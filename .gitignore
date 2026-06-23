@@ -1,7 +1,9 @@
-node_modules/
-.vercel/
-.env
-.env.local
+node_modules
+.next
+out
 .DS_Store
 *.log
-.supabase/
+.env
+.env*.local
+.vercel
+next-env.d.ts

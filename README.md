@@ -1,54 +1,36 @@
-# MiaMe 🛵 · מיה פור · Free Feel 🗽
+# MiaMe.co.il
 
-> שיווק, מכירה, מימון ושיתופי השכרה · תהליך איבחון וזיהוי לקוח, טיפול · כל מה שקשור
-> לרכישת מיה פור ותנאי מימון מיוחדים לקלנועית. קנייה ושירות Online.
->
-> אתר המכר הצרכני של **מיה פור** · קלנועית חשמלית פרימיום על פלטפורמת 4 גלגלים מוגנת פטנט.
-> מבית **Leasing.co.il** 🎯.
+מכונת מכירה רזה לניידות חשמלית פרימיום, מבית Leasing.co.il.
+דף נחיתה אחד: סימולטור תשלומים, לידים ישירות לוואטסאפ, וסקשן שותפים.
 
-דף נחיתה ומשפך מכירה · עברית RTL · מובייל‑first · סימולטור תשלומים אינטראקטיבי · ניתוב לוואטסאפ.
+## Stack
+
+Next.js 14 (App Router) · TypeScript · Tailwind · Supabase · Vercel.
+
+## Quick start
+
+```bash
+npm install
+cp .env.example .env.local   # מלאו Supabase + מספר וואטסאפ
+npm run dev                  # http://localhost:3000
+```
+
+## משתני סביבה
+
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_WHATSAPP_NUMBER=972501234567
+```
 
 ## מבנה
 
 ```
-index.html                 דף הנחיתה (כל הסקשנים, RTL)
-assets/styles.css          מערכת עיצוב (azure + gold)
-assets/app.js              דגמים · סימולטור · ניתוב וואטסאפ · טופס ליד
-api/lead.js                שמירת ליד אופציונלית (Supabase REST, env-gated)
-supabase/migrations/       0001_leads.sql · טבלת leads + RLS
-vercel.json                headers אבטחה + cache
-.env.example               משתני סביבה (כולם אופציונליים)
+app/         layout + page + globals.css
+components/  Header, Hero, Configurator (ליבה), Partner, Footer, FloatingWa
+lib/         models, finance, whatsapp, supabase, analytics
+supabase/    schema.sql
+docs/        RUNBOOK.md (הוראות העלאה מלאות)
 ```
 
-## הרצה מקומית
-
-אתר סטטי · ללא build. כל שרת סטטי יספיק:
-
-```bash
-npx serve .        # או: python3 -m http.server 3000
-```
-
-## פריסה (Vercel)
-
-static + serverless `/api` · אפס הגדרת build.
-
-1. חברו את הריפו ל‑Vercel · Framework Preset = **Other**.
-2. (אופציונלי) משתני סביבה ל‑Production:
-   - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` · להפעלת שמירת לידים.
-   - `MIAME_WHATSAPP` · מספר הוואטסאפ העסקי (ספרות בלבד, פורמט בינ"ל).
-3. דומיין `miame.co.il` (האצלת nameservers ל‑Vercel: `ns1/ns2.vercel-dns.com`).
-4. Supabase (אם מפעילים לידים): הריצו את `supabase/migrations/0001_leads.sql`.
-
-ללא משתני הסביבה האתר חי ועובד במלואו · הלידים זורמים בוואטסאפ.
-
-## גילוי נאות
-
-המחירים, התשלומים החודשיים והסימולטור הם **הערכה ראשונית להמחשה בלבד** · אינם הצעת אשראי
-מחייבת, ייעוץ או התחייבות למימון. MiaMe מתווכת ומארגנת את העסקה · **אינה מלווה ואינה מסלקת
-כספים בעצמה**, ואין באתר סליקה/חיוב מקוון. ההתקשרות הסופית כפופה לאישור פרטני ולחתימה על הסכם.
-
-## TODO
-
-- [ ] תמונות מוצר אמיתיות של מיה פור (מחליפות את ה‑placeholders).
-- [ ] חיבור דומיין miame.co.il (DNS · nameservers ל‑Vercel) + SSL.
-- [ ] (אופציונלי) הפעלת Supabase לשמירת לידים.
+הוראות מלאות להעלאה, חיבור Supabase, פריסה וחיבור דומיין: ראו `docs/RUNBOOK.md`.
