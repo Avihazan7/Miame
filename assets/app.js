@@ -1,0 +1,42 @@
+(function(){"use strict";
+var WA="972547477477";
+var waLink=function(m){return "https://wa.me/"+WA+"?text="+encodeURIComponent(m)};
+var ils=function(n){return "₪"+Math.round(n).toLocaleString("en-US")};
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var MODELS=[
+ {id:"pro",name:"Mia Four Pro 4×4",short:"Pro · 4×4",platform:"4×4",price:27900,tag:"פרימיום",best:1,sub:"הכוח לכל מסלול · 4 מנועים · הנעה כפולה לשטח",specs:[["מנועים","4 · 1,800W"],["סוללה","60V · 35Ah נשלפת"],["טווח","עד 100 ק\"מ"],["משקל","48 ק\"ג"]]},
+ {id:"longrange",name:"Mia Four 4×2 Long Range",short:"4×2 · Long Range",platform:"4×2",price:21900,tag:"הכי מבוקש",sub:"הטווח המורחב · 2 מנועים · סוללה מוגדלת נשלפת",specs:[["מנועים","2 · 1,800W"],["סוללה","60V · 35Ah נשלפת"],["טווח","עד 100 ק\"מ"],["משקל","43 ק\"ג"]]},
+ {id:"city",name:"Mia Four 4×2",short:"4×2 · City",platform:"4×2",price:19900,sub:"העירוני החכם · 2 מנועים · קל וזריז ליום־יום",specs:[["מנועים","2 · 1,800W"],["סוללה","60V · 25Ah"],["טווח","עד ~60 ק\"מ"],["משקל","42 ק\"ג"]]}
+];
+var byId=function(id){for(var i=0;i<MODELS.length;i++)if(MODELS[i].id===id)return MODELS[i];return MODELS[0]};
+var VEH='<img class="card-veh" src="/miame-hero.webp" alt="מיה פור" loading="lazy">';
+$("#modelsGrid").innerHTML=MODELS.map(function(m){return '<div class="card" data-model="'+m.id+'"><div class="card-stage">'+(m.tag?'<span class="card-badge'+(m.best?' best':'')+'">'+m.tag+'</span>':'')+VEH+'</div><div class="card-body"><div class="card-name">'+m.name+'</div><div class="card-tagline">'+m.sub+'</div><div class="card-specs">'+m.specs.map(function(s){return '<span class="spec">'+s[0]+' '+s[1]+'</span>'}).join('')+'</div><div class="card-price"><span class="price-from">החל מ־</span><div class="price-num"><span class="cur">₪</span>'+m.price.toLocaleString("en-US")+'</div></div><a class="btn btn-primary card-cta" data-pick="'+m.id+'" data-cta="'+m.id+'">בחר והרץ סימולציה</a><button class="card-more" data-more="'+m.id+'">פרטים מלאים ←</button></div></div>'}).join("");
+$("#modelPick").innerHTML=MODELS.map(function(m){return '<button class="mp'+(m.id==="city"?" on":"")+'" data-mp="'+m.id+'"><div class="mp-n">'+m.short+'</div><div class="mp-p">'+ils(m.price)+'</div></button>'}).join("");
+var DEALERS=[
+ ["אקו פאן","הוד-השרון","09-3730188"],["אורבניקו","תל-אביב","03-7207220"],["אורבן רייד","תל-אביב","051-2872267"],
+ ["אורסל","ראשון לציון","052-6387509"],["פול גזז","אשקלון","050-4525183"],["אופני הבירה","ירושלים","02-5326699"],
+ ["הר ריידר","בית שמש","054-8424101"],["MIA בני ברק","בני ברק","050-4171552"],["גלגל יציב","כנות","1-700-557-744"],
+ ["MOTOATV","כרמיאל","053-4000100"],["ElectricMove","חצור הגלילית","050-5949416"],["מחסני חשמל","אילת","073-2540171"],
+ ["All Mobile","אילת","054-9188871"],["מייק בייק","אילת","053-6500174"]
+];
+$("#dealersGrid").innerHTML=DEALERS.map(function(d){var tel=d[2].replace(/[^0-9]/g,"");return '<div class="dealer"><div class="dealer-info"><b>'+d[0]+'</b><span>'+d[1]+' · '+d[2]+'</span></div><div class="dealer-btns"><a class="dealer-btn" href="tel:'+tel+'">📞 חיוג</a><a class="dealer-btn nav" href="https://waze.com/ul?q='+encodeURIComponent(d[0]+" "+d[1])+'" target="_blank" rel="noopener">📍 ניווט</a></div></div>'}).join("");
+var state={model:"pro",track:"private"},down=$("#down"),balloon=$("#balloon"),term=$("#term");
+function fill(el){var p=(el.value-el.min)/(el.max-el.min)*100;el.style.background="linear-gradient(90deg,#1f9dff,#4fd0ff "+p+"%,var(--line) "+p+"%)"}
+function calc(){var m=byId(state.model),price=m.price,dp=+down.value,bp=+balloon.value,mo=+term.value,d=price*dp/100,b=price*bp/100,fin=Math.max(0,price-d-b);
+ $("#downOut").textContent=ils(d);$("#balloonOut").textContent=ils(b);$("#downNote").textContent=dp+"% מהמחיר";$("#balloonNote").textContent=bp+"% מהמחיר";$("#termOut").textContent=mo+" ח׳";
+ $("#monthly").textContent=Math.round(fin/mo).toLocaleString("en-US");$("#full").textContent=ils(price);$("#financed").textContent=ils(fin);$("#resModel").textContent=m.name;[down,balloon,term].forEach(fill)}
+[down,balloon,term].forEach(function(el){el.addEventListener("input",calc)});
+$$(".tab").forEach(function(b){b.addEventListener("click",function(){$$(".tab").forEach(function(x){x.classList.remove("on")});b.classList.add("on");state.track=b.dataset.track})});
+function setModel(id){state.model=id;$$(".mp").forEach(function(x){x.classList.toggle("on",x.dataset.mp===id)});$$(".card").forEach(function(c){c.classList.toggle("sel",c.dataset.model===id)});$$("[data-cta]").forEach(function(b){var on=b.dataset.cta===id;b.textContent=on?"נטען בסימולטור ✓":"בחר והרץ סימולציה";b.classList.toggle("loaded",on)});calc()}
+$$("[data-mp]").forEach(function(b){b.addEventListener("click",function(){setModel(b.dataset.mp)})});
+function simMsg(name,phone){var m=byId(state.model),mo=+term.value;return "היי MiaMe 🛵 "+(name?name+" ("+phone+"). ":"")+"מתעניין/ת ב"+m.name+" ("+m.platform+").\nמסלול: "+(state.track==="business"?"עסקי/סוכן":"לקוח פרטי")+"\nמחיר "+$("#full").textContent+" · מקדמה "+$("#downOut").textContent+" · בלון "+$("#balloonOut").textContent+"\n"+mo+" תשלומים · חודשי משוער ₪"+$("#monthly").textContent+" (0% ריבית)."}
+$("#confirmDeal").addEventListener("click",function(){var name=$("#leadName").value.trim(),phone=$("#leadPhone").value.trim();if(!name||!phone){$("#leadOk").textContent="נא למלא שם וטלפון";$("#leadOk").style.color="#ffb4a8";return}try{fetch("/api/lead",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:name,phone:phone,model_name:byId(state.model).name,track:state.track,source:"miame.co.il"})})}catch(e){}window.open(waLink(simMsg(name,phone)),"_blank","noopener");$("#leadOk").style.color="";$("#leadOk").textContent="הפרטים נשמרו ושיחת וואטסאפ נפתחה ✓ נחזור אליכם בהקדם · עד 24 שעות בימי עסקים."});
+document.addEventListener("click",function(e){var t=e.target.closest("[data-wa]");if(!t)return;e.preventDefault();window.open(waLink(t.getAttribute("data-wa")||"היי MiaMe 🛵"),"_blank","noopener")});
+document.addEventListener("click",function(e){var p=e.target.closest("[data-pick]");if(p){setModel(p.dataset.pick);$("#sim").scrollIntoView({behavior:"smooth"});return}var more=e.target.closest("[data-more]"),card=e.target.closest(".card");if(more||(card&&!e.target.closest("[data-pick]")))openModal(more?more.dataset.more:card.dataset.model)});
+var modal=$("#modal");
+function openModal(id){var m=byId(id);$("#mPlatform").textContent=m.platform;$("#mName").textContent=m.name;$("#mPrice").textContent=ils(m.price);$("#mMedia").innerHTML=VEH;$("#mSpecs").innerHTML=m.specs.map(function(s){return '<div class="ms"><span class="ms-k">'+s[0]+'</span><span class="ms-v">'+s[1]+'</span></div>'}).join("");$("#mPick").onclick=function(){closeModal();setModel(id);$("#sim").scrollIntoView({behavior:"smooth"})};$("#mWa").setAttribute("data-wa","היי, אשמח לפרטים על "+m.name+" ("+ils(m.price)+") 🙂");modal.classList.add("on")}
+function closeModal(){modal.classList.remove("on")}
+$$("[data-close]").forEach(function(x){x.addEventListener("click",closeModal)});document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal()});
+var amb=$("#ambientInner");if(amb&&!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)){window.addEventListener("pointermove",function(e){amb.style.transform="translate("+((e.clientX/innerWidth-.5)*22)+"px,"+((e.clientY/innerHeight-.5)*22)+"px)"},{passive:true});window.addEventListener("deviceorientation",function(e){if(e.gamma==null||e.beta==null)return;var x=Math.max(-1,Math.min(1,e.gamma/45)),y=Math.max(-1,Math.min(1,(e.beta-40)/45));amb.style.transform="translate("+(x*28)+"px,"+(y*28)+"px)"},{passive:true})}
+setModel("city");calc();
+})();
