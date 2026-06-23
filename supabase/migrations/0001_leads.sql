@@ -1,5 +1,5 @@
--- MiaMe · leads capture (P0 funnel: lead -> deal-file -> human close)
--- Multi-tenant aware (tenant column) per UMM Marketplace Engine spec.
+-- MiaMe · leads capture (lead -> follow-up -> human close)
+-- Optional `tenant` column scopes rows by brand/site.
 -- RLS ON with no public policy: only the service_role (server-side /api/lead) may
 -- read/write. anon/auth clients get nothing. No payment/clearing data is stored here.
 
@@ -24,4 +24,4 @@ alter table public.leads enable row level security;
 -- Intentionally no anon/authenticated policies. service_role bypasses RLS.
 -- (If a tenant dashboard is added later, add tenant-scoped SELECT policies here.)
 
-comment on table public.leads is 'MiaMe storefront leads. service_role-only via /api/lead. No clearing data (P0 gate).';
+comment on table public.leads is 'MiaMe storefront leads. service_role-only via /api/lead. No payment/clearing data.';
