@@ -123,6 +123,11 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}s
 .soon-title{font-size:clamp(34px,8vw,52px);font-weight:900;letter-spacing:1.5px;background:linear-gradient(90deg,#00e5dd,#5ac8fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin:6px 0 10px}
 .soon-sub{font-size:15px;line-height:1.6;color:#cfe0ff;max-width:520px;margin:0 auto}
 .soon-link{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22);margin-top:6px}
+.soon-media{position:relative;flex:1;display:flex;justify-content:center}.soon-img{width:100%;max-width:380px;height:auto;filter:drop-shadow(0 22px 38px rgba(0,229,221,.28))}.soon-badge{position:absolute;top:0;inset-inline-start:0;z-index:2}.soon-txt{flex:1}
+@media(min-width:780px){.soon-card{flex-direction:row-reverse;text-align:right;padding:42px;gap:36px}.soon-sub{margin:0}}
+.feat-show{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-bottom:30px}@media(max-width:780px){.feat-show{grid-template-columns:1fr}}
+.feat-show-main,.feat-show-detail{position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-md);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+.feat-show-main img,.feat-show-detail img{width:100%;height:auto;display:block}.feat-show-cap{margin-top:8px;font-size:12.5px;color:var(--slate);font-weight:600}
 .sim{display:grid;grid-template-columns:1.05fr .95fr;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-md);background:#fff}@media(max-width:920px){.sim{grid-template-columns:1fr}}
 .sim-controls{padding:30px}@media(max-width:520px){.sim-controls{padding:22px 18px}}
 .tabs{display:grid;grid-template-columns:repeat(2,1fr);background:var(--mist);border-radius:14px;padding:5px;gap:4px;margin-bottom:24px}
@@ -272,6 +277,10 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}s
 
 <section class="block features-sec" id="features"><div class="wrap">
   <div class="sec-head"><div class="sec-kicker">הנדסה</div><h2 class="sec-title">בנוי לשטח · חכם לעיר</h2><p class="sec-desc">פלטפורמה מוגנת פטנט, מנועים עוצמתיים וסוללה נשלפת. הכל בכלי אחד.</p></div>
+  <div class="feat-show">
+    <div class="feat-show-main"><img class="floaty" src="/miame-side.webp" alt="מיה פור · פלטפורמת 4 גלגלים מוגנת פטנט"></div>
+    <div class="feat-show-detail"><img src="/miame-alloy.webp" alt="גלגלי סגסוגת · צמיגי שטח"><div class="feat-show-cap">גלגלי סגסוגת · צמיגי שטח · מתלים מוגני פטנט</div></div>
+  </div>
   <div class="feat-grid">
     <div class="feat-card"><div class="feat-ic">⚡</div><div class="feat-title">עוצמה</div><p class="feat-text">2 או 4 מנועים בהספק 1,800W כל אחד. סוללת ליתיום נשלפת 60V בקיבולת 25/35Ah, עם אפשרות להוספת סוללות להגדלת הטווח.</p></div>
     <div class="feat-card"><div class="feat-ic">◈</div><div class="feat-title">חדשנות</div><p class="feat-text">מערכת מתלים מכנית פורצת דרך על פלטפורמה מוגנת פטנט. שיכוך מלא קדמי ואחורי לנסיעה יציבה ובטוחה בכל תוואי.</p></div>
@@ -316,10 +325,12 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}s
 </div></section>
 
 <section class="block"><div class="wrap"><div class="soon-card">
-  <span class="soon-badge">בקרוב · Coming Soon</span>
-  <div class="soon-title">SPYQE</div>
-  <p class="soon-sub">פלטפורמת MIA Dynamics מתרחבת · דגמים חדשים בדרך. MiaMe תהיה הבית הדיגיטלי לכל הקו · עסקה אחת, מנוע אחד, אינסוף אפשרויות.</p>
-  <a class="btn soon-link" data-wa="היי, אשמח לעדכון על SPYQE כשמשיקים 🚀">לפרטי SPYQE ←</a>
+  <div class="soon-media"><span class="soon-badge">בקרוב · Coming Soon</span><img class="soon-img floaty" src="/miame-spyqe.webp" alt="SPYQE · הדגם הבא של MIA Dynamics"></div>
+  <div class="soon-txt">
+    <div class="soon-title">SPYQE</div>
+    <p class="soon-sub">פלטפורמת MIA Dynamics מתרחבת · דגמים חדשים בדרך. MiaMe תהיה הבית הדיגיטלי לכל הקו · עסקה אחת, מנוע אחד, אינסוף אפשרויות.</p>
+    <a class="btn soon-link" data-wa="היי, אשמח לעדכון על SPYQE כשמשיקים 🚀">לפרטי SPYQE ←</a>
+  </div>
 </div></div></section>
 
 <section class="block sim-sec" id="sim"><div class="wrap">
@@ -351,7 +362,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}s
 <section class="block tribute-sec" id="tribute"><div class="wrap">
   <div class="sec-head"><span class="tribute-flag">הוקרה והנגשה</span><h2 class="sec-title" style="margin-top:8px">מיה פור מצדיעה לכוחות הביטחון</h2><p class="sec-desc">ובני משפחותיהם · בכפוף לבדיקת זכאות במשרד הביטחון.</p></div>
   <div class="tribute-wrap">
-    <div class="tribute-media"><div class="tribute-badge">95%<small>מימון*</small></div><img src="/miame-front.webp" alt="מיה פור · קלנועית יחיד"></div>
+    <div class="tribute-media"><div class="tribute-badge">95%<small>מימון*</small></div><img class="floaty" src="/miame-front.webp" alt="מיה פור · קלנועית יחיד"></div>
     <div>
       <div class="elig-card"><div class="elig-head"><h3>נכי צה"ל וכוחות הביטחון</h3><span class="elig-tag">אגף השיקום</span></div><p class="elig-body">קלנועית במימון משרד הביטחון, בהתאם לזכאות הרפואית והתפקודית · <b>עד 95%*</b> מהעלות.</p><a class="elig-link" href="https://shikum.mod.gov.il/medical/equipment/wheelchairs" target="_blank" rel="noopener">פרטי הזכאות באגף השיקום ←</a></div>
       <div class="elig-card"><div class="elig-head"><h3>בני משפחות שכולות</h3><span class="elig-tag">אגף משפחות הנצחה</span></div><p class="elig-body">מענק לרכישת קלנועית יחיד, פעם ב־4 שנים · <b>עד 13,494 ₪</b> להורה שכול · <b>עד 17,988 ₪</b> לאלמן/ה.</p><a class="elig-link" href="https://mishpahot-hantzaha.mod.gov.il/transportation/scooter" target="_blank" rel="noopener">פרטי הזכאות באגף משפחות הנצחה ←</a></div>
@@ -401,6 +412,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}s
 </div></section>
 
 <footer class="site-footer"><div class="wrap">
+  <img src="/566290cf9_logomiafour.png" alt="MIA FOUR" style="height:34px;width:auto;margin:0 auto 14px;display:block;opacity:.9">
   <div class="foot-logo">MiaMe</div>
   <div class="foot-tag">Free Feel 🗽 · מבית Leasing.co.il 🎯</div>
   <div class="foot-contact"><a href="mailto:info@miame.co.il">info@miame.co.il</a></div>
@@ -452,7 +464,7 @@ var modal=$("#modal");
 function openModal(id){var m=byId(id);$("#mPlatform").textContent=m.platform;$("#mName").textContent=m.name;$("#mPrice").textContent=ils(m.price);$("#mMedia").innerHTML=VEH;$("#mSpecs").innerHTML=m.specs.map(function(s){return '<div class="ms"><span class="ms-k">'+s[0]+'</span><span class="ms-v">'+s[1]+'</span></div>'}).join("");$("#mPick").onclick=function(){closeModal();setModel(id);$("#sim").scrollIntoView({behavior:"smooth"})};$("#mWa").setAttribute("data-wa","היי, אשמח לפרטים על "+m.name+" ("+ils(m.price)+") 🙂");modal.classList.add("on")}
 function closeModal(){modal.classList.remove("on")}
 $$("[data-close]").forEach(function(x){x.addEventListener("click",closeModal)});document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal()});
-var amb=$("#ambientInner");if(amb&&!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)){window.addEventListener("pointermove",function(e){amb.style.transform="translate("+((e.clientX/innerWidth-.5)*22)+"px,"+((e.clientY/innerHeight-.5)*22)+"px)"},{passive:true})}
+var amb=$("#ambientInner");if(amb&&!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)){window.addEventListener("pointermove",function(e){amb.style.transform="translate("+((e.clientX/innerWidth-.5)*22)+"px,"+((e.clientY/innerHeight-.5)*22)+"px)"},{passive:true});window.addEventListener("deviceorientation",function(e){if(e.gamma==null||e.beta==null)return;var x=Math.max(-1,Math.min(1,e.gamma/45)),y=Math.max(-1,Math.min(1,(e.beta-40)/45));amb.style.transform="translate("+(x*28)+"px,"+(y*28)+"px)"},{passive:true})}
 setModel("promax");calc();
 })();
 </script>
