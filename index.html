@@ -219,6 +219,17 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}s
 @keyframes d1{to{transform:scale(1.16) translate(5%,5%)}}@keyframes d2{from{transform:scale(1.08)}to{transform:scale(.92) translate(-5%,4%)}}@keyframes d3{from{transform:scale(.96)}to{transform:scale(1.12) translate(4%,-3%)}}@keyframes d4{from{transform:scale(1.04)}to{transform:scale(.9) translate(-4%,5%)}}@keyframes d5{to{transform:scale(1.14) translate(3%,-4%)}}
 .features-sec,.patents-sec,.sim-sec,.service-sec{background:rgba(255,255,255,.8)}
 .specs-sec,.models-sec,.partner-sec,.life-sec{background:rgba(240,247,253,.72)}
+.chassis-banner{position:relative;margin:0 0 30px;background:linear-gradient(135deg,#0a2c54,#0e3d76);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 18px 42px rgba(10,40,90,.28);display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:10px}
+.chassis-banner .cb-txt{padding:26px 28px;color:#fff;text-align:right}
+.chassis-banner .cb-kick{font-size:12.5px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--cyan)}
+.chassis-banner .cb-h{font-size:clamp(22px,3.6vw,30px);font-weight:800;margin:8px 0;line-height:1.15}
+.chassis-banner .cb-p{font-size:14.5px;line-height:1.6;color:#cfe0ff;margin:0}
+.chassis-banner .cb-media{position:relative;display:flex;align-items:center;justify-content:center;padding:18px 18px 12px;min-height:190px}
+.chassis-banner .cb-media img{width:100%;max-width:440px;height:auto;filter:drop-shadow(0 22px 30px rgba(0,0,0,.42))}
+@media(max-width:780px){.chassis-banner{grid-template-columns:1fr;text-align:center}.chassis-banner .cb-txt{text-align:center;padding:24px 22px 0}.chassis-banner .cb-media{padding:14px 14px 18px}}
+.map-embed{margin:18px 0 0;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-md);background:#eef4fc}
+.map-embed iframe{display:block;width:100%;height:340px;border:0}
+@media(max-width:520px){.map-embed iframe{height:280px}}
 :focus-visible{outline:2px solid var(--azure);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -320,6 +331,14 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}s
 
 <section class="block models-sec" id="models"><div class="wrap">
   <div class="sec-head"><div class="sec-kicker">שלושה דגמים</div><h2 class="sec-title">בחרו את הדגם שלכם</h2><p class="sec-desc">לחצו על דגם כדי לטעון אותו בסימולטור ולקבל תשלום חודשי משוער מיידית · פלטפורמה אחת · שלושה דגמים · אינסוף אפשרויות.</p></div>
+  <div class="chassis-banner">
+    <div class="cb-txt">
+      <div class="cb-kick">פלטפורמה אחת · שלושה דגמים</div>
+      <div class="cb-h">שלדה מוגנת פטנט · 4 גלגלים</div>
+      <p class="cb-p">אותו DNA הנדסי בכל דגם · שלדת MIA Dynamics עם מתלים מלאים קדמי ואחורי וסוללה נשלפת. בוחרים רק את ההספק והטווח שמתאימים לכם.</p>
+    </div>
+    <div class="cb-media"><img class="floaty" src="/mia-four-side.webp" alt="שלדת מיה פור · פלטפורמת 4 גלגלים מוגנת פטנט" loading="lazy"></div>
+  </div>
   <div class="cards" id="modelsGrid"></div>
   <p class="tribute-disclaimer">המחירים להמחשה ראשונית בלבד · ייתכנו עדכונים בהתאם לדגם, מלאי ותנאי הספק.</p>
 </div></section>
@@ -344,7 +363,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}s
       <div class="field"><div class="field-top"><span class="field-label">תקופת תשלומים</span><span class="field-val" id="termOut">18 ח׳</span></div><input type="range" class="rng" id="term" min="12" max="36" value="18" step="6"><div class="field-note">12 · 18 · 24 · 30 · 36 · 0% ריבית</div></div>
     </div>
     <div class="sim-result">
-      <div class="res-eyebrow">תשלום חודשי משוער</div><div class="res-model" id="resModel">מיה פור · Pro Max</div>
+      <div class="res-eyebrow">תשלום חודשי משוער</div><div class="res-model" id="resModel">Mia Four Pro 4×4</div>
       <div class="res-monthly"><span class="cur">₪</span><span class="num" id="monthly">1,550</span><span class="per">ללא ריבית · להמחשה בלבד</span></div>
       <div class="res-line"></div>
       <div class="res-grid"><div class="res-cell"><div class="k">מחיר מלא</div><div class="v" id="full">₪27,900</div></div><div class="res-cell"><div class="k">יתרה למימון</div><div class="v" id="financed">₪27,900</div></div></div>
@@ -367,8 +386,8 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}s
       <div class="elig-card"><div class="elig-head"><h3>נכי צה"ל וכוחות הביטחון</h3><span class="elig-tag">אגף השיקום</span></div><p class="elig-body">קלנועית במימון משרד הביטחון, בהתאם לזכאות הרפואית והתפקודית · <b>עד 95%*</b> מהעלות.</p><a class="elig-link" href="https://shikum.mod.gov.il/medical/equipment/wheelchairs" target="_blank" rel="noopener">פרטי הזכאות באגף השיקום ←</a></div>
       <div class="elig-card"><div class="elig-head"><h3>בני משפחות שכולות</h3><span class="elig-tag">אגף משפחות הנצחה</span></div><p class="elig-body">מענק לרכישת קלנועית יחיד, פעם ב־4 שנים · <b>עד 13,494 ₪</b> להורה שכול · <b>עד 17,988 ₪</b> לאלמן/ה.</p><a class="elig-link" href="https://mishpahot-hantzaha.mod.gov.il/transportation/scooter" target="_blank" rel="noopener">פרטי הזכאות באגף משפחות הנצחה ←</a></div>
       <div class="tribute-calc">
-        <div class="tc-head">🎁 לזכאי אגף השיקום · מיה פור City</div>
-        <div class="tc-row"><b>מחיר מיה פור City</b><span>19,900 ₪</span></div>
+        <div class="tc-head">🎁 לזכאי אגף השיקום · מיה פור 4×2</div>
+        <div class="tc-row"><b>מחיר מיה פור 4×2</b><span>19,900 ₪</span></div>
         <div class="tc-row tc-sub"><b>מימון אגף השיקום*</b><span>עד 95%</span></div>
         <div class="tc-row tc-sub"><b>מענק מתנה MiaMe.co.il 🎁</b><span>5%</span></div>
         <div class="tc-row tc-pay"><b>אתם משלמים</b><span>0 ₪ · ללא עלות*</span></div>
@@ -386,6 +405,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}s
     <div class="flagship-body"><div class="flagship-name">MEU · אליעזר קפלן 21, תל אביב</div><div class="flagship-meta">מתחם דה וינצ׳י · א׳–ה׳ 10:00–19:00 · ו׳ וערב חג 10:00–14:00</div></div>
     <div class="flagship-btns"><a class="flagship-tel" href="tel:0778038321">📞 077-8038321</a><a class="flagship-nav" href="https://waze.com/ul?q=אליעזר קפלן 21 תל אביב" target="_blank" rel="noopener">📍 ניווט</a></div>
   </div>
+  <div class="map-embed"><iframe title="מפה · MEU · אליעזר קפלן 21, תל אביב" src="https://maps.google.com/maps?q=%D7%90%D7%9C%D7%99%D7%A2%D7%96%D7%A8%20%D7%A7%D7%A4%D7%9C%D7%9F%2021%20%D7%AA%D7%9C%20%D7%90%D7%91%D7%99%D7%91&hl=he&z=15&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
   <p class="dealers-title">משווקים מורשים · לחצו לחיוג או ניווט 📍</p>
   <div class="dealers-grid" id="dealersGrid"></div>
   <div class="rental-strip"><b>רוצים לשכור מיה פור לפי שעה?</b><span>החל מ־50 ₪ לשעה · אתרו נקודת השכרה קרובה ברשת MiaMe Hub</span><div class="rental-cta"><a class="btn btn-light btn-block" data-wa="היי, אשמח לאתר נקודת השכרה של מיה פור קרובה אליי 🛵">אתרו נקודת השכרה</a></div></div>
@@ -431,14 +451,14 @@ var waLink=function(m){return "https://wa.me/"+WA+"?text="+encodeURIComponent(m)
 var ils=function(n){return "₪"+Math.round(n).toLocaleString("en-US")};
 var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
 var MODELS=[
- {id:"city",name:"מיה פור · City",platform:"4×2",price:19900,sub:"2 מנועים · עיר ויומיום",specs:[["מנועים","2 · 1,800W"],["סוללה","60V · 25Ah"],["טווח","עד ~60 ק\"מ"],["משקל","42 ק\"ג"]]},
- {id:"citymax",name:"מיה פור · City Max Range",platform:"4×2",price:21900,tag:"טווח מורחב",sub:"2 מנועים · סוללת טווח מורחב",specs:[["מנועים","2 · 1,800W"],["סוללה","60V · 35Ah נשלפת"],["טווח","עד 100 ק\"מ"],["משקל","43 ק\"ג"]]},
- {id:"promax",name:"מיה פור · Pro Max",platform:"4×4",price:27900,tag:"הנמכר ביותר",best:1,sub:"4 מנועים · הנעה כפולה לשטח",specs:[["מנועים","4 · 1,800W"],["סוללה","60V · 35Ah נשלפת"],["טווח","עד 100 ק\"מ"],["משקל","48 ק\"ג"]]}
+ {id:"pro",name:"Mia Four Pro 4×4",short:"Pro · 4×4",platform:"4×4",price:27900,tag:"פרימיום",best:1,sub:"הכוח לכל מסלול · 4 מנועים · הנעה כפולה לשטח",specs:[["מנועים","4 · 1,800W"],["סוללה","60V · 35Ah נשלפת"],["טווח","עד 100 ק\"מ"],["משקל","48 ק\"ג"]]},
+ {id:"longrange",name:"Mia Four 4×2 Long Range",short:"4×2 · Long Range",platform:"4×2",price:21900,tag:"הכי מבוקש",sub:"הטווח המורחב · 2 מנועים · סוללה מוגדלת נשלפת",specs:[["מנועים","2 · 1,800W"],["סוללה","60V · 35Ah נשלפת"],["טווח","עד 100 ק\"מ"],["משקל","43 ק\"ג"]]},
+ {id:"city",name:"Mia Four 4×2",short:"4×2 · City",platform:"4×2",price:19900,sub:"העירוני החכם · 2 מנועים · קל וזריז ליום־יום",specs:[["מנועים","2 · 1,800W"],["סוללה","60V · 25Ah"],["טווח","עד ~60 ק\"מ"],["משקל","42 ק\"ג"]]}
 ];
-var byId=function(id){for(var i=0;i<MODELS.length;i++)if(MODELS[i].id===id)return MODELS[i];return MODELS[2]};
+var byId=function(id){for(var i=0;i<MODELS.length;i++)if(MODELS[i].id===id)return MODELS[i];return MODELS[0]};
 var VEH='<img class="card-veh" src="/miame-hero.webp" alt="מיה פור" loading="lazy">';
-$("#modelsGrid").innerHTML=MODELS.map(function(m){return '<div class="card" data-model="'+m.id+'"><div class="card-stage">'+(m.tag?'<span class="card-badge'+(m.best?' best':'')+'">'+m.tag+'</span>':'')+VEH+'</div><div class="card-body"><div class="card-name">'+m.name+'</div><div class="card-tagline">'+m.platform+' · '+m.sub+'</div><div class="card-specs">'+m.specs.map(function(s){return '<span class="spec">'+s[0]+' '+s[1]+'</span>'}).join('')+'</div><div class="card-price"><span class="price-from">החל מ־</span><div class="price-num"><span class="cur">₪</span>'+m.price.toLocaleString("en-US")+'</div></div><a class="btn btn-primary card-cta" data-pick="'+m.id+'">בחרו דגם זה</a><button class="card-more" data-more="'+m.id+'">פרטים מלאים ←</button></div></div>'}).join("");
-$("#modelPick").innerHTML=MODELS.map(function(m){return '<button class="mp'+(m.id==="promax"?" on":"")+'" data-mp="'+m.id+'"><div class="mp-n">'+m.platform+'</div><div class="mp-p">'+ils(m.price)+'</div></button>'}).join("");
+$("#modelsGrid").innerHTML=MODELS.map(function(m){return '<div class="card" data-model="'+m.id+'"><div class="card-stage">'+(m.tag?'<span class="card-badge'+(m.best?' best':'')+'">'+m.tag+'</span>':'')+VEH+'</div><div class="card-body"><div class="card-name">'+m.name+'</div><div class="card-tagline">'+m.sub+'</div><div class="card-specs">'+m.specs.map(function(s){return '<span class="spec">'+s[0]+' '+s[1]+'</span>'}).join('')+'</div><div class="card-price"><span class="price-from">החל מ־</span><div class="price-num"><span class="cur">₪</span>'+m.price.toLocaleString("en-US")+'</div></div><a class="btn btn-primary card-cta" data-pick="'+m.id+'">בחרו דגם זה</a><button class="card-more" data-more="'+m.id+'">פרטים מלאים ←</button></div></div>'}).join("");
+$("#modelPick").innerHTML=MODELS.map(function(m){return '<button class="mp'+(m.id==="pro"?" on":"")+'" data-mp="'+m.id+'"><div class="mp-n">'+m.short+'</div><div class="mp-p">'+ils(m.price)+'</div></button>'}).join("");
 var DEALERS=[
  ["אקו פאן","הוד-השרון","09-3730188"],["אורבניקו","תל-אביב","03-7207220"],["אורבן רייד","תל-אביב","051-2872267"],
  ["אורסל","ראשון לציון","052-6387509"],["פול גזז","אשקלון","050-4525183"],["אופני הבירה","ירושלים","02-5326699"],
@@ -447,7 +467,7 @@ var DEALERS=[
  ["All Mobile","אילת","054-9188871"],["מייק בייק","אילת","053-6500174"]
 ];
 $("#dealersGrid").innerHTML=DEALERS.map(function(d){var tel=d[2].replace(/[^0-9]/g,"");return '<div class="dealer"><div class="dealer-info"><b>'+d[0]+'</b><span>'+d[1]+' · '+d[2]+'</span></div><div class="dealer-btns"><a class="dealer-btn" href="tel:'+tel+'">📞 חיוג</a><a class="dealer-btn nav" href="https://waze.com/ul?q='+encodeURIComponent(d[0]+" "+d[1])+'" target="_blank" rel="noopener">📍 ניווט</a></div></div>'}).join("");
-var state={model:"promax",track:"private"},down=$("#down"),balloon=$("#balloon"),term=$("#term");
+var state={model:"pro",track:"private"},down=$("#down"),balloon=$("#balloon"),term=$("#term");
 function fill(el){var p=(el.value-el.min)/(el.max-el.min)*100;el.style.background="linear-gradient(90deg,var(--azure) "+p+"%,var(--line) "+p+"%)"}
 function calc(){var m=byId(state.model),price=m.price,dp=+down.value,bp=+balloon.value,mo=+term.value,d=price*dp/100,b=price*bp/100,fin=Math.max(0,price-d-b);
  $("#downOut").textContent=ils(d);$("#balloonOut").textContent=ils(b);$("#downNote").textContent=dp+"% מהמחיר";$("#balloonNote").textContent=bp+"% מהמחיר";$("#termOut").textContent=mo+" ח׳";
@@ -465,7 +485,7 @@ function openModal(id){var m=byId(id);$("#mPlatform").textContent=m.platform;$("
 function closeModal(){modal.classList.remove("on")}
 $$("[data-close]").forEach(function(x){x.addEventListener("click",closeModal)});document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal()});
 var amb=$("#ambientInner");if(amb&&!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)){window.addEventListener("pointermove",function(e){amb.style.transform="translate("+((e.clientX/innerWidth-.5)*22)+"px,"+((e.clientY/innerHeight-.5)*22)+"px)"},{passive:true});window.addEventListener("deviceorientation",function(e){if(e.gamma==null||e.beta==null)return;var x=Math.max(-1,Math.min(1,e.gamma/45)),y=Math.max(-1,Math.min(1,(e.beta-40)/45));amb.style.transform="translate("+(x*28)+"px,"+(y*28)+"px)"},{passive:true})}
-setModel("promax");calc();
+setModel("pro");calc();
 })();
 </script>
 </body>
