@@ -1,428 +1,831 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MiaMe · מיה פור · החופש שלך על ארבעה גלגלים</title>
-  <meta name="description" content="MiaMe.co.il · קלנועית חשמלית פרימיום מיה פור על פלטפורמת 4 גלגלים מוגנת פטנט. הצעת תשלום מותאמת תוך דקה, ישירות לוואטסאפ. 0% ריבית · אספקה מיידית · אחריות יבואן." />
-  <meta name="theme-color" content="#0a1230" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛵</text></svg>" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>MiaMe · החופש שלך על ארבעה גלגלים</title>
+<meta name="description" content="MiaMe · קלנועית חשמלית פרימיום על פלטפורמת 4 גלגלים. הצעת תשלום אישית, בדיקת זכאות וליווי עד המסירה, ישירות בוואטסאפ. מבית Leasing.co.il.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://miame.co.il/">
+<meta name="format-detection" content="telephone=no">
+<meta name="color-scheme" content="light">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MiaMe">
+<meta property="og:title" content="MiaMe · קלנועית חשמלית פרימיום על 4 גלגלים">
+<meta property="og:description" content="הצעת תשלום אישית, בדיקת זכאות וליווי עד המסירה, ישירות בוואטסאפ. מבית Leasing.co.il.">
+<meta property="og:url" content="https://miame.co.il/">
+<meta property="og:image" content="https://miame.co.il/og-image.jpg">
+<meta property="og:locale" content="he_IL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MiaMe · קלנועית חשמלית פרימיום על 4 גלגלים">
+<meta name="twitter:description" content="הצעת תשלום אישית, בדיקת זכאות וליווי עד המסירה, ישירות בוואטסאפ.">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","name":"MiaMe","url":"https://miame.co.il","email":"info@miame.co.il","parentOrganization":{"@type":"Organization","name":"Leasing.co.il","url":"https://leasing.co.il"}},{"@type":"Product","name":"Mia Four · קלנועית חשמלית 4 גלגלים","brand":{"@type":"Brand","name":"MIA FOUR"},"image":"https://miame.co.il/og-image.jpg","description":"קלנועית חשמלית פרימיום על פלטפורמת 4 גלגלים, עם מתלים מלאים וגלגלי שטח, בדיקת זכאות ומסלול תשלום אישי.","offers":{"@type":"AggregateOffer","priceCurrency":"ILS","lowPrice":"19900","highPrice":"27900","availability":"https://schema.org/InStock","seller":{"@type":"Organization","name":"MiaMe"}}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--font-heebo:'Heebo'}
+:root{
+  --snow:#ffffff; --mist:#f2f8fd; --tint:#e7f1ff;
+  --azure:#0a84ff; --azure-deep:#0067d6; --sky:#5ac8fa; --cyan:#0ce5dd;
+  --ink:#0c2340; --slate:#5b6675; --line:#e6eef6;
+  --shadow-sm:0 1px 2px rgba(11,15,20,.04), 0 4px 14px rgba(11,15,20,.05);
+  --shadow-md:0 8px 30px rgba(11,20,40,.08);
+  --shadow-lg:0 24px 60px rgba(11,30,80,.12);
+  --r:18px; --r-lg:26px; --maxw:1120px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;background:#fff}
+body{margin:0;font-family:var(--font-heebo),system-ui,-apple-system,sans-serif;background:transparent;color:var(--ink);line-height:1.55;font-weight:400;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+svg{display:block}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
 
-  <!-- Open Graph / social -->
-  <meta property="og:type" content="website" />
-  <meta property="og:locale" content="he_IL" />
-  <meta property="og:site_name" content="MiaMe" />
-  <meta property="og:title" content="MiaMe · מיה פור · החופש שלך על ארבעה גלגלים" />
-  <meta property="og:description" content="קלנועית חשמלית פרימיום על פלטפורמת 4 גלגלים. הצעת תשלום מותאמת תוך דקה, ישירות לוואטסאפ." />
-  <meta property="og:url" content="https://miame.co.il/" />
-  <meta name="twitter:card" content="summary_large_image" />
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-weight:600;font-size:16px;border-radius:999px;padding:15px 26px;border:none;background:none;transition:transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;white-space:nowrap;cursor:pointer}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--azure);color:#fff;box-shadow:0 8px 22px rgba(10,132,255,.28)}
+.btn-primary:hover{background:var(--azure-deep);box-shadow:0 12px 30px rgba(10,132,255,.36)}
+.btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:#cfd8e3;background:#fbfcfe}
+.btn-wa{background:#25d366;color:#fff;box-shadow:0 8px 22px rgba(37,211,102,.3)}
+.btn-wa:hover{background:#1eb858}
+.btn-sm{padding:11px 18px;font-size:14.5px}
+.btn-block{width:100%}
+.btn-light{background:#fff;color:var(--ink);box-shadow:0 8px 22px rgba(11,20,40,.18)}
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/styles.css" />
+.site-header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid rgba(230,238,246,.7)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;flex-direction:column;align-items:flex-end;gap:1px;line-height:1}
+.logo{font-weight:800;font-size:28px;letter-spacing:-.4px;background:linear-gradient(176deg,#ffffff 0%,#e3f3ff 13%,#7fd0ff 40%,var(--azure) 68%,var(--azure-deep) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;filter:drop-shadow(0 1px 0 rgba(255,255,255,.9)) drop-shadow(0 3px 12px rgba(10,132,255,.20))}
+.logo .dot{-webkit-text-fill-color:transparent}
+.brand-ff{font-size:11px;font-weight:700;font-style:italic;letter-spacing:.3px;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;margin-top:1px;filter:drop-shadow(0 1px 6px rgba(0,229,221,.5))}
+.brand-ff .ff-txt{background:linear-gradient(95deg,#00e5dd,#5ac8fa,#0a84ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.nav-cta{display:flex;align-items:center;gap:10px}
+.nav-link{font-size:14.5px;color:var(--slate);font-weight:500;padding:8px 6px}
+.nav-link:hover{color:var(--ink)}
+@media(max-width:820px){.nav-link.hide-m{display:none}}
+
+.hero{position:relative;padding:54px 0 26px;overflow:hidden}
+.hero-glow{position:absolute;inset:0;z-index:0;pointer-events:none}
+.hero-glow::before{content:"";position:absolute;width:760px;height:760px;top:-340px;left:50%;transform:translateX(-50%);background:radial-gradient(circle, rgba(90,200,250,.22), rgba(90,200,250,0) 62%);opacity:.55}
+.hero-inner{position:relative;z-index:1;text-align:center;max-width:760px;margin:0 auto}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--tint);color:var(--azure-deep);font-weight:600;font-size:13.5px;padding:7px 15px;border-radius:999px;margin-bottom:22px}
+.eyebrow .pulse{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 4px rgba(12,229,221,.16);animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(12,229,221,.30)}70%{box-shadow:0 0 0 9px rgba(12,229,221,0)}100%{box-shadow:0 0 0 0 rgba(12,229,221,0)}}
+.hero-title{font-size:clamp(36px,7vw,62px);font-weight:800;line-height:1.05;letter-spacing:-1.4px;margin:0}
+.hero-sub{font-size:clamp(18px,2.4vw,23px);color:var(--slate);font-weight:400;margin-top:18px}
+.hero-sub .strong{color:var(--ink);font-weight:600}
+.hero-slogan{margin:10px auto 0;max-width:580px;font-size:14.5px;font-weight:600;color:var(--azure-deep);letter-spacing:.2px;line-height:1.5}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:30px}
+.hero-trust{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px}
+.tchip{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.85);border:1px solid rgba(10,132,255,.18);color:var(--ink);padding:9px 14px;border-radius:999px;font-size:13.5px;font-weight:700;box-shadow:0 10px 25px rgba(11,20,40,.04)}
+.tchip svg{width:16px;height:16px;color:var(--azure)}
+.tchip-brand{background:var(--tint);border-color:rgba(10,132,255,.22);color:var(--azure-deep)}
+.hero-disclaimer{margin:10px auto 0;font-size:11.5px;color:#9aa6b6;text-align:center}
+
+.stage{position:relative;margin:30px auto 0;max-width:780px}
+.stage-card{position:relative;background:linear-gradient(180deg,#fbfdff,#eef4fc);border:1px solid var(--line);border-radius:var(--r-lg);padding:30px 20px;overflow:hidden;box-shadow:var(--shadow-md)}
+.stage-grid{position:absolute;inset:0;opacity:.5;background-image:linear-gradient(rgba(10,132,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(10,132,255,.05) 1px,transparent 1px);background-size:34px 34px;-webkit-mask-image:radial-gradient(circle at 50% 40%,#000 40%,transparent 78%);mask-image:radial-gradient(circle at 50% 40%,#000 40%,transparent 78%)}
+.stage-label{position:absolute;top:16px;inset-inline-start:18px;z-index:2;background:#0a2c54;border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:8px 14px;box-shadow:0 10px 24px rgba(11,20,40,.20)}
+.vehicle{position:relative;z-index:1;width:100%;max-width:470px;margin:6px auto 0;filter:drop-shadow(0 26px 26px rgba(11,40,100,.16))}
+.floaty{animation:floaty 5s ease-in-out infinite;will-change:transform}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+
+/* MIA FOUR logo (vector) */
+.mia-logo{display:inline-flex;align-items:center;gap:8px;font-weight:900;color:#fff;letter-spacing:.5px}
+.mia-logo .chev{display:inline-block;width:26px;height:18px;background:
+  linear-gradient(135deg,var(--cyan) 0 45%,transparent 45%) 0 0/100% 50% no-repeat,
+  linear-gradient(135deg,var(--cyan) 0 45%,transparent 45%) 0 100%/100% 50% no-repeat;transform:skewX(-8deg)}
+.mia-logo .mt{font-size:14px;line-height:1}
+.mia-logo .mf{font-size:20px;line-height:.9}
+.mia-logo small{font-size:10px;color:var(--cyan)}
+
+/* generic SVG product placeholder */
+.veh-ph{width:100%;height:auto;display:block}
+
+.block{padding:62px 0}
+@media(max-width:720px){.block{padding:46px 0}}
+.sec-head{text-align:center;max-width:660px;margin:0 auto 38px}
+.sec-kicker{color:var(--azure);font-weight:700;font-size:14px;letter-spacing:.4px;margin-bottom:10px}
+.sec-title{font-size:clamp(28px,4.4vw,40px);font-weight:800;letter-spacing:-1px;line-height:1.12;margin:0}
+.sec-desc{color:var(--slate);font-size:17px;margin-top:12px}
+
+.about-sec{position:relative}
+.about-wrap{max-width:760px;margin-inline:auto;text-align:center}
+.about-title{font-size:clamp(25px,5.4vw,37px);font-weight:800;line-height:1.15;color:var(--ink);margin:8px 0 14px;letter-spacing:-.5px}
+.about-text{font-size:16px;line-height:1.8;color:#33405a;max-width:650px;margin-inline:auto}
+.about-text b{color:var(--azure-deep);font-weight:700}
+
+.testride-card{background:linear-gradient(135deg,var(--azure) 0%,var(--azure-deep) 100%);border-radius:26px;padding:30px 26px;color:#fff;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center;box-shadow:0 26px 60px rgba(10,132,255,.30);position:relative;overflow:hidden}
+.testride-card::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 82% 0,rgba(255,255,255,.20),transparent 60%);pointer-events:none}
+.testride-kicker{font-size:12.5px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.92);position:relative}
+.testride-title{font-size:clamp(21px,4.4vw,29px);font-weight:800;line-height:1.2;margin:6px 0 8px;position:relative}
+.testride-sub{font-size:15.5px;line-height:1.6;color:rgba(255,255,255,.94);max-width:520px;margin:0 auto;position:relative}
+.btn-testride{background:#fff;color:var(--azure-deep);font-weight:800;font-size:16px;padding:15px 30px;border-radius:14px;box-shadow:0 12px 26px rgba(11,20,40,.22);position:relative;white-space:nowrap}
+.btn-testride:hover{transform:translateY(-2px)}
+@media(min-width:780px){.testride-card{flex-direction:row;justify-content:space-between;text-align:right;padding:34px 42px;gap:28px}.testride-txt{flex:1}.testride-sub{margin:0}}
+
+.features-sec{background:rgba(255,255,255,.80)}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:880px){.feat-grid{grid-template-columns:1fr}}
+.feat-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;box-shadow:var(--shadow-sm)}
+.feat-ic{width:46px;height:46px;border-radius:13px;background:var(--tint);color:var(--azure);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:22px}
+.feat-title{font-size:19px;font-weight:800;letter-spacing:-.3px;margin-bottom:8px}
+.feat-text{color:var(--slate);font-size:14.5px;line-height:1.6;margin:0}
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px;background:var(--mist);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px}
+@media(max-width:620px){.stat-strip{grid-template-columns:repeat(2,1fr);gap:20px}}
+.stat{text-align:center}
+.stat-n{font-size:24px;font-weight:900;letter-spacing:-1px;color:var(--azure)}
+.stat-l{font-size:12.5px;color:var(--slate);font-weight:600;margin-top:3px}
+
+.specs-sec{background:rgba(240,247,253,.72)}
+.specs-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:26px;align-items:stretch}
+@media(max-width:760px){.specs-wrap{grid-template-columns:1fr}}
+.specs-media{position:relative;border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-md);background:linear-gradient(180deg,#0a2c54,#0e3d76);min-height:300px;display:flex;align-items:center;justify-content:center;padding:18px}
+.specs-table{background:var(--snow);border:1px solid var(--line);border-radius:var(--r-lg);padding:8px 22px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;justify-content:center}
+.spec-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.spec-row:last-child{border-bottom:none}
+.spec-k{color:var(--slate);font-size:14.5px;font-weight:600}
+.spec-v{color:var(--ink);font-size:14.5px;font-weight:700;text-align:left;line-height:1.4}
+
+.patents-sec{background:rgba(255,255,255,.80)}
+.patents-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:4px}
+@media(max-width:760px){.patents-grid{grid-template-columns:1fr 1fr}}
+.patent{background:linear-gradient(180deg,#ffffff,#f6faff);border:1px solid var(--line);border-radius:var(--r);padding:24px 14px;text-align:center;box-shadow:var(--shadow-sm);transition:transform .25s,box-shadow .25s}
+.patent:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.patent-flag{font-size:24px;line-height:1;margin-bottom:10px}
+.patent-no{font-size:15.5px;font-weight:800;letter-spacing:-.2px;color:#0a7d96}
+.patent-rg{font-size:11.5px;color:var(--slate);margin-top:6px;font-weight:500}
+.patents-tag-wrap{text-align:center;margin-top:24px}
+.patents-tag{display:inline-block;background:linear-gradient(90deg,rgba(0,229,221,.14),rgba(10,132,255,.10));color:#0a7d96;border-radius:999px;padding:9px 20px;font-size:13px;font-weight:800;letter-spacing:.4px}
+
+.models-sec{background:rgba(240,247,253,.72)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:880px){.cards{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm);transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+.card-stage{position:relative;background:linear-gradient(180deg,#f3f8ff,#e7f0fc);padding:26px 16px 14px;text-align:center}
+.card-badge{position:absolute;top:14px;right:14px;background:var(--ink);color:#fff;font-size:11.5px;font-weight:600;border-radius:999px;padding:5px 11px}
+.card-badge.best{background:var(--azure)}
+.card-veh{width:84%;max-width:240px;margin:6px auto 0;animation:floaty 5.6s ease-in-out infinite}
+.card-body{padding:20px;display:flex;flex-direction:column;gap:6px;flex:1;text-align:center;align-items:center}
+.card-name{font-size:21px;font-weight:800;letter-spacing:-.4px}
+.card-tagline{color:var(--slate);font-size:14px}
+.card-specs{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 14px;justify-content:center}
+.spec{background:var(--tint);color:var(--azure-deep);font-size:12.5px;font-weight:600;border-radius:8px;padding:5px 10px}
+.card-price{margin-top:auto}
+.price-from{font-size:13px;color:var(--slate)}
+.price-num{font-size:30px;font-weight:800;letter-spacing:-1px}
+.price-num .cur{font-size:19px;font-weight:700;margin-right:2px}
+.card-cta{margin-top:14px;align-self:stretch}
+.card-more{display:inline-flex;align-items:center;gap:6px;margin-top:11px;color:var(--azure);font-weight:700;font-size:13.5px;background:none;border:none}
+.card-more:hover{text-decoration:underline}
+
+.sim-sec{background:rgba(255,255,255,.80)}
+.sim{display:grid;grid-template-columns:1.05fr .95fr;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-md);background:#fff}
+@media(max-width:920px){.sim{grid-template-columns:1fr}}
+.sim-controls{padding:30px}
+@media(max-width:520px){.sim-controls{padding:22px 18px}}
+.tabs{display:grid;grid-template-columns:repeat(2,1fr);background:var(--mist);border-radius:14px;padding:5px;gap:4px;margin-bottom:24px}
+.tab{padding:11px 6px;border-radius:10px;font-weight:600;font-size:14.5px;color:var(--slate);transition:all .18s ease;text-align:center;border:none;background:none}
+.tab.on{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
+.model-pick{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.mp{flex:1;min-width:92px;border:1px solid var(--line);border-radius:13px;padding:11px 8px;text-align:center;transition:all .16s ease;background:#fff}
+.mp.on{border-color:var(--azure);background:var(--tint)}
+.mp-n{font-weight:700;font-size:14px}
+.mp-p{font-size:12px;color:var(--slate)}
+.field{margin-bottom:22px}
+.field-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px}
+.field-label{font-weight:600;font-size:15px}
+.field-val{font-weight:800;font-size:16px;color:var(--azure)}
+.field-note{font-size:12px;color:var(--slate);font-weight:500}
+.rng{-webkit-appearance:none;appearance:none;width:100%;height:7px;border-radius:99px;background:var(--line);outline:none;cursor:pointer}
+.rng::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(11,30,80,.28), 0 0 0 2px var(--azure) inset;transition:transform .12s ease}
+.rng::-webkit-slider-thumb:active{transform:scale(1.12)}
+.rng::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid var(--azure)}
+.sim-result{background:linear-gradient(165deg,#0a2c54,#0e3d76);color:#fff;padding:30px;display:flex;flex-direction:column;box-shadow:0 18px 42px rgba(10,40,90,.30),inset 0 1px 0 rgba(150,205,255,.15)}
+@media(max-width:520px){.sim-result{padding:24px 18px}}
+.res-eyebrow{font-size:13.5px;color:#9fc2ff;font-weight:600}
+.res-model{font-size:16px;font-weight:600;color:#cfe0ff;margin-top:3px}
+.res-monthly{margin:14px 0 4px}
+.res-monthly .num{font-size:clamp(46px,11vw,62px);font-weight:900;letter-spacing:-2px;line-height:1;background:linear-gradient(90deg,#fff,#bcd8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.res-monthly .cur{font-size:26px;font-weight:800;margin-right:4px;color:#bcd8ff;-webkit-text-fill-color:#bcd8ff}
+.res-monthly .per{display:block;font-size:14px;color:#9fc2ff;font-weight:500;margin-top:6px}
+.res-line{height:3px;width:64px;background:linear-gradient(90deg,var(--cyan),transparent);border-radius:99px;margin:14px 0 20px}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.1);border-radius:14px;overflow:hidden}
+.res-cell{background:#0c3461;padding:14px 15px}
+.res-cell .k{font-size:12.5px;color:#9fc2ff}
+.res-cell .v{font-size:18px;font-weight:800;margin-top:3px}
+.res-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.res-badge{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#cfe0ff;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700}
+.res-badge.accent{background:rgba(90,200,250,.18);border-color:rgba(90,200,250,.35);color:#bfe6ff}
+.lead{margin-top:auto;padding-top:22px}
+.lead-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:520px){.lead-row{grid-template-columns:1fr}}
+.inp{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#fff;border-radius:12px;padding:13px 15px;font-size:15px;font-family:inherit;outline:none;transition:border .16s ease}
+.inp::placeholder{color:#7e93b8}
+.inp:focus{border-color:var(--sky);background:rgba(255,255,255,.1)}
+.disclaimer{font-size:11.5px;color:#7e93b8;margin-top:12px;text-align:center;line-height:1.5}
+.lead-ok{font-size:13px;color:#7fd4a0;text-align:center;margin-top:10px;font-weight:600;min-height:1em}
+
+.tribute-sec{position:relative}
+.tribute-flag{display:inline-block;font-size:13px;font-weight:800;letter-spacing:2px;color:var(--azure-deep);text-transform:uppercase}
+.tribute-wrap{display:grid;grid-template-columns:1fr;gap:22px;align-items:center;margin-top:10px}
+@media(min-width:780px){.tribute-wrap{grid-template-columns:.9fr 1.1fr;gap:34px}}
+.tribute-media{position:relative;display:flex;justify-content:center;align-items:center;background:radial-gradient(120% 92% at 50% 32%,#eaf4ff 0%,transparent 70%);border-radius:24px;padding:14px}
+.tribute-img{width:100%;max-width:340px;height:auto;filter:drop-shadow(0 22px 34px rgba(11,20,40,.20))}
+.tribute-badge{position:absolute;top:12px;inset-inline-start:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:86px;height:86px;border-radius:50%;background:linear-gradient(150deg,var(--azure),var(--azure-deep));color:#fff;font-weight:900;font-size:21px;line-height:1;box-shadow:0 12px 26px rgba(10,132,255,.40);text-align:center}
+.tribute-badge small{font-size:10.5px;font-weight:700;margin-top:3px;letter-spacing:.5px}
+.tribute-tracks{display:grid;grid-template-columns:1fr;gap:14px}
+.elig-card{background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:18px;padding:18px 18px 15px;box-shadow:0 10px 26px rgba(11,20,40,.06)}
+.elig-head{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.elig-head h3{font-size:16.5px;font-weight:800;color:var(--ink);margin:0}
+.elig-tag{font-size:11px;font-weight:700;color:var(--azure-deep);background:var(--mist);border-radius:20px;padding:3px 9px;white-space:nowrap}
+.elig-body{font-size:14.5px;line-height:1.6;color:#33405a;margin:0 0 10px}
+.elig-body b{color:var(--azure-deep);font-weight:800}
+.elig-link{font-size:13px;font-weight:700;color:var(--azure-deep);text-decoration:none}
+.elig-link:hover{text-decoration:underline}
+.tribute-calc{max-width:430px;margin:18px auto 0;background:linear-gradient(180deg,#0a2c54,#0e3d76);border-radius:18px;padding:15px 18px;color:#fff;box-shadow:0 16px 34px rgba(11,20,40,.22)}
+.tc-head{font-size:12px;font-weight:700;color:#7fd0ff;text-align:center;margin-bottom:9px;letter-spacing:.3px}
+.tc-row{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px;padding:7px 0}
+.tc-row b{font-weight:700;color:#cfe3ff}
+.tc-row>span{font-weight:800;white-space:nowrap}
+.tc-sub{color:#7fd0ff;border-bottom:1px solid rgba(255,255,255,.14)}
+.tc-sub b{color:#7fd0ff}
+.tc-pay{padding-top:11px}
+.tc-pay b{color:#fff;font-size:15px}
+.tc-pay>span{color:#5ac8fa;font-size:20px;font-weight:900}
+.tribute-cta{margin:18px auto 0;max-width:430px}
+.tribute-disclaimer{margin:14px auto 0;max-width:700px;font-size:11.5px;line-height:1.6;color:#8893a3;text-align:center}
+
+.partner-sec{background:rgba(240,247,253,.72)}
+.partner-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:stretch}
+@media(max-width:880px){.partner-grid{grid-template-columns:1fr}}
+.partner-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:34px;box-shadow:var(--shadow-sm)}
+.partner-card.dark{background:linear-gradient(165deg,#0a2c54,#0e3d76);color:#fff;border:none;box-shadow:0 18px 42px rgba(10,40,90,.30),inset 0 1px 0 rgba(150,205,255,.15)}
+.partner-h{font-size:26px;font-weight:800;letter-spacing:-.6px;margin:0 0 6px}
+.partner-p{color:var(--slate);font-size:16px;margin:0}
+.partner-card.dark .partner-p{color:#cfe0ff}
+.flow{margin:22px 0 0;display:flex;flex-direction:column;gap:14px}
+.flow-item{display:flex;gap:13px;align-items:flex-start}
+.flow-ic{flex:none;width:38px;height:38px;border-radius:11px;background:var(--tint);color:var(--azure);display:flex;align-items:center;justify-content:center;font-weight:800}
+.flow-t{font-weight:600;font-size:15.5px}
+.flow-d{color:var(--slate);font-size:13.5px}
+.fee-badge{display:inline-flex;align-items:center;gap:8px;background:var(--tint);color:var(--azure-deep);font-weight:700;border-radius:999px;padding:9px 16px;font-size:14.5px;margin-top:18px}
+.pl-title{font-size:14px;color:#9fc2ff;font-weight:600;margin-bottom:14px}
+.pl-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.pl-row:last-child{border-bottom:none}
+.pl-k{font-size:15px;font-weight:500}
+.pl-v{font-size:19px;font-weight:800}
+.pl-v .cur{font-size:14px;font-weight:700;color:#9fc2ff}
+.partner-cta{margin-top:22px}
+
+.soon-sec{position:relative}
+.soon-card{background:linear-gradient(135deg,#0a2c54,#0e3d76);border-radius:var(--r-lg);padding:32px 26px;color:#fff;display:flex;flex-direction:column;gap:18px;align-items:center;text-align:center;box-shadow:0 26px 60px rgba(10,40,90,.30),inset 0 1px 0 rgba(150,205,255,.15);position:relative;overflow:hidden}
+.soon-card::before{content:"";position:absolute;inset:0;background:radial-gradient(90% 70% at 25% 30%,rgba(0,229,221,.18),transparent 60%);pointer-events:none}
+.soon-media{position:relative;width:100%;display:flex;justify-content:center}
+.soon-img{width:100%;max-width:360px;filter:drop-shadow(0 22px 38px rgba(0,229,221,.28));position:relative}
+.soon-badge{position:absolute;top:0;inset-inline-start:0;background:var(--cyan);color:#06302e;font-weight:800;font-size:12px;border-radius:999px;padding:6px 14px;z-index:2;box-shadow:0 8px 20px rgba(0,229,221,.4)}
+.soon-txt{position:relative}
+.soon-title{font-size:clamp(34px,8vw,52px);font-weight:900;letter-spacing:1.5px;line-height:1;margin:6px 0 10px;background:linear-gradient(90deg,#00e5dd,#5ac8fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.soon-sub{font-size:15px;line-height:1.6;color:#cfe0ff;max-width:430px;margin:0 auto}
+.soon-link{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22);margin-top:16px}
+.soon-link:hover{background:rgba(255,255,255,.22)}
+@media(min-width:780px){.soon-card{flex-direction:row-reverse;text-align:right;padding:42px;gap:36px}.soon-media{flex:1}.soon-txt{flex:1}.soon-sub{margin:0}}
+
+.site-footer{background:rgba(255,255,255,.86);border-top:1px solid var(--line);padding:40px 0 90px;text-align:center}
+.foot-logo{font-weight:800;font-size:26px;letter-spacing:-.5px;background:linear-gradient(176deg,#fff 0%,#7fd0ff 40%,var(--azure) 68%,var(--azure-deep) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.foot-tag{margin-top:8px;font-size:12px;font-weight:800;letter-spacing:2px;color:var(--azure);text-transform:uppercase}
+.foot-contact{margin-top:10px;font-size:14px}
+.foot-contact a{color:var(--azure-deep);font-weight:600}
+.foot-legal{color:var(--slate);font-size:12.5px;margin-top:18px;max-width:680px;margin-inline:auto;line-height:1.6}
+
+.wa-float{position:fixed;bottom:20px;left:20px;z-index:60;width:58px;height:58px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(37,211,102,.45);transition:transform .18s ease}
+.wa-float:hover{transform:scale(1.07)}
+.wa-float svg{width:30px;height:30px;color:#fff}
+.sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;gap:10px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);border-top:1px solid var(--line);box-shadow:0 -8px 30px rgba(11,20,40,.08)}
+.sticky-wa{flex:none;width:52px;height:52px;border-radius:14px;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(37,211,102,.3)}
+.sticky-wa svg{color:#fff}
+.sticky-main{flex:1;padding:15px}
+@media(max-width:720px){.sticky-cta{display:flex}.wa-float{display:none}}
+
+.modal{position:fixed;inset:0;z-index:140;display:none}
+.modal.on{display:block}
+.modal-backdrop{position:absolute;inset:0;background:rgba(8,14,28,.55);backdrop-filter:blur(4px)}
+.modal-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(600px,92vw);max-height:90vh;overflow:auto;background:var(--snow);border-radius:var(--r-lg);box-shadow:var(--shadow-lg)}
+.modal-x{position:absolute;left:14px;top:12px;width:34px;height:34px;border-radius:999px;background:rgba(10,12,16,.06);color:var(--ink);font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center;z-index:2;border:none}
+.modal-media{background:radial-gradient(120% 100% at 50% 0,#eaf2ff 0,#fff 70%);padding:26px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line)}
+.modal-body{padding:22px 26px 26px}
+.modal-eyebrow{color:var(--azure);font-weight:800;font-size:12px;letter-spacing:.4px;text-transform:uppercase}
+.modal-title{font-size:24px;font-weight:800;margin-top:6px;letter-spacing:-.4px}
+.modal-price{margin-top:6px;color:var(--slate);font-size:15px}
+.modal-price b{color:var(--ink);font-size:19px;font-weight:800}
+.modal-specs{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:2px 20px}
+.ms{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ms-k{color:var(--slate);font-size:13.5px;font-weight:600}
+.ms-v{color:var(--ink);font-size:13.5px;font-weight:700;text-align:left}
+.modal-cta{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+.modal-cta .btn{flex:1;min-width:150px}
+
+.ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#fff}
+.ambient-inner{position:absolute;inset:0;transition:transform 1.4s cubic-bezier(.22,1,.36,1);will-change:transform}
+.flow-anchor{position:absolute;border-radius:50%;filter:blur(104px);will-change:transform,opacity}
+.fa-1{width:60vw;height:60vh;background:rgba(10,132,255,.14);top:-12%;right:-6%;animation:drift1 21s infinite alternate ease-in-out}
+.fa-2{width:52vw;height:52vh;background:rgba(12,229,221,.15);bottom:-16%;left:-6%;animation:drift2 26s infinite alternate ease-in-out}
+.fa-3{width:74vw;height:74vh;background:rgba(0,103,214,.09);top:16%;left:18%;animation:drift3 31s infinite alternate ease-in-out}
+.fa-4{width:42vw;height:42vh;background:rgba(0,255,246,.18);top:36%;right:10%;animation:drift4 23s infinite alternate ease-in-out}
+.fa-5{width:48vw;height:48vh;background:rgba(70,130,200,.11);bottom:2%;right:22%;animation:drift5 27s infinite alternate ease-in-out}
+.calm-overlay{position:absolute;inset:0;background:rgba(255,255,255,.24);backdrop-filter:blur(44px);-webkit-backdrop-filter:blur(44px)}
+@keyframes drift1{from{transform:scale(1) translate(0,0)}to{transform:scale(1.16) translate(5%,5%)}}
+@keyframes drift2{from{transform:scale(1.08) translate(0,0)}to{transform:scale(.92) translate(-5%,4%)}}
+@keyframes drift3{from{transform:scale(.96) translate(0,0)}to{transform:scale(1.12) translate(4%,-3%)}}
+@keyframes drift4{from{transform:scale(1.04) translate(0,0)}to{transform:scale(.9) translate(-4%,5%)}}
+@keyframes drift5{from{transform:scale(1) translate(0,0)}to{transform:scale(1.14) translate(3%,-4%)}}
+:focus-visible{outline:2px solid var(--azure);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
-  <a class="skip-link" href="#main">דלג לתוכן</a>
 
-  <!-- ===================== NAV ===================== -->
-  <header class="nav" id="nav">
-    <div class="container nav__inner">
-      <a class="brand" href="#hero" aria-label="MiaMe דף הבית">
-        <span class="brand__mark" aria-hidden="true">◍</span>
-        <span class="brand__name">MiaMe</span>
-        <span class="brand__by">Powered by Leasing.co.il&nbsp;🎯</span>
-      </a>
+<div class="ambient" aria-hidden="true">
+  <div class="ambient-inner" id="ambientInner">
+    <div class="flow-anchor fa-1"></div><div class="flow-anchor fa-2"></div>
+    <div class="flow-anchor fa-3"></div><div class="flow-anchor fa-4"></div>
+    <div class="flow-anchor fa-5"></div>
+  </div>
+  <div class="calm-overlay"></div>
+</div>
 
-      <nav class="nav__links" aria-label="ניווט ראשי">
-        <a href="#about">אודותינו</a>
-        <a href="#features">יכולות</a>
-        <a href="#spec">מפרט</a>
-        <a href="#models">דגמים</a>
-        <a href="#simulator">סימולטור</a>
-        <a href="#partner">שותף עסקי</a>
-        <a class="btn btn--ghost btn--sm" href="#contact" data-wa>דברו איתי</a>
-      </nav>
+<header class="site-header">
+  <div class="wrap nav">
+    <div class="brand"><span class="logo">Mia<span class="dot">Me</span></span><span class="brand-ff"><span class="ff-txt">Free Feel</span> 🗽</span></div>
+    <nav class="nav-cta">
+      <a href="#about" class="nav-link hide-m">אודותינו</a>
+      <a href="#features" class="nav-link hide-m">יכולות</a>
+      <a href="#specs" class="nav-link hide-m">מפרט</a>
+      <a href="#models" class="nav-link hide-m">דגמים</a>
+      <a href="#sim" class="nav-link hide-m">סימולטור</a>
+      <a href="#partner" class="nav-link hide-m">שותף עסקי</a>
+      <a data-wa="היי MiaMe, אשמח לפרטים על הדגמים 🙂" class="btn btn-wa btn-sm"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.477-.255zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>דברו איתי</a>
+    </nav>
+  </div>
+</header>
 
-      <button class="nav__toggle" id="navToggle" aria-label="פתיחת תפריט" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="wrap hero-inner">
+    <span class="eyebrow"><span class="pulse"></span>מצטרפים · מרוויחים · צומחים</span>
+    <h1 class="hero-title">החופש שלך<br>על ארבעה גלגלים</h1>
+    <p class="hero-sub">קלנועית חשמלית פרימיום על פלטפורמת 4 גלגלים. <span class="strong">הצעה מותאמת תוך דקה</span>, ישירות לוואטסאפ.</p>
+    <p class="hero-slogan">להרגיש חופש בתנועה · ליהנות מכל דרך ונסיעה · חכמה וחסכונית</p>
+    <div class="hero-actions">
+      <a href="#sim" class="btn btn-primary">קבלת תנאי עסקה</a>
+      <a href="#partner" class="btn btn-ghost">אני רוצה להיות שותף עסקי</a>
     </div>
-  </header>
-
-  <main id="main">
-    <!-- ===================== HERO ===================== -->
-    <section class="hero" id="hero">
-      <div class="hero__bg" aria-hidden="true">
-        <span class="orb orb--gold"></span>
-        <span class="orb orb--azure"></span>
-        <span class="grid-lines"></span>
-      </div>
-      <div class="container hero__grid">
-        <div class="hero__copy reveal">
-          <p class="eyebrow">קנה · השכר · תצמח</p>
-          <h1 class="hero__title">החופש שלך<br /><span class="grad">על ארבעה גלגלים</span></h1>
-          <p class="hero__lead">
-            קלנועית חשמלית פרימיום על פלטפורמת 4 גלגלים מוגנת פטנט.
-            הצעת תשלום מותאמת תוך דקה, ישירות לוואטסאפ.
-          </p>
-          <p class="hero__sub">להרגיש חופש בתנועה · ליהנות מכל דרך ונסיעה · חכמה וחסכונית</p>
-          <div class="hero__cta">
-            <a class="btn btn--gold" href="#simulator">קבל הצעת תשלום</a>
-            <a class="btn btn--ghost" href="#partner">אני רוצה להיות שותף עסקי</a>
-          </div>
-          <ul class="hero__badges" aria-label="יתרונות">
-            <li>אחריות יבואן</li>
-            <li>אספקה מיידית</li>
-            <li>0% ריבית</li>
-            <li>קלנועית · 12 קמ״ש</li>
-          </ul>
-        </div>
-
-        <div class="hero__media reveal" aria-hidden="true">
-          <div class="media-card">
-            <div class="media-card__glow"></div>
-            <svg class="scooter" viewBox="0 0 420 300" role="img" aria-label="המחשת קלנועית מיה פור">
-              <defs>
-                <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stop-color="#7fd8ff" />
-                  <stop offset="1" stop-color="#2b6fff" />
-                </linearGradient>
-                <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stop-color="#ffe9a8" />
-                  <stop offset="1" stop-color="#d4af37" />
-                </linearGradient>
-              </defs>
-              <!-- ground shadow -->
-              <ellipse cx="210" cy="262" rx="170" ry="14" fill="#000" opacity="0.25" />
-              <!-- seat + frame -->
-              <path d="M120 150 q-6 -34 30 -38 l70 0 q26 0 30 22 l8 36" fill="none" stroke="url(#bodyGrad)" stroke-width="12" stroke-linecap="round" />
-              <rect x="150" y="96" width="92" height="26" rx="13" fill="url(#bodyGrad)" />
-              <!-- handlebar column -->
-              <path d="M120 150 L96 70" stroke="url(#bodyGrad)" stroke-width="12" stroke-linecap="round" fill="none" />
-              <path d="M78 64 q18 -8 34 2" stroke="url(#goldGrad)" stroke-width="10" stroke-linecap="round" fill="none" />
-              <!-- deck -->
-              <path d="M118 196 L300 196 q16 0 16 -16 l0 -8 l-210 0 q-6 12 -4 32 z" fill="url(#bodyGrad)" opacity="0.92" />
-              <!-- four wheels -->
-              <g class="wheels">
-                <circle cx="120" cy="238" r="30" fill="#0b1020" stroke="url(#goldGrad)" stroke-width="6" />
-                <circle cx="120" cy="238" r="11" fill="#1b2550" />
-                <circle cx="186" cy="238" r="30" fill="#0b1020" stroke="url(#goldGrad)" stroke-width="6" />
-                <circle cx="186" cy="238" r="11" fill="#1b2550" />
-                <circle cx="266" cy="238" r="30" fill="#0b1020" stroke="url(#goldGrad)" stroke-width="6" />
-                <circle cx="266" cy="238" r="11" fill="#1b2550" />
-                <circle cx="332" cy="238" r="30" fill="#0b1020" stroke="url(#goldGrad)" stroke-width="6" />
-                <circle cx="332" cy="238" r="11" fill="#1b2550" />
-              </g>
-              <!-- headlight -->
-              <circle cx="92" cy="70" r="7" fill="url(#goldGrad)" />
-            </svg>
-            <div class="media-card__stats">
-              <span><b>4×4</b><small>הנעה כפולה</small></span>
-              <span><b>Flat</b><small>קיפול מלא</small></span>
-              <span><b>0%</b><small>ריבית</small></span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <a class="scroll-hint" href="#about" aria-label="גלול למטה">⌄</a>
-    </section>
-
-    <!-- ===================== ABOUT ===================== -->
-    <section class="section" id="about">
-      <div class="container">
-        <p class="kicker reveal">אודותינו</p>
-        <h2 class="section__title reveal">חלום של מיקרו־מוביליטי <span class="grad">על 4 גלגלים</span></h2>
-        <p class="section__lead reveal">
-          MiaMe.co.il נולדה מתוך אמונה פשוטה · שלכל אחד מגיע החופש לזוז בביטחון, בנוחות ובסטייל.
-          אנחנו מביאים את הדור הבא של ניידות חשמלית · קלנועית מיה פור · ומרכזים במקום אחד את כל
-          הפתרונות, אפשרויות השימוש והרכישה, מותאמים בדיוק אליכם. בלי פשרות על ניידות · רק חופש,
-          ביטחון והנאה מכל נסיעה.
-        </p>
-        <div class="cta-row reveal">
-          <a class="btn btn--ghost" href="#contact" data-wa data-wa-msg="היי, אשמח לתאם נסיעת מבחן על מיה פור 🛵">תיאום נסיעת מבחן</a>
-          <span class="cta-row__note">בואו לנסיעת מבחן · עלו על מיה פור ותרגישו את החופש לפני שאתם מחליטים.</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== FEATURES / CAPABILITIES ===================== -->
-    <section class="section section--alt" id="features">
-      <div class="container">
-        <p class="kicker reveal">הנדסה</p>
-        <h2 class="section__title reveal">בנוי לשטח · <span class="grad">חכם לעיר</span></h2>
-        <p class="section__lead reveal">פלטפורמה מוגנת פטנט, מנועים עוצמתיים וסוללה נשלפת. הכל בכלי אחד.</p>
-
-        <div class="cards-3">
-          <article class="card reveal">
-            <div class="card__icon">⚡</div>
-            <h3>עוצמה</h3>
-            <p>2 או 4 מנועים בהספק 1,800W כל אחד. סוללת ליתיום נשלפת 60V בקיבולת 25/35Ah, עם אפשרות להוספת סוללות להגדלת הטווח.</p>
-          </article>
-          <article class="card reveal">
-            <div class="card__icon">◈</div>
-            <h3>חדשנות</h3>
-            <p>מערכת מתלים מכנית פורצת דרך על פלטפורמה מוגנת פטנט. שיכוך מלא קדמי ואחורי לנסיעה יציבה ובטוחה בכל תוואי.</p>
-          </article>
-          <article class="card reveal">
-            <div class="card__icon">⤢</div>
-            <h3>יעילות</h3>
-            <p>שחרור מהיר של הכיסא וקיפול הכידון ביד אחת. אחסון ושינוע נוחים גם ברכב קטן. אידיאלי לסיורים, תיירות ושילוח.</p>
-          </article>
-        </div>
-
-        <ul class="stats reveal" aria-label="נתוני ביצועים">
-          <li><b data-count="12">12</b><span>קמ״ש · מהירות מרבית</span></li>
-          <li><b data-count="100" data-prefix="עד ">עד 100</b><span>ק״מ · טווח נסיעה</span></li>
-          <li><b data-count="1800" data-suffix="W">1,800W</b><span>לכל מנוע</span></li>
-          <li><b data-count="42" data-suffix=' ק״ג'>42</b><span>משקל הכלי</span></li>
-        </ul>
-
-        <div class="feature-strip reveal">
-          <span>מתלים מכניים מוגני פטנט · שיכוך מלא קדמי ואחורי</span>
-          <span>צמיגי שטח · גלגלי סגסוגת</span>
-          <span>שחרור כיסא וקיפול כידון ביד אחת</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== SPEC ===================== -->
-    <section class="section" id="spec">
-      <div class="container">
-        <p class="kicker reveal">מפרט טכני</p>
-        <h2 class="section__title reveal">כל מה ש<span class="grad">מתחת למעטפת</span></h2>
-        <p class="section__lead reveal">הנדסה מדויקת, רכיבים איכותיים ושליטה מלאה. כל הנתונים במקום אחד.</p>
-
-        <div class="spec-wrap reveal">
-          <dl class="spec">
-            <div><dt>מהירות מרבית</dt><dd>12 קמ״ש</dd></div>
-            <div><dt>טווח נסיעה</dt><dd>עד 100 ק״מ · סוללה נשלפת</dd></div>
-            <div><dt>מנועים</dt><dd>2 או 4 · BLDC · 1,800W כל אחד</dd></div>
-            <div><dt>סוללה</dt><dd>ליתיום נשלפת 60V · 25/35Ah</dd></div>
-            <div><dt>משקל סוללה</dt><dd>6.3 ק״ג · תאי LG 21700</dd></div>
-            <div><dt>מידות (ר×א×ג)</dt><dd>689 × 1,244 × 1,190 מ״מ</dd></div>
-            <div><dt>גובה מקופל</dt><dd>450 מ״מ</dd></div>
-            <div><dt>משקל הכלי</dt><dd>42 ק״ג (דגם 4×2)</dd></div>
-            <div><dt>עומס מרבי</dt><dd>עד 136 ק״ג</dd></div>
-            <div><dt>בלמים</dt><dd>דיסק הידראולי כפול · 140 מ״מ</dd></div>
-            <div><dt>גלגלים</dt><dd>15 אינץ׳ · גלגלי סגסוגת</dd></div>
-            <div><dt>תאורה</dt><dd>LED עם נורית בלימה</dd></div>
-            <div><dt>זמן טעינה</dt><dd>כ־9 שעות</dd></div>
-            <div><dt>כושר טיפוס</dt><dd>עד 20°</dd></div>
-            <div><dt>תקן</dt><dd>EN17128 · מותאם לתקנות הקלנועית בישראל</dd></div>
-          </dl>
-        </div>
-
-        <!-- Patents -->
-        <div class="patents reveal">
-          <h3 class="patents__title">טכנולוגיה רשומה ומוגנת</h3>
-          <p class="patents__lead">פלטפורמת המזעור של ארבעת הגלגלים מוגנת בפטנטים רשומים בארה״ב ובישראל. חדשנות אמיתית, לא חיקוי.</p>
-          <div class="patents__grid">
-            <div class="patent"><span class="flag">🇺🇸</span><b>US 11,878,763 B2</b><small>United States Patent</small></div>
-            <div class="patent"><span class="flag">🇺🇸</span><b>US 12,097,926 B2</b><small>United States Patent</small></div>
-            <div class="patent"><span class="flag">🇮🇱</span><b>IL 280339</b><small>פטנט ישראל</small></div>
-            <div class="patent"><span class="flag">🇮🇱</span><b>IL 285336</b><small>פטנט ישראל</small></div>
-          </div>
-          <p class="patents__foot">Miniaturized Four-Wheel Technology · Our Electric Platform</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== MODELS ===================== -->
-    <section class="section section--alt" id="models">
-      <div class="container">
-        <p class="kicker reveal">שלושה דגמים</p>
-        <h2 class="section__title reveal">בחרו את <span class="grad">הדגם שלכם</span></h2>
-        <p class="section__lead reveal">לחצו על דגם כדי לטעון אותו בסימולטור ולקבל תשלום חודשי משוער מיידית. פלטפורמה אחת · שלושה דגמים · אינסוף אפשרויות.</p>
-        <div class="models" id="modelsGrid"><!-- injected by app.js --></div>
-        <p class="fineprint reveal">המחירים להמחשה ראשונית בלבד · ייתכנו עדכונים בהתאם לדגם, מלאי ותנאי הספק.</p>
-      </div>
-    </section>
-
-    <!-- ===================== SIMULATOR ===================== -->
-    <section class="section" id="simulator">
-      <div class="container">
-        <p class="kicker reveal">סימולטור תשלומים</p>
-        <h2 class="section__title reveal">בנו את <span class="grad">העסקה שלכם</span></h2>
-        <p class="section__lead reveal">בחרו מסלול, גררו את הפרמטרים, וקבלו תשלום חודשי משוער בזמן אמת.</p>
-
-        <div class="sim reveal">
-          <div class="sim__controls">
-            <div class="seg" role="tablist" aria-label="מסלול">
-              <button class="seg__btn is-active" data-track="private" role="tab" aria-selected="true">לקוח פרטי</button>
-              <button class="seg__btn" data-track="business" role="tab" aria-selected="false">שותף עסקי</button>
-            </div>
-
-            <label class="field">
-              <span class="field__label">דגם</span>
-              <select id="simModel" class="select"></select>
-            </label>
-
-            <label class="field">
-              <span class="field__top"><span class="field__label">מקדמה</span><output id="downOut">₪0</output></span>
-              <input type="range" id="down" min="0" max="40" value="0" step="1" />
-              <small class="field__hint" id="downPct">0% מהמחיר</small>
-            </label>
-
-            <label class="field">
-              <span class="field__top"><span class="field__label">תשלום בלון בסוף התקופה</span><output id="balloonOut">₪0</output></span>
-              <input type="range" id="balloon" min="0" max="40" value="0" step="1" />
-              <small class="field__hint" id="balloonPct">0% מהמחיר</small>
-            </label>
-
-            <label class="field">
-              <span class="field__top"><span class="field__label">תקופת תשלומים</span><output id="termOut">18 ח׳</output></span>
-              <input type="range" id="term" min="12" max="36" value="18" step="6" />
-              <small class="field__hint">12 · 18 · 24 · 30 · 36 חודשים</small>
-            </label>
-          </div>
-
-          <aside class="sim__result" aria-live="polite">
-            <p class="sim__resultLabel">תשלום חודשי משוער</p>
-            <p class="sim__monthly"><span id="monthly">₪0</span></p>
-            <ul class="sim__breakdown">
-              <li><span>מחיר מלא</span><b id="full">₪0</b></li>
-              <li><span>יתרה למימון</span><b id="financed">₪0</b></li>
-              <li><span>תקופה</span><b id="periodOut">18 ח׳</b></li>
-            </ul>
-            <p class="sim__tags"><span>0% ריבית</span><span>זמינות מיידית*</span></p>
-            <div class="sim__cta">
-              <a class="btn btn--gold btn--block" id="confirmDeal" href="#" data-wa>אשר עסקה</a>
-              <a class="btn btn--wa btn--block" id="askWa" href="#" data-wa>דברו איתי בוואטסאפ</a>
-            </div>
-            <p class="sim__disclaimer">
-              ההערכה אינפורמטיבית בלבד ואינה הצעת אשראי. *בכפוף לזמינות מלאי, אישור עסקה ותנאי הספק.
-              התשלום החודשי מחושב כיתרה לאחר מקדמה ובלון, מחולקת במספר התשלומים, ללא ריבית והצמדה.
-            </p>
-          </aside>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== DEFENSE / MOD ===================== -->
-    <section class="section section--honor" id="honor">
-      <div class="container">
-        <p class="kicker kicker--light reveal">הוקרה והנגשה</p>
-        <h2 class="section__title section__title--light reveal">מיה פור מצדיעה <span class="grad-gold">לכוחות הביטחון</span></h2>
-        <p class="section__lead section__lead--light reveal">
-          מיה פור · קלנועית יחיד · זמינה לרכישה דרך MiaMe.co.il עבור נכי צה״ל, כוחות הביטחון ובני
-          המשפחות השכולות, בכפוף לבדיקת זכאות במשרד הביטחון. עד 95%* מימון.
-        </p>
-        <div class="honor-grid">
-          <article class="honor-card reveal">
-            <h3>נכי צה״ל וכוחות הביטחון</h3>
-            <p class="honor-card__org">אגף השיקום</p>
-            <p>קלנועית במימון משרד הביטחון, בהתאם לזכאות הרפואית והתפקודית · עד 95%* מהעלות.</p>
-            <a href="https://shikum.mod.gov.il/medical/equipment/wheelchairs" target="_blank" rel="noopener">פרטי הזכאות באגף השיקום ←</a>
-          </article>
-          <article class="honor-card reveal">
-            <h3>בני משפחות שכולות</h3>
-            <p class="honor-card__org">אגף משפחות הנצחה</p>
-            <p>מענק לרכישת קלנועית יחיד, פעם ב־4 שנים · עד 13,494 ₪ להורה שכול · עד 17,988 ₪ לאלמן/ה.</p>
-            <a href="https://mishpahot-hantzaha.mod.gov.il/transportation/scooter" target="_blank" rel="noopener">פרטי הזכאות באגף משפחות הנצחה ←</a>
-          </article>
-          <aside class="honor-calc reveal">
-            <p class="honor-calc__row"><span>מחיר מיה פור 4×2</span><b>19,900 ₪</b></p>
-            <p class="honor-calc__row"><span>בקיזוז מימון / מענק משרד הביטחון*</span><b>עד 19,000 ₪</b></p>
-            <hr />
-            <p class="honor-calc__pay"><span>אתם משלמים מ־</span><strong>כ־1,000 ₪</strong></p>
-            <a class="btn btn--gold btn--block" href="#contact" data-wa data-wa-msg="היי, אשמח לבדוק זכאות לרכישת מיה פור דרך משרד הביטחון 🇮🇱">בדיקת זכאות ורכישה דרך MiaMe</a>
-          </aside>
-        </div>
-        <p class="fineprint fineprint--light reveal">
-          *שיעור המימון, גובה המענק ותנאי הזכאות נקבעים על ידי משרד הביטחון בלבד (אגף השיקום / אגף
-          משפחות הנצחה), בכפוף לאישור עקרוני לזכאות לפני הרכישה. אין באמור משום התחייבות לזכאות או
-          לגובה המימון. הרכישה דרך MiaMe.co.il מתבצעת לאחר קבלת אישור הזכאות.
-        </p>
-      </div>
-    </section>
-
-    <!-- ===================== PARTNER ===================== -->
-    <section class="section section--alt" id="partner">
-      <div class="container">
-        <p class="kicker reveal">שותפות עסקית</p>
-        <h2 class="section__title reveal">הפכו ל־<span class="grad">MiaMe Hub</span></h2>
-        <p class="section__lead reveal">מודל שותפות פשוט להפעלת צי השכרה רווחי, בלי להיכנס לעולם השיווק לבד. שלושה צעדים, אפס סיכון מיותר.</p>
-
-        <div class="steps">
-          <article class="step reveal"><span class="step__n">1</span><h3>אתם מחזיקים את הצי</h3><p>השותף רוכש, מתחזק וטוען את הכלים. אתם הבעלים.</p></article>
-          <article class="step reveal"><span class="step__n">2</span><h3>אנחנו מביאים את הביקוש</h3><p>MiaMe מביאה שיווק, לידים וחשיפה וממלאת לכם את היומן.</p></article>
-          <article class="step reveal"><span class="step__n">3</span><h3>משלמים רק על תוצאה</h3><p>13% Success Fee מהפניות בלבד. אפס עלות קבועה.</p></article>
-        </div>
-
-        <div class="partner-rates reveal">
-          <div class="partner-rates__head">
-            <h3>מחירון השכרה לדוגמה</h3>
-            <span class="pill">13% Success Fee · מהפניות בלבד</span>
-          </div>
-          <ul class="rate-list">
-            <li><span>שעה אחת</span><b>₪45</b></li>
-            <li><span>3 שעות</span><b>₪100</b></li>
-            <li><span>6 שעות</span><b>₪180</b></li>
-            <li><span>9 שעות</span><b>₪245</b></li>
-          </ul>
-          <a class="btn btn--gold" href="#contact" data-wa data-wa-msg="היי, אני רוצה להיות שותף עסקי · MiaMe Hub. אשמח לפרטים 🤝">אני רוצה להיות שותף עסקי</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== CONTACT / LEAD ===================== -->
-    <section class="section section--contact" id="contact">
-      <div class="container contact__grid">
-        <div class="reveal">
-          <p class="kicker">דברו איתי</p>
-          <h2 class="section__title">הצעה אישית <span class="grad">תוך דקה</span></h2>
-          <p class="section__lead">השאירו פרטים ונחזור אליכם בוואטסאפ עם הצעת תשלום מותאמת למיה פור · או דברו איתנו עכשיו.</p>
-          <a class="btn btn--wa btn--lg" href="#" data-wa data-wa-msg="היי MiaMe 🛵 אשמח לקבל הצעת תשלום למיה פור">פתחו שיחת וואטסאפ עכשיו</a>
-          <p class="contact__mail">או כתבו לנו: <a href="mailto:info@miame.co.il">info@miame.co.il</a></p>
-        </div>
-
-        <form class="lead-form reveal" id="leadForm" novalidate>
-          <h3>קבלו הצעת תשלום</h3>
-          <label class="field"><span class="field__label">שם מלא</span>
-            <input type="text" name="name" required autocomplete="name" placeholder="ישראל ישראלי" />
-          </label>
-          <label class="field"><span class="field__label">טלפון</span>
-            <input type="tel" name="phone" required autocomplete="tel" inputmode="tel" placeholder="05X-XXXXXXX" />
-          </label>
-          <label class="field"><span class="field__label">דגם מבוקש</span>
-            <select name="model" id="leadModel"></select>
-          </label>
-          <label class="field"><span class="field__label">הערה (לא חובה)</span>
-            <textarea name="note" rows="2" placeholder="מתי נוח לחזור אליכם?"></textarea>
-          </label>
-          <button class="btn btn--gold btn--block" type="submit" id="leadSubmit">שלחו · ונחזור אליכם בוואטסאפ</button>
-          <p class="lead-form__status" id="leadStatus" role="status"></p>
-          <p class="fineprint">בלחיצה אתם מאשרים יצירת קשר. ההצעה להמחשה בלבד ואינה הצעת אשראי מחייבת.</p>
-        </form>
-      </div>
-    </section>
-  </main>
-
-  <!-- ===================== FOOTER ===================== -->
-  <footer class="footer">
-    <div class="container footer__inner">
-      <div class="footer__brand">
-        <span class="brand__name">MiaMe</span>
-        <span class="footer__free">Free Feel 🗽</span>
-        <span class="footer__by">מבית <b>Leasing.co.il</b>&nbsp;🎯</span>
-        <a href="mailto:info@miame.co.il">info@miame.co.il</a>
-      </div>
-      <p class="footer__legal">
-        המחירים, התשלומים החודשיים ותנאי המימון המוצגים באתר הם הערכה ראשונית בלבד לצורך התרשמות,
-        ואינם מהווים הצעה מחייבת, ייעוץ או התחייבות למימון. התשלום החודשי המשוער מחושב כיתרה לאחר
-        מקדמה ובלון, מחולקת במספר התשלומים, ללא ריבית והצמדה. ההתקשרות הסופית, תנאיה והעמדת המימון
-        כפופים לאישור פרטני ולחתימה על הסכם. MiaMe מתווכת ומארגנת את העסקה · אינה מלווה ואינה מסלקת
-        כספים בעצמה. כל הזכויות שמורות ל־Leasing.co.il.
-      </p>
+    <div class="hero-trust">
+      <span class="tchip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>אחריות יבואן</span>
+      <span class="tchip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>אספקה מהירה*</span>
+      <span class="tchip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>0% ריבית*</span>
+      <span class="tchip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>קלנועית · 12 קמ"ש</span>
+      <span class="tchip tchip-brand">Powered by Leasing.co.il 🎯</span>
     </div>
-  </footer>
+    <p class="hero-disclaimer">*בכפוף לאישור, לתנאי העסקה ולמלאי</p>
+    <div class="stage">
+      <div class="stage-card">
+        <div class="stage-grid"></div>
+        <span class="stage-label"><span class="mia-logo"><span class="chev"></span><span><span class="mt">MIA</span><br><span class="mf">FOUR</span></span></span></span>
+        <!-- IMAGE SLOT · hero scooter · החלף ל-<img src="..."> של מיה פור -->
+        <svg class="vehicle veh-ph floaty" viewBox="0 0 520 320" role="img" aria-label="מיה פור · המחשה">
+          <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#cfe6ff"/><stop offset="1" stop-color="#8fb6e8"/></linearGradient></defs>
+          <ellipse cx="260" cy="288" rx="210" ry="16" fill="#0c2340" opacity="0.12"/>
+          <rect x="180" y="120" width="120" height="22" rx="11" fill="#26405f"/>
+          <path d="M150 175 q-8 -42 36 -46 l92 0 q30 0 36 26" fill="none" stroke="#26405f" stroke-width="13" stroke-linecap="round"/>
+          <path d="M150 175 L120 80" stroke="#26405f" stroke-width="13" stroke-linecap="round"/>
+          <path d="M100 72 q22 -10 42 4" stroke="#0ce5dd" stroke-width="11" stroke-linecap="round"/>
+          <path d="M150 220 L360 220 q20 0 20 -20 l0 -8 l-244 0 q-8 14 -6 36 z" fill="url(#g1)"/>
+          <g>
+            <circle cx="150" cy="262" r="34" fill="#0b1020" stroke="#0ce5dd" stroke-width="5"/><circle cx="150" cy="262" r="12" fill="#26405f"/>
+            <circle cx="224" cy="262" r="34" fill="#0b1020" stroke="#0ce5dd" stroke-width="5"/><circle cx="224" cy="262" r="12" fill="#26405f"/>
+            <circle cx="316" cy="262" r="34" fill="#0b1020" stroke="#0ce5dd" stroke-width="5"/><circle cx="316" cy="262" r="12" fill="#26405f"/>
+            <circle cx="390" cy="262" r="34" fill="#0b1020" stroke="#0ce5dd" stroke-width="5"/><circle cx="390" cy="262" r="12" fill="#26405f"/>
+          </g>
+          <circle cx="96" cy="80" r="8" fill="#0a84ff"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- floating WhatsApp -->
-  <a class="wa-float" href="#" data-wa data-wa-msg="היי MiaMe 🛵 אשמח להצעת תשלום למיה פור" aria-label="וואטסאפ">
-    <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M16 3C9.4 3 4 8.4 4 15c0 2.1.6 4.2 1.6 6L4 29l8.2-1.6c1.7.9 3.7 1.4 5.8 1.4 6.6 0 12-5.4 12-12S22.6 3 16 3zm0 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-4.9 1 1-4.8-.2-.4c-1-1.6-1.5-3.4-1.5-5.3C5 9.5 9.9 4.6 16 4.6S27 9.5 27 15.6 22.1 24.8 16 24.8zm6-7.7c-.3-.2-1.9-1-2.2-1-.3-.1-.5-.2-.7.1-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-1.8-.9-3-1.6-4.2-3.6-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.6s-.7-1.7-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.5 3.8 6 5.3 2.2.9 3 1 4.1.9.7-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></svg>
-  </a>
+<!-- ABOUT -->
+<section class="block about-sec" id="about">
+  <div class="wrap about-wrap">
+    <div class="sec-kicker">אודותינו</div>
+    <h2 class="about-title">חלום של מיקרו־מוביליטי <span style="color:var(--azure)">על 4 גלגלים</span></h2>
+    <p class="about-text"><b>MiaMe.co.il</b> נולדה מתוך אמונה פשוטה · שלכל אחד מגיע החופש לזוז בביטחון, בנוחות ובסטייל. אנחנו מביאים את הדור הבא של ניידות חשמלית · קלנועית <b>מיה פור</b> · ומרכזים במקום אחד את כל הפתרונות, אפשרויות השימוש והרכישה, מותאמים בדיוק אליכם. בלי פשרות על ניידות · רק חופש, ביטחון והנאה מכל נסיעה.</p>
+  </div>
+</section>
 
-  <script src="/assets/app.js" defer></script>
+<!-- TEST RIDE -->
+<section class="block" style="padding-top:0">
+  <div class="wrap">
+    <div class="testride-card">
+      <div class="testride-txt">
+        <div class="testride-kicker">חוויה לפני הכל</div>
+        <div class="testride-title">רוצים להרגיש את זה?</div>
+        <p class="testride-sub">קבעו תיאום אישי, עלו על מיה פור, ותרגישו את החופש לפני שאתם מחליטים.</p>
+      </div>
+      <a class="btn btn-testride" data-wa="היי, אשמח לתאם נסיעת מבחן על מיה פור 🛵">תיאום נסיעת מבחן</a>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="block features-sec" id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">הנדסה</div>
+      <h2 class="sec-title">בנוי לשטח · חכם לעיר</h2>
+      <p class="sec-desc">פלטפורמה מוגנת פטנט, מנועים עוצמתיים וסוללה נשלפת. הכל בכלי אחד.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-ic">⚡</div><div class="feat-title">עוצמה</div><p class="feat-text">2 או 4 מנועים בהספק 1,800W כל אחד. סוללת ליתיום נשלפת 60V בקיבולת 25/35Ah, עם אפשרות להוספת סוללות להגדלת הטווח.</p></div>
+      <div class="feat-card"><div class="feat-ic">◈</div><div class="feat-title">חדשנות</div><p class="feat-text">מערכת מתלים מכנית פורצת דרך על פלטפורמה מוגנת פטנט. שיכוך מלא קדמי ואחורי לנסיעה יציבה ובטוחה בכל תוואי.</p></div>
+      <div class="feat-card"><div class="feat-ic">⤢</div><div class="feat-title">יעילות</div><p class="feat-text">שחרור מהיר של הכיסא וקיפול הכידון ביד אחת. אחסון ושינוע נוחים גם ברכב קטן. אידיאלי לסיורים, תיירות ושילוח.</p></div>
+    </div>
+    <div class="stat-strip">
+      <div class="stat"><div class="stat-n">12 קמ"ש</div><div class="stat-l">מהירות מרבית</div></div>
+      <div class="stat"><div class="stat-n">עד 100 ק"מ</div><div class="stat-l">טווח נסיעה</div></div>
+      <div class="stat"><div class="stat-n">1,800W</div><div class="stat-l">לכל מנוע</div></div>
+      <div class="stat"><div class="stat-n">42 ק"ג</div><div class="stat-l">משקל הכלי</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SPECS -->
+<section class="block specs-sec" id="specs">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">מפרט טכני</div>
+      <h2 class="sec-title">כל מה שמתחת למעטפת</h2>
+      <p class="sec-desc">הנדסה מדויקת, רכיבים איכותיים ושליטה מלאה. כל הנתונים במקום אחד.</p>
+    </div>
+    <div class="specs-wrap">
+      <div class="specs-media">
+        <!-- IMAGE SLOT · specs · החלף ל-<img> תא נהג / שלדה -->
+        <span class="mia-logo" style="transform:scale(1.6)"><span class="chev"></span><span><span class="mt">MIA</span><br><span class="mf">FOUR</span></span></span>
+      </div>
+      <div class="specs-table">
+        <div class="spec-row"><span class="spec-k">מהירות מרבית</span><span class="spec-v">12 קמ"ש</span></div>
+        <div class="spec-row"><span class="spec-k">טווח נסיעה</span><span class="spec-v">עד 100 ק"מ · סוללה נשלפת</span></div>
+        <div class="spec-row"><span class="spec-k">מנועים</span><span class="spec-v">2 או 4 · BLDC · 1,800W כל אחד</span></div>
+        <div class="spec-row"><span class="spec-k">סוללה</span><span class="spec-v">ליתיום נשלפת 60V · 25/35Ah</span></div>
+        <div class="spec-row"><span class="spec-k">משקל סוללה</span><span class="spec-v">6.3 ק"ג · תאי LG 21700</span></div>
+        <div class="spec-row"><span class="spec-k">מידות (ר×א×ג)</span><span class="spec-v">689 × 1,244 × 1,190 מ"מ</span></div>
+        <div class="spec-row"><span class="spec-k">גובה מקופל</span><span class="spec-v">450 מ"מ</span></div>
+        <div class="spec-row"><span class="spec-k">משקל הכלי</span><span class="spec-v">42 ק"ג (דגם 4×2)</span></div>
+        <div class="spec-row"><span class="spec-k">עומס מרבי</span><span class="spec-v">עד 136 ק"ג</span></div>
+        <div class="spec-row"><span class="spec-k">בלמים</span><span class="spec-v">דיסק הידראולי כפול · 140 מ"מ</span></div>
+        <div class="spec-row"><span class="spec-k">גלגלים / תאורה</span><span class="spec-v">15″ סגסוגת · LED עם בלימה</span></div>
+        <div class="spec-row"><span class="spec-k">טעינה / טיפוס / תקן</span><span class="spec-v">~9ש' · עד 20° · EN17128</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PATENTS -->
+<section class="block patents-sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">מוגן בפטנט</div>
+      <h2 class="sec-title">טכנולוגיה רשומה ומוגנת</h2>
+      <p class="sec-desc">פלטפורמת המזעור של ארבעת הגלגלים מוגנת בפטנטים רשומים בארה"ב ובישראל. חדשנות אמיתית, לא חיקוי.</p>
+    </div>
+    <div class="patents-grid">
+      <div class="patent"><div class="patent-flag">🇺🇸</div><div class="patent-no">US 11,878,763 B2</div><div class="patent-rg">United States Patent</div></div>
+      <div class="patent"><div class="patent-flag">🇺🇸</div><div class="patent-no">US 12,097,926 B2</div><div class="patent-rg">United States Patent</div></div>
+      <div class="patent"><div class="patent-flag">🇮🇱</div><div class="patent-no">IL 280339</div><div class="patent-rg">פטנט ישראל</div></div>
+      <div class="patent"><div class="patent-flag">🇮🇱</div><div class="patent-no">IL 285336</div><div class="patent-rg">פטנט ישראל</div></div>
+    </div>
+    <div class="patents-tag-wrap"><span class="patents-tag">Miniaturized Four-Wheel Technology · Our Electric Platform</span></div>
+  </div>
+</section>
+
+<!-- MODELS -->
+<section class="block models-sec" id="models">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">שלושה דגמים</div>
+      <h2 class="sec-title">בחרו את הדגם שלכם</h2>
+      <p class="sec-desc">לחצו על דגם כדי לטעון אותו בסימולטור ולקבל תשלום חודשי משוער מיידית.</p>
+    </div>
+    <div class="cards" id="modelsGrid"></div>
+    <p class="tribute-disclaimer">המחירים להמחשה ראשונית בלבד · ייתכנו עדכונים בהתאם לדגם, מלאי ותנאי הספק.</p>
+  </div>
+</section>
+
+<!-- SIMULATOR -->
+<section class="block sim-sec" id="sim">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">סימולטור תשלומים</div>
+      <h2 class="sec-title">בנו את העסקה שלכם</h2>
+      <p class="sec-desc">בחרו מסלול, גררו את הפרמטרים, וקבלו תשלום חודשי משוער בזמן אמת.</p>
+    </div>
+    <div class="sim">
+      <div class="sim-controls">
+        <div class="tabs">
+          <button class="tab on" data-track="private">לקוח פרטי</button>
+          <button class="tab" data-track="business">עסקי / סוכן</button>
+        </div>
+        <div class="model-pick" id="modelPick"></div>
+        <div class="field">
+          <div class="field-top"><span class="field-label">מקדמה</span><span class="field-val" id="downOut">₪0</span></div>
+          <input type="range" class="rng" id="down" min="0" max="40" value="0" step="1">
+          <div class="field-note" id="downNote">0% מהמחיר</div>
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="field-label">תשלום בלון בסוף</span><span class="field-val" id="balloonOut">₪0</span></div>
+          <input type="range" class="rng" id="balloon" min="0" max="40" value="0" step="1">
+          <div class="field-note" id="balloonNote">0% מהמחיר</div>
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="field-label">תקופת תשלומים</span><span class="field-val" id="termOut">18 ח׳</span></div>
+          <input type="range" class="rng" id="term" min="12" max="36" value="18" step="6">
+          <div class="field-note">12 · 18 · 24 · 30 · 36 חודשים · 0% ריבית</div>
+        </div>
+      </div>
+      <div class="sim-result">
+        <div class="res-eyebrow">תשלום חודשי משוער</div>
+        <div class="res-model" id="resModel">מיה פור · Pro Max</div>
+        <div class="res-monthly"><span class="cur">₪</span><span class="num" id="monthly">1,550</span><span class="per">ללא ריבית · להמחשה בלבד</span></div>
+        <div class="res-line"></div>
+        <div class="res-grid">
+          <div class="res-cell"><div class="k">מחיר מלא</div><div class="v" id="full">₪27,900</div></div>
+          <div class="res-cell"><div class="k">יתרה למימון</div><div class="v" id="financed">₪27,900</div></div>
+        </div>
+        <div class="res-badges"><span class="res-badge accent">0% ריבית</span><span class="res-badge">זמינות מיידית*</span><span class="res-badge">אחריות יבואן</span></div>
+        <div class="lead">
+          <div class="lead-row">
+            <input class="inp" id="leadName" type="text" placeholder="שם מלא" autocomplete="name">
+            <input class="inp" id="leadPhone" type="tel" placeholder="טלפון" inputmode="tel" autocomplete="tel">
+          </div>
+          <button class="btn btn-wa btn-block" id="confirmDeal">אשר עסקה · המשך בוואטסאפ</button>
+          <div class="lead-ok" id="leadOk"></div>
+          <p class="disclaimer">ההערכה אינפורמטיבית בלבד ואינה הצעת אשראי. *בכפוף לזמינות מלאי, אישור עסקה ותנאי הספק. התשלום מחושב כיתרה לאחר מקדמה ובלון, מחולקת במספר התשלומים, ללא ריבית והצמדה.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRIBUTE / MOD -->
+<section class="block tribute-sec" id="tribute">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tribute-flag">הוקרה והנגשה</span>
+      <h2 class="sec-title" style="margin-top:8px">מיה פור מצדיעה לכוחות הביטחון</h2>
+      <p class="sec-desc">ובני משפחותיהם · בכפוף לבדיקת זכאות במשרד הביטחון.</p>
+    </div>
+    <div class="tribute-wrap">
+      <div class="tribute-media">
+        <div class="tribute-badge">95%<small>מימון*</small></div>
+        <!-- IMAGE SLOT · tribute · החלף ל-<img class="tribute-img"> -->
+        <span class="mia-logo" style="transform:scale(1.5)"><span class="chev"></span><span><span class="mt">MIA</span><br><span class="mf">FOUR</span></span></span>
+      </div>
+      <div>
+        <div class="tribute-tracks">
+          <div class="elig-card">
+            <div class="elig-head"><h3>נכי צה"ל וכוחות הביטחון</h3><span class="elig-tag">אגף השיקום</span></div>
+            <p class="elig-body">קלנועית במימון משרד הביטחון, בהתאם לזכאות הרפואית והתפקודית · <b>עד 95%*</b> מהעלות.</p>
+            <a class="elig-link" href="https://shikum.mod.gov.il/medical/equipment/wheelchairs" target="_blank" rel="noopener">פרטי הזכאות באגף השיקום ←</a>
+          </div>
+          <div class="elig-card">
+            <div class="elig-head"><h3>בני משפחות שכולות</h3><span class="elig-tag">אגף משפחות הנצחה</span></div>
+            <p class="elig-body">מענק לרכישת קלנועית יחיד, פעם ב־4 שנים · <b>עד 13,494 ₪</b> להורה שכול · <b>עד 17,988 ₪</b> לאלמן/ה.</p>
+            <a class="elig-link" href="https://mishpahot-hantzaha.mod.gov.il/transportation/scooter" target="_blank" rel="noopener">פרטי הזכאות באגף משפחות הנצחה ←</a>
+          </div>
+        </div>
+        <div class="tribute-calc">
+          <div class="tc-head">דוגמה · מיה פור 4×2</div>
+          <div class="tc-row"><b>מחיר מיה פור 4×2</b><span>19,900 ₪</span></div>
+          <div class="tc-row tc-sub"><b>בקיזוז מימון / מענק משרד הביטחון*</b><span>עד 19,000 ₪</span></div>
+          <div class="tc-row tc-pay"><b>אתם משלמים מ־</b><span>כ־1,000 ₪</span></div>
+        </div>
+        <div class="tribute-cta"><a class="btn btn-primary btn-block" data-wa="היי, אשמח לבדוק זכאות לרכישת מיה פור דרך משרד הביטחון 🇮🇱">בדיקת זכאות ורכישה דרך MiaMe</a></div>
+      </div>
+    </div>
+    <p class="tribute-disclaimer">*שיעור המימון, גובה המענק ותנאי הזכאות נקבעים על ידי משרד הביטחון בלבד (אגף השיקום / אגף משפחות הנצחה), בכפוף לאישור עקרוני לזכאות לפני הרכישה. אין באמור משום התחייבות לזכאות או לגובה המימון. הרכישה דרך MiaMe.co.il מתבצעת לאחר קבלת אישור הזכאות.</p>
+  </div>
+</section>
+
+<!-- PARTNER -->
+<section class="block partner-sec" id="partner">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-kicker">שותפות עסקית</div>
+      <h2 class="sec-title">הפכו ל־MiaMe Hub</h2>
+      <p class="sec-desc">מודל שותפות פשוט להפעלת צי השכרה רווחי, בלי להיכנס לעולם השיווק לבד.</p>
+    </div>
+    <div class="partner-grid">
+      <div class="partner-card">
+        <h3 class="partner-h">איך זה עובד</h3>
+        <p class="partner-p">שלושה צעדים, אפס סיכון מיותר.</p>
+        <div class="flow">
+          <div class="flow-item"><div class="flow-ic">1</div><div><div class="flow-t">אתם מחזיקים את הצי</div><div class="flow-d">השותף רוכש, מתחזק וטוען את הכלים. אתם הבעלים.</div></div></div>
+          <div class="flow-item"><div class="flow-ic">2</div><div><div class="flow-t">אנחנו מביאים את הביקוש</div><div class="flow-d">MiaMe מביאה שיווק, לידים וחשיפה וממלאת לכם את היומן.</div></div></div>
+          <div class="flow-item"><div class="flow-ic">3</div><div><div class="flow-t">משלמים רק על תוצאה</div><div class="flow-d">13% Success Fee מהפניות בלבד. אפס עלות קבועה.</div></div></div>
+        </div>
+        <span class="fee-badge">13% Success Fee · מהפניות בלבד</span>
+      </div>
+      <div class="partner-card dark">
+        <div class="pl-title">מחירון השכרה לדוגמה</div>
+        <div class="pl-row"><span class="pl-k">שעה אחת</span><span class="pl-v"><span class="cur">₪</span>45</span></div>
+        <div class="pl-row"><span class="pl-k">3 שעות</span><span class="pl-v"><span class="cur">₪</span>100</span></div>
+        <div class="pl-row"><span class="pl-k">6 שעות</span><span class="pl-v"><span class="cur">₪</span>180</span></div>
+        <div class="pl-row"><span class="pl-k">9 שעות</span><span class="pl-v"><span class="cur">₪</span>245</span></div>
+        <div class="partner-cta"><a class="btn btn-light btn-block" data-wa="היי, אני רוצה להיות שותף עסקי · MiaMe Hub. אשמח לפרטים 🤝">אני רוצה להיות שותף עסקי</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOON -->
+<section class="block soon-sec">
+  <div class="wrap">
+    <div class="soon-card">
+      <div class="soon-media">
+        <span class="soon-badge">בקרוב</span>
+        <span class="mia-logo" style="transform:scale(1.7)"><span class="chev"></span><span><span class="mt">MIA</span><br><span class="mf">FOUR</span></span></span>
+      </div>
+      <div class="soon-txt">
+        <div class="soon-title">SPYQE</div>
+        <p class="soon-sub">הדור הבא של פלטפורמת ה‑4 גלגלים מגיע ל‑MiaMe. השאירו פרטים ותהיו הראשונים לדעת.</p>
+        <a class="btn soon-link" data-wa="היי, אשמח לעדכון כשה‑SPYQE יגיע ל‑MiaMe 🚀">עדכנו אותי כשמשיקים</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-logo">MiaMe</div>
+    <div class="foot-tag">Free Feel 🗽 · מבית Leasing.co.il 🎯</div>
+    <div class="foot-contact"><a href="mailto:info@miame.co.il">info@miame.co.il</a></div>
+    <p class="foot-legal">המחירים, התשלומים החודשיים ותנאי המימון המוצגים באתר הם הערכה ראשונית בלבד לצורך התרשמות, ואינם מהווים הצעה מחייבת, ייעוץ או התחייבות למימון. MiaMe מתווכת ומארגנת את העסקה · אינה מלווה ואינה מסלקת כספים בעצמה, ואין באתר סליקה/חיוב מקוון. ההתקשרות הסופית, תנאיה והעמדת המימון כפופים לאישור פרטני ולחתימה על הסכם. כל הזכויות שמורות ל־Leasing.co.il.</p>
+  </div>
+</footer>
+
+<a class="wa-float" data-wa="היי MiaMe 🛵 אשמח להצעת תשלום למיה פור" aria-label="וואטסאפ"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.477-.255zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a>
+
+<div class="sticky-cta">
+  <a class="sticky-wa" data-wa="היי MiaMe 🛵 אשמח להצעת תשלום למיה פור" aria-label="וואטסאפ"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24l6.597-3.807c1.676.995 3.276 1.591 5.392 1.592z"/></svg></a>
+  <a class="btn btn-primary sticky-main" href="#sim">קבלת תנאי עסקה</a>
+</div>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <button class="modal-x" data-close aria-label="סגור">×</button>
+    <div class="modal-media" id="mMedia"></div>
+    <div class="modal-body">
+      <div class="modal-eyebrow" id="mPlatform">4×4</div>
+      <div class="modal-title" id="mName">מיה פור</div>
+      <div class="modal-price">החל מ־ <b id="mPrice">₪0</b></div>
+      <div class="modal-specs" id="mSpecs"></div>
+      <div class="modal-cta">
+        <a class="btn btn-primary" id="mPick">לסימולטור עם הדגם</a>
+        <a class="btn btn-wa" id="mWa">דברו איתי בוואטסאפ</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var WA = "972547477477";
+  var waLink = function(msg){ return "https://wa.me/"+WA+"?text="+encodeURIComponent(msg); };
+  var ils = function(n){ return "₪"+Math.round(n).toLocaleString("en-US"); };
+  var $ = function(s,r){ return (r||document).querySelector(s); };
+  var $$ = function(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
+
+  var MODELS = [
+    {id:"city",name:"מיה פור · City",platform:"4×2",price:19900,tag:"",svg:1,
+     sub:"2 מנועים · עיר ויומיום",specs:[["מנועים","2 · 1,800W"],["סוללה","60V · 25Ah"],["טווח","עד ~60 ק\"מ"],["משקל","42 ק\"ג"]]},
+    {id:"citymax",name:"מיה פור · City Max Range",platform:"4×2",price:21900,tag:"טווח מורחב",svg:1,
+     sub:"2 מנועים · סוללת טווח מורחב",specs:[["מנועים","2 · 1,800W"],["סוללה","60V · 35Ah נשלפת"],["טווח","עד 100 ק\"מ"],["משקל","43 ק\"ג"]]},
+    {id:"promax",name:"מיה פור · Pro Max",platform:"4×4",price:27900,tag:"הנמכר ביותר",best:1,svg:1,
+     sub:"4 מנועים · הנעה כפולה לשטח",specs:[["מנועים","4 · 1,800W"],["סוללה","60V · 35Ah נשלפת"],["טווח","עד 100 ק\"מ"],["משקל","48 ק\"ג"]]}
+  ];
+  var byId = function(id){ for(var i=0;i<MODELS.length;i++) if(MODELS[i].id===id) return MODELS[i]; return MODELS[2]; };
+
+  // reusable SVG product placeholder (swap with real <img>)
+  var VEH = '<svg class="card-veh veh-ph" viewBox="0 0 320 200" aria-hidden="true">'
+    +'<ellipse cx="160" cy="178" rx="130" ry="10" fill="#0c2340" opacity="0.10"/>'
+    +'<rect x="112" y="74" width="74" height="14" rx="7" fill="#26405f"/>'
+    +'<path d="M92 108 q-5 -26 22 -28 l58 0 q19 0 22 16" fill="none" stroke="#26405f" stroke-width="8" stroke-linecap="round"/>'
+    +'<path d="M92 108 L74 50" stroke="#26405f" stroke-width="8" stroke-linecap="round"/>'
+    +'<path d="M62 46 q14 -6 26 3" stroke="#0ce5dd" stroke-width="7" stroke-linecap="round"/>'
+    +'<path d="M92 136 L226 136 q12 0 12 -12 l0 -5 l-152 0 q-5 9 -4 22 z" fill="#9fc2ee"/>'
+    +'<g><circle cx="92" cy="162" r="21" fill="#0b1020" stroke="#0ce5dd" stroke-width="3"/><circle cx="140" cy="162" r="21" fill="#0b1020" stroke="#0ce5dd" stroke-width="3"/>'
+    +'<circle cx="198" cy="162" r="21" fill="#0b1020" stroke="#0ce5dd" stroke-width="3"/><circle cx="244" cy="162" r="21" fill="#0b1020" stroke="#0ce5dd" stroke-width="3"/></g></svg>';
+
+  // models grid
+  var grid = $("#modelsGrid");
+  grid.innerHTML = MODELS.map(function(m){
+    return '<div class="card" data-model="'+m.id+'">'
+      +'<div class="card-stage">'+(m.tag?'<span class="card-badge'+(m.best?' best':'')+'">'+m.tag+'</span>':'')+VEH+'</div>'
+      +'<div class="card-body"><div class="card-name">'+m.name+'</div><div class="card-tagline">'+m.platform+' · '+m.sub+'</div>'
+      +'<div class="card-specs">'+m.specs.map(function(s){return '<span class="spec">'+s[0]+' '+s[1]+'</span>';}).join('')+'</div>'
+      +'<div class="card-price"><span class="price-from">החל מ־</span><div class="price-num"><span class="cur">₪</span>'+m.price.toLocaleString("en-US")+'</div></div>'
+      +'<a class="btn btn-primary card-cta" data-pick="'+m.id+'">בחרו דגם זה</a>'
+      +'<button class="card-more" data-more="'+m.id+'">פרטים מלאים ←</button></div></div>';
+  }).join("");
+
+  // model pick (sim)
+  var pick = $("#modelPick");
+  pick.innerHTML = MODELS.map(function(m,i){
+    return '<button class="mp'+(m.id==="promax"?' on':'')+'" data-mp="'+m.id+'"><div class="mp-n">'+m.platform+'</div><div class="mp-p">'+ils(m.price)+'</div></button>';
+  }).join("");
+
+  // simulator
+  var state = {model:"promax",track:"private"};
+  var down=$("#down"),balloon=$("#balloon"),term=$("#term");
+  function fill(el){ var p=(el.value-el.min)/(el.max-el.min)*100; el.style.background="linear-gradient(90deg,var(--azure) "+p+"%,var(--line) "+p+"%)"; }
+  function calc(){
+    var m=byId(state.model), price=m.price, dp=+down.value, bp=+balloon.value, mo=+term.value;
+    var d=price*dp/100, b=price*bp/100, fin=Math.max(0,price-d-b), monthly=fin/mo;
+    $("#downOut").textContent=ils(d); $("#balloonOut").textContent=ils(b);
+    $("#downNote").textContent=dp+"% מהמחיר"; $("#balloonNote").textContent=bp+"% מהמחיר";
+    $("#termOut").textContent=mo+" ח׳";
+    $("#monthly").textContent=Math.round(monthly).toLocaleString("en-US");
+    $("#full").textContent=ils(price); $("#financed").textContent=ils(fin);
+    $("#resModel").textContent=m.name;
+    [down,balloon,term].forEach(fill);
+  }
+  [down,balloon,term].forEach(function(el){ el.addEventListener("input",calc); });
+  $$(".tab").forEach(function(b){ b.addEventListener("click",function(){ $$(".tab").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); state.track=b.dataset.track; }); });
+  function setModel(id){ state.model=id; $$(".mp").forEach(function(x){ x.classList.toggle("on", x.dataset.mp===id); }); calc(); }
+  $$("[data-mp]").forEach(function(b){ b.addEventListener("click",function(){ setModel(b.dataset.mp); }); });
+
+  // simulator -> whatsapp message
+  function simMsg(name,phone){
+    var m=byId(state.model), mo=+term.value;
+    return "היי MiaMe 🛵 "+(name?name+" ("+phone+"). ":"")+"מתעניין/ת ב"+m.name+" ("+m.platform+").\n"
+      +"מסלול: "+(state.track==="business"?"עסקי/סוכן":"לקוח פרטי")+"\n"
+      +"מחיר "+$("#full").textContent+" · מקדמה "+$("#downOut").textContent+" · בלון "+$("#balloonOut").textContent+"\n"
+      +mo+" תשלומים · חודשי משוער ₪"+$("#monthly").textContent+" (0% ריבית).";
+  }
+  $("#confirmDeal").addEventListener("click",function(){
+    var name=$("#leadName").value.trim(), phone=$("#leadPhone").value.trim();
+    if(!name||!phone){ $("#leadOk").textContent="נא למלא שם וטלפון"; $("#leadOk").style.color="#ffb4a8"; return; }
+    try{ fetch("/api/lead",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:name,phone:phone,model_name:byId(state.model).name,track:state.track,source:"miame.co.il"})}); }catch(e){}
+    window.open(waLink(simMsg(name,phone)),"_blank","noopener");
+    $("#leadOk").style.color=""; $("#leadOk").textContent="נפתחה שיחת וואטסאפ ✓ נחזור אליכם מיד";
+  });
+
+  // generic WhatsApp routing
+  document.addEventListener("click",function(e){
+    var t=e.target.closest("[data-wa]"); if(!t) return; e.preventDefault();
+    window.open(waLink(t.getAttribute("data-wa")||"היי MiaMe 🛵"),"_blank","noopener");
+  });
+
+  // model card -> sim / modal
+  document.addEventListener("click",function(e){
+    var p=e.target.closest("[data-pick]"); if(p){ setModel(p.dataset.pick); $("#sim").scrollIntoView({behavior:"smooth"}); return; }
+    var card=e.target.closest(".card"); var more=e.target.closest("[data-more]");
+    if(more || (card && !e.target.closest("[data-pick]"))){ openModal((more?more.dataset.more:card.dataset.model)); }
+  });
+
+  // modal
+  var modal=$("#modal");
+  function openModal(id){
+    var m=byId(id);
+    $("#mPlatform").textContent=m.platform; $("#mName").textContent=m.name; $("#mPrice").textContent=ils(m.price);
+    $("#mMedia").innerHTML=VEH.replace("card-veh","").replace("320 200","320 200");
+    $("#mSpecs").innerHTML=m.specs.map(function(s){return '<div class="ms"><span class="ms-k">'+s[0]+'</span><span class="ms-v">'+s[1]+'</span></div>';}).join("");
+    $("#mPick").onclick=function(){ closeModal(); setModel(id); $("#sim").scrollIntoView({behavior:"smooth"}); };
+    $("#mWa").setAttribute("data-wa","היי, אשמח לפרטים על "+m.name+" ("+ils(m.price)+") 🙂");
+    modal.classList.add("on"); modal.setAttribute("aria-hidden","false");
+  }
+  function closeModal(){ modal.classList.remove("on"); modal.setAttribute("aria-hidden","true"); }
+  $$("[data-close]").forEach(function(x){ x.addEventListener("click",closeModal); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") closeModal(); });
+
+  // ambient parallax
+  var amb=$("#ambientInner");
+  if(amb && window.matchMedia && !window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    window.addEventListener("pointermove",function(e){
+      var x=(e.clientX/window.innerWidth-.5), y=(e.clientY/window.innerHeight-.5);
+      amb.style.transform="translate("+(x*22)+"px,"+(y*22)+"px)";
+    },{passive:true});
+  }
+
+  setModel("promax"); calc();
+})();
+</script>
 </body>
 </html>
