@@ -1,7 +1,7 @@
 import { Quote, ils } from "./finance";
 
 export const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "972500000000";
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "972547477477";
 
 export function buildWhatsAppUrl(message: string): string {
   const num = WHATSAPP_NUMBER.replace(/[^\d]/g, "");
