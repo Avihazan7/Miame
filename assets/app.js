@@ -8,15 +8,13 @@
 
   /* ---- config (swap WHATSAPP with the real number, digits only, intl format) ---- */
   const CONFIG = {
-    // e.g. 972541234567  ·  override at runtime with window.MIAME_WHATSAPP
-    whatsapp: window.MIAME_WHATSAPP || "972500000000",
-    defaultModel: "sport",
+    // MiaMe business WhatsApp · override at runtime with window.MIAME_WHATSAPP
+    whatsapp: window.MIAME_WHATSAPP || "972547477477",
+    defaultModel: "pro-max",
   };
 
-  /* ---- Mia Four lineup ----
-     4x2 price 19,900 and 4x4 27,990 (= ₪1,555 x 18, 0% interest) are anchored to the
-     source spec. "Max" price is an initial estimate to confirm; all prices are shown as
-     non-binding estimates per the on-page disclosure. */
+  /* ---- Mia Four lineup (final · prices per founder, 0% interest) ----
+     All prices shown as non-binding estimates per the on-page disclosure. */
   const MODELS = [
     {
       id: "city", name: "מיה פור · City", platform: "4×2", emoji: "🛵",
@@ -24,13 +22,13 @@
       specs: [["מנועים", "2 · 1,800W"], ["סוללה", "60V · 25Ah"], ["טווח", "עד ~60 ק״מ"], ["משקל", "42 ק״ג"]],
     },
     {
-      id: "sport", name: "מיה פור · Sport", platform: "4×4", emoji: "🏍️",
-      sub: "4 מנועים · הנעה כפולה לשטח", price: 27990, featured: true, tag: "הנמכר ביותר",
-      specs: [["מנועים", "4 · 1,800W"], ["סוללה", "60V · 25Ah"], ["טווח", "עד ~80 ק״מ"], ["משקל", "46 ק״ג"]],
+      id: "city-max", name: "מיה פור · City Max Range", platform: "4×2", emoji: "🔋",
+      sub: "2 מנועים · סוללת טווח מורחב", price: 21900, featured: false, tag: "טווח מורחב",
+      specs: [["מנועים", "2 · 1,800W"], ["סוללה", "60V · 35Ah נשלפת"], ["טווח", "עד 100 ק״מ"], ["משקל", "43 ק״ג"]],
     },
     {
-      id: "max", name: "מיה פור · Max", platform: "4×4", emoji: "🚀",
-      sub: "4 מנועים · סוללת טווח מורחב", price: 32900, featured: false, tag: "טווח מרבי",
+      id: "pro-max", name: "מיה פור · Pro Max", platform: "4×4", emoji: "🚀",
+      sub: "4 מנועים · הנעה כפולה לשטח", price: 27900, featured: true, tag: "הנמכר ביותר",
       specs: [["מנועים", "4 · 1,800W"], ["סוללה", "60V · 35Ah נשלפת"], ["טווח", "עד 100 ק״מ"], ["משקל", "48 ק״ג"]],
     },
   ];
