@@ -1,7 +1,7 @@
 // MiaMe · POST /api/lead
 // Optional lead persistence. Zero-dependency: talks to Supabase REST directly.
 // If SUPABASE env vars are absent the endpoint is a graceful no-op (200) so the
-// WhatsApp funnel keeps working. No clearing / payment here (P0 regulatory gate).
+// WhatsApp funnel keeps working. No payment/clearing is processed here.
 
 const ALLOWED = ["name", "phone", "model", "model_name", "note", "track", "source"];
 

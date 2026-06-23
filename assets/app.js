@@ -1,7 +1,7 @@
 /* =========================================================
    MiaMe · app.js
    Models · payment simulator · WhatsApp routing · lead form
-   P0 gate: estimate only, no live clearing. CTA -> WhatsApp / human close.
+   Compliance: estimate only, no online clearing. CTA -> WhatsApp / human close.
    ========================================================= */
 (() => {
   "use strict";
