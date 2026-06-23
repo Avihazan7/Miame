@@ -363,10 +363,10 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}s
       <div class="field"><div class="field-top"><span class="field-label">תקופת תשלומים</span><span class="field-val" id="termOut">18 ח׳</span></div><input type="range" class="rng" id="term" min="12" max="36" value="18" step="6"><div class="field-note">12 · 18 · 24 · 30 · 36 · 0% ריבית</div></div>
     </div>
     <div class="sim-result">
-      <div class="res-eyebrow">תשלום חודשי משוער</div><div class="res-model" id="resModel">Mia Four Pro 4×4</div>
-      <div class="res-monthly"><span class="cur">₪</span><span class="num" id="monthly">1,550</span><span class="per">ללא ריבית · להמחשה בלבד</span></div>
+      <div class="res-eyebrow">תשלום חודשי משוער</div><div class="res-model" id="resModel">Mia Four 4×2</div>
+      <div class="res-monthly"><span class="cur">₪</span><span class="num" id="monthly">1,106</span><span class="per">ללא ריבית · להמחשה בלבד</span></div>
       <div class="res-line"></div>
-      <div class="res-grid"><div class="res-cell"><div class="k">מחיר מלא</div><div class="v" id="full">₪27,900</div></div><div class="res-cell"><div class="k">יתרה למימון</div><div class="v" id="financed">₪27,900</div></div></div>
+      <div class="res-grid"><div class="res-cell"><div class="k">מחיר מלא</div><div class="v" id="full">₪19,900</div></div><div class="res-cell"><div class="k">יתרה למימון</div><div class="v" id="financed">₪19,900</div></div></div>
       <div class="res-badges"><span class="res-badge accent">0% ריבית</span><span class="res-badge">זמינות מהירה*</span><span class="res-badge">אחריות יבואן</span></div>
       <div class="lead">
         <div class="lead-row"><input class="inp" id="leadName" type="text" placeholder="שם מלא" autocomplete="name"><input class="inp" id="leadPhone" type="tel" placeholder="טלפון" inputmode="tel" autocomplete="tel"></div>
@@ -458,7 +458,7 @@ var MODELS=[
 var byId=function(id){for(var i=0;i<MODELS.length;i++)if(MODELS[i].id===id)return MODELS[i];return MODELS[0]};
 var VEH='<img class="card-veh" src="/miame-hero.webp" alt="מיה פור" loading="lazy">';
 $("#modelsGrid").innerHTML=MODELS.map(function(m){return '<div class="card" data-model="'+m.id+'"><div class="card-stage">'+(m.tag?'<span class="card-badge'+(m.best?' best':'')+'">'+m.tag+'</span>':'')+VEH+'</div><div class="card-body"><div class="card-name">'+m.name+'</div><div class="card-tagline">'+m.sub+'</div><div class="card-specs">'+m.specs.map(function(s){return '<span class="spec">'+s[0]+' '+s[1]+'</span>'}).join('')+'</div><div class="card-price"><span class="price-from">החל מ־</span><div class="price-num"><span class="cur">₪</span>'+m.price.toLocaleString("en-US")+'</div></div><a class="btn btn-primary card-cta" data-pick="'+m.id+'" data-cta="'+m.id+'">בחר והרץ סימולציה</a><button class="card-more" data-more="'+m.id+'">פרטים מלאים ←</button></div></div>'}).join("");
-$("#modelPick").innerHTML=MODELS.map(function(m){return '<button class="mp'+(m.id==="pro"?" on":"")+'" data-mp="'+m.id+'"><div class="mp-n">'+m.short+'</div><div class="mp-p">'+ils(m.price)+'</div></button>'}).join("");
+$("#modelPick").innerHTML=MODELS.map(function(m){return '<button class="mp'+(m.id==="city"?" on":"")+'" data-mp="'+m.id+'"><div class="mp-n">'+m.short+'</div><div class="mp-p">'+ils(m.price)+'</div></button>'}).join("");
 var DEALERS=[
  ["אקו פאן","הוד-השרון","09-3730188"],["אורבניקו","תל-אביב","03-7207220"],["אורבן רייד","תל-אביב","051-2872267"],
  ["אורסל","ראשון לציון","052-6387509"],["פול גזז","אשקלון","050-4525183"],["אופני הבירה","ירושלים","02-5326699"],
@@ -485,7 +485,7 @@ function openModal(id){var m=byId(id);$("#mPlatform").textContent=m.platform;$("
 function closeModal(){modal.classList.remove("on")}
 $$("[data-close]").forEach(function(x){x.addEventListener("click",closeModal)});document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal()});
 var amb=$("#ambientInner");if(amb&&!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)){window.addEventListener("pointermove",function(e){amb.style.transform="translate("+((e.clientX/innerWidth-.5)*22)+"px,"+((e.clientY/innerHeight-.5)*22)+"px)"},{passive:true});window.addEventListener("deviceorientation",function(e){if(e.gamma==null||e.beta==null)return;var x=Math.max(-1,Math.min(1,e.gamma/45)),y=Math.max(-1,Math.min(1,(e.beta-40)/45));amb.style.transform="translate("+(x*28)+"px,"+(y*28)+"px)"},{passive:true})}
-setModel("pro");calc();
+setModel("city");calc();
 })();
 </script>
 </body>
