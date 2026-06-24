@@ -4,25 +4,32 @@ export default function Lifestyle() {
       <div className="wrap">
         <div className="sec-head">
           <div className="sec-kicker">לייפסטייל</div>
-          <h2 className="sec-title">הכי חכם · בעיר ובשטח</h2>
+          <h2 className="sec-title">חכם בעיר ועוצמתי בשטח</h2>
           <p className="sec-desc">
             חוויה של דו־גלגלי עם יציבות של ארבעה. נסיעה חלקה, בטוחה ומהנה · בכל מקום שתבחרו.
           </p>
         </div>
         <div className="life-grid">
           <div className="life-card">
-            <img src="/mia-ride.jpg" alt="רכיבה בשטח על מיה פור בזריחה" loading="lazy" />
+            <img src="/mia-fold-lot.jpg" alt="מיה פור מקופלת · נכנסת לכל מקום" loading="lazy" />
             <div className="life-cap">
-              <b>חופש בשטח</b>
-              <span>יציבות 4×4 וביטחון על כל משטח</span>
+              <b>חכם בעיר</b>
+              <span>מתקפל · נייד · 42 ק״ג, נכנס לכל מקום</span>
             </div>
           </div>
           <div className="life-card">
-            <img src="/mia-fold-lot.jpg" alt="מיה פור מקופלת · נכנסת לכל מקום" loading="lazy" />
+            <img src="/mia-wheel-detail.webp" alt="מתלים וצמיגי שטח · MIA Dynamics" loading="lazy" />
             <div className="life-cap">
-              <b>מתקפל · נכנס לכל מקום</b>
-              <span>42 ק״ג · מהשטח ישר לתא המטען</span>
+              <b>עוצמתי בשטח</b>
+              <span>מתלים מלאים · צמיגי שטח MIA Dynamics</span>
             </div>
+          </div>
+        </div>
+        <div className="life-band photo-frame">
+          <img src="/mia-beach.webp" alt="מיה פור על קו החוף · חופש בכל מקום" loading="lazy" />
+          <div className="photo-cap">
+            <b>חופש אמיתי — בכל מקום</b>
+            <span>מהעיר, דרך החוף, אל השטח</span>
           </div>
         </div>
       </div>

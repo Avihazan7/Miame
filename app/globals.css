@@ -838,3 +838,29 @@ html.intro-quick .hero-sub{animation:heroRise 520ms ease both 120ms}
 @media (prefers-reduced-motion: reduce){
   .photo-frame img,.patent-showcase img,.patent-showcase::after,.deliver-banner .db-ic{animation:none!important;transform:none!important}
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Calderon round 2 · white-bg specs · enlarged tribute · beach band
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Specs media now shows the full white-background product (no crop) */
+.specs-media--product{background:#ffffff;
+  background-image:radial-gradient(120% 92% at 50% -6%, hsla(var(--amb-hue-a),96%,70%,.12), transparent 62%)}
+.specs-media--product img{object-fit:contain;width:100%;height:100%;padding:16px}
+
+/* Tribute · enlarge the full MIA presence for כוחות הביטחון */
+.tribute-media{min-height:320px;background:radial-gradient(120% 92% at 50% 30%,#f3f9ff,transparent 72%)}
+.tribute-media img{max-width:440px;filter:drop-shadow(0 26px 40px rgba(11,20,40,.22))}
+@media(min-width:780px){.tribute-media{min-height:360px}.tribute-media img{max-width:480px}}
+
+/* Lifestyle · full-width "freedom" band (beach) */
+.life-band{position:relative;margin-top:18px;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:13/5}
+@media(max-width:760px){.life-band{aspect-ratio:3/2}}
+.life-band img{object-position:center 58%}
+.life-band .photo-cap{text-align:right}
+.life-band .photo-cap b{font-size:clamp(18px,2.6vw,24px)}
+
+/* polish · wax · nano on the new frames */
+.life-band:hover,.feat-show-main:hover,.feat-show-detail:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.22), var(--glow), var(--shadow-lg)}
+.life-band,.feat-show-main,.feat-show-detail{transition:box-shadow .25s ease, transform .25s ease}
+.life-band:hover{transform:translateY(-3px)}
