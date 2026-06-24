@@ -11,7 +11,8 @@ export type BrainEventType =
   | "simulator_quote" // a deal was configured in the simulator
   | "partner_inquiry" // MiaMe Hub (fleet) partner interest
   | "deal_closed" // sale or rental closed
-  | "support_ticket"; // service / maintenance request
+  | "support_ticket" // service / maintenance request
+  | "question"; // general Q&A about MIA FOUR (the website chat)
 
 export interface BrainEvent {
   type: BrainEventType;
