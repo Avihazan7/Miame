@@ -10,6 +10,7 @@ export default function Header() {
           <span className="logo">
             Mia<span className="dot">Me</span>
           </span>
+          <span className="brand-tag">Free Feel</span>
         </div>
         <nav className="nav-cta">
           <a href="#features" className="nav-link hide-m">יכולות</a>

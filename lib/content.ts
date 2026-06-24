@@ -30,9 +30,9 @@ export const MODEL_PRICING = MODELS.map((m) => ({ id: m.id, name: m.name, price:
 export const SUCCESS_FEE_PCT = 13; // % of referrals only, no fixed cost
 
 /** Example hourly rental pricing (MiaMe Hub). */
-export const RENTAL_FROM = 45; // ₪ per hour — entry price
+export const RENTAL_FROM = 50; // ₪ per hour — entry price
 export const RENTAL_PRICES: { k: string; v: string }[] = [
-  { k: "שעה אחת", v: "45" },
+  { k: "שעה אחת", v: "50" },
   { k: "3 שעות", v: "100" },
   { k: "6 שעות", v: "180" },
   { k: "9 שעות", v: "245" }
