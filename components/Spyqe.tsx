@@ -7,11 +7,17 @@ export default function Spyqe() {
         <div className="soon-card">
           <div className="soon-media">
             <span className="soon-badge">בקרוב · Coming Soon</span>
-            <img
-              className="soon-img floaty"
-              src="/miame-spyqe.webp"
-              alt="SPYQE · הדגם הבא של MIA Dynamics"
-            />
+            <div className="soon-gallery">
+              <div className="soon-tile main">
+                <img className="floaty" src="/mia-four-teal-side.png" alt="SPYQE · פרופיל" />
+              </div>
+              <div className="soon-tile">
+                <img src="/mia-four-teal-wheel.png" alt="SPYQE · גלגל שטח" />
+              </div>
+              <div className="soon-tile">
+                <img src="/mia-four-teal-cockpit.png" alt="SPYQE · תא נהג" />
+              </div>
+            </div>
           </div>
           <div className="soon-txt">
             <div className="soon-title">SPYQE</div>
