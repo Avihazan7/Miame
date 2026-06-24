@@ -1,21 +1,5 @@
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
-
-const DEALERS: [string, string, string][] = [
-  ["אקו פאן", "הוד-השרון", "09-3730188"],
-  ["אורבניקו", "תל-אביב", "03-7207220"],
-  ["אורבן רייד", "תל-אביב", "051-2872267"],
-  ["אורסל", "ראשון לציון", "052-6387509"],
-  ["פול גזז", "אשקלון", "050-4525183"],
-  ["אופני הבירה", "ירושלים", "02-5326699"],
-  ["הר ריידר", "בית שמש", "054-8424101"],
-  ["MIA בני ברק", "בני ברק", "050-4171552"],
-  ["גלגל יציב", "כנות", "1-700-557-744"],
-  ["MOTOATV", "כרמיאל", "053-4000100"],
-  ["ElectricMove", "חצור הגלילית", "050-5949416"],
-  ["מחסני חשמל", "אילת", "073-2540171"],
-  ["All Mobile", "אילת", "054-9188871"],
-  ["מייק בייק", "אילת", "053-6500174"]
-];
+import { DEALERS, RENTAL_FROM } from "@/lib/content";
 
 export default function Service() {
   return (
@@ -86,7 +70,7 @@ export default function Service() {
         </div>
         <div className="rental-strip">
           <b>רוצים לשכור מיה פור לפי שעה?</b>
-          <span>החל מ־45 ₪ לשעה · אתרו נקודת השכרה קרובה ברשת MiaMe Hub</span>
+          <span>החל מ־{RENTAL_FROM} ₪ לשעה · אתרו נקודת השכרה קרובה ברשת MiaMe Hub</span>
           <div className="rental-cta">
             <a
               className="btn btn-light btn-block"

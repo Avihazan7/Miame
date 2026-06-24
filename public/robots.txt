@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://miame.co.il/sitemap.xml
+Sitemap: https://www.miame.co.il/sitemap.xml

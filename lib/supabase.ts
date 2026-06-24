@@ -34,8 +34,14 @@ export async function saveLead(lead: LeadRecord): Promise<boolean> {
   try {
     if (!supabase) return false;
     const { error } = await supabase.from("leads").insert(lead);
+    if (error && process.env.NODE_ENV !== "production") {
+      console.warn("[MiaMe] lead insert failed:", error.message);
+    }
     return !error;
-  } catch {
+  } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[MiaMe] lead insert threw:", e);
+    }
     return false;
   }
 }
@@ -44,8 +50,14 @@ export async function savePartner(partner: PartnerRecord): Promise<boolean> {
   try {
     if (!supabase) return false;
     const { error } = await supabase.from("partners").insert(partner);
+    if (error && process.env.NODE_ENV !== "production") {
+      console.warn("[MiaMe] partner insert failed:", error.message);
+    }
     return !error;
-  } catch {
+  } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[MiaMe] partner insert threw:", e);
+    }
     return false;
   }
 }
