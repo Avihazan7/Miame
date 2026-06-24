@@ -14,7 +14,8 @@ export default function Tribute() {
         <div className="tribute-wrap">
           <div className="tribute-media">
             <div className="tribute-badge">
-              95%<small>מימון*</small>
+              <span className="tb-pre">עד</span>
+              100%<small>סבסוד*</small>
             </div>
             <img className="floaty" src="/miame-front.webp" alt="מיה פור · קלנועית יחיד" />
           </div>
@@ -25,7 +26,7 @@ export default function Tribute() {
                 <span className="elig-tag">אגף השיקום</span>
               </div>
               <p className="elig-body">
-                קלנועית במימון משרד הביטחון, בהתאם לזכאות הרפואית והתפקודית · <b>עד 95%*</b> מהעלות.
+                קלנועית במימון משרד הביטחון, בהתאם לזכאות הרפואית והתפקודית · <b>עד 100% מוכר לסבסוד*</b>.
               </p>
               <a
                 className="elig-link"
@@ -42,7 +43,7 @@ export default function Tribute() {
                 <span className="elig-tag">אגף משפחות הנצחה</span>
               </div>
               <p className="elig-body">
-                מענק לרכישת קלנועית יחיד, פעם ב־4 שנים · <b>עד 13,494 ₪</b> להורה שכול · <b>עד 17,988 ₪</b> לאלמן/ה.
+                מענק לרכישת קלנועית יחיד, פעם ב־4 שנים · <b>עד 17,988 ₪</b> לאלמן/ה — <b>שהם עד 90% מוכרים לסבסוד*</b>.
               </p>
               <a
                 className="elig-link"
@@ -54,18 +55,18 @@ export default function Tribute() {
               </a>
             </div>
             <div className="tribute-calc">
-              <div className="tc-head">🎁 לזכאי אגף השיקום · מיה פור 4×2</div>
+              <div className="tc-head">🎁 לזכאי כוחות הביטחון · מיה פור 4×2</div>
               <div className="tc-row">
                 <b>מחיר מיה פור 4×2</b>
                 <span>19,900 ₪</span>
               </div>
               <div className="tc-row tc-sub">
-                <b>מימון אגף השיקום*</b>
-                <span>עד 95%</span>
+                <b>סבסוד מוכר · משרד הביטחון*</b>
+                <span>עד 90%</span>
               </div>
               <div className="tc-row tc-sub">
-                <b>מענק מתנה MiaMe.co.il 🎁</b>
-                <span>5%</span>
+                <b>MEU · מענק מתנה והוקרה 🎁</b>
+                <span>10%</span>
               </div>
               <div className="tc-row tc-pay">
                 <b>אתם משלמים</b>
@@ -87,7 +88,7 @@ export default function Tribute() {
           </div>
         </div>
         <p className="tribute-disclaimer">
-          *שיעור המימון, גובה המענק ותנאי הזכאות נקבעים על ידי משרד הביטחון בלבד (אגף השיקום / אגף משפחות הנצחה), בכפוף לאישור עקרוני לזכאות לפני הרכישה. אין באמור משום התחייבות לזכאות או לגובה המימון. מענק המתנה של MiaMe.co.il (5%) הוא הטבה לזכאי אגף השיקום בלבד, להשלמת העלות עד אפס, בכפוף לאישור זכאות ולתנאי המבצע.
+          *שיעור הסבסוד, גובה המענק ותנאי הזכאות נקבעים על ידי משרד הביטחון בלבד (אגף השיקום / אגף משפחות והנצחה), בכפוף לאישור עקרוני לזכאות לפני הרכישה. הציון &quot;עד 100%&quot; מבטא את הכיסוי המרבי האפשרי בלבד (סבסוד מוכר של עד 90% ממחיר הקלנועית, בתוספת מענק ההוקרה של MEU בשיעור 10%), ואינו מהווה התחייבות לזכאות, לשיעור הסבסוד או להיעדר עלות. מענק המתנה וההוקרה של MEU (10%) הוא הטבת רשות להשלמת העלות, בכפוף לאישור זכאות, למלאי ולתנאי המבצע, וניתן לשינוי או להפסקה בכל עת.
         </p>
       </div>
     </section>

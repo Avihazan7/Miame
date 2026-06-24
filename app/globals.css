@@ -333,8 +333,9 @@ svg{display:block}
 @media(min-width:780px){.tribute-wrap{grid-template-columns:.9fr 1.1fr;gap:34px}}
 .tribute-media{position:relative;display:flex;justify-content:center;align-items:center;background:radial-gradient(120% 92% at 50% 32%,#eaf4ff,transparent 70%);border-radius:24px;padding:28px;min-height:220px}
 .tribute-media img{max-width:340px;width:100%;height:auto;filter:drop-shadow(0 22px 34px rgba(11,20,40,.2))}
-.tribute-badge{position:absolute;top:12px;inset-inline-start:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:86px;height:86px;border-radius:50%;background:linear-gradient(150deg,var(--azure),var(--azure-deep));color:#fff;font-weight:900;font-size:21px;line-height:1;box-shadow:0 12px 26px rgba(10,132,255,.4);text-align:center}
-.tribute-badge small{font-size:10.5px;font-weight:700;margin-top:3px}
+.tribute-badge{position:absolute;top:12px;inset-inline-start:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:108px;height:108px;border-radius:50%;background:linear-gradient(150deg,var(--azure),var(--azure-deep));color:#fff;font-weight:900;font-size:28px;line-height:1;border:3px solid rgba(255,255,255,.92);box-shadow:0 16px 32px rgba(10,132,255,.5),0 0 0 6px rgba(10,132,255,.14);text-align:center;z-index:2}
+.tribute-badge .tb-pre{font-size:11px;font-weight:800;opacity:.95;margin-bottom:1px}
+.tribute-badge small{font-size:11px;font-weight:800;margin-top:3px;letter-spacing:.5px}
 .elig-card{background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 10px 26px rgba(11,20,40,.06);margin-bottom:14px}
 .elig-head{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
 .elig-head h3{font-size:16.5px;font-weight:800;margin:0}
