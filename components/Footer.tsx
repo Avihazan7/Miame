@@ -1,10 +1,22 @@
+import MiaMark from "./MiaMark";
+
 export default function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer className="site-footer">
       <div className="wrap">
-        <div className="foot-logo">
-          Mia<span className="dot">Me</span>
+        <div className="foot-brand">
+          <span className="foot-mark">
+            <MiaMark size={46} title="MiaMe" />
+          </span>
+          <div className="foot-logo">
+            Mia<span className="dot">Me</span>
+          </div>
+        </div>
+        <div className="foot-tag">
+          <span aria-hidden="true">🌐</span> Free Feel
+          <span className="sep">·</span>
+          <span aria-hidden="true">🗽</span>
         </div>
         <div className="foot-powered">
           מבית <b>Leasing.co.il</b> 🎯

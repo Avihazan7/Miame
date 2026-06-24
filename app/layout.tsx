@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Heebo } from "next/font/google";
 import "./globals.css";
+import AmbientLight from "@/components/AmbientLight";
+import MarkField from "@/components/MarkField";
+import MotionFx from "@/components/MotionFx";
 
 const heebo = Heebo({
   subsets: ["hebrew", "latin"],
@@ -143,7 +146,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="he" dir="rtl" className={heebo.variable}>
       <body>
+        <AmbientLight />
+        <MarkField />
         {children}
+        <MotionFx />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
