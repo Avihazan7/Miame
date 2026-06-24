@@ -11,17 +11,17 @@ export default function Lifestyle() {
         </div>
         <div className="life-grid">
           <div className="life-card">
-            <img src="/miame-life-1.webp" alt="חופש בשטח · מיה פור" />
+            <img src="/mia-ride.jpg" alt="רכיבה בשטח על מיה פור בזריחה" loading="lazy" />
             <div className="life-cap">
               <b>חופש בשטח</b>
-              <span>יציבות וביטחון על כל משטח</span>
+              <span>יציבות 4×4 וביטחון על כל משטח</span>
             </div>
           </div>
           <div className="life-card">
-            <img src="/miame-life-2.webp" alt="אלגנטיות בעיר · מיה פור" />
+            <img src="/mia-fold-lot.jpg" alt="מיה פור מקופלת · נכנסת לכל מקום" loading="lazy" />
             <div className="life-cap">
-              <b>אלגנטיות בעיר</b>
-              <span>קלה, שקטה וחסכונית ליום־יום</span>
+              <b>מתקפל · נכנס לכל מקום</b>
+              <span>42 ק״ג · מהשטח ישר לתא המטען</span>
             </div>
           </div>
         </div>

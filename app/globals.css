@@ -753,3 +753,82 @@ html.intro-quick .hero-sub{animation:heroRise 520ms ease both 120ms}
 @media (prefers-reduced-motion: reduce){
   .veh-wake{opacity:0!important}
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Real-world photography + delivery banner + value pillars (Calderon)
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── subtle 3D delivery banner (above "הנדסה") ── */
+.deliver-banner{position:relative;display:inline-flex;align-items:center;gap:11px;
+  margin:0 auto 30px;padding:13px 24px;border-radius:999px;
+  font-weight:800;font-size:clamp(14.5px,1.8vw,17px);letter-spacing:-.2px;color:#0a4b63;
+  background:linear-gradient(180deg,#ecfdff,#cdf3fb);border:1px solid rgba(12,229,221,.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 2px 0 #a3e4ee, 0 12px 26px rgba(19,182,223,.26);
+  transition:transform .18s ease, box-shadow .22s ease}
+.deliver-banner:hover{transform:translateY(-2px);
+  box-shadow:inset 0 1px 0 #fff, 0 4px 0 #a3e4ee, 0 18px 34px rgba(19,182,223,.34)}
+.deliver-banner .db-ic{display:inline-flex;color:var(--sky-600);animation:dbTruck 3.6s ease-in-out infinite}
+@keyframes dbTruck{0%,100%{transform:translateX(0)}50%{transform:translateX(-4px)}}
+.deliver-banner b{color:var(--azure-deep)}
+.deliver-banner .db-free{background:var(--grad-teal);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;font-weight:900}
+.deliver-wrap{text-align:center}
+
+/* ── 4 value pillars (replaces the stat strip), 3D + highlighted ── */
+.value-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+@media(max-width:680px){.value-strip{grid-template-columns:repeat(2,1fr)}}
+.value{position:relative;text-align:center;background:linear-gradient(180deg,#ffffff,#eef6ff);
+  border:1px solid rgba(10,132,255,.16);border-radius:var(--r-lg);padding:24px 14px;overflow:hidden;
+  box-shadow:inset 0 1px 0 #fff, 0 2px 0 #dde9f7, 0 12px 26px rgba(11,30,80,.08);
+  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease}
+.value::before{content:"";position:absolute;top:0;left:14%;right:14%;height:2px;border-radius:2px;
+  background:var(--grad-teal);opacity:.55}
+.value:hover{transform:translateY(-5px);border-color:rgba(12,229,221,.5);
+  box-shadow:inset 0 1px 0 #fff, 0 4px 0 #dde9f7, var(--glow), 0 18px 34px rgba(11,30,80,.12)}
+.value-ic{width:54px;height:54px;margin:0 auto 13px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+  color:#fff;background:var(--grad-teal);box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 9px 20px rgba(19,182,223,.36)}
+.value-n{font-size:clamp(17px,2.2vw,21px);font-weight:900;letter-spacing:-.5px;color:var(--ink)}
+.value-s{font-size:12.5px;color:var(--slate);font-weight:600;margin-top:5px;line-height:1.5}
+
+/* ── real-photo frames: cover, motion, adaptive-ambient glow ── */
+.photo-frame{position:relative;overflow:hidden;border-radius:var(--r-lg);
+  background:linear-gradient(165deg,#0a2450,#0e3a7a);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16), var(--shadow-md)}
+.photo-frame img{object-fit:cover;transform:scale(1.02);animation:photoDrift 22s ease-in-out infinite alternate}
+.photo-frame:nth-of-type(even) img{animation-duration:26s;animation-direction:alternate-reverse}
+@keyframes photoDrift{from{transform:scale(1.02)}to{transform:scale(1.12) translate(-1.5%,-1%)}}
+.photo-frame::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+  background:radial-gradient(120% 75% at 50% -10%, hsla(var(--amb-hue-a),96%,62%,.16), transparent 58%)}
+.photo-cap{position:absolute;inset-inline:0;bottom:0;z-index:2;padding:30px 18px 15px;color:#fff;text-align:right;
+  background:linear-gradient(0deg, rgba(6,20,44,.88), rgba(6,20,44,.1) 62%, transparent)}
+.photo-cap b{display:block;font-size:18px;font-weight:800;letter-spacing:-.3px}
+.photo-cap span{display:block;font-size:13px;color:#bfe4ff;font-weight:600;margin-top:2px}
+.photo-tag{position:absolute;top:14px;inset-inline-start:14px;z-index:2;background:rgba(8,24,48,.55);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(12,229,221,.4);
+  color:#eafffe;font-size:12px;font-weight:800;border-radius:999px;padding:6px 13px}
+
+/* feat-show rebuilt around real photos */
+.feat-show-main.photo-frame{aspect-ratio:3/2}
+.feat-show-detail.photo-frame{aspect-ratio:1/1;padding:0}
+
+/* ── patents platform showcase ── */
+.patent-showcase{position:relative;max-width:560px;margin:0 auto 30px;border-radius:var(--r-lg);overflow:hidden;
+  background:#05080f;box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 26px 60px rgba(4,12,30,.4)}
+.patent-showcase::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(80% 50% at 50% 4%, hsla(var(--amb-hue-a),96%,60%,.22), transparent 60%);
+  animation:psGlow 7s ease-in-out infinite}
+@keyframes psGlow{0%,100%{opacity:.7}50%{opacity:1}}
+.patent-showcase img{display:block;width:100%;height:auto;animation:floaty 7.5s ease-in-out infinite}
+.ps-kicker{position:absolute;top:0;inset-inline:0;z-index:2;text-align:center;padding:16px 12px 30px;
+  background:linear-gradient(180deg, rgba(5,8,15,.85), transparent);
+  font-size:13px;font-weight:900;letter-spacing:3px;text-transform:uppercase;direction:ltr;
+  background-clip:padding-box}
+.ps-kicker .k{background:var(--grad-teal);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ensure real-photo frames fill edge-to-edge (override older feat-show img sizing) */
+.photo-frame{padding:0;display:block}
+.photo-frame img{position:absolute;inset:0;width:100%;height:100%;max-width:none}
+@media (prefers-reduced-motion: reduce){
+  .photo-frame img,.patent-showcase img,.patent-showcase::after,.deliver-banner .db-ic{animation:none!important;transform:none!important}
+}
