@@ -334,6 +334,7 @@ export default function Configurator() {
 
             {/* result */}
             <div className="sim-result">
+              <img className="res-product" src="/mia-four-x4.webp" alt="" aria-hidden="true" />
               <div className="res-eyebrow">תשלום חודשי משוער</div>
               <div className="res-model">
                 {model.name} · מסלול {track_.label}
