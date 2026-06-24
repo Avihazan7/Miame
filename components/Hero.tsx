@@ -31,8 +31,8 @@ export default function Hero() {
         </div>
         <div className="hero-trust">
           <span className="tchip"><Check />אחריות יבואן</span>
-          <span className="tchip"><Check />אספקה מיידית</span>
-          <span className="tchip"><Check />0% ריבית</span>
+          <span className="tchip"><Check />אספקה מיידית בכפוף למלאי</span>
+          <span className="tchip"><Check />0% ריבית בכפוף לאישור</span>
           <span className="tchip"><Check />4×4 אמיתי</span>
           <span className="tchip tchip-brand">Powered by Leasing.co.il 🎯</span>
         </div>

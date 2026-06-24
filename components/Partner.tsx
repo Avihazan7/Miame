@@ -1,5 +1,6 @@
 import { buildWhatsAppUrl, buildPartnerMessage } from "@/lib/whatsapp";
 import WaIcon from "./WaIcon";
+import { RENTAL_PRICES, SUCCESS_FEE_PCT } from "@/lib/content";
 
 function Icon({ d }: { d: string }) {
   return (
@@ -23,15 +24,8 @@ const FLOW = [
   {
     d: "M20 6L9 17l-5-5",
     t: "משלמים רק על תוצאה",
-    p: "13% Success Fee מהפניות בלבד. אפס עלות קבועה."
+    p: `${SUCCESS_FEE_PCT}% Success Fee מהפניות בלבד. אפס עלות קבועה.`
   }
-];
-
-const PRICES = [
-  { k: "שעה אחת", v: "45" },
-  { k: "3 שעות", v: "100" },
-  { k: "6 שעות", v: "180" },
-  { k: "9 שעות", v: "245" }
 ];
 
 export default function Partner() {
@@ -51,7 +45,7 @@ export default function Partner() {
         <div className="partner-grid">
           <div className="partner-card">
             <h3 className="partner-h">איך זה עובד</h3>
-            <p className="partner-p">שלושה צעדים, אפס סיכון מיותר.</p>
+            <p className="partner-p">שלושה צעדים, מודל רזה, מדיד וללא עלות קבועה.</p>
 
             <div className="flow">
               {FLOW.map((f) => (
@@ -67,13 +61,13 @@ export default function Partner() {
               ))}
             </div>
 
-            <div className="fee-badge">13% Success Fee · מהפניות בלבד</div>
+            <div className="fee-badge">{SUCCESS_FEE_PCT}% Success Fee · מהפניות בלבד</div>
           </div>
 
           <div className="partner-card dark">
             <div className="pl-title">מחירון השכרה לדוגמה</div>
             <div className="price-list">
-              {PRICES.map((p) => (
+              {RENTAL_PRICES.map((p) => (
                 <div className="pl-row" key={p.k}>
                   <span className="pl-k">{p.k}</span>
                   <span className="pl-v">

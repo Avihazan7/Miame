@@ -20,7 +20,7 @@ export default function Specs() {
             </div>
             <div className="spec-row">
               <span className="spec-k">טווח נסיעה</span>
-              <span className="spec-v">עד 100 ק"מ · סוללה נשלפת</span>
+              <span className="spec-v">עד 100 ק"מ ריאלי · יצרן עד 120 ק"מ*</span>
             </div>
             <div className="spec-row">
               <span className="spec-k">מנועים</span>
@@ -52,6 +52,12 @@ export default function Specs() {
             </div>
           </div>
         </div>
+        <p
+          className="spec-note"
+          style={{ marginTop: "16px", fontSize: "13px", lineHeight: 1.6, color: "#8a93a3" }}
+        >
+          * נתון טווח היצרן נמדד בתנאי מעבדה. הטווח בפועל מושפע ממשקל הנהג, תוואי הדרך, תנאי השטח וסגנון הנהיגה.
+        </p>
       </div>
     </section>
   );

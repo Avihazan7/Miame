@@ -345,7 +345,7 @@ export default function Configurator() {
               </div>
 
               <div className="res-badges">
-                <span className="res-badge accent">0% ריבית</span>
+                <span className="res-badge accent">0% ריבית*</span>
                 <span className="res-badge">זמינות מיידית*</span>
               </div>
 
@@ -406,7 +406,7 @@ export default function Configurator() {
                     className="btn btn-primary btn-block"
                     onClick={() => openDeal("אישור עסקה", "LeadSubmitted")}
                   >
-                    אשר עסקה
+                    קבל הצעת עסקה בוואטסאפ
                   </button>
                   <button
                     className="btn btn-light btn-block"
@@ -417,7 +417,7 @@ export default function Configurator() {
                   </button>
                 </div>
                 <p className="disclaimer">
-                  ההערכה אינפורמטיבית בלבד ואינה הצעת אשראי. *בכפוף לזמינות מלאי, אישור עסקה ותנאי הספק.
+                  הסימולטור להמחשה בלבד. העסקה כפופה לאישור ספק, מלאי, תנאי מימון וחתימה. ההערכה אינה הצעת אשראי.
                 </p>
                 {sent && <div className="lead-ok">נפתחה שיחת וואטסאפ ✓ נחזור אליכם מיד</div>}
               </div>
