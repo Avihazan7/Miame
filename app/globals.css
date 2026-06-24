@@ -411,6 +411,10 @@ svg{display:block}
 .soon-link{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22);margin-top:6px}
 .soon-media{position:relative;flex:1;display:flex;justify-content:center}
 .soon-img{width:100%;max-width:380px;height:auto;filter:drop-shadow(0 22px 38px rgba(0,229,221,.28))}
+.soon-gallery{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:400px;margin:0 auto}
+.soon-tile{background:#fff;border-radius:14px;padding:8px;display:flex;box-shadow:0 14px 28px rgba(0,0,0,.22)}
+.soon-tile.main{grid-column:1 / -1}
+.soon-tile img{width:100%;height:auto;border-radius:8px;display:block}
 .soon-txt{flex:1}
 @media(min-width:780px){.soon-card{flex-direction:row-reverse;text-align:right;padding:42px;gap:36px}.soon-sub{margin:0}}
 
