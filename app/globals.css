@@ -668,3 +668,94 @@ html{scroll-padding-top:92px}
 
 /* clip the feat-card wax-sweep to its rounded bounds */
 .feat-card{overflow:hidden}
+
+/* ════════════════════════════════════════════════════════════════════
+   Cinematic entrance · מיה פור נכנסת בנסיעה + שובל תאורה אדפטיבי
+   ──────────────────────────────────────────────────────────────────
+   Classes intro-go / intro-full / intro-quick are set before first paint
+   by the gate in layout.tsx, and retired by HeroIntro after the sequence.
+   Default (no class / no-JS / reduced-motion) = calm resting state.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* resting state */
+.vehicle-arrive{position:relative;z-index:2;width:100%;max-width:560px;margin:0 auto}
+.vehicle-arrive .vehicle{max-width:100%}
+/* the wake rides WITH the vehicle, trailing to its right (the side it drove in from) */
+.veh-wake{position:absolute;top:4%;bottom:10%;left:58%;right:-64%;z-index:-1;pointer-events:none;opacity:0}
+.streak,.comet{position:absolute;opacity:0;pointer-events:none}
+.amb-sweep{position:absolute;top:0;bottom:0;inset-inline-end:0;width:64vw;opacity:0;pointer-events:none;
+  mix-blend-mode:multiply;transform:translateX(40%);
+  background:radial-gradient(closest-side, hsla(var(--amb-hue-a),96%,66%,.5), transparent 70%)}
+
+/* light-trail streaks — bright at the vehicle (left), fading into the wake (right),
+   coloured by the live adaptive ambient hue */
+.streak{left:0;right:0;height:4px;border-radius:99px;transform-origin:left center;
+  background:linear-gradient(to right, hsla(var(--amb-hue-a),96%,76%,1) 0%,
+    hsla(var(--amb-hue-a),96%,56%,.92) 22%, hsla(var(--amb-hue-a),96%,56%,0) 92%);
+  filter:drop-shadow(0 0 9px hsla(var(--amb-hue-a),96%,60%,.85))}
+.s1{top:12%}.s2{top:30%}.s3{top:48%}.s4{top:66%}.s5{top:84%}
+.comet{left:-18%;top:28%;width:56%;height:50%;border-radius:50%;filter:blur(13px);
+  background:radial-gradient(closest-side, hsla(var(--amb-hue-a),96%,64%,.6),
+    hsla(var(--amb-hue-b),90%,58%,.18), transparent 72%)}
+
+/* ── FULL cinematic (first visit this session): floats-in over ~2.6s ── */
+html.intro-full .vehicle-arrive{animation:driveIn 2600ms linear both}
+html.intro-full .veh-wake{animation:wake 2600ms ease both}
+html.intro-full .streak{animation:streakPulse 2600ms ease both}
+html.intro-full .comet{animation:cometPulse 2600ms ease both}
+html.intro-full .stage-card::before{animation:landBloom 2600ms ease both}
+html.intro-full .amb-sweep{animation:ambSweep 2600ms linear both}
+html.intro-full .s1{animation-delay:40ms}
+html.intro-full .s2{animation-delay:0ms}
+html.intro-full .s3{animation-delay:90ms}
+html.intro-full .s4{animation-delay:30ms}
+html.intro-full .s5{animation-delay:70ms}
+html.intro-full .eyebrow{animation:heroRise 700ms ease both 150ms}
+html.intro-full .hero-title{animation:heroRise 850ms cubic-bezier(.2,.7,.2,1) both 320ms}
+html.intro-full .hero-sub{animation:heroRise 850ms ease both 520ms}
+html.intro-full .hero-actions{animation:heroRise 850ms ease both 700ms}
+html.intro-full .hero-trust{animation:heroRise 850ms ease both 860ms}
+
+/* ── QUICK settle (returning within the session) ── */
+html.intro-quick .vehicle-arrive{animation:driveQuick 1000ms cubic-bezier(.2,.7,.2,1) both}
+html.intro-quick .hero-title{animation:heroRise 520ms ease both 40ms}
+html.intro-quick .hero-sub{animation:heroRise 520ms ease both 120ms}
+
+@keyframes driveIn{
+  0%{transform:translateX(120%) translateY(-1.5%) scale(.78) rotate(3.2deg);filter:blur(12px) brightness(1.12);opacity:0}
+  10%{opacity:1}
+  40%{transform:translateX(46%) translateY(1.6%) scale(.92) rotate(1.5deg);filter:blur(4px) brightness(1.05)}
+  70%{transform:translateX(9%) translateY(-1.2%) scale(1.015) rotate(-.5deg);filter:blur(.4px) brightness(1)}
+  100%{transform:translateX(0) translateY(0) scale(1) rotate(0);filter:blur(0)}
+}
+@keyframes driveQuick{
+  0%{transform:translateX(22%) scale(.96);filter:blur(4px);opacity:0}
+  100%{transform:translateX(0) scale(1);filter:blur(0);opacity:1}
+}
+@keyframes wake{0%{opacity:0}12%{opacity:1}66%{opacity:.9}100%{opacity:0}}
+@keyframes streakPulse{
+  0%{transform:scaleX(.14);opacity:.25}
+  26%{transform:scaleX(1);opacity:1}
+  70%{transform:scaleX(.96);opacity:.7}
+  100%{transform:scaleX(.8);opacity:.4}
+}
+@keyframes cometPulse{0%{opacity:0}22%{opacity:.9}70%{opacity:.6}100%{opacity:0}}
+@keyframes ambSweep{
+  0%{opacity:0;transform:translateX(46%) scale(.88)}
+  12%{opacity:.85}
+  70%{opacity:.5}
+  100%{opacity:0;transform:translateX(-14%) scale(1.12)}
+}
+@keyframes landBloom{
+  0%{opacity:0;transform:translateX(-50%) scale(.5)}
+  50%{opacity:.5}
+  78%{opacity:1;transform:translateX(-50%) scale(1.3)}
+  100%{opacity:.55;transform:translateX(-50%) scale(1)}
+}
+@keyframes heroRise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* the global reduced-motion rule already disables all of the above;
+   this keeps the wake invisible if a class lingers without animation */
+@media (prefers-reduced-motion: reduce){
+  .veh-wake{opacity:0!important}
+}

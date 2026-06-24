@@ -4,6 +4,16 @@ import "./globals.css";
 import AmbientLight from "@/components/AmbientLight";
 import MarkField from "@/components/MarkField";
 import MotionFx from "@/components/MotionFx";
+import HeroIntro from "@/components/HeroIntro";
+
+// Gate the cinematic entrance before first paint (no flash, no-JS safe).
+// Full sequence on first visit per session, a quick settle afterwards,
+// and nothing at all for reduced-motion visitors.
+const INTRO_GATE = `(function(){try{var d=document.documentElement;
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+var s=sessionStorage.getItem('miame_intro');
+d.classList.add('intro-go',s?'intro-quick':'intro-full');
+sessionStorage.setItem('miame_intro','1');}catch(e){}})();`;
 
 const heebo = Heebo({
   subsets: ["hebrew", "latin"],
@@ -146,10 +156,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="he" dir="rtl" className={heebo.variable}>
       <body>
+        <script dangerouslySetInnerHTML={{ __html: INTRO_GATE }} />
         <AmbientLight />
         <MarkField />
         {children}
         <MotionFx />
+        <HeroIntro />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}

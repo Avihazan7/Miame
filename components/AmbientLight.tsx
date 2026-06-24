@@ -88,6 +88,7 @@ export default function AmbientLight() {
       <span className="amb-blob amb-2" />
       <span className="amb-blob amb-3" />
       <span className="amb-spotlight" />
+      <span className="amb-sweep" />
       <span className="amb-grain" />
     </div>
   );
