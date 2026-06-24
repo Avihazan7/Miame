@@ -15,10 +15,12 @@ BrainEvent → ULTRA (ניתוב דטרמיניסטי)        ultra.ts
                ↓ (משתמשים ב-)
             MAX workers (Haiku)                max.ts       — leadScorer · intentRouter
                ↓ (כולם מבוססים על)
-            RAG knowledge (pgvector)           knowledge.ts — כל עובדה נושאת source
+            RAG knowledge (pgvector)           knowledge.ts — vector-first (cosine) → keyword fallback
+               ↑ embeddings                    embeddings.ts — Voyage (1024-d), gated
                ↓ (הכל נבדק ע"י)
             GUARDIAN (דטרמיניסטי, ללא LLM)      guardian.ts  — grounding · consent · PII · audit
-```
+
+מנוע ביקוש:  Lead → score ∥ segment (Max) → nurture מבוסס-מקור (Master) → Guardian   pipeline.ts
 
 ## עקרונות המתודולוגיה (מה ייחודי)
 1. **U.M.M** — מנצח דק ודטרמיניסטי (Ultra) מעל מומחים יקרים (Master) מעל פועלים מהירים (Max). סולם המודלים: `config.ts`.
@@ -36,7 +38,9 @@ BrainEvent → ULTRA (ניתוב דטרמיניסטי)        ultra.ts
 | `ultra.ts` | אורקסטרטור — טבלת ניתוב אירוע→Masters |
 | `masters.ts` | מומחי Sonnet מבוססי-RAG |
 | `max.ts` | פועלי Haiku (ניקוד ליד, ניתוב כוונה) |
-| `knowledge.ts` | ממשק RAG + seed corpus (להחלפה ב-pgvector) |
+| `knowledge.ts` | RAG על pgvector — `retrieve` vector-first (RPC `match_knowledge`) → keyword fallback |
+| `embeddings.ts` | ספק embeddings (Voyage, 1024-d) — gated על `VOYAGE_API_KEY` |
+| `pipeline.ts` | מנוע הביקוש — `processLead`: score ∥ segment → nurture מבוסס-מקור → Guardian |
 | `guardian.ts` | guardrails דטרמיניסטיים + audit |
 | `evals.ts` | שלד eval suite |
 | `index.ts` | `runBrain(event, now)` — הצנרת המלאה |
@@ -49,14 +53,23 @@ const result = await runBrain(
   new Date().toISOString()
 );
 ```
-**משתני סביבה:** `ANTHROPIC_API_KEY` (חובה להרצה) · `BRAIN_MODEL_ULTRA/MASTER/MAX` (אופציונלי).
-ללא מפתח — `brainReady=false` וכל קריאת מודל זורקת שגיאה ברורה (לא רץ ב-build).
+**משתני סביבה:**
+- `ANTHROPIC_API_KEY` — חובה להרצת המודלים (Max/Master). ללא מפתח: `brainReady=false`, וכל קריאת מודל זורקת שגיאה ברורה (לא רץ ב-build).
+- `BRAIN_MODEL_ULTRA/MASTER/MAX` — אופציונלי, דריסת סולם המודלים.
+- `VOYAGE_API_KEY` — אופציונלי, **מפעיל את חיפוש הווקטור** (cosine). ללא מפתח: `retrieve` נופל אוטומטית ל-keyword (מדויק בגודל הקורפוס הנוכחי).
+- `BRAIN_EMBED_MODEL` — אופציונלי (ברירת מחדל `voyage-3.5`, 1024-d).
+- `SUPABASE_SERVICE_ROLE_KEY` — נדרש **רק** ל-backfill של ה-embeddings (כתיבה). anon יכול רק לקרוא.
 
-## אינטגרציה ל-MiaMe (כשתחליטו)
-- **API route**: `app/api/brain/route.ts` שקורא ל-`runBrain` (server). *לא נוצר עדיין — בכוונה, לא לגעת באתר.*
-- **n8n**: צומת function שקורא ל-`runBrain` (תואם Demand/Outbound engines של ULease).
-- **RAG אמיתי**: החלף את `retrieve` ב-`knowledge.ts` בשאילתת pgvector על קורפוס MiaMe.
+## אינטגרציה ל-MiaMe (פעיל)
+- **`POST /api/brain`** → `runBrain` (הצ'אט "שאל את MiaMe" קורא לזה).
+- **`POST /api/lead`** → `processLead` (מנוע הביקוש: score · segment · nurture). gated על `ANTHROPIC_API_KEY`.
+- **`POST /api/embed`** → backfill embeddings (gated על `VOYAGE_API_KEY` + `SUPABASE_SERVICE_ROLE_KEY`). `GET` מחזיר כמה שורות עדיין חסרות embedding.
+- **n8n**: צומת function שקורא ל-`runBrain`/`processLead` (תואם Demand/Outbound engines של ULease).
+
+## נתיב הווקטור (RAG cosine)
+הטבלה `public.knowledge` (pgvector, `embedding vector(1024)`), אינדקס ivfflat וה-RPC `match_knowledge` — **כבר קיימים** ומאוכלסים ב-30 עובדות.
+חסר רק backfill של עמודת ה-embedding: הוסף `VOYAGE_API_KEY` + `SUPABASE_SERVICE_ROLE_KEY` והרץ `POST /api/embed` (פעם אחת). מאותו רגע `retrieve` הוא vector-first; עד אז — keyword (זהה איכותית ב-30 עובדות).
 
 ## סטטוס
-שלד מאומת (TypeScript תקין, מנותק מהאתר). חי: Ultra routing · Guardian gates · seed-RAG · client.
-Stub/לפיתוח: pgvector אמיתי · ה-API route · הרחבת ה-Masters/Max · eval runner מלא.
+מאומת (TypeScript תקין, מנותק מהאתר). **חי:** Ultra routing · Masters (כולל concierge) · Max · Guardian · RAG keyword על קורפוס חי (30 עובדות) · `runBrain` · `processLead` · 3 ה-API routes.
+**מוכן-להפעלה (env אחד):** חיפוש וקטור (`VOYAGE_API_KEY` → `POST /api/embed`).

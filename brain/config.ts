@@ -28,3 +28,18 @@ export const SUPABASE_URL =
 export const SUPABASE_ANON_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoaHlmd29leWJrcHR4dmJwY21nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MDc5OTIsImV4cCI6MjA5NzI4Mzk5Mn0.Yb_FnyXGPEfTlnj6FhoxAZRw0T2pGyT_N4cUM37VsaA";
+
+// Embeddings provider — the RAG *vector* path (cosine over pgvector). Voyage AI's
+// voyage-3.x family returns 1024-dim vectors, matching the `embedding vector(1024)`
+// column and the `match_knowledge` RPC. Kept separate from ANTHROPIC_API_KEY on
+// purpose: Anthropic has no embeddings endpoint. GATED — with no key, retrieval
+// degrades to keyword search (accurate at the current corpus size), so the brain
+// never hard-fails. Backfill writes need the service-role key (server-only).
+export const VOYAGE_API_KEY = process.env.VOYAGE_API_KEY || "";
+export const VOYAGE_BASE = process.env.VOYAGE_BASE_URL || "https://api.voyageai.com";
+export const EMBED_MODEL = process.env.BRAIN_EMBED_MODEL || "voyage-3.5";
+export const EMBED_DIM = 1024;
+export const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+
+/** True only when an embeddings key is present — guards the vector retrieval path. */
+export const embeddingsReady: boolean = Boolean(VOYAGE_API_KEY);
