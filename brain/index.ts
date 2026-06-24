@@ -1,0 +1,47 @@
+// brain/index.ts — runBrain(): the U.M.M pipeline entry point.
+//
+//   Guardian.preCheck → Ultra.route → Master(s) run (grounded) → Guardian.postCheck → audit
+//
+// Returns a fully-traced BrainResult. SERVER-SIDE: call from a Next.js API route, an
+// n8n function node, or a worker. Nothing here is imported by the MiaMe site, so it
+// can never affect the public bundle or build output.
+//
+// `now` (ISO timestamp) is injected by the caller so this module stays pure/testable.
+import { preCheck, postCheck, audit } from "./guardian";
+import { route } from "./ultra";
+import { runMaster } from "./masters";
+import type { BrainEvent, BrainResult, AgentResult, AuditEntry, GuardianVerdict } from "./types";
+
+export async function runBrain(event: BrainEvent, now: string): Promise<BrainResult> {
+  const auditLog: AuditEntry[] = [];
+  auditLog.push(audit("ultra", `received:${event.type}`, now, { source: event.source }));
+
+  const pre = preCheck(event);
+  if (!pre.allowed) {
+    auditLog.push(audit("guardian", "blocked:pre", now, { reasons: pre.reasons }));
+    return { event, routed: [], results: [], verdict: pre, audit: auditLog };
+  }
+
+  const masters = route(event.type);
+  auditLog.push(audit("ultra", "routed", now, { masters }));
+
+  const input =
+    typeof event.payload["message"] === "string"
+      ? (event.payload["message"] as string)
+      : JSON.stringify(event.payload);
+
+  const results: AgentResult[] = [];
+  for (const m of masters) {
+    const r = await runMaster(m, input);
+    const post = postCheck(typeof r.output === "string" ? r.output : "", {
+      groundedFacts: r.grounded
+    });
+    auditLog.push(audit(m, post.allowed ? "ok" : "blocked:post", now, { reasons: post.reasons }));
+    results.push({ ...r, notes: [r.notes, ...post.reasons].filter(Boolean).join(" | ") });
+  }
+
+  const verdict: GuardianVerdict = { allowed: true, reasons: [] };
+  return { event, routed: masters, results, verdict, audit: auditLog };
+}
+
+export type { BrainEvent, BrainResult } from "./types";
