@@ -216,6 +216,28 @@ svg{display:block}
 .partner-cta{margin-top:22px}
 
 /* footer */
+/* importer band */
+.importer-band{background:linear-gradient(135deg,#0a9aab,#0a6fe0);color:#fff;padding:34px 0;border-top:1px solid rgba(255,255,255,.35)}
+.importer-inner{display:flex;flex-wrap:wrap;gap:26px;align-items:center;justify-content:space-between}
+.importer-info{min-width:260px}
+.importer-kicker{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.92)}
+.importer-name{font-size:24px;font-weight:900;margin:6px 0 2px;letter-spacing:-.3px;color:#fff}
+.importer-sub{font-size:15px;font-weight:700;color:#eafffe}
+.importer-meta{font-size:14px;margin-top:9px;color:rgba(255,255,255,.96)}
+.importer-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
+.imp-btn{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);color:#fff;font-weight:700;font-size:14px;border-radius:999px;padding:9px 16px;transition:background .18s,color .18s}
+.imp-btn:hover{background:#fff;color:var(--azure-deep)}
+.importer-social{display:flex;gap:16px;margin-top:14px}
+.imp-soc{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:700;color:#fff;opacity:.95}
+.imp-soc:hover{opacity:1;text-decoration:underline}
+.importer-brand{display:flex;flex-direction:column;align-items:center;gap:11px}
+.imp-logo-tile{background:#000;border-radius:16px;padding:16px 26px;box-shadow:0 14px 32px rgba(4,12,22,.32);display:flex}
+.imp-logo-tile img{height:50px;width:auto;display:block}
+.imp-global{font-size:13px;font-weight:800;color:#fff;letter-spacing:.2px}
+.imp-global:hover{text-decoration:underline}
+@media(max-width:640px){.importer-inner{flex-direction:column;text-align:center;align-items:center}.importer-actions,.importer-social{justify-content:center}}
+/* hero brand watermark */
+.stage-watermark{position:absolute;inset-inline-end:20px;top:18px;height:30px;width:auto;opacity:.22;mix-blend-mode:multiply;pointer-events:none;z-index:1}
 .site-footer{background:#fff;border-top:1px solid var(--line);padding:40px 0 34px;text-align:center}
 .foot-logo{font-weight:800;font-size:24px;letter-spacing:-.5px}
 .foot-logo .dot{color:var(--azure)}
