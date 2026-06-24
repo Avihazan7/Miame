@@ -1,17 +1,25 @@
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import WaIcon from "./WaIcon";
+import MiaMark from "./MiaMark";
 
 export default function Header() {
   const waUrl = buildWhatsAppUrl("היי MiaMe, אשמח לפרטים על הדגמים 🙂");
   return (
-    <header className="site-header">
+    <header className="site-header" id="top">
       <div className="wrap nav">
-        <div className="brand">
-          <span className="logo">
-            Mia<span className="dot">Me</span>
+        <a className="brand" href="#" aria-label="MiaMe · Free Feel">
+          <span className="brand-mark">
+            <MiaMark size={38} title="MiaMe" />
           </span>
-          <span className="brand-tag">Free Feel</span>
-        </div>
+          <span className="brand-text">
+            <span className="logo">
+              Mia<span className="dot">Me</span>
+            </span>
+            <span className="brand-tag">
+              <span aria-hidden="true">🗽</span> Free&nbsp;Feel
+            </span>
+          </span>
+        </a>
         <nav className="nav-cta">
           <a href="#features" className="nav-link hide-m">יכולות</a>
           <a href="#models" className="nav-link hide-m">דגמים</a>

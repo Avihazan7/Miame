@@ -20,7 +20,7 @@ export default function Hero() {
         <h1 className="hero-title">
           החופש שלך
           <br />
-          על ארבעה גלגלים
+          <span className="tg">על ארבעה גלגלים</span>
         </h1>
         <p className="hero-sub">
           ניידות חשמלית פרימיום במחיר חכם. <span className="strong">הצעת תשלום מותאמת תוך דקה</span>, ישירות לוואטסאפ.
@@ -48,6 +48,8 @@ export default function Hero() {
               width={760}
               height={760}
               className="vehicle floaty"
+              sizes="(max-width: 780px) 90vw, 560px"
+              quality={92}
               priority
             />
           </div>
