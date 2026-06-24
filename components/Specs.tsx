@@ -11,7 +11,7 @@ export default function Specs() {
         </div>
         <div className="specs-wrap">
           <div className="specs-media">
-            <img src="/miame-cockpit.webp" alt="תא נהג מיה פור · בקרה מלאה" />
+            <img src="/mia-four-teal-cockpit.png" alt="תא נהג מיה פור · בקרה מלאה" />
           </div>
           <div className="specs-table">
             <div className="spec-row">
