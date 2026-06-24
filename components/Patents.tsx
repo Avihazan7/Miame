@@ -9,6 +9,18 @@ export default function Patents() {
             פלטפורמת המזעור של MIA Dynamics שומרת על יציבות של 4 גלגלים בכלי קומפקטי, ומחוללת מהפכה במיקרו־ניידות. מוגנת בפטנטים רשומים בארה"ב ובישראל · חדשנות אמיתית, לא חיקוי.
           </p>
         </div>
+
+        <div className="patent-showcase">
+          <div className="ps-kicker">
+            <span className="k">פטנטים ייחודיים · MIA</span>
+          </div>
+          <img
+            src="/mia-platform.jpg"
+            alt="פלטפורמת MIA Dynamics · טכנולוגיית ארבעה גלגלים ממוזערת מוגנת פטנט"
+            loading="lazy"
+          />
+        </div>
+
         <div className="patents-grid">
           <div className="patent">
             <div className="patent-flag">🇺🇸</div>

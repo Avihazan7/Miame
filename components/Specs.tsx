@@ -10,8 +10,8 @@ export default function Specs() {
           </p>
         </div>
         <div className="specs-wrap">
-          <div className="specs-media">
-            <img className="floaty" src="/miame-cockpit.webp" alt="תא נהג מיה פור · בקרה מלאה" />
+          <div className="specs-media specs-media--product">
+            <img className="floaty" src="/mia-white.webp" alt="מיה פור X4 · הכלי המלא" />
           </div>
           <div className="specs-table">
             <div className="spec-row">
