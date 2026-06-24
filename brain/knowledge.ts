@@ -1,9 +1,11 @@
 // brain/knowledge.ts — RAG knowledge layer (ULEASE_SPEC §7.1).
 //
-// The corpus (specs, battery docs, maintenance SLAs, regulation, happy-path stories)
-// belongs in pgvector and is fed by events — NOT fine-tuned (D-022: RAG over
-// retraining). This is the interface plus a seed corpus so the brain answers
-// grounded questions on day one. Swap `retrieve` for a real vector query later.
+// Backed by the live Supabase `public.knowledge` table (pgvector-ready). Today it does
+// keyword retrieval over the corpus (Hebrew-safe). When an embeddings provider is
+// wired, switch `retrieve` to the `match_knowledge` RPC (vector cosine) — the table,
+// the ivfflat index and the RPC already exist. Server-side; reads the public
+// anon-SELECT corpus, so no secret is needed.  (D-022: RAG over fine-tuning.)
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./config";
 
 export interface KnowledgeDoc {
   id: string;
@@ -12,20 +14,38 @@ export interface KnowledgeDoc {
   score?: number;
 }
 
-const SEED: KnowledgeDoc[] = [
-  { id: "spec-range", source: "MiaMe/Specs", text: 'טווח שימוש ריאלי עד 100 ק"מ; נתון יצרן עד 120 ק"מ.' },
-  { id: "spec-motor", source: "MiaMe/Specs", text: "2 או 4 מנועים, 1,800W כל אחד; סוללת ליתיום נשלפת 60V 25/35Ah." },
-  { id: "price-4x2", source: "MiaMe/Models", text: "מיה פור 4×2 — מחיר MiaMe החל מ-19,900 ₪." },
-  { id: "rental", source: "MiaMe/Hub", text: "השכרה החל מ-50 ₪ לשעה; שותף משלם 13% Success Fee מהפניות בלבד." }
+// Offline fallback so the brain never hard-fails if the DB is unreachable.
+const FALLBACK: KnowledgeDoc[] = [
+  { id: "spec-range", source: "MiaMe/Specs", text: 'טווח ריאלי עד 100 ק"מ; יצרן עד 120 ק"מ.' },
+  { id: "price-4x2", source: "MiaMe/Models", text: 'מיה פור 4x2 — החל מ-19,900 ש"ח.' }
 ];
 
+async function fetchCorpus(): Promise<KnowledgeDoc[]> {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/knowledge?select=id,source,body`, {
+      headers: { apikey: SUPABASE_ANON_KEY, authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+      cache: "no-store"
+    });
+    if (!res.ok) return FALLBACK;
+    const rows = (await res.json()) as Array<{ id: string; source: string; body: string }>;
+    return rows.length
+      ? rows.map((r) => ({ id: r.id, source: r.source, text: r.body }))
+      : FALLBACK;
+  } catch {
+    return FALLBACK;
+  }
+}
+
 export async function retrieve(query: string, k = 4): Promise<KnowledgeDoc[]> {
-  // TODO: replace with pgvector cosine search. Until then, naive keyword overlap
-  // over the seed corpus keeps the grounding contract real rather than faked.
-  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-  const scored = SEED.map((d) => {
+  const corpus = await fetchCorpus();
+  const words = query.toLowerCase().split(/\s+/).filter((w) => w.length > 1);
+  const scored = corpus.map((d) => {
     const hay = d.text.toLowerCase();
     return { ...d, score: words.filter((w) => hay.includes(w)).length };
   });
-  return scored.sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, k);
+  const hits = scored
+    .filter((d) => (d.score || 0) > 0)
+    .sort((a, b) => (b.score || 0) - (a.score || 0));
+  // If nothing matched, still return a few rows so the Master has grounded context.
+  return (hits.length ? hits : scored).slice(0, k);
 }
