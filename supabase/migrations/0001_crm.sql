@@ -1,9 +1,18 @@
--- MiaMe.co.il · Supabase schema
--- Run this once in the Supabase project: SQL Editor > New query > Run.
--- Architecture is client-side (anon key), so anon may INSERT only. Reading is
--- restricted to the project owner via the dashboard / service role.
+-- MiaMe.co.il · CRM schema (leads / partners / events)
+--
+-- This migration is EQUIVALENT to ../schema.sql (the canonical copy run via the
+-- Supabase SQL Editor per docs/RUNBOOK.md). Either one provisions the full CRM.
+--
+-- Architecture (per product audit): the storefront writes directly from the
+-- browser using the public anon key, so anon may INSERT ONLY — no SELECT/UPDATE/
+-- DELETE. The service_role key is NEVER shipped to the browser. Reads happen in
+-- the Supabase dashboard (owner) only.
+--
+-- NOTE: this supersedes the earlier service_role-only `/api/lead` draft. That
+-- server-side route was never implemented; the live app uses the client-side
+-- anon design above. To switch to a server-side design later, add an /api route
+-- with the service_role key and replace the anon INSERT policies with none.
 
--- gen_random_uuid() is available natively on Supabase (Postgres 13+).
 create extension if not exists pgcrypto;
 
 -- ============ leads ============
@@ -48,9 +57,8 @@ alter table public.leads    enable row level security;
 alter table public.partners enable row level security;
 alter table public.events   enable row level security;
 
--- Allow anonymous (anon) INSERT only. No SELECT policy => public cannot read.
--- WITH CHECK uses bounded input (not `true`) as defense-in-depth: legitimate
--- leads pass, oversized/empty abuse is rejected, and the public has zero read access.
+-- Anon INSERT only, with bounded input (defense-in-depth; not `with check (true)`).
+-- No SELECT policy => the public cannot read any row.
 drop policy if exists "anon insert leads" on public.leads;
 create policy "anon insert leads"
   on public.leads for insert to anon
@@ -85,18 +93,3 @@ create policy "anon insert events"
 create index if not exists leads_created_idx    on public.leads (created_at desc);
 create index if not exists partners_created_idx on public.partners (created_at desc);
 create index if not exists events_name_idx      on public.events (event_name, created_at desc);
-
--- ============ Optional / future (not used by the MVP) ============
--- A static catalog and a per-simulation log can be added later:
---
--- create table if not exists public.models (
---   id uuid primary key default gen_random_uuid(),
---   slug text unique, name text, base_price numeric, active boolean default true
--- );
---
--- create table if not exists public.simulations (
---   id uuid primary key default gen_random_uuid(),
---   created_at timestamptz default now(),
---   model_name text, customer_type text, down_payment numeric,
---   balloon numeric, months int, monthly_payment numeric
--- );
