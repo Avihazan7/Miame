@@ -49,10 +49,10 @@ export default function Features() {
 
         <div className="feat-show">
           <div className="feat-show-main">
-            <Image src="/mia-four-teal-side.png" alt="MiaMe Four · פרופיל תכלת" width={560} height={560} priority />
+            <Image src="/mia-four-black-side.webp" alt="MIA FOUR X4 · פרופיל" width={560} height={560} priority className="floaty" />
           </div>
           <div className="feat-show-detail">
-            <Image src="/mia-four-teal-wheel.png" alt="צמיג שטח MiaMe Four" width={300} height={300} />
+            <Image src="/mia-four-wheel.webp" alt="צמיג שטח MIA FOUR" width={300} height={300} />
             <span className="feat-show-cap">צמיגי שטח · גלגלי סגסוגת</span>
           </div>
         </div>
