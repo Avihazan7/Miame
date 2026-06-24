@@ -223,7 +223,9 @@ svg{display:block}
 .mp-p{font-size:12px;color:var(--slate)}
 
 /* sim result */
-.sim-result{background:linear-gradient(165deg,#0b2450,#0e3a7a);color:#fff;padding:30px;display:flex;flex-direction:column}
+.sim-result{background:linear-gradient(165deg,#0b2450,#0e3a7a);color:#fff;padding:30px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.res-product{position:absolute;inset-inline-end:-3%;top:7%;width:52%;max-width:290px;height:auto;opacity:.5;pointer-events:none;z-index:0;filter:drop-shadow(0 14px 28px rgba(0,0,0,.4))}
+.sim-result>*:not(.res-product){position:relative;z-index:1}
 @media(max-width:520px){.sim-result{padding:24px 18px}}
 .res-eyebrow{font-size:13.5px;color:#9fc2ff;font-weight:600}
 .res-model{font-size:16px;font-weight:600;color:#cfe0ff;margin-top:3px}
