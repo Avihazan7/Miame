@@ -42,16 +42,29 @@ export default function Hero() {
             <div className="stage-grid" />
             <img className="stage-watermark" src="/mia-four-logo.png" alt="" aria-hidden="true" />
             <span className="stage-label">MiaMe · Electric</span>
-            <Image
-              src="/mia-four.webp"
-              alt="MiaMe Four"
-              width={760}
-              height={760}
-              className="vehicle floaty"
-              sizes="(max-width: 780px) 90vw, 560px"
-              quality={92}
-              priority
-            />
+
+            <div className="vehicle-arrive">
+              {/* cinematic wake — light trail in the adaptive ambient hue,
+                  rides with the vehicle so it is never occluded */}
+              <span className="veh-wake" aria-hidden="true">
+                <span className="streak s1" />
+                <span className="streak s2" />
+                <span className="streak s3" />
+                <span className="streak s4" />
+                <span className="streak s5" />
+                <span className="comet" />
+              </span>
+              <Image
+                src="/mia-four.webp"
+                alt="MiaMe Four"
+                width={760}
+                height={760}
+                className="vehicle floaty"
+                sizes="(max-width: 780px) 90vw, 560px"
+                quality={92}
+                priority
+              />
+            </div>
           </div>
         </div>
       </div>
