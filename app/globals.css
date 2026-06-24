@@ -956,3 +956,41 @@ html.intro-quick .hero-sub{animation:heroRise 520ms ease both 120ms}
   .patents-tag::before,.patents-tag::after,.res-monthly::before,.res-monthly::after,
   .deliver-banner::after{animation:none!important;opacity:.7}
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Smartphone & in-app browser tuning (WhatsApp/Instagram webview · iOS/Android)
+   ════════════════════════════════════════════════════════════════════ */
+
+/* belt-and-suspenders against any horizontal scroll on phones */
+html{overflow-x:clip}
+
+/* crisp taps: kill the grey flash, remove tap delay, keep our :active feedback */
+*{-webkit-tap-highlight-color:transparent}
+a,button,.btn,.tab,.mp,input,.dealer-btn,.imp-btn{touch-action:manipulation}
+
+@media (max-width:760px){
+  /* lighter ambient — cheaper blur & fewer GPU layers on phones */
+  .amb-blob{filter:blur(46px)}
+  .amb-1{width:74vw;height:74vw}
+  .amb-2{width:68vw;height:68vw}
+  .amb-3{display:none}
+  /* thin out the drifting marks (paint cost) */
+  .fm-7,.fm-9,.fm-10,.fm-11,.fm-12{display:none}
+  /* drop the infinite hero sheen loop on phones (battery) */
+  .stage-card::after{display:none}
+  /* lighter cinematic blur so the entrance stays buttery on mid/low-end phones */
+  html.intro-full .vehicle-arrive{animation-name:driveInM}
+  /* comfortable tap targets in the nav */
+  .nav-link{padding:10px 8px}
+}
+
+@keyframes driveInM{
+  0%{transform:translateX(118%) scale(.82) rotate(2.6deg);filter:blur(5px);opacity:0}
+  12%{opacity:1}
+  60%{transform:translateX(8%) scale(1.01) rotate(-.4deg);filter:blur(0)}
+  100%{transform:translateX(0) scale(1) rotate(0);filter:blur(0)}
+}
+
+/* honour the iPhone home-indicator / notch (viewport-fit: cover) */
+.site-header{padding-top:env(safe-area-inset-top)}
+.wa-float{bottom:calc(20px + env(safe-area-inset-bottom));left:calc(20px + env(safe-area-inset-left))}
