@@ -415,6 +415,45 @@ svg{display:block}
 .soon-tile{background:#fff;border-radius:14px;padding:8px;display:flex;box-shadow:0 14px 28px rgba(0,0,0,.22)}
 .soon-tile.main{grid-column:1 / -1}
 .soon-tile img{width:100%;height:auto;border-radius:8px;display:block}
+/* ask — 3D chat */
+.ask-sec{background:#fff}
+.chat3d{max-width:640px;margin:0 auto;border-radius:24px;overflow:hidden;
+  background:linear-gradient(180deg,#ffffff,#eef5fc);border:1px solid rgba(10,132,255,.16);
+  box-shadow:inset 0 1px 0 #fff,0 2px 0 #dbe7f6,0 26px 60px rgba(11,30,80,.16),var(--glow)}
+.chat3d-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;color:#fff;
+  background:linear-gradient(135deg,#0b2450,#0e3a7a);box-shadow:inset 0 -1px 0 rgba(255,255,255,.08)}
+.chat3d-mark{display:inline-flex;color:var(--cyan);filter:drop-shadow(0 3px 9px rgba(12,229,221,.55))}
+.chat3d-title{font-weight:800;font-size:15px;letter-spacing:-.2px}
+.chat3d-live{margin-inline-start:auto;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:#bfe4ff}
+.chat3d-live i{width:7px;height:7px;border-radius:50%;background:#39e0a8;box-shadow:0 0 8px rgba(57,224,168,.85)}
+.chat3d-body{padding:18px;min-height:240px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.bub{max-width:84%;padding:12px 15px;border-radius:18px;font-size:15px;line-height:1.6;white-space:pre-wrap}
+.bub.bot{align-self:flex-start;background:#fff;border:1px solid var(--line);border-inline-start:3px solid var(--cyan);
+  box-shadow:0 8px 20px rgba(11,20,40,.07);color:var(--ink)}
+.bub.user{align-self:flex-end;color:#fff;background:linear-gradient(180deg,#41a4ff,#0a84ff);box-shadow:0 10px 22px rgba(10,132,255,.32)}
+.bub-src{margin-top:6px;font-size:11px;font-weight:600;color:var(--slate);opacity:.85}
+.typing{display:flex;gap:5px;padding:3px 2px}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--azure);opacity:.45;animation:typing 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.18s}
+.typing span:nth-child(3){animation-delay:.36s}
+@keyframes typing{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.chat3d-chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 18px 4px}
+.chat3d-chip{font-size:13px;font-weight:600;color:var(--azure-deep);background:var(--tint);
+  border:1px solid rgba(10,132,255,.2);border-radius:999px;padding:8px 13px;transition:background .16s,transform .16s}
+.chat3d-chip:hover:not(:disabled){background:#fff;transform:translateY(-1px)}
+.chat3d-chip:disabled{opacity:.5;cursor:default}
+.chat3d-input{display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--line);background:rgba(255,255,255,.7)}
+.chat3d-input input{flex:1;border:1px solid var(--line);border-radius:999px;padding:13px 18px;font-size:15px;font-family:inherit;background:#fff;outline:none}
+.chat3d-input input:focus{border-color:rgba(10,132,255,.5);box-shadow:0 0 0 4px rgba(10,132,255,.12)}
+.chat3d-send{width:46px;height:46px;flex:0 0 46px;border-radius:50%;color:#fff;font-size:20px;font-weight:800;border:none;cursor:pointer;
+  background:linear-gradient(180deg,#41a4ff,#0a84ff 55%,#0061cf);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 0 #0257b4,0 10px 20px rgba(10,132,255,.4);transition:transform .15s,box-shadow .2s}
+.chat3d-send:hover:not(:disabled){transform:translateY(-2px)}
+.chat3d-send:disabled{opacity:.5;cursor:default}
+.chat3d-wa{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;font-size:13px;font-weight:600;
+  color:var(--slate);background:rgba(255,255,255,.5);border-top:1px solid var(--line)}
+.chat3d-wa:hover{color:#1eb858}
+.chat3d-wa svg{color:#25d366}
 .soon-txt{flex:1}
 @media(min-width:780px){.soon-card{flex-direction:row-reverse;text-align:right;padding:42px;gap:36px}.soon-sub{margin:0}}
 

@@ -6,9 +6,10 @@
 // thin, rule-based conductor over expensive specialists.
 import type { BrainEventType } from "./types";
 
-export type MasterName = "match" | "deal" | "content" | "support";
+export type MasterName = "match" | "deal" | "content" | "support" | "concierge";
 
 const ROUTES: Record<BrainEventType, MasterName[]> = {
+  question: ["concierge"],
   lead_inbound: ["match", "deal"],
   simulator_quote: ["deal"],
   partner_inquiry: ["match", "deal"],
