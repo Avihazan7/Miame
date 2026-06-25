@@ -389,6 +389,38 @@ svg{display:block}
 .about-text{font-size:16px;line-height:1.8;color:#33405a;max-width:650px;margin-inline:auto}
 .about-text b{color:var(--azure-deep)}
 
+/* About — MIA FOUR premium badge (polish · wax · nano · ambient light) */
+.about-logo{position:relative;width:min(330px,74vw);aspect-ratio:1;margin:22px auto 30px;display:grid;place-items:center}
+.about-logo-halo{position:absolute;inset:-16%;z-index:0;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 50% 44%,
+    hsla(var(--amb-hue-a,188),92%,60%,.45),
+    hsla(var(--amb-hue-b,205),90%,55%,.18) 46%,
+    transparent 70%);
+  filter:blur(10px);animation:haloPulse 6s ease-in-out infinite}
+.about-logo-disc{position:relative;z-index:1;width:100%;height:100%;border-radius:32px;overflow:hidden;
+  display:grid;place-items:center;
+  background:radial-gradient(125% 125% at 50% 0%,#15273f 0%,#0a1424 56%,#05080f 100%);
+  border:1px solid rgba(12,229,221,.30);
+  box-shadow:0 34px 74px rgba(8,16,34,.55),
+    0 0 0 1px rgba(255,255,255,.05) inset,
+    0 0 64px rgba(12,229,221,.20);
+  animation:floaty 6.5s ease-in-out infinite}
+.about-logo-img{position:relative;z-index:2;width:80%;height:auto;
+  filter:drop-shadow(0 10px 26px rgba(12,229,221,.48))}
+/* top gloss highlight — polish */
+.about-logo-disc::after{content:"";position:absolute;left:8%;right:8%;top:4%;height:32%;z-index:3;
+  pointer-events:none;border-radius:50%;
+  background:radial-gradient(120% 100% at 50% 0%,rgba(255,255,255,.24),transparent 70%);filter:blur(2px)}
+/* wax / nano gloss sweep */
+.about-logo-disc::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.18) 48%,rgba(255,255,255,.05) 56%,transparent 64%);
+  transform:translateX(-130%);animation:nanoSheen 5.5s ease-in-out infinite}
+@keyframes haloPulse{0%,100%{opacity:.85;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes nanoSheen{0%{transform:translateX(-130%)}55%,100%{transform:translateX(130%)}}
+@media(prefers-reduced-motion:reduce){
+  .about-logo-disc,.about-logo-halo,.about-logo-disc::before{animation:none}
+}
+
 /* lifestyle */
 .life-grid{display:grid;grid-template-columns:1fr;gap:18px}
 .life-card{position:relative;border-radius:var(--r-lg);overflow:hidden;box-shadow:0 18px 42px rgba(10,40,90,.16);min-height:230px;display:flex;align-items:flex-end;background:linear-gradient(135deg,#0a3164,#114a92)}
