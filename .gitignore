@@ -8,3 +8,7 @@ out
 .vercel
 next-env.d.ts
 *.tsbuildinfo
+
+# Architecture Guardian run artifacts
+arch-guardian-report.json
+arch-guardian-summary.md

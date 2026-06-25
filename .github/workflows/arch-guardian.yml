@@ -1,0 +1,137 @@
+name: Architecture Guardian
+
+# 🛡️ האחראי הישיר 24/7 על תקינות הארכיטקטורה של MiaMe.co.il.
+# רץ ברציפות (cron), בודק 4 תחומים, פותח Issue על drift ומנסה PR-fix.
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # כל 6 שעות — 24/7
+  workflow_dispatch:
+    inputs:
+      domains:
+        description: 'תחומים (code,live,seo,secrets)'
+        default: 'code,live,seo,secrets'
+  push:
+    branches: [main, claude/agent-skills-architecture-kvtgnh]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: arch-guardian
+  cancel-in-progress: false
+
+jobs:
+  guardian:
+    runs-on: ubuntu-latest
+    env:
+      GUARDIAN_DOMAINS: ${{ github.event.inputs.domains || 'code,live,seo,secrets' }}
+      MIAME_SITE: ${{ vars.MIAME_SITE || 'https://miame.co.il' }}
+      LEASING_SITE: ${{ vars.LEASING_SITE || 'https://leasing.co.il' }}
+      # next build דורש משתני NEXT_PUBLIC — placeholders כדי שה-build לא יקרוס על חוסר תצורה
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
+      NEXT_PUBLIC_WHATSAPP_NUMBER: ${{ vars.NEXT_PUBLIC_WHATSAPP_NUMBER || '972500000000' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run Architecture Guardian
+        id: guardian
+        continue-on-error: true
+        run: node scripts/arch-guardian.mjs
+
+      - name: Publish summary
+        if: always()
+        run: cat arch-guardian-summary.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-guardian-report
+          path: |
+            arch-guardian-report.json
+            arch-guardian-summary.md
+          if-no-files-found: warn
+
+      - name: Open / update Issue on drift
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (!fs.existsSync('arch-guardian-report.json')) {
+              core.warning('אין דוח Guardian — הסקריפט קרס לפני שכתב פלט.');
+              return;
+            }
+            const report = JSON.parse(fs.readFileSync('arch-guardian-report.json', 'utf8'));
+            const summary = fs.existsSync('arch-guardian-summary.md')
+              ? fs.readFileSync('arch-guardian-summary.md', 'utf8') : '';
+            const LABEL = 'arch-guardian';
+            const { owner, repo } = context.repo;
+
+            try { await github.rest.issues.getLabel({ owner, repo, name: LABEL }); }
+            catch { await github.rest.issues.createLabel({ owner, repo, name: LABEL, color: 'b60205',
+              description: 'Architecture Guardian — drift בתקינות הארכיטקטורה' }); }
+
+            const open = await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: LABEL, per_page: 5 });
+            const existing = open.data[0];
+
+            if (report.ok) {
+              if (existing) {
+                await github.rest.issues.createComment({ owner, repo, issue_number: existing.number,
+                  body: `✅ ה-Guardian עבר בריצה ${context.runId}. סוגר.\n\n${summary}` });
+                await github.rest.issues.update({ owner, repo, issue_number: existing.number, state: 'closed' });
+              }
+              core.info('Guardian PASS — אין drift.');
+              return;
+            }
+
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const body = `🛡️ **Architecture Guardian — drift זוהה**\n\nריצה: ${runUrl}\n\n${summary}\n\n`
+              + `> נפתח אוטומטית. תיקון: root-cause, אמת, ורק אז commit.`;
+
+            if (existing) {
+              await github.rest.issues.update({ owner, repo, issue_number: existing.number,
+                title: `🛡️ Architecture Guardian — ${report.totals.fail} כשלים`, body });
+            } else {
+              await github.rest.issues.create({ owner, repo, labels: [LABEL],
+                title: `🛡️ Architecture Guardian — ${report.totals.fail} כשלים`, body });
+            }
+
+      - name: Attempt autofix PR (npm audit)
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (!fs.existsSync('arch-guardian-report.json')) return;
+            const report = JSON.parse(fs.readFileSync('arch-guardian-report.json', 'utf8'));
+            const hasAuditFix = report.results.some(r => r.id === 'secrets.audit' && r.status === 'fail');
+            if (!hasAuditFix) { core.info('אין כשל בר-תיקון אוטומטי.'); return; }
+            const { execSync } = require('child_process');
+            const branch = `arch-guardian/autofix-${context.runId}`;
+            try {
+              execSync('npm audit fix --omit=dev', { stdio: 'inherit' });
+              const dirty = execSync('git status --porcelain').toString().trim();
+              if (!dirty) { core.info('npm audit fix לא שינה דבר.'); return; }
+              execSync('git config user.name "arch-guardian[bot]"');
+              execSync('git config user.email "arch-guardian@users.noreply.github.com"');
+              execSync(`git checkout -b ${branch}`);
+              execSync('git add -A');
+              execSync('git commit -m "fix(deps): arch-guardian npm audit autofix"');
+              execSync(`git push origin ${branch}`);
+              const { owner, repo } = context.repo;
+              await github.rest.pulls.create({ owner, repo, head: branch, base: context.ref.replace('refs/heads/', ''),
+                draft: true, title: '🛡️ Guardian autofix: npm audit',
+                body: 'תיקון אוטומטי של חולשות תלויות (`npm audit fix`). לבדיקה ידנית לפני מיזוג.' });
+            } catch (e) { core.warning(`autofix נכשל: ${e.message}`); }
