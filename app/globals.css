@@ -305,6 +305,9 @@ svg{display:block}
 .foot-logo .dot{color:var(--azure)}
 .foot-powered{color:var(--slate);font-size:14px;margin-top:8px}
 .foot-powered b{color:var(--ink)}
+.foot-powered a{color:var(--azure-deep);text-decoration:none}
+.foot-powered a:hover{text-decoration:underline}
+.foot-powered a b{color:var(--azure-deep)}
 .foot-legal{color:var(--slate);font-size:12.5px;margin-top:18px;max-width:640px;margin-inline:auto;line-height:1.6}
 
 /* floating wa */
@@ -333,11 +336,28 @@ svg{display:block}
 .stat-n{font-size:24px;font-weight:900;letter-spacing:-1px;color:var(--azure)}
 .stat-l{font-size:12.5px;color:var(--slate);font-weight:600;margin-top:3px}
 
-/* hero trust row */
-.hero-trust{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px}
-.tchip{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.85);border:1px solid rgba(10,132,255,.18);color:var(--ink);padding:9px 14px;border-radius:999px;font-size:13.5px;font-weight:700;box-shadow:0 10px 25px rgba(11,20,40,.04)}
-.tchip svg{width:16px;height:16px;color:var(--azure)}
+/* hero trust banners ("הכי …") */
+.hero-trust{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:24px}
+.tchip{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#ffffff,#eef6ff);
+  border:1px solid rgba(10,132,255,.22);color:var(--ink);padding:10px 16px;border-radius:999px;
+  font-size:14.5px;font-weight:800;letter-spacing:-.2px;box-shadow:0 10px 26px rgba(11,20,40,.06)}
+.tchip svg{width:18px;height:18px;color:var(--cyan);flex:none}
 .tchip-brand{background:var(--tint);border-color:rgba(10,132,255,.22);color:var(--azure-deep)}
+
+/* hero "Free Feel" highlight banner */
+.free-feel{display:inline-flex;align-items:center;gap:10px;margin:18px auto 0;padding:10px 26px;
+  border-radius:999px;direction:ltr;font-weight:900;font-size:clamp(16px,2.4vw,21px);letter-spacing:4px;
+  text-transform:uppercase;background:var(--grad-teal);color:#fff;
+  box-shadow:0 16px 34px rgba(12,229,221,.34);text-shadow:0 1px 2px rgba(7,40,80,.18)}
+.free-feel span{font-size:1.25em;letter-spacing:0;filter:drop-shadow(0 2px 4px rgba(7,40,80,.25))}
+
+/* hero bullet banners (●) */
+.hero-bullets{list-style:none;margin:22px auto 0;padding:0;max-width:560px;display:grid;gap:10px;text-align:right}
+.hero-bullets li{position:relative;padding:13px 46px 13px 18px;background:rgba(255,255,255,.78);
+  border:1px solid var(--line);border-radius:16px;font-size:15.5px;font-weight:600;color:var(--ink);
+  box-shadow:0 8px 22px rgba(11,20,40,.05)}
+.hero-bullets li::before{content:"";position:absolute;right:20px;top:50%;transform:translateY(-50%);
+  width:9px;height:9px;border-radius:50%;background:var(--grad-teal);box-shadow:0 0 0 4px rgba(12,229,221,.18)}
 
 /* commercial result extras */
 .res-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
@@ -755,9 +775,11 @@ html.intro-full .s4{animation-delay:30ms}
 html.intro-full .s5{animation-delay:70ms}
 html.intro-full .eyebrow{animation:heroRise 700ms ease both 150ms}
 html.intro-full .hero-title{animation:heroRise 850ms cubic-bezier(.2,.7,.2,1) both 320ms}
+html.intro-full .free-feel{animation:heroRise 850ms ease both 440ms}
 html.intro-full .hero-sub{animation:heroRise 850ms ease both 520ms}
 html.intro-full .hero-actions{animation:heroRise 850ms ease both 700ms}
 html.intro-full .hero-trust{animation:heroRise 850ms ease both 860ms}
+html.intro-full .hero-bullets{animation:heroRise 850ms ease both 980ms}
 
 /* ── QUICK settle (returning within the session) ── */
 html.intro-quick .vehicle-arrive{animation:driveQuick 1000ms cubic-bezier(.2,.7,.2,1) both}
