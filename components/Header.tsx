@@ -1,13 +1,25 @@
+"use client";
+
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import WaIcon from "./WaIcon";
 import MiaMark from "./MiaMark";
 
 export default function Header() {
   const waUrl = buildWhatsAppUrl("היי MiaMe, אשמח לפרטים על הדגמים 🙂");
+
+  function toTop(e: React.MouseEvent<HTMLAnchorElement>) {
+    // Always return to the very top — no half-way landing, no #-anchor pull.
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    if (window.location.hash) {
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+  }
+
   return (
     <header className="site-header" id="top">
       <div className="wrap nav">
-        <a className="brand" href="#" aria-label="MiaMe · Free Feel">
+        <a className="brand" href="#top" onClick={toTop} aria-label="MiaMe · Free Feel">
           <span className="brand-mark">
             <MiaMark size={38} title="MiaMe" />
           </span>

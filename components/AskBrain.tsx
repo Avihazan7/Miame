@@ -51,7 +51,11 @@ export default function AskBrain() {
   const endRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    // Keep the latest message in view by scrolling the chat box itself —
+    // never scrollIntoView(), which would drag the whole page down to the
+    // chat on first load and leave visitors mid-page instead of at the top.
+    const box = endRef.current?.closest(".chat3d-body");
+    if (box) box.scrollTop = box.scrollHeight;
   }, [msgs, busy]);
 
   async function ask(q: string) {

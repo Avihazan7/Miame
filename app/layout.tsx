@@ -5,6 +5,7 @@ import AmbientLight from "@/components/AmbientLight";
 import MarkField from "@/components/MarkField";
 import MotionFx from "@/components/MotionFx";
 import HeroIntro from "@/components/HeroIntro";
+import ScrollTop from "@/components/ScrollTop";
 
 // Gate the cinematic entrance before first paint (no flash, no-JS safe).
 // Full sequence on first visit per session, a quick settle afterwards,
@@ -158,6 +159,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="he" dir="rtl" className={heebo.variable}>
       <body>
         <script dangerouslySetInnerHTML={{ __html: INTRO_GATE }} />
+        <ScrollTop />
         <AmbientLight />
         <MarkField />
         {children}

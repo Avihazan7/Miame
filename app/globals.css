@@ -193,7 +193,7 @@ svg{display:block}
 .card-cta{margin-top:14px}
 
 /* simulator */
-.sim-sec{background:#fff;position:relative;overflow:hidden}
+.sim-sec{background:#fff;position:relative;overflow:hidden;padding-bottom:36px}
 .sim-sec::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(70% 60% at 50% -5%,rgba(10,132,255,.08),transparent 70%)}
 .sim-sec .wrap{position:relative;z-index:1}
 .sim{display:grid;grid-template-columns:1.05fr .95fr;border:1px solid var(--line);border-radius:var(--r-lg);
@@ -351,7 +351,11 @@ svg{display:block}
 .sticky-wa{flex:none;width:52px;height:52px;border-radius:14px;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(37,211,102,.3)}
 .sticky-wa svg{color:#fff}
 .sticky-main{flex:1;padding:15px}
-@media(max-width:720px){.sticky-cta{display:flex}.wa-float{display:none}body{padding-bottom:80px}}
+@media(max-width:720px){
+  .sticky-cta{display:flex}
+  /* clear the sticky bar so it never covers the last content */
+  body{padding-bottom:112px}
+}
 
 /* section backgrounds (ported sections) */
 .patents-sec{background:rgba(255,255,255,.8)}
@@ -416,7 +420,7 @@ svg{display:block}
 .soon-tile.main{grid-column:1 / -1}
 .soon-tile img{width:100%;height:auto;border-radius:8px;display:block}
 /* ask — 3D chat */
-.ask-sec{background:#fff}
+.ask-sec{background:#fff;padding-top:36px}
 .chat3d{max-width:640px;margin:0 auto;border-radius:24px;overflow:hidden;
   background:linear-gradient(180deg,#ffffff,#eef5fc);border:1px solid rgba(10,132,255,.16);
   box-shadow:inset 0 1px 0 #fff,0 2px 0 #dbe7f6,0 26px 60px rgba(11,30,80,.16),var(--glow)}
@@ -994,3 +998,9 @@ a,button,.btn,.tab,.mp,input,.dealer-btn,.imp-btn{touch-action:manipulation}
 /* honour the iPhone home-indicator / notch (viewport-fit: cover) */
 .site-header{padding-top:env(safe-area-inset-top)}
 .wa-float{bottom:calc(20px + env(safe-area-inset-bottom));left:calc(20px + env(safe-area-inset-left))}
+/* on mobile the sticky CTA bar occupies the bottom edge — keep the floating
+   WhatsApp button visible but lifted clear above it (no overlap, no overrun) */
+@media(max-width:720px){
+  .wa-float{bottom:calc(5.5rem + env(safe-area-inset-bottom,0px));left:calc(16px + env(safe-area-inset-left,0px));width:52px;height:52px}
+  .wa-float svg{width:26px;height:26px}
+}
