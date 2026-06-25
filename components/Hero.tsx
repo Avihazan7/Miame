@@ -22,6 +22,9 @@ export default function Hero() {
           <br />
           <span className="tg">על ארבעה גלגלים</span>
         </h1>
+        <div className="free-feel" aria-label="Free Feel">
+          <span aria-hidden="true">🗽</span> Free&nbsp;Feel
+        </div>
         <p className="hero-sub">
           ניידות חשמלית פרימיום במחיר חכם. <span className="strong">הצעת תשלום מותאמת תוך דקה</span>, ישירות לוואטסאפ.
         </p>
@@ -30,12 +33,18 @@ export default function Hero() {
           <a href="#partner" className="btn btn-ghost">אני רוצה להיות שותף עסקי</a>
         </div>
         <div className="hero-trust">
-          <span className="tchip"><Check />אחריות יבואן</span>
-          <span className="tchip"><Check />אספקה מיידית בכפוף למלאי</span>
-          <span className="tchip"><Check />0% ריבית בכפוף לאישור</span>
-          <span className="tchip"><Check />4×4 אמיתי</span>
-          <span className="tchip tchip-brand">Powered by Leasing.co.il 🎯</span>
+          <span className="tchip"><Check />הכי חכם</span>
+          <span className="tchip"><Check />הכי בטיחותי</span>
+          <span className="tchip"><Check />הכי אמין</span>
+          <span className="tchip"><Check />הכי נוח</span>
+          <span className="tchip"><Check />הכי משתלם</span>
         </div>
+
+        <ul className="hero-bullets">
+          <li>MIA&nbsp;FOUR מגיעה עד אליך — הריבית והמשלוח עלינו.</li>
+          <li>ומשלמים מה שבא לכם.</li>
+          <li>יבואן מורשה · שירות ואחריות 12 חודשים · MEU.</li>
+        </ul>
 
         <div className="stage">
           <div className="stage-card">

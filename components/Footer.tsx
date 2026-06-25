@@ -19,7 +19,11 @@ export default function Footer() {
           <span aria-hidden="true">🗽</span>
         </div>
         <div className="foot-powered">
-          מבית <b>Leasing.co.il</b> 🎯
+          מבית{" "}
+          <a href="https://www.leasing.co.il" target="_blank" rel="noopener">
+            <b>Leasing.co.il</b>
+          </a>{" "}
+          🎯
         </div>
         <p className="foot-legal">
           המחירים, התשלומים החודשיים ותנאי המימון המוצגים באתר הם הערכה ראשונית
