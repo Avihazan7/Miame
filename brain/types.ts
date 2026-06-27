@@ -52,10 +52,26 @@ export interface AgentResult {
 export type { GuardianVerdict, AuditEntry } from "@ulease/core";
 import type { GuardianVerdict, AuditEntry } from "@ulease/core";
 
+/** One observed model/embeddings call in a request (M2). Plain types — no runtime deps. */
+export interface TraceSpan {
+  name: string;
+  model: string;
+  latencyMs: number;
+}
+
+/** Per-request observability summary (M2): which model/embeddings calls ran, and cost. */
+export interface BrainTrace {
+  calls: number;
+  costUsd: number;
+  latencyMs: number;
+  spans: TraceSpan[];
+}
+
 export interface BrainResult {
   event: BrainEvent;
   routed: string[]; // master names invoked
   results: AgentResult[];
   verdict: GuardianVerdict;
   audit: AuditEntry[];
+  trace?: BrainTrace; // per-request model/embeddings telemetry (M2)
 }

@@ -7,7 +7,6 @@ import { NextResponse } from "next/server";
 import { runBrain } from "@/brain";
 import type { BrainEvent } from "@/brain/types";
 import { brainReady } from "@/brain/config";
-import { brainTelemetry } from "@/brain/router";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -37,9 +36,9 @@ export async function POST(req: Request) {
 
   try {
     const result = await runBrain(event, new Date().toISOString());
-    const t = brainTelemetry();
+    const tr = result.trace;
     console.log(
-      `[brain] telemetry calls=${t.calls} costUsd=${t.totalCostUsd.toFixed(6)} latencyMs=${t.totalLatencyMs}`
+      `[brain] req calls=${tr?.calls ?? 0} costUsd=${(tr?.costUsd ?? 0).toFixed(6)} latencyMs=${tr?.latencyMs ?? 0}`
     );
     return NextResponse.json(result);
   } catch (e) {

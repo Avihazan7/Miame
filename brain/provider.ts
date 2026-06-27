@@ -1,74 +1,109 @@
-// brain/provider.ts — the Claude ModelProvider for the shared @ulease/core router.
+// brain/provider.ts — the model + embeddings providers for the @ulease/core router.
 //
-// Wraps the existing Anthropic client (./client) as a kernel ModelProvider so every
-// brain call goes through ONE provider-agnostic surface (M3), and is traced + costed
-// with the kernel observability primitives (M2). Behaviour is unchanged: the same
-// Anthropic Messages call runs underneath; we only add routing + telemetry around it.
+// Both wrap the existing brain clients as kernel ModelProviders (M3) so every model and
+// embeddings call goes through ONE provider-agnostic surface, and each records a span +
+// cost into the current request's observer (M2) plus a cumulative process meter.
+// Behaviour is unchanged: the same Anthropic / Voyage calls run underneath.
 //
-// SERVER-SIDE ONLY (it calls the model client). Date.now() is fine here — this is the
-// host/consumer layer, not the pure kernel.
+// SERVER-SIDE ONLY. Date.now() is fine here — consumer layer, not the pure kernel.
 import {
   type ModelProvider,
   type GenerateRequest,
   type GenerateResult,
-  InMemoryTracer,
   estimateCost,
-  estimateTokens,
-  latencyMs
+  estimateTokens
 } from "@ulease/core";
 import { callModel } from "./client";
-import { MODELS } from "./config";
+import { embedQuery } from "./embeddings";
+import { MODELS, EMBED_MODEL } from "./config";
 import type { ModelTier } from "./types";
+import { currentObserver } from "./observability";
 
 // Router task → model tier. reason = Master (Sonnet) deliberation; fast = Max (Haiku).
 const TASK_TIER: Record<string, ModelTier> = { reason: "master", fast: "max", embed: "max" };
 
-export interface BrainTelemetry {
+const VOYAGE_PRICED_AS = "voyage-embeddings"; // key in the kernel PRICING table
+
+export interface ProviderMeter {
   calls: number;
-  totalCostUsd: number;
-  totalLatencyMs: number;
+  costUsd: number;
+  latencyMs: number;
 }
 
 export class ClaudeProvider implements ModelProvider {
   readonly name = "claude";
-  readonly tracer = new InMemoryTracer("miame-brain");
-  private costUsd = 0;
+  private meter: ProviderMeter = { calls: 0, costUsd: 0, latencyMs: 0 };
 
-  // Clock is injected so the provider stays testable; defaults to wall-clock.
   constructor(private readonly clock: () => number = () => Date.now()) {}
 
   async generate(req: GenerateRequest): Promise<GenerateResult> {
     const tier = TASK_TIER[req.task ?? "reason"] ?? "master";
     const model = MODELS[tier];
-    const span = this.tracer.startSpan(`model:${req.task ?? "reason"}`, {
-      startedAt: this.clock(),
-      attributes: { provider: this.name, model }
-    });
+    const obs = currentObserver();
+    const span = obs?.startSpan(`model:${req.task ?? "reason"}`, model);
+
+    const t0 = this.clock();
     const text = await callModel({
       tier,
       system: req.system ?? "",
       user: req.user,
       ...(req.maxTokens !== undefined ? { maxTokens: req.maxTokens } : {})
     });
+    const t1 = this.clock();
+
     const usage = {
       inputTokens: estimateTokens((req.system ?? "") + req.user),
       outputTokens: estimateTokens(text)
     };
-    this.tracer.endSpan(span, {
-      endedAt: this.clock(),
-      attributes: { inputTokens: usage.inputTokens, outputTokens: usage.outputTokens }
-    });
-    this.costUsd += estimateCost({ model, ...usage });
+    this.meter.calls += 1;
+    this.meter.costUsd += estimateCost({ model, ...usage });
+    this.meter.latencyMs += t1 - t0;
+    if (obs && span) obs.endSpan(span, { model, ...usage });
+
     return { text, model, provider: this.name, usage };
   }
 
-  /** Cumulative process-level meter (calls, cost, latency) — surface for observability. */
-  telemetry(): BrainTelemetry {
-    const spans = this.tracer.finished;
-    const totalLatencyMs = spans.reduce(
-      (a, s) => a + (Number.isNaN(latencyMs(s)) ? 0 : latencyMs(s)),
-      0
-    );
-    return { calls: spans.length, totalCostUsd: this.costUsd, totalLatencyMs };
+  telemetry(): ProviderMeter {
+    return { ...this.meter };
+  }
+}
+
+/**
+ * Embeddings-only provider (Voyage). generate() is unsupported by design — the router
+ * only routes the `embed` task here; reason/fast go to Claude.
+ */
+export class VoyageProvider implements ModelProvider {
+  readonly name = "voyage";
+  private meter: ProviderMeter = { calls: 0, costUsd: 0, latencyMs: 0 };
+
+  constructor(private readonly clock: () => number = () => Date.now()) {}
+
+  generate(): Promise<GenerateResult> {
+    return Promise.reject(new Error("[brain] voyage is an embeddings-only provider"));
+  }
+
+  async embed(texts: string[]): Promise<number[][]> {
+    const obs = currentObserver();
+    const span = obs?.startSpan("embed", EMBED_MODEL);
+
+    const t0 = this.clock();
+    const vectors = await Promise.all(texts.map((t) => embedQuery(t)));
+    const t1 = this.clock();
+
+    const usage = {
+      model: VOYAGE_PRICED_AS,
+      inputTokens: texts.reduce((a, t) => a + estimateTokens(t), 0),
+      outputTokens: 0
+    };
+    this.meter.calls += 1;
+    this.meter.costUsd += estimateCost(usage);
+    this.meter.latencyMs += t1 - t0;
+    if (obs && span) obs.endSpan(span, usage);
+
+    return vectors;
+  }
+
+  telemetry(): ProviderMeter {
+    return { ...this.meter };
   }
 }
