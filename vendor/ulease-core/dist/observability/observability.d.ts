@@ -52,9 +52,10 @@ export interface ModelPricing {
     outputPerMillion: number;
 }
 /**
- * Illustrative pricing table (USD / 1M tokens). PURE DATA, single source of truth for
- * cost estimation across the portfolio. Numbers are approximate and host-overridable —
- * keep them current in one place rather than scattered per repo.
+ * Pricing table (USD / 1M tokens). PURE DATA, single source of truth for cost
+ * estimation across the portfolio. Numbers are approximate published list prices and
+ * host-overridable (pass a custom table to estimateCost) — keep them current here
+ * rather than scattered per repo. Embedding models have no output tokens (→ 0).
  */
 export declare const PRICING: Record<string, ModelPricing>;
 export interface Usage {

@@ -22,8 +22,6 @@ import { currentObserver } from "./observability";
 // Router task → model tier. reason = Master (Sonnet) deliberation; fast = Max (Haiku).
 const TASK_TIER: Record<string, ModelTier> = { reason: "master", fast: "max", embed: "max" };
 
-const VOYAGE_PRICED_AS = "voyage-embeddings"; // key in the kernel PRICING table
-
 export interface ProviderMeter {
   calls: number;
   costUsd: number;
@@ -91,7 +89,7 @@ export class VoyageProvider implements ModelProvider {
     const t1 = this.clock();
 
     const usage = {
-      model: VOYAGE_PRICED_AS,
+      model: EMBED_MODEL, // the real Voyage model id — priced in the kernel PRICING table
       inputTokens: texts.reduce((a, t) => a + estimateTokens(t), 0),
       outputTokens: 0
     };
