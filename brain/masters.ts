@@ -3,7 +3,7 @@
 // Each Master is GROUNDED in retrieved knowledge and encodes one piece of the unique
 // methodology: Big Five matching, deal construction, content generation, support
 // triage. Masters never invent prices/specs — they answer only from the RAG context.
-import { callModel } from "./client";
+import { router } from "./router";
 import { retrieve } from "./knowledge";
 import type { MasterName } from "./ultra";
 import type { AgentResult } from "./types";
@@ -36,8 +36,8 @@ const SYSTEM: Record<MasterName, string> = {
 
 export async function runMaster(name: MasterName, input: string): Promise<AgentResult> {
   const { context, sources } = await groundedContext(input);
-  const output = await callModel({
-    tier: "master",
+  const { text: output } = await router.generate({
+    task: "reason",
     system: `${SYSTEM[name]}\n\nהקשר מבוסס-מקור:\n${context}`,
     user: input
   });
