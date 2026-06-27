@@ -1,0 +1,26 @@
+{
+  "name": "@ulease/core",
+  "version": "0.1.0",
+  "description": "Vendored build of the ULease OS U.M.M kernel. Source of truth: github.com/Avihazan7/ulease-core. Re-sync with scripts/sync-kernel.mjs; do not edit dist by hand.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./constitution": "./dist/constitution.js",
+    "./engines": "./dist/engines/index.js",
+    "./guardian": "./dist/guardian/index.js",
+    "./evals": "./dist/evals/index.js",
+    "./observability": "./dist/observability/index.js",
+    "./router": "./dist/router/index.js"
+  },
+  "uleaseKernel": {
+    "vendoredFrom": "Avihazan7/ulease-core",
+    "commit": "07c01d7"
+  }
+}
