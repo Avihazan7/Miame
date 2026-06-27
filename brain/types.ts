@@ -47,18 +47,10 @@ export interface AgentResult {
   notes?: string;
 }
 
-export interface GuardianVerdict {
-  allowed: boolean;
-  reasons: string[];
-  redactions?: string[];
-}
-
-export interface AuditEntry {
-  at: string; // ISO timestamp, stamped by the runtime
-  actor: string;
-  action: string;
-  meta?: Record<string, unknown>;
-}
+// GuardianVerdict + AuditEntry are owned by the shared kernel (@ulease/core); re-exported
+// here so existing `./types` import paths keep working with a single source of truth.
+export type { GuardianVerdict, AuditEntry } from "@ulease/core";
+import type { GuardianVerdict, AuditEntry } from "@ulease/core";
 
 export interface BrainResult {
   event: BrainEvent;
