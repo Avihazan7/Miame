@@ -1,13 +1,13 @@
 // brain/index.ts — runBrain(): the U.M.M pipeline entry point.
 //
-//   Guardian.preCheck → Ultra.route → Master(s) run (grounded) → Guardian.postCheck → audit
+//   Guardian.preCheck → Ultra.route → Guardian.screenInput → Master(s) run (grounded) → Guardian.postCheck → audit
 //
 // Returns a fully-traced BrainResult. SERVER-SIDE: call from a Next.js API route, an
 // n8n function node, or a worker. Nothing here is imported by the MiaMe site, so it
 // can never affect the public bundle or build output.
 //
 // `now` (ISO timestamp) is injected by the caller so this module stays pure/testable.
-import { preCheck, postCheck, audit } from "./guardian";
+import { preCheck, postCheck, screenInput, audit } from "./guardian";
 import { route } from "./ultra";
 import { runMaster } from "./masters";
 import type { BrainEvent, BrainResult, AgentResult, AuditEntry, GuardianVerdict } from "./types";
@@ -29,6 +29,14 @@ export async function runBrain(event: BrainEvent, now: string): Promise<BrainRes
     typeof event.payload["message"] === "string"
       ? (event.payload["message"] as string)
       : JSON.stringify(event.payload);
+
+  // Input safety: screen the raw visitor message for prompt-injection BEFORE any model
+  // call or RAG query. /api/brain is public, so this is the first untrusted boundary.
+  const screen = screenInput(input);
+  if (!screen.allowed) {
+    auditLog.push(audit("guardian", "blocked:input", now, { reasons: screen.reasons }));
+    return { event, routed: masters, results: [], verdict: screen, audit: auditLog };
+  }
 
   const results: AgentResult[] = [];
   for (const m of masters) {
