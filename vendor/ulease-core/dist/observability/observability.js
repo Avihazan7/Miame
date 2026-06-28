@@ -58,15 +58,23 @@ export class InMemoryMetrics {
     }
 }
 /**
- * Illustrative pricing table (USD / 1M tokens). PURE DATA, single source of truth for
- * cost estimation across the portfolio. Numbers are approximate and host-overridable —
- * keep them current in one place rather than scattered per repo.
+ * Pricing table (USD / 1M tokens). PURE DATA, single source of truth for cost
+ * estimation across the portfolio. Numbers are approximate published list prices and
+ * host-overridable (pass a custom table to estimateCost) — keep them current here
+ * rather than scattered per repo. Embedding models have no output tokens (→ 0).
  */
 export const PRICING = {
+    // Generation models.
     'gemini-1.5-flash': { inputPerMillion: 0.075, outputPerMillion: 0.3 },
     'claude-sonnet-4-6': { inputPerMillion: 3, outputPerMillion: 15 },
     'claude-haiku-4-5-20251001': { inputPerMillion: 0.8, outputPerMillion: 4 },
-    'voyage-embeddings': { inputPerMillion: 0.12, outputPerMillion: 0 },
+    // Embedding models (used by the RAG vector paths). Voyage is the live Miame provider;
+    // text-embedding-004 is leasing-api's optional Gemini provider. Deterministic/lexical
+    // embeddings are free (in-process) and intentionally absent → estimateCost = 0.
+    'voyage-3.5': { inputPerMillion: 0.06, outputPerMillion: 0 },
+    'voyage-3-large': { inputPerMillion: 0.18, outputPerMillion: 0 },
+    'text-embedding-004': { inputPerMillion: 0.15, outputPerMillion: 0 },
+    'voyage-embeddings': { inputPerMillion: 0.06, outputPerMillion: 0 }, // generic alias
 };
 /** Estimate the USD cost of a call from its token usage. Returns 0 for unknown models. */
 export function estimateCost(usage, pricing = PRICING) {

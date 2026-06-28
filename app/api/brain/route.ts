@@ -36,6 +36,10 @@ export async function POST(req: Request) {
 
   try {
     const result = await runBrain(event, new Date().toISOString());
+    const tr = result.trace;
+    console.log(
+      `[brain] req calls=${tr?.calls ?? 0} costUsd=${(tr?.costUsd ?? 0).toFixed(6)} latencyMs=${tr?.latencyMs ?? 0}`
+    );
     return NextResponse.json(result);
   } catch (e) {
     const msg = e instanceof Error ? e.message : "brain error";

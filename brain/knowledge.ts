@@ -7,7 +7,7 @@
 // Hebrew-safe keyword retrieval. Both paths read the public anon-SELECT corpus, so no
 // secret is needed for reads.  (D-022: RAG over fine-tuning.)
 import { SUPABASE_URL, SUPABASE_ANON_KEY, embeddingsReady } from "./config";
-import { embedQuery } from "./embeddings";
+import { embedQueryVia } from "./router";
 
 export interface KnowledgeDoc {
   id: string;
@@ -42,7 +42,7 @@ async function fetchCorpus(): Promise<KnowledgeDoc[]> {
  *  has no embeddings yet (the RPC filters `embedding is not null`) so the caller can
  *  fall back. Requires an embeddings key to embed the query. */
 async function vectorRetrieve(query: string, k: number): Promise<KnowledgeDoc[]> {
-  const queryEmbedding = await embedQuery(query);
+  const queryEmbedding = await embedQueryVia(query);
   const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/match_knowledge`, {
     method: "POST",
     headers: {
