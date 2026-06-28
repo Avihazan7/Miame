@@ -138,3 +138,46 @@ git push -u origin main
 - [ ] ליד בדיקה הופיע בטבלת leads.
 - [ ] תצוגת מובייל מושלמת (כפתורים, סליידרים, טופס).
 - [ ] תמונות רכב אמיתיות הוחלפו (או שהוחלט לצאת עם האיור הזמני).
+
+---
+
+## 11. חיבור למוח המרכזי (U.M.M · leasing-api)
+
+MiaMe מחוברת כעת כ-**tenant** (`miame`) של המוח המרכזי, בנוסף למשפך הקיים (וואטסאפ + Supabase) — תוספתי, לא מחליף. החיבור כולו **צד-שרת**: הדפדפן פונה רק ל-`/api/*`, מפתח ה-tenant לעולם לא נשלח ל-bundle.
+
+הזרימה:
+
+- `lib/brain.ts` — קליינט צד-שרת למוח. ה-tenant נקבע במוח לפי ה-Host המועבר (`miame.co.il`), אף פעם לא לפי client.
+- `app/api/signal` → `/v1/public/signal` — כל אינטראקציה (בחירת דגם, כיוונון סליידר) מעדכנת את פרופיל ה-Big Five של הגולש בגרף הישויות המרכזי.
+- `app/api/deal` → `/v1/public/lead` — עסקה שנבנתה בסימולטור נשמרת כישות `lead` tenant-scoped + outbox, ומוחזר **Deal Score אטום** (ציון+דרגה+נימוקים בלבד; המשקלים נשארים בשרת). הציון מוצג כ-badge בסימולטור.
+- `app/api/catalog` → `/v1/public/catalog` — קריאה של קטלוג MiaMe מ-`vehicle_read_model` (tenant-scoped).
+
+### משתני סביבה (Vercel · Production + Preview)
+
+```
+LEASING_API_URL=https://<leasing-api-origin>     # ריק = ריצה עצמאית (וואטסאפ+Supabase בלבד)
+MIAME_TENANT_HOST=miame.co.il
+MIAME_TENANT_API_KEY=<key מ-`npm run seed:miame` ב-leasing-api · מוצג פעם אחת>
+```
+
+ללא `LEASING_API_URL` האתר עובד כרגיל; כל קריאות המוח נכשלות-רך (fail-soft) ומחזירות null.
+
+### הרשמת ה-tenant במוח (חד-פעמי, בצד leasing-api)
+
+```
+DATABASE_URL=... RLS_ENABLED=true npm run seed:miame
+```
+
+מקים את ה-tenant `miame` (domain=miame.co.il), זורע מלאי השקה, ומנפיק מפתח write-tier (מוצג פעם אחת — שמרו אותו ל-`MIAME_TENANT_API_KEY`).
+
+---
+
+## 12. ניטור לפני go-live (P5)
+
+לפני פתיחת הקמפיין, ודאו ששני המקורות **נקיים**:
+
+- [ ] **Vercel runtime errors** נקי — ללא חריגות ב-`/api/deal`, `/api/signal`, `/api/catalog` (Vercel → Project → Logs / Observability).
+- [ ] **Supabase advisors** נקי — אין אזהרות security/performance במוח (`leasing-co-il-prod`).
+- [ ] ליד בדיקה דרך הסימולטור יצר ישות `lead` עם `tenant_id='miame'` ואירוע `lead.captured` ב-outbox.
+- [ ] ה-Deal Score badge מוצג לאחר שליחת ליד.
+- [ ] בדיקת בידוד: בקשה עם Host של miame לא מחזירה נתוני tenant אחר.

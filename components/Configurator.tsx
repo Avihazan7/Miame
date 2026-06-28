@@ -47,6 +47,42 @@ function useCountUp(target: number, duration = 520): number {
 
 const TYPES: CustomerType[] = ["private", "business", "partner"];
 
+/** Stable, anonymous per-visitor id (charset matches the brain's ref validation). */
+function visitorRef(): string {
+  if (typeof window === "undefined") return "anon";
+  try {
+    let r = localStorage.getItem("miame_ref");
+    if (!r) {
+      r = "miame-" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+      localStorage.setItem("miame_ref", r);
+    }
+    return r;
+  } catch {
+    return "anon";
+  }
+}
+
+/** Fire a behavioural signal at the central brain (best-effort, never blocks UI). */
+function emitSignal(signal: string): void {
+  try {
+    void fetch("/api/signal", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ref: visitorRef(), signal }),
+      keepalive: true,
+    }).catch(() => {});
+  } catch {
+    /* never throw from analytics */
+  }
+}
+
+/** The sealed Deal Score the brain returns — headline only (no weights). */
+interface SealedScore {
+  score: number;
+  grade: "A" | "B" | "C" | "D";
+  reasons: string[];
+}
+
 export default function Configurator() {
   const [modelId, setModelId] = useState<string>(MODELS[0].id);
   const [type, setType] = useState<CustomerType>("private");
@@ -56,6 +92,7 @@ export default function Configurator() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [sent, setSent] = useState(false);
+  const [score, setScore] = useState<SealedScore | null>(null);
 
   const model = getModel(modelId);
   const track_ = TRACKS[type];
@@ -86,6 +123,7 @@ export default function Configurator() {
     setModelId(id);
     setSent(false);
     track("ModelSelected", { modelId: id });
+    emitSignal("view_specs"); // viewing a model's specs → central Big Five nudge
     if (scroll && typeof document !== "undefined") {
       document.getElementById("sim")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -101,6 +139,7 @@ export default function Configurator() {
       months,
       monthly: quote.monthlyPayment
     });
+    emitSignal("compare_many"); // actively tuning the deal → conscientiousness nudge
   }
 
   function openDeal(intent: string, evt: "LeadSubmitted" | "WhatsAppClicked") {
@@ -119,6 +158,36 @@ export default function Configurator() {
         source: "miame-web · " + intent
       };
       void saveLead(lead);
+      // Additively feed the built deal into the U.M.M central brain (tenant +
+      // server-side scoring). Best-effort: the WhatsApp + Supabase funnel above
+      // already fired, so a brain hiccup never costs us the lead.
+      try {
+        void fetch("/api/deal", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            ref: visitorRef(),
+            model: model.name,
+            customerType: type,
+            quote: {
+              basePrice: quote.basePrice,
+              effectivePrice: quote.effectivePrice,
+              downAmount: quote.downAmount,
+              balloonAmount: quote.balloonAmount,
+              monthlyPayment: quote.monthlyPayment,
+              months: quote.months
+            },
+            contact: { name: name.trim(), phone: phone.trim() }
+          })
+        })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d) => {
+            if (d?.score) setScore(d.score as SealedScore);
+          })
+          .catch(() => {});
+      } catch {
+        /* never block the funnel */
+      }
     }
     void track(evt, { modelId, type, monthly: quote.monthlyPayment, intent });
 
@@ -421,6 +490,15 @@ export default function Configurator() {
                   הסימולטור להמחשה בלבד. העסקה כפופה לאישור ספק, מלאי, תנאי מימון וחתימה. ההערכה אינה הצעת אשראי.
                 </p>
                 {sent && <div className="lead-ok">נפתחה שיחת וואטסאפ ✓ נחזור אליכם מיד</div>}
+                {score && (
+                  <div
+                    className="res-badge accent"
+                    style={{ marginTop: 12, alignSelf: "flex-start" }}
+                    title={score.reasons.join(" · ")}
+                  >
+                    ציון עסקה {score.grade} · {score.score}/100
+                  </div>
+                )}
               </div>
             </div>
           </div>
