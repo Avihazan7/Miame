@@ -35,6 +35,10 @@ export default function Specs() {
               <span className="spec-v">6.3 ק"ג · תאי LG 21700</span>
             </div>
             <div className="spec-row">
+              <span className="spec-k">זמן טעינה</span>
+              <span className="spec-v">עד 8 שעות · מטען סטנדרטי</span>
+            </div>
+            <div className="spec-row">
               <span className="spec-k">מידות (ר×א×ג)</span>
               <span className="spec-v">689 × 1,244 × 1,190 מ"מ</span>
             </div>

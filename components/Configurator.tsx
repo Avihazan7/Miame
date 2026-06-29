@@ -226,6 +226,10 @@ export default function Configurator() {
     monthlyPaymentLabel: `₪${animatedMonthly.toLocaleString("he-IL")}`,
     cover: { url: "/miame-hero.webp", alt: "מיה פור X4 · ניידות חשמלית פרימיום" },
     gallery: [
+      { url: "/mia-four-x4-night-rear.jpg", alt: "מיה פור X4 · גימור סטודיו, מתלה אחורי ושיכוך חשוף" },
+      { url: "/mia-four-x4-night-front.jpg", alt: "מיה פור X4 · עיצוב פרימיום מלפנים" },
+      { url: "/mia-four-x4-seat.webp", alt: "מיה פור X4 עם כיסא בשחרור מהיר" },
+      { url: "/mia-four-x4-pure-freedom.png", alt: "MIA FOUR · Pure Freedom · מוגן פטנט" },
       { url: "/mia-studio.jpg", alt: "מיה פור X4 בסטודיו" },
       { url: "/mia-four-ride.jpg", alt: "רכיבה על מיה פור X4" },
       { url: "/miame-cockpit.webp", alt: "תא הנהג של מיה פור" },
