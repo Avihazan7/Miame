@@ -105,3 +105,69 @@ export interface CatalogResponse {
 export function getCatalog(): Promise<CatalogResponse | null> {
   return call<CatalogResponse>("/v1/public/catalog", { method: "GET" });
 }
+
+// ── 2026 catalog (models + Master Match) ─────────────────────────────────────
+// The dedicated catalog domain (catalog_models): brands-and-models with the
+// official government data (safety/pollution/importer) + segment. Distinct from
+// getCatalog() above, which is the VIN-keyed read model.
+
+/** Raw catalog model as the brain serves it (snake_case). */
+export interface CatalogModelApi {
+  id: string;
+  make: string;
+  make_he: string | null;
+  model_family: string;
+  name: string;
+  fuel_type: string | null;
+  from_price: string | number | null;
+  available_new: boolean;
+  segment: string | null;
+  attributes: Record<string, unknown> | null;
+  image_url?: string | null;
+  media?: { studio?: string | null } | null;
+}
+
+export interface CatalogModelsResponse {
+  tenant: string;
+  count: number;
+  models: CatalogModelApi[];
+}
+
+/** List the 2026 catalog models, optionally filtered by make. */
+export function getCatalogModels(make?: string): Promise<CatalogModelsResponse | null> {
+  const q = make ? `?make=${encodeURIComponent(make)}` : "";
+  return call<CatalogModelsResponse>(`/v1/public/catalog/models${q}`, { method: "GET" });
+}
+
+/** One ranked Master-Match result. */
+export interface ModelMatchApi {
+  id: string;
+  make: string;
+  makeHe: string | null;
+  name: string;
+  fromPrice: number | null;
+  segment: string | null;
+  fit: number;
+  recommendedTrack: string;
+  reason: string | null;
+  media?: { studio?: string | null } | null;
+}
+
+export interface InMarketApi {
+  score: number;
+  band: "cold" | "browsing" | "warm" | "hot" | "in_market";
+  nextBestAction: string;
+  insight: string;
+}
+
+export interface MatchResponse {
+  tenant: string;
+  match: ModelMatchApi | null;
+  top: ModelMatchApi[];
+  inMarket: InMarketApi | null;
+}
+
+/** Master Match — the best-fit model for a visitor (by ref → stored Big Five). */
+export function matchModel(body: { ref?: string; bigfive?: Record<string, number>; make?: string }): Promise<MatchResponse | null> {
+  return call<MatchResponse>("/v1/public/catalog/match", { method: "POST", body: JSON.stringify(body) });
+}
