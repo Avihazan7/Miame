@@ -7,6 +7,7 @@ import Features from "@/components/Features";
 import Specs from "@/components/Specs";
 import Engineering from "@/components/Engineering";
 import Patents from "@/components/Patents";
+import LegalStatus from "@/components/LegalStatus";
 import Configurator from "@/components/Configurator";
 import AskBrain from "@/components/AskBrain";
 import Spyqe from "@/components/Spyqe";
@@ -31,6 +32,7 @@ export default function Page() {
         <Specs />
         <Engineering />
         <Patents />
+        <LegalStatus />
         <Configurator />
         <AskBrain />
         <Spyqe />
