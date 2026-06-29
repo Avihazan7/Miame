@@ -412,7 +412,7 @@ export default function Configurator() {
               {/* 3D Deal Aura — the live vehicle lit by the SEALED deal score.
                   Supersedes the former faint decorative vehicle image. */}
               <DealShowcase
-                imageUrl="/mia-four.webp"
+                imageUrl="/mia-four-x4-hero.webp"
                 score={score?.score ?? 0}
                 grade={score?.grade}
                 className="deal-aura"
