@@ -5,6 +5,7 @@ import Lifestyle from "@/components/Lifestyle";
 import TestRide from "@/components/TestRide";
 import Features from "@/components/Features";
 import Specs from "@/components/Specs";
+import Engineering from "@/components/Engineering";
 import Patents from "@/components/Patents";
 import Configurator from "@/components/Configurator";
 import AskBrain from "@/components/AskBrain";
@@ -28,6 +29,7 @@ export default function Page() {
         <TestRide />
         <Features />
         <Specs />
+        <Engineering />
         <Patents />
         <Configurator />
         <AskBrain />
