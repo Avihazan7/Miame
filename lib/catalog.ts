@@ -66,3 +66,48 @@ export function co2Label(co2: number | null | undefined): string | null {
   if (co2 === 0) return 'פליטת CO₂ אפס';
   return `CO₂ ${Math.round(co2)} ג׳/ק״מ`;
 }
+
+// ── In-Market → Ultra Design ────────────────────────────────────────────────
+// The visitor's In-Market band drives a progressive "Ultra Design" elevation: as
+// purchase intent rises, the catalog quietly intensifies (premium glass, motion,
+// a stronger CTA) — focusing attention without a hard sell.
+
+export type InMarketBand = 'cold' | 'browsing' | 'warm' | 'hot' | 'in_market';
+
+/** Elevation level 0–3 for a band — how much "Ultra Design" treatment to apply. */
+export function elevationForBand(band: InMarketBand | null | undefined): 0 | 1 | 2 | 3 {
+  switch (band) {
+    case 'in_market': return 3;
+    case 'hot': return 2;
+    case 'warm': return 1;
+    default: return 0; // cold / browsing / unknown — calm baseline
+  }
+}
+
+/** Hebrew label for an In-Market band. */
+export function bandLabel(band: InMarketBand | null | undefined): string {
+  return { cold: 'מתעניין', browsing: 'גולש', warm: 'מחפש', hot: 'בוחר', in_market: 'בשל לרכישה' }[band ?? 'cold'];
+}
+
+/** Map the brain's raw catalog model (snake_case) → the UI CatalogModel. */
+export function mapApiModel(m: {
+  id: string; make: string; make_he: string | null; model_family: string; name: string;
+  fuel_type: string | null; from_price: string | number | null; available_new?: boolean;
+  segment: string | null; attributes?: Record<string, unknown> | null;
+  image_url?: string | null; media?: { studio?: string | null } | null;
+}): CatalogModel {
+  const price = m.from_price == null ? null : Number(m.from_price);
+  return {
+    id: m.id,
+    make: m.make,
+    makeHe: m.make_he,
+    modelFamily: m.model_family,
+    name: m.name,
+    fuelType: m.fuel_type,
+    fromPrice: Number.isFinite(price as number) ? (price as number) : null,
+    availableNew: m.available_new ?? true,
+    segment: m.segment,
+    attributes: (m.attributes ?? {}) as CatalogAttributes,
+    imageUrl: m.image_url ?? m.media?.studio ?? null,
+  };
+}

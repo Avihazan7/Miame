@@ -3,11 +3,17 @@
 // A presentational card for ONE catalog model, rendering the official government
 // data the catalog now carries (data.gov.il): manufacturer + model, official
 // safety level, pollution group + green index, CO₂/consumption, and the importer.
-// Ultra-premium models get a distinct gold treatment AND a concierge note that
-// mirrors the backend business gate (no autonomous execution — human approval).
 //
-// Pure presentation: it takes a CatalogModel and renders. No data fetching, no
-// scoring — the contract (lib/catalog.ts) is the single source of shape + labels.
+// Two adaptive layers ride on top of the static design:
+//   • Master Match — when this model is the visitor's best fit, an azure ribbon +
+//     "Master Match" badge + fit% mark it as the recommendation.
+//   • Ultra Design (In-Market) — `elevation` (0–3, derived from the visitor's
+//     In-Market band) progressively intensifies the card: premium ring, lift, and
+//     a stronger CTA as purchase intent rises. Ultra-premium marques always get
+//     the gold concierge treatment.
+//
+// Pure presentation: the contract (lib/catalog.ts) is the single source of shape
+// + labels; adaptivity arrives as props from the client experience layer.
 
 import {
   type CatalogModel,
@@ -25,6 +31,9 @@ const TONE_CLASS: Record<"good" | "mid" | "low" | "none", string> = {
   none: "bg-mist text-slate ring-line",
 };
 
+// Ultra Design — ring + shadow per elevation level (0 calm → 3 in-market).
+const ELEVATION_RING = ["ring-1 ring-line", "ring-1 ring-sky/40", "ring-2 ring-azure/50", "ring-2 ring-azure shadow-lift"];
+
 function Chip({ label, tone = "none" }: { label: string; tone?: "good" | "mid" | "low" | "none" }) {
   return (
     <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ${TONE_CLASS[tone]}`}>
@@ -33,31 +42,54 @@ function Chip({ label, tone = "none" }: { label: string; tone?: "good" | "mid" |
   );
 }
 
-export default function VehicleCard({ model }: { model: CatalogModel }) {
+export interface VehicleCardProps {
+  model: CatalogModel;
+  /** This model is the visitor's Master Match (best fit). */
+  matched?: boolean;
+  /** Fit 0–100 to show on the match badge. */
+  matchPct?: number;
+  /** Ultra-Design elevation 0–3, derived from the visitor's In-Market band. */
+  elevation?: 0 | 1 | 2 | 3;
+  /** Fired when the card is opened — drives a storefront signal. */
+  onView?: (model: CatalogModel) => void;
+}
+
+export default function VehicleCard({ model, matched = false, matchPct, elevation = 0, onView }: VehicleCardProps) {
   const ultra = isUltraPremium(model);
   const a = model.attributes ?? {};
   const safety = safetyTone(a.safetyLevel);
   const pollution = pollutionTone(a.pollutionLevel);
   const co2 = co2Label(a.co2Wltp);
   const fuel = a.fuelHe ?? model.fuelType ?? null;
+  const hot = elevation >= 2;
+
+  const ring = ultra
+    ? "ring-2 ring-amber-300/70 [background:linear-gradient(180deg,#fffdf5,#ffffff)]"
+    : matched
+      ? "ring-2 ring-azure shadow-lift"
+      : ELEVATION_RING[elevation];
 
   return (
     <article
       dir="rtl"
+      onClick={onView ? () => onView(model) : undefined}
       className={[
-        "group relative flex flex-col overflow-hidden rounded-xl2 bg-snow shadow-card transition",
+        "group relative flex cursor-pointer flex-col overflow-hidden rounded-xl2 bg-snow shadow-card transition duration-300",
         "hover:-translate-y-0.5 hover:shadow-lift",
-        ultra
-          ? "ring-2 ring-amber-300/70 [background:linear-gradient(180deg,#fffdf5,#ffffff)]"
-          : "ring-1 ring-line",
+        hot ? "-translate-y-0.5" : "",
+        ring,
       ].join(" ")}
     >
-      {/* Ultra-premium ribbon */}
-      {ultra && (
-        <div className="absolute left-0 top-0 z-10 rounded-br-xl2 bg-gradient-to-l from-amber-400 to-amber-600 px-3 py-1 text-xs font-semibold text-white shadow">
+      {/* Top ribbons: ultra-premium (gold) or Master Match (azure) */}
+      {ultra ? (
+        <div className="absolute right-0 top-0 z-10 rounded-bl-xl2 bg-gradient-to-l from-amber-400 to-amber-600 px-3 py-1 text-xs font-semibold text-white shadow">
           אולטרה־פרימיום · קונסיירז׳
         </div>
-      )}
+      ) : matched ? (
+        <div className="absolute right-0 top-0 z-10 rounded-bl-xl2 bg-gradient-to-l from-azure to-sky px-3 py-1 text-xs font-semibold text-white shadow">
+          ★ Master Match{typeof matchPct === "number" ? ` · ${Math.round(matchPct)}%` : ""}
+        </div>
+      ) : null}
 
       {/* Imagery */}
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-mist">
@@ -70,9 +102,7 @@ export default function VehicleCard({ model }: { model: CatalogModel }) {
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-slate/40">
-            <span className="text-sm">תמונת סטודיו בקרוב</span>
-          </div>
+          <div className="flex h-full w-full items-center justify-center text-sm text-slate/40">תמונת סטודיו בקרוב</div>
         )}
         {model.availableNew && (
           <span className="absolute bottom-2 right-2 rounded-full bg-ink/80 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">
@@ -114,8 +144,13 @@ export default function VehicleCard({ model }: { model: CatalogModel }) {
           {ultra ? (
             <span className="shrink-0 text-xs font-medium text-amber-700">דרוש אישור אנושי</span>
           ) : (
-            <button className="shrink-0 rounded-full bg-azure px-3.5 py-1.5 text-xs font-semibold text-white transition hover:brightness-110">
-              לפרטים
+            <button
+              className={[
+                "shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold text-white transition",
+                hot ? "bg-azure shadow-lift hover:brightness-110" : "bg-azure/90 hover:brightness-110",
+              ].join(" ")}
+            >
+              {hot ? "דברו איתי עכשיו" : "לפרטים"}
             </button>
           )}
         </div>
