@@ -237,10 +237,10 @@ export default function Configurator() {
                     {best && <span className="card-badge best">הכי מבוקש</span>}
                     {!best && i === 2 && <span className="card-badge">פרימיום</span>}
                     <Image
-                      src="/mia-four.webp"
+                      src="/mia-four-x4-hero.webp"
                       alt={m.name}
-                      width={400}
-                      height={400}
+                      width={621}
+                      height={717}
                       className="card-veh"
                     />
                   </div>
