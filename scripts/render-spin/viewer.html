@@ -1,0 +1,123 @@
+<!doctype html>
+<!--
+  render-spin viewer — a headless three.js studio that loads ONE GLB and renders
+  it from any Y angle on a transparent background. The Node runner (render-spin.mjs)
+  drives it through Playwright: it waits for window.__ready, then calls
+  window.__renderAngle(deg) once per frame and screenshots the canvas.
+
+  Pinned to three@0.160.1 to match the app dependency (package.json), so the 360°
+  frames look identical to the in-app 3D viewer.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      html, body { margin: 0; background: transparent; }
+      #c { display: block; }
+    </style>
+    <!-- three is served locally from node_modules by render-spin.mjs (no CDN /
+         network needed, and it's pinned to the app's exact three version). -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/three/build/three.module.js",
+          "three/addons/": "/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <script type="module">
+      import * as THREE from "three";
+      import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+      import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+      // The runner passes ?model=…&size=… on the URL.
+      const params = new URLSearchParams(location.search);
+      const MODEL_URL = params.get("model") || "/model.glb";
+      const SIZE = Number(params.get("size") || 1600);
+
+      const canvas = document.getElementById("c");
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,          // transparent background → frames composite anywhere
+        preserveDrawingBuffer: true,
+      });
+      renderer.setPixelRatio(1);          // exact pixels for deterministic frames
+      renderer.setSize(SIZE, SIZE, false);
+      renderer.setClearColor(0x000000, 0);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.0;
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+      const scene = new THREE.Scene();
+
+      // Studio environment for physically-based reflections (so metal/paint read
+      // like a product shot, not a black blob). No HDR file needed.
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+      // Soft key + fill on top of the env, kept gentle so the env does the work.
+      const key = new THREE.DirectionalLight(0xffffff, 1.6);
+      key.position.set(3, 5, 4);
+      scene.add(key);
+      const fill = new THREE.DirectionalLight(0xffffff, 0.5);
+      fill.position.set(-4, 2, -3);
+      scene.add(fill);
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x404040, 0.6));
+
+      const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 1000);
+
+      // The model lives inside a pivot we spin around Y; the camera stays put.
+      const pivot = new THREE.Group();
+      scene.add(pivot);
+
+      window.__ready = false;
+      window.__error = null;
+
+      // Frame the camera to fit the model's bounding sphere with a small margin.
+      function frameCamera(object) {
+        const box = new THREE.Box3().setFromObject(object);
+        const sphere = box.getBoundingSphere(new THREE.Sphere());
+        const center = sphere.center;
+        const radius = sphere.radius || 1;
+
+        // Re-center the model on the pivot origin so it spins in place.
+        object.position.sub(center);
+
+        const fov = (camera.fov * Math.PI) / 180;
+        const dist = (radius / Math.sin(fov / 2)) * 1.25; // 1.25 = breathing room
+        // Slight downward look from front-above — the classic product 3/4 hint.
+        camera.position.set(0, radius * 0.35, dist);
+        camera.near = dist - radius * 2;
+        camera.far = dist + radius * 2;
+        camera.lookAt(0, 0, 0);
+        camera.updateProjectionMatrix();
+      }
+
+      // Render one frame at the given Y rotation (degrees). Called per-frame by
+      // the runner; returns true so Playwright can await a concrete value.
+      window.__renderAngle = function (deg) {
+        pivot.rotation.y = (deg * Math.PI) / 180;
+        renderer.render(scene, camera);
+        return true;
+      };
+
+      new GLTFLoader().load(
+        MODEL_URL,
+        (gltf) => {
+          pivot.add(gltf.scene);
+          frameCamera(gltf.scene);
+          renderer.render(scene, camera);
+          window.__ready = true;
+        },
+        undefined,
+        (err) => {
+          window.__error = String(err?.message || err || "GLB load failed");
+        },
+      );
+    </script>
+  </body>
+</html>
