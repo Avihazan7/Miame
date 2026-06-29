@@ -81,11 +81,9 @@ for all
 using (auth.role() = 'service_role')
 with check (auth.role() = 'service_role');
 
-drop policy if exists "public can insert media events" on public.vehicle_media_events;
-create policy "public can insert media events"
-on public.vehicle_media_events
-for insert
-with check (true);
+-- NOTE: media events are inserted by the /api/vehicle-media-events route using
+-- the service-role key (which bypasses RLS), so there is intentionally NO
+-- anonymous INSERT policy here — RLS default-denies direct client inserts.
 
 drop policy if exists "service can read media events" on public.vehicle_media_events;
 create policy "service can read media events"
@@ -93,11 +91,9 @@ on public.vehicle_media_events
 for select
 using (auth.role() = 'service_role');
 
-drop policy if exists "public read vehicle media bucket" on storage.objects;
-create policy "public read vehicle media bucket"
-on storage.objects
-for select
-using (bucket_id = 'vehicle-media');
+-- NOTE: `vehicle-media` is a PUBLIC bucket — object URLs are served without a
+-- broad SELECT policy on storage.objects. We intentionally omit one so clients
+-- can't list/enumerate every file in the bucket (only fetch known URLs).
 
 drop policy if exists "service manage vehicle media bucket" on storage.objects;
 create policy "service manage vehicle media bucket"
@@ -109,6 +105,7 @@ with check (bucket_id = 'vehicle-media' and auth.role() = 'service_role');
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   new.updated_at = now();
