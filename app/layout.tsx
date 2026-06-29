@@ -6,6 +6,7 @@ import MarkField from "@/components/MarkField";
 import MotionFx from "@/components/MotionFx";
 import HeroIntro from "@/components/HeroIntro";
 import ScrollTop from "@/components/ScrollTop";
+import StaffToolbar from "@/components/StaffToolbar";
 
 // Gate the cinematic entrance before first paint (no flash, no-JS safe).
 // Full sequence on first visit per session, a quick settle afterwards,
@@ -168,6 +169,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <MotionFx />
         <HeroIntro />
+        <StaffToolbar />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
