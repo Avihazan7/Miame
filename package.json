@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "guardian": "node scripts/arch-guardian.mjs"
+    "guardian": "node scripts/arch-guardian.mjs",
+    "build:glb": "node scripts/build-glb.mjs",
+    "publish:glb": "node scripts/publish-glb-to-bucket.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",

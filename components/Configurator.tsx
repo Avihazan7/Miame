@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MODELS, getModel } from "@/lib/models";
+import { MIA_GLB_URL } from "@/lib/content";
 import {
   CustomerType,
   TRACKS,
@@ -215,8 +216,12 @@ export default function Configurator() {
 
   // Ultra Vehicle Vision media for the Mia FOUR. Images live in /public (this
   // vertical isn't in the Supabase car catalog); the live Deal Score + monthly
-  // payment flow through from the simulator. When a 360° frame set or a GLB is
-  // added (Supabase bucket), the spin/3D tabs light up automatically.
+  // payment flow through from the simulator. The 3D-Pro tab is driven by a
+  // professional GLB (procedurally authored by scripts/build-glb.mjs and served
+  // from /public; override with NEXT_PUBLIC_MIA_GLB_URL once it's published to
+  // the Supabase `vehicle-media` bucket). A 360° frame set lights up its tab
+  // automatically when added.
+  const glbUrl = MIA_GLB_URL;
   const vehicleMedia: UltraVehicleMedia = {
     id: "mia-four-x4",
     make: "Mia FOUR",
@@ -237,7 +242,8 @@ export default function Configurator() {
       { url: "/miame-life-1.webp", alt: "מיה פור באורח חיים" },
       { url: "/mia-beach.webp", alt: "מיה פור על החוף" },
     ],
-    badges: ["תמונות 4K", "VR 360° בקרוב", "3D Pro בקרוב"],
+    model3d: { glbUrl, posterUrl: "/mia-four-x4-night-rear.jpg" },
+    badges: ["תמונות 4K", "3D Pro · GLB", "VR 360° בקרוב"],
   };
 
   return (

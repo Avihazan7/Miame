@@ -71,3 +71,12 @@ export const DEALERS: [string, string, string][] = [
 
 /** Brand WhatsApp / sales line (also configurable via NEXT_PUBLIC_WHATSAPP_NUMBER). */
 export const SALES_WHATSAPP = "972547477477";
+
+/**
+ * Professional GLB for the Ultra Vehicle Vision "3D Pro" tab. Authored
+ * deterministically by scripts/build-glb.mjs and served from /public. Override
+ * with NEXT_PUBLIC_MIA_GLB_URL once the asset is published to the Supabase
+ * `vehicle-media` bucket (scripts/publish-glb-to-bucket.mjs).
+ */
+export const MIA_GLB_URL =
+  process.env.NEXT_PUBLIC_MIA_GLB_URL || "/models/mia-four-x4.glb";
