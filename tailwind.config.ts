@@ -11,9 +11,12 @@ const config: Config = {
         snow: "#FFFFFF",
         mist: "#F2F8FD",
         azure: "#0A84FF",
-        sky: "#5AC8FA",
+        // NOTE: `slate` and `sky` were brand single-colors here, but they clobbered
+        // Tailwind's default slate-*/sky-* scales that the vehicle-media components
+        // need (bg-slate-950, from-sky-400, …). Nothing uses them as utilities (the
+        // brand reads --slate/--sky CSS vars in globals.css), so they're removed to
+        // restore the full default scales.
         ink: "#0B0F14",
-        slate: "#5B6675",
         line: "#E6EEF6"
       },
       fontFamily: {
