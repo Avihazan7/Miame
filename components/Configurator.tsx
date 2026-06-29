@@ -15,7 +15,13 @@ import {
 import { saveLead, LeadRecord } from "@/lib/supabase";
 import { track } from "@/lib/analytics";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import WaIcon from "./WaIcon";
+
+// The 3D "Deal Aura" showcase pulls in the three.js stack — load it lazily and
+// client-only so it never enters SSR or the initial bundle. It renders the live
+// vehicle and brightens its azure aura as the SEALED deal score climbs.
+const DealShowcase = dynamic(() => import("./DealShowcase"), { ssr: false });
 
 /* count-up animation, strict-mode safe (cancelable rAF, continues from last shown value) */
 function useCountUp(target: number, duration = 520): number {
@@ -403,7 +409,14 @@ export default function Configurator() {
 
             {/* result */}
             <div className="sim-result">
-              <img className="res-product" src="/mia-four-x4.webp" alt="" aria-hidden="true" />
+              {/* 3D Deal Aura — the live vehicle lit by the SEALED deal score.
+                  Supersedes the former faint decorative vehicle image. */}
+              <DealShowcase
+                imageUrl="/mia-four.webp"
+                score={score?.score ?? 0}
+                grade={score?.grade}
+                className="deal-aura"
+              />
               <div className="res-eyebrow">תשלום חודשי משוער</div>
               <div className="res-model">
                 {model.name} · מסלול {track_.label}
