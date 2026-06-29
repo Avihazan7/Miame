@@ -24,7 +24,10 @@ const heebo = Heebo({
 });
 
 const SITE_URL = "https://www.miame.co.il";
-const OG_IMAGE = "/mia-four.webp";
+// Social/OG preview: the branded lifestyle scene (real background, reads well in
+// social cards). Product schema uses the clean cutout of the actual Mia FOUR X4.
+const OG_IMAGE = "/mia-four-lifestyle.webp";
+const PRODUCT_IMAGE = "/mia-four-x4-hero.webp";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -42,7 +45,7 @@ export const metadata: Metadata = {
     locale: "he_IL",
     type: "website",
     images: [
-      { url: OG_IMAGE, width: 760, height: 760, alt: "MiaMe Four — ניידות חשמלית פרימיום" }
+      { url: OG_IMAGE, width: 1200, height: 1200, alt: "MiaMe Four — ניידות חשמלית פרימיום" }
     ]
   },
   twitter: {
@@ -77,7 +80,7 @@ const JSON_LD = {
       "@type": "Product",
       "@id": SITE_URL + "/#product",
       name: "MiaMe Four",
-      image: SITE_URL + OG_IMAGE,
+      image: SITE_URL + PRODUCT_IMAGE,
       description:
         "רכב ניידות חשמלי פרימיום על פלטפורמה מוגנת פטנט, סוללת ליתיום נשלפת 60V ועד 4 מנועים.",
       brand: { "@type": "Brand", name: "MiaMe" },
@@ -95,7 +98,7 @@ const JSON_LD = {
       "@type": "LocalBusiness",
       "@id": SITE_URL + "/#localbusiness",
       name: "MiaMe · חנות הדגל",
-      image: SITE_URL + OG_IMAGE,
+      image: SITE_URL + PRODUCT_IMAGE,
       url: SITE_URL,
       telephone: "+972-54-747-7477",
       address: {
