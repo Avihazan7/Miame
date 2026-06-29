@@ -181,3 +181,36 @@ DATABASE_URL=... RLS_ENABLED=true npm run seed:miame
 - [ ] ליד בדיקה דרך הסימולטור יצר ישות `lead` עם `tenant_id='miame'` ואירוע `lead.captured` ב-outbox.
 - [ ] ה-Deal Score badge מוצג לאחר שליחת ליד.
 - [ ] בדיקת בידוד: בקשה עם Host של miame לא מחזירה נתוני tenant אחר.
+
+---
+
+## 13. דומיין פרודקשן ובריאות (Task 4 — Double Triangle)
+
+הדומיין הציבורי חי ותקין. הקנוניקל הוא **`https://www.miame.co.il`**, וה-apex מפנה אליו.
+
+### מצב חי (נבדק)
+
+| Host | תוצאה |
+|---|---|
+| `https://miame.co.il` | `308` → `https://www.miame.co.il/` (סופי `200`) |
+| `https://www.miame.co.il` | `200` |
+| `https://www.miame.co.il/api/health` | `200` · `{"ok":true,"environment":"production"}` |
+
+החזרת `environment:"production"` עם ה-commit האחרון של `main` היא ההוכחה ש-**ה-production branch הוא `main`** וש-merge ל-`main` מקודם אוטומטית ל-Production.
+
+### קנוניקל בקוד (מקור-אמת)
+
+ההפניה apex → www מעוגנת ב-`next.config.js` (`redirects()` עם `has.host`), לא רק בהגדרת הדומיין ב-Vercel. כך הקנוניקל **שחזיר ומגורסן** ושורד בנייה-מחדש של הפרויקט. בטוח-מלולאה: Next מהדר את ה-host דרך path-to-regexp (מעוגן, נקודות escaped) — תואם רק ל-apex, לא ל-`www` ולא ל-preview של `*.vercel.app`, ואינרטי ב-localhost.
+
+### בדיקת בריאות דומיינים
+
+```bash
+npm run health:domains   # בודק 6 דומיינים (miame/leasing/ulease · apex+www), יוצא עם שגיאה אם משהו נפל
+```
+
+### נותר ידני בדשבורד Vercel (לא ניתן דרך MCP)
+
+- [ ] לוודא ש-Production Branch = `main` (Project → Settings → Git).
+- [ ] לוודא ש-`miame.co.il` + `www.miame.co.il` מחוברים, קנוניקל = www, apex→www.
+- [ ] **Preview Deployment Protection** מופעל (Project → Settings → Deployment Protection).
+- [ ] לאחר העלאה: להריץ advisors ב-Supabase ולוודא שאזהרת `auth_rls_initplan` נעלמה (אחרי merge של leasing-api#155 + boot עם `RLS_ENABLED=true`).

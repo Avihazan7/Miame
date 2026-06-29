@@ -9,6 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "guardian": "node scripts/arch-guardian.mjs",
+    "health:domains": "node scripts/domain-health-check.mjs",
     "build:glb": "node scripts/build-glb.mjs",
     "publish:glb": "node scripts/publish-glb-to-bucket.mjs"
   },
