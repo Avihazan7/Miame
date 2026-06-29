@@ -239,8 +239,8 @@ export default function Configurator() {
                     <Image
                       src="/mia-four-x4-hero.webp"
                       alt={m.name}
-                      width={621}
-                      height={717}
+                      width={774}
+                      height={860}
                       className="card-veh"
                     />
                   </div>
