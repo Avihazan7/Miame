@@ -74,9 +74,15 @@ export const SALES_WHATSAPP = "972547477477";
 
 /**
  * Professional GLB for the Ultra Vehicle Vision "3D Pro" tab. Authored
- * deterministically by scripts/build-glb.mjs and served from /public. Override
- * with NEXT_PUBLIC_MIA_GLB_URL once the asset is published to the Supabase
- * `vehicle-media` bucket (scripts/publish-glb-to-bucket.mjs).
+ * deterministically by scripts/build-glb.mjs and published to the public
+ * Supabase `vehicle-media` bucket (scripts/publish-glb-to-bucket.mjs). The URL
+ * is derived from the project's Supabase URL so it tracks the environment; set
+ * NEXT_PUBLIC_MIA_GLB_URL to override, or fall back to the committed copy under
+ * /public/models when no Supabase URL is configured.
  */
+const _supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://thhyfwoeybkptxvbpcmg.supabase.co";
 export const MIA_GLB_URL =
-  process.env.NEXT_PUBLIC_MIA_GLB_URL || "/models/mia-four-x4.glb";
+  process.env.NEXT_PUBLIC_MIA_GLB_URL ||
+  (_supabaseUrl
+    ? `${_supabaseUrl}/storage/v1/object/public/vehicle-media/mia-four-x4/mia-four-x4.glb`
+    : "/models/mia-four-x4.glb");
