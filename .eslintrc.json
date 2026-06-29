@@ -2,5 +2,40 @@
   "extends": "next/core-web-vitals",
   "rules": {
     "react/no-unescaped-entities": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["components/**/*.{ts,tsx}", "app/**/*.{ts,tsx}"],
+      "excludedFiles": ["app/api/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "jsonwebtoken",
+                "message": "Server-only crypto. Use it behind app/api/** or lib/umm-crypto.ts — never in client-reachable code."
+              },
+              {
+                "name": "crypto-js",
+                "message": "Server-only crypto. Use it behind app/api/** or lib/umm-crypto.ts — never in client-reachable code."
+              },
+              {
+                "name": "@/lib/umm-crypto",
+                "message": "lib/umm-crypto is server-only (guarded by `server-only`). Call it from a route handler under app/api/**, not from a component/page."
+              }
+            ]
+          }
+        ],
+        "no-restricted-properties": [
+          "error",
+          {
+            "object": "process",
+            "property": "env",
+            "message": "Secrets and scoring weights stay server-side. In client-reachable code use only NEXT_PUBLIC_* values, read them in app/api/** route handlers, or pass an already-sealed score down as a prop."
+          }
+        ]
+      }
+    }
+  ]
 }
