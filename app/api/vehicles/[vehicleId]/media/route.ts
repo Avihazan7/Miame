@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 
-function adminSupabase() {
+// Returns null (instead of throwing) when the server Supabase env vars are absent,
+// so a missing/misconfigured env degrades GRACEFULLY to "no media" rather than a
+// 500. The consumer treats any non-ok response as "render nothing".
+function adminSupabase(): SupabaseClient | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !key) {
-    throw new Error("Missing Supabase server env vars.");
+    return null;
   }
 
   return createClient(url, key, {
@@ -21,6 +24,15 @@ export async function GET(
   { params }: { params: { vehicleId: string } }
 ) {
   const supabase = adminSupabase();
+
+  if (!supabase) {
+    // Env not configured on this deployment — fail soft so the page renders
+    // without media instead of surfacing a 500 to the visitor.
+    return NextResponse.json(
+      { ok: false, error: "vehicle_media_unavailable", media: null },
+      { status: 503, headers: { "Cache-Control": "no-store" } }
+    );
+  }
 
   const { data, error } = await supabase
     .from("vehicle_media_assets")
