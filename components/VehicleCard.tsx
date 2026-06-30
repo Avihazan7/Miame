@@ -144,14 +144,16 @@ export default function VehicleCard({ model, matched = false, matchPct, elevatio
           {ultra ? (
             <span className="shrink-0 text-xs font-medium text-amber-700">דרוש אישור אנושי</span>
           ) : (
-            <button
+            // A span (not a button): the whole card is wrapped in a Link to the
+            // standalone model page, so nested interactive elements are invalid.
+            <span
               className={[
                 "shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold text-white transition",
-                hot ? "bg-azure shadow-lift hover:brightness-110" : "bg-azure/90 hover:brightness-110",
+                hot ? "bg-azure shadow-lift group-hover:brightness-110" : "bg-azure/90 group-hover:brightness-110",
               ].join(" ")}
             >
               {hot ? "דברו איתי עכשיו" : "לפרטים"}
-            </button>
+            </span>
           )}
         </div>
       </div>

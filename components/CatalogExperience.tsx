@@ -14,6 +14,7 @@
 // The brain decides (sealed, server-side); this component only reflects.
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import VehicleCard from "@/components/VehicleCard";
 import {
   type CatalogModel,
@@ -51,6 +52,28 @@ function viewSignal(m: CatalogModel): string {
   if (/חשמל/.test(fuel)) return "view_ev";
   if (isUltraPremium(m)) return "view_luxury";
   return "view_specs";
+}
+
+interface BrandGroup {
+  make: string;
+  makeHe: string;
+  models: CatalogModel[];
+}
+
+/** Group models under their manufacturer (יצרן), brands A→ת, models cheapest
+ *  first within a brand — the "תחת כל יצרן/מותג" catalog layout. */
+function groupByBrand(models: CatalogModel[]): BrandGroup[] {
+  const byMake = new Map<string, BrandGroup>();
+  for (const m of models) {
+    const g = byMake.get(m.make) ?? { make: m.make, makeHe: m.makeHe ?? m.make, models: [] };
+    g.models.push(m);
+    byMake.set(m.make, g);
+  }
+  const groups = [...byMake.values()];
+  for (const g of groups) {
+    g.models.sort((a, b) => (a.fromPrice ?? Infinity) - (b.fromPrice ?? Infinity) || a.name.localeCompare(b.name, "he"));
+  }
+  return groups.sort((a, b) => a.makeHe.localeCompare(b.makeHe, "he"));
 }
 
 export default function CatalogExperience({ models }: { models: CatalogModel[] }) {
@@ -97,6 +120,7 @@ export default function CatalogExperience({ models }: { models: CatalogModel[] }
 
   const elevation = elevationForBand(state.band);
   const matched = models.find((m) => m.id === state.matchId) ?? null;
+  const brands = groupByBrand(models);
 
   return (
     <div className="flex flex-col gap-5">
@@ -128,19 +152,34 @@ export default function CatalogExperience({ models }: { models: CatalogModel[] }
         </div>
       )}
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {models.map((m) => (
-          <VehicleCard
-            key={m.id}
-            model={m}
-            matched={m.id === state.matchId}
-            matchPct={m.id === state.matchId ? state.matchPct ?? undefined : undefined}
-            elevation={elevation}
-            onView={onView}
-          />
-        ))}
-      </div>
+      {/* Catalog — grouped under each manufacturer (יצרן). Each card links to the
+          standalone model page; opening it also emits the In-Market signal. */}
+      {brands.map((g) => (
+        <section key={g.make} aria-label={g.makeHe} className="flex flex-col gap-3">
+          <div className="flex items-baseline justify-between border-b border-line pb-2">
+            <h2 className="text-xl font-extrabold text-ink">{g.makeHe}</h2>
+            <span className="text-xs text-slate">{g.models.length} דגמים</span>
+          </div>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {g.models.map((m) => (
+              <Link
+                key={m.id}
+                href={`/catalog-2026/${encodeURIComponent(m.id)}`}
+                className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-azure rounded-xl2"
+                aria-label={`${m.makeHe ?? m.make} ${m.name} — לדף הדגם`}
+              >
+                <VehicleCard
+                  model={m}
+                  matched={m.id === state.matchId}
+                  matchPct={m.id === state.matchId ? state.matchPct ?? undefined : undefined}
+                  elevation={elevation}
+                  onView={onView}
+                />
+              </Link>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

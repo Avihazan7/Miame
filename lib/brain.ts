@@ -139,6 +139,67 @@ export function getCatalogModels(make?: string): Promise<CatalogModelsResponse |
   return call<CatalogModelsResponse>(`/v1/public/catalog/models${q}`, { method: "GET" });
 }
 
+// ── Model detail (the standalone model page) ─────────────────────────────────
+// One model's full record: government data + imagery + trims (each with its
+// official MoT code), plus the live "available for a deal" window — the
+// supplier/importer offers matched to THIS model by its degem code. The public
+// (private-audience) endpoint returns only B2C-eligible offers; B2B/partner are
+// gated behind the authenticated tier.
+
+/** A trim row on the model page — carries its official MoT model code. */
+export interface TrimApi {
+  id: string;
+  trim: string | null;
+  modelYear: number | null;
+  listPrice: number;
+  fuelType: string | null;
+  attributes: Record<string, unknown> | null;
+  motTozeretCd: number | null;
+  motDegemCd: number | null;
+}
+
+/** One supplier/importer offer matched to the model (the available window). */
+export interface OfferApi {
+  vin: string;
+  trim: string | null;
+  modelYear: number | null;
+  fuelType: string | null;
+  listPrice: number | null;
+  offerPrice: number | null;
+  dealScore: number | null;
+  registration: { year: number; month: number } | null;
+  zeroKm: { price: number; ageMonths: number } | null;
+  salesChannel: string;
+  salesChannelLabel: string;
+}
+
+export interface ModelDetailApi {
+  model: {
+    id: string;
+    make: string;
+    makeHe: string | null;
+    modelFamily: string;
+    name: string;
+    bodyType: string | null;
+    fuelType: string | null;
+    fromPrice: number | null;
+    motTozeretCd: number | null;
+    motDegemCd: number | null;
+    availableNew: boolean;
+    attributes: Record<string, unknown> | null;
+    segment: string | null;
+  };
+  media?: { studio?: string | null } | null;
+  trims: TrimApi[];
+  available: OfferApi[];
+  availableCount: number;
+}
+
+/** Fetch one model's full detail by catalog id (e.g. "mot-toyota-corolla"). */
+export function getModelDetail(id: string): Promise<ModelDetailApi | null> {
+  return call<ModelDetailApi>(`/v1/public/catalog/models/${encodeURIComponent(id)}`, { method: "GET" });
+}
+
 /** One ranked Master-Match result. */
 export interface ModelMatchApi {
   id: string;
