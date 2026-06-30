@@ -291,6 +291,9 @@ svg{display:block}
   padding:13px 15px;font-size:15px;font-family:inherit;outline:none;transition:border .16s ease}
 .inp::placeholder{color:#7e93b8}
 .inp:focus{border-color:var(--sky);background:rgba(255,255,255,.1)}
+.inp-error{border-color:#ff7a7a;background:rgba(255,90,90,.08)}
+.inp-error:focus{border-color:#ff7a7a}
+.lead-err{font-size:13px;color:#ffb0b0;text-align:center;margin-top:-2px;margin-bottom:8px;font-weight:600}
 .disclaimer{font-size:11.5px;color:#7e93b8;margin-top:12px;text-align:center;line-height:1.5}
 .lead-ok{font-size:13px;color:#7fd4a0;text-align:center;margin-top:10px;font-weight:600}
 

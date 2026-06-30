@@ -101,6 +101,7 @@ export default function Configurator() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [sent, setSent] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
   const [score, setScore] = useState<SealedScore | null>(null);
 
   const model = getModel(modelId);
@@ -153,6 +154,15 @@ export default function Configurator() {
 
   function openDeal(intent: string, evt: "LeadSubmitted" | "WhatsAppClicked") {
     const digits = phone.replace(/[^\d]/g, "");
+    // A valid phone is the whole point — without it there is no lead to capture.
+    // Block here so we never fire a "lead" event or open WhatsApp with no contact
+    // (which previously produced LeadSubmitted events with zero saved leads).
+    if (digits.length < 9) {
+      setPhoneError(true);
+      setSent(false);
+      return;
+    }
+    setPhoneError(false);
     if (digits.length >= 9) {
       const lead: LeadRecord = {
         full_name: name.trim(),
@@ -520,14 +530,23 @@ export default function Configurator() {
                     onChange={(e) => setName(e.target.value)}
                   />
                   <input
-                    className="inp"
+                    className={phoneError ? "inp inp-error" : "inp"}
                     placeholder="טלפון"
                     aria-label="מספר טלפון"
+                    aria-invalid={phoneError}
                     inputMode="tel"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => {
+                      setPhone(e.target.value);
+                      if (phoneError) setPhoneError(false);
+                    }}
                   />
                 </div>
+                {phoneError && (
+                  <div className="lead-err" role="alert">
+                    נא להזין מספר טלפון תקין כדי שנחזור אליכם 📱
+                  </div>
+                )}
                 <div className="cta-stack">
                   <button
                     className="btn btn-primary btn-block"
