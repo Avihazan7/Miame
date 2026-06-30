@@ -216,12 +216,15 @@ export default function Configurator() {
 
   // Ultra Vehicle Vision media for the Mia FOUR. Images live in /public (this
   // vertical isn't in the Supabase car catalog); the live Deal Score + monthly
-  // payment flow through from the simulator. The 3D-Pro tab is driven by a
-  // professional GLB (procedurally authored by scripts/build-glb.mjs and served
-  // from /public; override with NEXT_PUBLIC_MIA_GLB_URL once it's published to
-  // the Supabase `vehicle-media` bucket). A 360° frame set lights up its tab
-  // automatically when added.
-  const glbUrl = MIA_GLB_URL;
+  // payment flow through from the simulator.
+  //
+  // 3D-Pro tab: surfaced ONLY when a real, launch-grade GLB has been published
+  // via NEXT_PUBLIC_MIA_GLB_URL. The committed /public copy (and the matching
+  // Supabase bucket copy) is a lightweight procedural placeholder — not good
+  // enough for launch — so until a genuine model is published we lead with the
+  // 4K studio photography (our current tech). Drop the env var in and the 3D tab
+  // lights up automatically, no code change needed.
+  const glbUrl = MIA_GLB_URL || undefined;
   const vehicleMedia: UltraVehicleMedia = {
     id: "mia-four-x4",
     make: "Mia FOUR",
@@ -242,8 +245,10 @@ export default function Configurator() {
       { url: "/miame-life-1.webp", alt: "מיה פור באורח חיים" },
       { url: "/mia-beach.webp", alt: "מיה פור על החוף" },
     ],
-    model3d: { glbUrl, posterUrl: "/mia-four-x4-night-rear.jpg" },
-    badges: ["תמונות 4K", "3D Pro · GLB", "VR 360° בקרוב"],
+    model3d: glbUrl ? { glbUrl, posterUrl: "/mia-four-x4-night-rear.jpg" } : undefined,
+    badges: glbUrl
+      ? ["תמונות 4K", "3D Pro · GLB", "VR 360° בקרוב"]
+      : ["תמונות 4K", "סטודיו פרימיום", "VR 360° בקרוב"],
   };
 
   return (
