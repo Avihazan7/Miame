@@ -36,6 +36,30 @@ const SELECTORS = [
   ".rental-strip"
 ].join(",");
 
+/**
+ * Reveal "personalities" — each content type enters with its own gesture so the
+ * page feels composed rather than uniform, while staying one coherent language:
+ *   • v-head  — section titles settle down with a soft upward clip-wipe
+ *   • v-zoom  — media / visual blocks bloom in from a gentle blurred zoom
+ *   • v-tilt  — wide strips glide up with a barely-there lift
+ * Everything else keeps the calm default rise. First match wins.
+ */
+const VARIANTS: Array<{ sel: string; v: string }> = [
+  { sel: ".sec-head", v: "v-head" },
+  {
+    sel: ".specs-media,.stage,.feat-show-main,.map-embed,.tribute-calc,.importer-inner,.specs-table",
+    v: "v-zoom"
+  },
+  { sel: ".stat-strip,.rental-strip", v: "v-tilt" }
+];
+
+function variantFor(el: Element): string | null {
+  for (const { sel, v } of VARIANTS) {
+    if (el.matches(sel)) return v;
+  }
+  return null;
+}
+
 export default function MotionFx() {
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -52,6 +76,8 @@ export default function MotionFx() {
       counters.set(parent, i + 1);
       el.style.setProperty("--reveal-i", String(Math.min(i, 6)));
       el.classList.add("reveal");
+      const v = variantFor(el);
+      if (v) el.classList.add(v);
     });
 
     const io = new IntersectionObserver(
