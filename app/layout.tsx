@@ -4,6 +4,7 @@ import "./globals.css";
 import AmbientLight from "@/components/AmbientLight";
 import MarkField from "@/components/MarkField";
 import MotionFx from "@/components/MotionFx";
+import ScrollProgress from "@/components/ScrollProgress";
 import HeroIntro from "@/components/HeroIntro";
 import ScrollTop from "@/components/ScrollTop";
 import StaffToolbar from "@/components/StaffToolbar";
@@ -163,6 +164,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="he" dir="rtl" className={heebo.variable}>
       <body>
         <script dangerouslySetInnerHTML={{ __html: INTRO_GATE }} />
+        <ScrollProgress />
         <ScrollTop />
         <AmbientLight />
         <MarkField />

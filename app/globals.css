@@ -651,9 +651,18 @@ svg{display:block}
 .amb-3{width:32vw;height:32vw;top:36%;inset-inline-start:44%;
   background:radial-gradient(circle,hsla(188,96%,72%,.42),transparent 70%);
   animation:drift3 30s ease-in-out infinite}
+/* aurora ribbon — the "Free Feel" band of light: a wide, breathing sheet of
+   תכלת that drifts and lifts with the scroll, carrying the page's open-sky energy */
+.amb-aurora{position:absolute;inset-inline:-20%;top:-6%;height:64vh;pointer-events:none;
+  background:
+    radial-gradient(60% 120% at 28% 0%,hsla(var(--amb-hue-a),95%,70%,.17),transparent 60%),
+    radial-gradient(55% 120% at 74% 6%,hsla(var(--amb-hue-b),92%,68%,.15),transparent 62%),
+    conic-gradient(from 118deg at 50% -12%,transparent,hsla(188,96%,72%,.12),transparent 46%);
+  filter:blur(48px);mix-blend-mode:multiply;
+  animation:auroraFlow 22s ease-in-out infinite;will-change:transform,opacity}
 .amb-spotlight{position:absolute;inset:0;opacity:0;mix-blend-mode:multiply;transition:opacity .7s ease;
-  background:radial-gradient(440px circle at var(--mx) var(--my),
-    hsla(186,96%,70%,.22),transparent 60%)}
+  background:radial-gradient(520px circle at var(--mx) var(--my),
+    hsla(184,98%,72%,.24),hsla(196,96%,70%,.10) 38%,transparent 62%)}
 .amb-live .amb-spotlight{opacity:calc(.95*var(--amb-intensity))}
 .amb-grain{position:absolute;inset:0;opacity:.035;mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -661,6 +670,11 @@ svg{display:block}
 @keyframes drift1{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-4vw,3vw,0) scale(1.12)}}
 @keyframes drift2{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(5vw,-3vw,0) scale(1.1)}}
 @keyframes drift3{0%,100%{transform:translate3d(0,0,0) scale(1)}33%{transform:translate3d(3vw,2vw,0) scale(.92)}66%{transform:translate3d(-3vw,-2vw,0) scale(1.08)}}
+/* breathing + scroll-lift; the --amb-scroll var (set by AmbientLight) rides along */
+@keyframes auroraFlow{
+  0%,100%{transform:translate3d(-2%,calc(var(--amb-scroll,0px) * -1),0) scale(1);opacity:calc(.72*var(--amb-intensity))}
+  50%{transform:translate3d(3%,calc(var(--amb-scroll,0px) * -1 - 12px),0) scale(1.06);opacity:calc(.96*var(--amb-intensity))}
+}
 
 /* ─── scattered "מיה" mark touch ────────────────────────────────────── */
 .mark-field{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -685,11 +699,25 @@ svg{display:block}
 .fm-11{top:8%;inset-inline-start:54%;--r:-5deg;--s:.44;color:var(--cyan);opacity:.05;animation-duration:32s;animation-delay:-8s}
 .fm-12{top:54%;inset-inline-start:28%;--r:9deg;--s:.5;color:var(--teal);opacity:.05;animation-duration:27s;animation-delay:-10s}
 
+/* ─── scroll progress ribbon (RTL: fills from the right) ────────────── */
+.scroll-progress{position:fixed;top:0;inset-inline:0;height:3px;z-index:70;pointer-events:none;
+  transform-origin:100% 50%;transform:scaleX(var(--sp,0));
+  background:linear-gradient(90deg,#0ce5dd,#39cdee 45%,#0a84ff);
+  box-shadow:0 0 10px rgba(12,229,221,.55),0 1px 4px rgba(10,132,255,.4);
+  transition:transform .12s linear,opacity .4s ease;opacity:calc(.25 + .75*var(--sp,0))}
+
 /* ─── scroll reveal ─────────────────────────────────────────────────── */
 .reveal{opacity:0;transform:translateY(24px) scale(.985);
-  transition:opacity .72s cubic-bezier(.2,.7,.2,1),transform .72s cubic-bezier(.2,.7,.2,1);
+  transition:opacity .72s cubic-bezier(.2,.7,.2,1),transform .82s cubic-bezier(.2,.7,.2,1),
+    filter .72s ease,clip-path .9s cubic-bezier(.2,.7,.2,1);
   transition-delay:calc(var(--reveal-i,0)*70ms);will-change:opacity,transform}
-.reveal.in{opacity:1;transform:none}
+.reveal.in{opacity:1;transform:none;filter:none;clip-path:inset(0 0 0 0)}
+
+/* unique per-type entrances — one family, distinct gestures */
+.reveal.v-head{transform:translateY(20px);clip-path:inset(0 0 14% 0);filter:blur(.4px)}
+.reveal.v-zoom{transform:translateY(20px) scale(.93);filter:blur(7px)}
+.reveal.v-tilt{transform:translateY(30px) scale(.97)}
+.reveal.v-tilt.in{transform:none}
 
 /* ─── eyebrow & hero polish ─────────────────────────────────────────── */
 .eyebrow{border:1px solid rgba(12,229,221,.28);
@@ -1057,6 +1085,7 @@ html.intro-quick .hero-sub{animation:heroRise 520ms ease both 120ms}
   .deliver-banner::after{animation:none!important;opacity:.7}
   .btn::after{transition:opacity .25s ease}
   .btn:hover::after{background-position:150% 0}
+  .amb-aurora{animation:none!important;opacity:calc(.7*var(--amb-intensity))}
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -1076,6 +1105,8 @@ a,button,.btn,.tab,.mp,input,.dealer-btn,.imp-btn{touch-action:manipulation}
   .amb-1{width:74vw;height:74vw}
   .amb-2{width:68vw;height:68vw}
   .amb-3{display:none}
+  /* lighter aurora blur keeps the band buttery on phones */
+  .amb-aurora{filter:blur(34px);height:52vh}
   /* thin out the drifting marks (paint cost) */
   .fm-7,.fm-9,.fm-10,.fm-11,.fm-12{display:none}
   /* drop the infinite hero sheen loop on phones (battery) */

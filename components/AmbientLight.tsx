@@ -74,10 +74,29 @@ export default function AmbientLight() {
       window.addEventListener("pointermove", onMove, { passive: true });
     }
 
+    // 3) Scroll-linked flow — the aurora drifts at its own pace as you move down
+    //    the page, giving the atmosphere a sense of forward motion and lift.
+    //    Pure CSS-var write (no layout reads beyond scrollY), rAF-throttled.
+    let sraf = 0;
+    const onScroll = () => {
+      if (sraf) return;
+      sraf = requestAnimationFrame(() => {
+        const y = window.scrollY || 0;
+        root.style.setProperty("--amb-scroll", (y * 0.06).toFixed(1) + "px");
+        sraf = 0;
+      });
+    };
+    if (!reduce) {
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+    }
+
     return () => {
       window.clearInterval(clock);
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("scroll", onScroll);
       if (raf) cancelAnimationFrame(raf);
+      if (sraf) cancelAnimationFrame(sraf);
       root.classList.remove("amb-live");
     };
   }, []);
@@ -87,6 +106,7 @@ export default function AmbientLight() {
       <span className="amb-blob amb-1" />
       <span className="amb-blob amb-2" />
       <span className="amb-blob amb-3" />
+      <span className="amb-aurora" />
       <span className="amb-spotlight" />
       <span className="amb-sweep" />
       <span className="amb-grain" />
