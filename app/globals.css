@@ -70,11 +70,20 @@ svg{display:block}
   border-radius:999px;padding:15px 28px;border:none;background:none;isolation:isolate;
   transition:transform .16s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, filter .22s ease, color .18s ease, border-color .18s ease;
   white-space:nowrap;transform:translateZ(0)}
-/* shared specular sheen on top edge */
+/* shared specular sheen on top edge — the "wax" coat */
 .btn::before{content:"";position:absolute;inset:1px 1px auto 1px;height:42%;border-radius:999px 999px 40% 40%;
-  background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));pointer-events:none;z-index:1;opacity:.9}
+  background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0));pointer-events:none;z-index:1;opacity:.92}
+/* nano-crystalline glint — a fine specular facet that sweeps across the surface on hover */
+.btn::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
+  background:linear-gradient(105deg,transparent 36%,rgba(255,255,255,.5) 47%,rgba(255,255,255,.12) 53%,transparent 64%);
+  background-size:230% 100%;background-position:150% 0;opacity:0;mix-blend-mode:screen;
+  transition:opacity .25s ease, background-position .7s cubic-bezier(.2,.7,.2,1)}
 .btn:hover{transform:translateY(-2px)}
+.btn:hover::after{opacity:1;background-position:-50% 0}
 .btn:active{transform:translateY(1px) scale(.992)}
+/* crisp, accessible focus halo that rides over the 3D shadow */
+.btn:focus-visible{outline:none;
+  box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--azure), 0 0 0 8px rgba(12,229,221,.28), 0 14px 30px rgba(10,132,255,.34)}
 
 .btn-primary{color:#fff;background:linear-gradient(180deg,#41a4ff,#0a84ff 48%,#0061cf);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.5), inset 0 -3px 7px rgba(2,38,86,.4),
@@ -100,6 +109,10 @@ svg{display:block}
 .btn-sm{padding:11px 19px;font-size:14.5px}
 .btn-sm::before{height:46%}
 .btn-block{width:100%}
+/* crystalline focus halo shared by every secondary control — same polish, accessible */
+.btn-testride:focus-visible,.dealer-btn:focus-visible,.imp-btn:focus-visible,
+.tab:focus-visible,.mp:focus-visible{outline:none;
+  box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--azure), 0 0 0 7px rgba(12,229,221,.26)}
 .cta-stack{display:flex;flex-direction:column;gap:10px;margin-top:2px}
 
 /* header */
@@ -152,7 +165,7 @@ svg{display:block}
   background-size:34px 34px;-webkit-mask-image:radial-gradient(circle at 50% 40%,#000 40%,transparent 78%);mask-image:radial-gradient(circle at 50% 40%,#000 40%,transparent 78%)}
 .stage-label{position:absolute;top:18px;right:20px;z-index:2;background:#fff;border:1px solid var(--line);border-radius:999px;
   padding:6px 13px;font-size:12.5px;font-weight:600;color:var(--slate);box-shadow:var(--shadow-sm)}
-.vehicle{position:relative;z-index:2;width:100%;max-width:560px;margin:0 auto;filter:drop-shadow(0 28px 30px rgba(11,40,100,.2))}
+.vehicle{position:relative;z-index:2;width:100%;max-width:661px;margin:0 auto;filter:drop-shadow(0 28px 30px rgba(11,40,100,.2))}
 .floaty{animation:floaty 6.5s ease-in-out infinite}
 @keyframes floaty{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-12px) rotate(-.7deg)}}
 
@@ -802,7 +815,7 @@ html{scroll-padding-top:92px}
    ════════════════════════════════════════════════════════════════════ */
 
 /* resting state */
-.vehicle-arrive{position:relative;z-index:2;width:100%;max-width:560px;margin:0 auto}
+.vehicle-arrive{position:relative;z-index:2;width:100%;max-width:661px;margin:0 auto}
 .vehicle-arrive .vehicle{max-width:100%}
 /* the wake rides WITH the vehicle, trailing to its right (the side it drove in from) */
 .veh-wake{position:absolute;top:4%;bottom:10%;left:58%;right:-64%;z-index:-1;pointer-events:none;opacity:0}
@@ -1042,6 +1055,8 @@ html.intro-quick .hero-sub{animation:heroRise 520ms ease both 120ms}
   .brand-mark::before,.brand-mark::after,.foot-mark::before,.foot-mark::after,
   .patents-tag::before,.patents-tag::after,.res-monthly::before,.res-monthly::after,
   .deliver-banner::after{animation:none!important;opacity:.7}
+  .btn::after{transition:opacity .25s ease}
+  .btn:hover::after{background-position:150% 0}
 }
 
 /* ════════════════════════════════════════════════════════════════════
