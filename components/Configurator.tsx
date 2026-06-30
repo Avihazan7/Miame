@@ -232,7 +232,7 @@ export default function Configurator() {
     trim: model.name,
     dealScore: score?.score,
     monthlyPaymentLabel: `₪${animatedMonthly.toLocaleString("he-IL")}`,
-    cover: { url: "/mia-four-teal-side.png", alt: "מיה פור X4 · צילום סטודיו תכלת · ניידות חשמלית פרימיום" },
+    cover: { url: "/mia-four-x4-studio-hero.jpg", alt: "מיה פור X4 · צילום סטודיו · ניידות חשמלית פרימיום" },
     gallery: [
       { url: "/mia-four-x4-night-rear.jpg", alt: "מיה פור X4 · גימור סטודיו, מתלה אחורי ושיכוך חשוף" },
       { url: "/mia-four-x4-night-front.jpg", alt: "מיה פור X4 · עיצוב פרימיום מלפנים" },
@@ -247,8 +247,8 @@ export default function Configurator() {
     ],
     model3d: glbUrl ? { glbUrl, posterUrl: "/mia-four-x4-night-rear.jpg" } : undefined,
     badges: glbUrl
-      ? ["תמונות 4K", "3D Pro · GLB", "VR 360° בקרוב"]
-      : ["תמונות 4K", "סטודיו פרימיום", "VR 360° בקרוב"],
+      ? ["סטודיו פרימיום", "3D Pro · GLB", "מוגן פטנט"]
+      : ["סטודיו פרימיום", "מוגן פטנט"],
   };
 
   return (

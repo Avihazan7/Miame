@@ -129,6 +129,10 @@ export function UltraVehicleMediaStage({
 
   const hasSpin = Boolean(media.spin360?.length);
   const has3d = Boolean(media.model3d?.glbUrl);
+  // Only surface the tab row when there is more than one view to switch between.
+  // For a photos-only vehicle this hides the bar entirely — a clean image, no
+  // empty "coming soon" chips.
+  const tabCount = 1 + (hasSpin ? 1 : 0) + (has3d ? 1 : 0);
 
   function selectTab(next: TabKey) {
     setTab(next);
@@ -150,47 +154,49 @@ export function UltraVehicleMediaStage({
 
       <div className="relative grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
         <div className="min-w-0">
-          <div className="mb-4 flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => selectTab("photos")}
-              className={cx(
-                "rounded-full px-5 py-2 text-sm font-bold transition",
-                tab === "photos"
-                  ? "bg-slate-950 text-white shadow-lg"
-                  : "bg-white/80 text-slate-700 ring-1 ring-cyan-100 hover:bg-cyan-50"
-              )}
-            >
-              תמונות 4K
-            </button>
+          {tabCount > 1 && (
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => selectTab("photos")}
+                className={cx(
+                  "rounded-full px-5 py-2 text-sm font-bold transition",
+                  tab === "photos"
+                    ? "bg-slate-950 text-white shadow-lg"
+                    : "bg-white/80 text-slate-700 ring-1 ring-cyan-100 hover:bg-cyan-50"
+                )}
+              >
+                תמונות
+              </button>
 
-            <button
-              onClick={() => hasSpin && selectTab("spin")}
-              disabled={!hasSpin}
-              className={cx(
-                "rounded-full px-5 py-2 text-sm font-bold transition",
-                tab === "spin"
-                  ? "bg-slate-950 text-white shadow-lg"
-                  : "bg-white/80 text-slate-700 ring-1 ring-cyan-100 hover:bg-cyan-50",
-                !hasSpin && "cursor-not-allowed opacity-45"
+              {hasSpin && (
+                <button
+                  onClick={() => selectTab("spin")}
+                  className={cx(
+                    "rounded-full px-5 py-2 text-sm font-bold transition",
+                    tab === "spin"
+                      ? "bg-slate-950 text-white shadow-lg"
+                      : "bg-white/80 text-slate-700 ring-1 ring-cyan-100 hover:bg-cyan-50"
+                  )}
+                >
+                  360° VR
+                </button>
               )}
-            >
-              360° VR
-            </button>
 
-            <button
-              onClick={() => has3d && selectTab("model")}
-              disabled={!has3d}
-              className={cx(
-                "rounded-full px-5 py-2 text-sm font-bold transition",
-                tab === "model"
-                  ? "bg-slate-950 text-white shadow-lg"
-                  : "bg-white/80 text-slate-700 ring-1 ring-cyan-100 hover:bg-cyan-50",
-                !has3d && "cursor-not-allowed opacity-45"
+              {has3d && (
+                <button
+                  onClick={() => selectTab("model")}
+                  className={cx(
+                    "rounded-full px-5 py-2 text-sm font-bold transition",
+                    tab === "model"
+                      ? "bg-slate-950 text-white shadow-lg"
+                      : "bg-white/80 text-slate-700 ring-1 ring-cyan-100 hover:bg-cyan-50"
+                  )}
+                >
+                  3D Pro
+                </button>
               )}
-            >
-              3D Pro
-            </button>
-          </div>
+            </div>
+          )}
 
           {tab === "photos" && (
             <div className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-slate-100 shadow-2xl">
