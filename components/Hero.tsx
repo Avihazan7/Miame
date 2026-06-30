@@ -50,7 +50,6 @@ export default function Hero() {
           <div className="stage-card">
             <div className="stage-grid" />
             <img className="stage-watermark" src="/mia-four-logo.png" alt="" aria-hidden="true" />
-            <span className="stage-label">MiaMe · Electric</span>
 
             <div className="vehicle-arrive">
               {/* cinematic wake — light trail in the adaptive ambient hue,
