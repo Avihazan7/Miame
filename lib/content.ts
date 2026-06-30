@@ -73,16 +73,14 @@ export const DEALERS: [string, string, string][] = [
 export const SALES_WHATSAPP = "972547477477";
 
 /**
- * Professional GLB for the Ultra Vehicle Vision "3D Pro" tab. Authored
- * deterministically by scripts/build-glb.mjs and published to the public
- * Supabase `vehicle-media` bucket (scripts/publish-glb-to-bucket.mjs). The URL
- * is derived from the project's Supabase URL so it tracks the environment; set
- * NEXT_PUBLIC_MIA_GLB_URL to override, or fall back to the committed copy under
- * /public/models when no Supabase URL is configured.
+ * Real, launch-grade GLB for the Ultra Vehicle Vision "3D Pro" tab.
+ *
+ * IMPORTANT: this is the env override ONLY (NEXT_PUBLIC_MIA_GLB_URL). We do NOT
+ * fall back to the committed /public/models copy or the Supabase bucket copy —
+ * both are lightweight *procedural placeholders* (scripts/build-glb.mjs), not a
+ * real model of the vehicle, and showing them at launch looked worse than our
+ * 4K studio photography. When an empty string is returned the 3D-Pro tab is
+ * hidden and the photo gallery leads. Publish a genuine GLB and point this env
+ * var at it — the tab lights up automatically, no code change needed.
  */
-const _supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://thhyfwoeybkptxvbpcmg.supabase.co";
-export const MIA_GLB_URL =
-  process.env.NEXT_PUBLIC_MIA_GLB_URL ||
-  (_supabaseUrl
-    ? `${_supabaseUrl}/storage/v1/object/public/vehicle-media/mia-four-x4/mia-four-x4.glb`
-    : "/models/mia-four-x4.glb");
+export const MIA_GLB_URL = process.env.NEXT_PUBLIC_MIA_GLB_URL || "";
