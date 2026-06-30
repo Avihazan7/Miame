@@ -106,99 +106,10 @@ export function getCatalog(): Promise<CatalogResponse | null> {
   return call<CatalogResponse>("/v1/public/catalog", { method: "GET" });
 }
 
-// ── 2026 catalog (models + Master Match) ─────────────────────────────────────
-// The dedicated catalog domain (catalog_models): brands-and-models with the
-// official government data (safety/pollution/importer) + segment. Distinct from
-// getCatalog() above, which is the VIN-keyed read model.
-
-/** Raw catalog model as the brain serves it (snake_case). */
-export interface CatalogModelApi {
-  id: string;
-  make: string;
-  make_he: string | null;
-  model_family: string;
-  name: string;
-  fuel_type: string | null;
-  from_price: string | number | null;
-  available_new: boolean;
-  segment: string | null;
-  attributes: Record<string, unknown> | null;
-  image_url?: string | null;
-  media?: { studio?: string | null } | null;
-}
-
-export interface CatalogModelsResponse {
-  tenant: string;
-  count: number;
-  models: CatalogModelApi[];
-}
-
-/** List the 2026 catalog models, optionally filtered by make. */
-export function getCatalogModels(make?: string): Promise<CatalogModelsResponse | null> {
-  const q = make ? `?make=${encodeURIComponent(make)}` : "";
-  return call<CatalogModelsResponse>(`/v1/public/catalog/models${q}`, { method: "GET" });
-}
-
-// ── Model detail (the standalone model page) ─────────────────────────────────
-// One model's full record: government data + imagery + trims (each with its
-// official MoT code), plus the live "available for a deal" window — the
-// supplier/importer offers matched to THIS model by its degem code. The public
-// (private-audience) endpoint returns only B2C-eligible offers; B2B/partner are
-// gated behind the authenticated tier.
-
-/** A trim row on the model page — carries its official MoT model code. */
-export interface TrimApi {
-  id: string;
-  trim: string | null;
-  modelYear: number | null;
-  listPrice: number;
-  fuelType: string | null;
-  attributes: Record<string, unknown> | null;
-  motTozeretCd: number | null;
-  motDegemCd: number | null;
-}
-
-/** One supplier/importer offer matched to the model (the available window). */
-export interface OfferApi {
-  vin: string;
-  trim: string | null;
-  modelYear: number | null;
-  fuelType: string | null;
-  listPrice: number | null;
-  offerPrice: number | null;
-  dealScore: number | null;
-  registration: { year: number; month: number } | null;
-  zeroKm: { price: number; ageMonths: number } | null;
-  salesChannel: string;
-  salesChannelLabel: string;
-}
-
-export interface ModelDetailApi {
-  model: {
-    id: string;
-    make: string;
-    makeHe: string | null;
-    modelFamily: string;
-    name: string;
-    bodyType: string | null;
-    fuelType: string | null;
-    fromPrice: number | null;
-    motTozeretCd: number | null;
-    motDegemCd: number | null;
-    availableNew: boolean;
-    attributes: Record<string, unknown> | null;
-    segment: string | null;
-  };
-  media?: { studio?: string | null } | null;
-  trims: TrimApi[];
-  available: OfferApi[];
-  availableCount: number;
-}
-
-/** Fetch one model's full detail by catalog id (e.g. "mot-toyota-corolla"). */
-export function getModelDetail(id: string): Promise<ModelDetailApi | null> {
-  return call<ModelDetailApi>(`/v1/public/catalog/models/${encodeURIComponent(id)}`, { method: "GET" });
-}
+// ── Master Match ─────────────────────────────────────────────────────────────
+// MiaMe is the INVENTORY (stock) storefront; the new-vehicle catalog by MoT code
+// lives on Leasing.co.il, not here. Only the inventory read model (getCatalog
+// above) and Master Match remain.
 
 /** One ranked Master-Match result. */
 export interface ModelMatchApi {
