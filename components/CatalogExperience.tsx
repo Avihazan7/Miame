@@ -118,12 +118,39 @@ export default function CatalogExperience({ models }: { models: CatalogModel[] }
     [refreshMatch],
   );
 
+  const [selectedMake, setSelectedMake] = useState<string>("");
+
   const elevation = elevationForBand(state.band);
   const matched = models.find((m) => m.id === state.matchId) ?? null;
-  const brands = groupByBrand(models);
+  const allBrands = groupByBrand(models);
+  const brands = selectedMake ? allBrands.filter((g) => g.make === selectedMake) : allBrands;
 
   return (
     <div className="flex flex-col gap-5">
+      {/* Brand picker — "בחרו יצרן" (the catalog entry point). Filters the catalog
+          to one manufacturer; the count keeps the choice grounded. */}
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="brand-picker" className="text-sm font-semibold text-ink">
+          בחרו יצרן
+        </label>
+        <div className="relative">
+          <select
+            id="brand-picker"
+            value={selectedMake}
+            onChange={(e) => setSelectedMake(e.target.value)}
+            className="w-full appearance-none rounded-xl2 border border-line bg-snow px-4 py-3 pe-10 text-sm font-medium text-ink shadow-card outline-none focus:ring-2 focus:ring-azure"
+          >
+            <option value="">כל היצרנים ({allBrands.length})</option>
+            {allBrands.map((g) => (
+              <option key={g.make} value={g.make}>
+                {g.makeHe} ({g.models.length})
+              </option>
+            ))}
+          </select>
+          <span className="pointer-events-none absolute inset-y-0 start-3 flex items-center text-slate">▾</span>
+        </div>
+      </div>
+
       {/* In-Market strip */}
       {state.band && state.band !== "cold" && (
         <div
