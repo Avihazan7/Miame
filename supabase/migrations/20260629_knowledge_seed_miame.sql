@@ -17,10 +17,20 @@ create table if not exists public.knowledge (
   id          text primary key,
   source      text not null,
   body        text not null,
-  embedding   vector(1536),
+  embedding   vector(1024),
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );
+
+-- Align the embedding dimension with the Voyage model the brain actually uses
+-- (brain/config.ts EMBED_DIM = 1024, voyage-3.5). Older deployments created this
+-- column as vector(1536); the backfill (POST /api/embed) writes 1024-d vectors
+-- and would fail on the dimension mismatch, silently degrading retrieval to the
+-- keyword fallback. This ALTER is idempotent and safe: seed rows carry no
+-- embedding and the backfill has never populated a vector, so the column is all
+-- NULL and the type change loses no data.
+alter table public.knowledge
+  alter column embedding type vector(1024);
 
 create index if not exists knowledge_source_idx on public.knowledge (source);
 
@@ -43,7 +53,7 @@ with check (auth.role() = 'service_role');
 -- Cosine similarity RPC used by the vector retrieval path. Filters rows that
 -- have no embedding yet so the caller can gracefully fall back to keywords.
 create or replace function public.match_knowledge(
-  query_embedding vector(1536),
+  query_embedding vector(1024),
   match_count int default 4
 )
 returns table (id text, source text, body text, similarity float)
