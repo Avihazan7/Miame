@@ -232,7 +232,7 @@ export default function Configurator() {
     trim: model.name,
     dealScore: score?.score,
     monthlyPaymentLabel: `₪${animatedMonthly.toLocaleString("he-IL")}`,
-    cover: { url: "/miame-hero.webp", alt: "מיה פור X4 · ניידות חשמלית פרימיום" },
+    cover: { url: "/mia-four-teal-side.png", alt: "מיה פור X4 · צילום סטודיו תכלת · ניידות חשמלית פרימיום" },
     gallery: [
       { url: "/mia-four-x4-night-rear.jpg", alt: "מיה פור X4 · גימור סטודיו, מתלה אחורי ושיכוך חשוף" },
       { url: "/mia-four-x4-night-front.jpg", alt: "מיה פור X4 · עיצוב פרימיום מלפנים" },
