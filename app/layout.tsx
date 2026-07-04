@@ -8,6 +8,8 @@ import ScrollProgress from "@/components/ScrollProgress";
 import HeroIntro from "@/components/HeroIntro";
 import ScrollTop from "@/components/ScrollTop";
 import StaffToolbar from "@/components/StaffToolbar";
+import MarketingScripts from "@/components/MarketingScripts";
+import ConsentBanner from "@/components/ConsentBanner";
 
 // Gate the cinematic entrance before first paint (no flash, no-JS safe).
 // Full sequence on first visit per session, a quick settle afterwards,
@@ -172,6 +174,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <MotionFx />
         <HeroIntro />
         <StaffToolbar />
+        <ConsentBanner />
+        <MarketingScripts />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}

@@ -20,7 +20,17 @@ create table if not exists public.leads (
   months          int,
   monthly_payment numeric,
   source          text,
-  status          text default 'new'
+  status          text default 'new',
+  -- campaign attribution (first-touch, captured client-side; see lib/utm.ts)
+  utm_source      text,
+  utm_medium      text,
+  utm_campaign    text,
+  utm_term        text,
+  utm_content     text,
+  gclid           text,
+  fbclid          text,
+  landing_page    text,
+  referrer        text
 );
 
 -- ============ partners ============
@@ -32,7 +42,17 @@ create table if not exists public.partners (
   phone          text,
   city           text,
   planned_assets int,
-  status         text default 'lead'
+  status         text default 'lead',
+  -- campaign attribution (first-touch, captured client-side; see lib/utm.ts)
+  utm_source     text,
+  utm_medium     text,
+  utm_campaign   text,
+  utm_term       text,
+  utm_content    text,
+  gclid          text,
+  fbclid         text,
+  landing_page   text,
+  referrer       text
 );
 
 -- ============ events ============
@@ -61,6 +81,15 @@ create policy "anon insert leads"
     and char_length(coalesce(customer_type,'')) <= 60
     and char_length(coalesce(model_name,''))    <= 80
     and char_length(coalesce(source,''))        <= 300
+    and char_length(coalesce(utm_source,''))    <= 200
+    and char_length(coalesce(utm_medium,''))    <= 200
+    and char_length(coalesce(utm_campaign,''))  <= 200
+    and char_length(coalesce(utm_term,''))      <= 200
+    and char_length(coalesce(utm_content,''))   <= 200
+    and char_length(coalesce(gclid,''))         <= 200
+    and char_length(coalesce(fbclid,''))        <= 200
+    and char_length(coalesce(landing_page,''))  <= 300
+    and char_length(coalesce(referrer,''))      <= 300
   );
 
 drop policy if exists "anon insert partners" on public.partners;
@@ -71,6 +100,15 @@ create policy "anon insert partners"
     and char_length(coalesce(contact_name,'')) <= 200
     and char_length(coalesce(phone,''))        <= 40
     and char_length(coalesce(city,''))         <= 120
+    and char_length(coalesce(utm_source,''))   <= 200
+    and char_length(coalesce(utm_medium,''))   <= 200
+    and char_length(coalesce(utm_campaign,'')) <= 200
+    and char_length(coalesce(utm_term,''))     <= 200
+    and char_length(coalesce(utm_content,''))  <= 200
+    and char_length(coalesce(gclid,''))        <= 200
+    and char_length(coalesce(fbclid,''))       <= 200
+    and char_length(coalesce(landing_page,'')) <= 300
+    and char_length(coalesce(referrer,''))     <= 300
   );
 
 drop policy if exists "anon insert events" on public.events;

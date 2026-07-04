@@ -15,6 +15,7 @@ import {
 } from "@/lib/whatsapp";
 import { saveLead, LeadRecord } from "@/lib/supabase";
 import { track } from "@/lib/analytics";
+import { getUtm, utmTag } from "@/lib/utm";
 import Image from "next/image";
 import WaIcon from "./WaIcon";
 // Ultra 360 Vehicle Vision — 4K photos / 360° spin / 3D-GLB viewer. The heavy
@@ -164,6 +165,7 @@ export default function Configurator() {
     }
     setPhoneError(false);
     if (digits.length >= 9) {
+      const utm = getUtm();
       const lead: LeadRecord = {
         full_name: name.trim(),
         phone: phone.trim(),
@@ -174,7 +176,8 @@ export default function Configurator() {
         balloon: quote.balloonAmount,
         months: quote.months,
         monthly_payment: quote.monthlyPayment,
-        source: "miame-web · " + intent
+        source: `miame-web · ${intent} · ${utmTag(utm)}`,
+        ...utm
       };
       void saveLead(lead);
       // Additively feed the built deal into the U.M.M central brain (tenant +

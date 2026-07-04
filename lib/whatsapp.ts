@@ -1,4 +1,14 @@
 import { Quote, ils } from "./finance";
+import { getUtm, hasUtm, type Utm } from "./utm";
+
+/** Append the campaign attribution to a WhatsApp message so the rep sees the source. */
+function campaignLines(u: Utm = getUtm()): string[] {
+  if (!hasUtm(u)) return [];
+  const bits = [u.utm_source, u.utm_medium, u.utm_campaign].filter(Boolean).join(" / ");
+  const lines = bits ? [`קמפיין: ${bits}`] : [];
+  if (u.utm_term) lines.push(`מילת מפתח: ${u.utm_term}`);
+  return lines;
+}
 
 export const WHATSAPP_NUMBER =
   process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "972547477477";
@@ -48,6 +58,7 @@ export function buildLeadMessage(input: LeadMessageInput): string {
   if (input.fullName) lines.push(`שם: ${input.fullName}`);
   if (input.phone) lines.push(`טלפון: ${input.phone}`);
   lines.push(`מקור: ${input.source}`);
+  lines.push(...campaignLines());
 
   return lines.join("\n");
 }
@@ -59,7 +70,8 @@ export function buildPartnerMessage(name: string, phone: string, city: string): 
     name ? `שם: ${name}` : "",
     phone ? `טלפון: ${phone}` : "",
     city ? `עיר: ${city}` : "",
-    "מקור: עמוד שותפים"
+    "מקור: עמוד שותפים",
+    ...campaignLines()
   ]
     .filter(Boolean)
     .join("\n");

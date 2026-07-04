@@ -16,7 +16,35 @@ export const supabase: SupabaseClient | null = supabaseReady
   ? createClient(url as string, anon as string)
   : null;
 
-export interface LeadRecord {
+// Campaign attribution columns, added by supabase/migrations/20260704_lead_utm.sql.
+// They are optional on the record: if the live table hasn't had the migration
+// applied yet, insertLenient() transparently retries with these fields stripped,
+// so capturing a lead never depends on the schema being up to date.
+export interface UtmFields {
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_term?: string;
+  utm_content?: string;
+  gclid?: string;
+  fbclid?: string;
+  landing_page?: string;
+  referrer?: string;
+}
+
+const UTM_COLUMNS: (keyof UtmFields)[] = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_term",
+  "utm_content",
+  "gclid",
+  "fbclid",
+  "landing_page",
+  "referrer"
+];
+
+export interface LeadRecord extends UtmFields {
   full_name: string;
   phone: string;
   customer_type: string;
@@ -29,7 +57,7 @@ export interface LeadRecord {
   source: string;
 }
 
-export interface PartnerRecord {
+export interface PartnerRecord extends UtmFields {
   business_name: string;
   contact_name: string;
   phone: string;
@@ -37,14 +65,37 @@ export interface PartnerRecord {
   planned_assets: number;
 }
 
+/**
+ * Insert with forward/backward schema compatibility: try the full row first; if
+ * it fails referencing an unknown UTM column (migration not yet applied on this
+ * project), strip the UTM fields and retry so the core lead is never lost.
+ */
+async function insertLenient<T extends UtmFields>(table: string, row: T): Promise<boolean> {
+  if (!supabase) return false;
+  const { error } = await supabase.from(table).insert(row);
+  if (!error) return true;
+
+  const missingColumn = UTM_COLUMNS.some((c) => error.message.includes(c));
+  if (missingColumn) {
+    const base = { ...row };
+    for (const c of UTM_COLUMNS) delete (base as Partial<UtmFields>)[c];
+    const retry = await supabase.from(table).insert(base);
+    if (!retry.error) return true;
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(`[MiaMe] ${table} insert failed (retry):`, retry.error.message);
+    }
+    return false;
+  }
+
+  if (process.env.NODE_ENV !== "production") {
+    console.warn(`[MiaMe] ${table} insert failed:`, error.message);
+  }
+  return false;
+}
+
 export async function saveLead(lead: LeadRecord): Promise<boolean> {
   try {
-    if (!supabase) return false;
-    const { error } = await supabase.from("leads").insert(lead);
-    if (error && process.env.NODE_ENV !== "production") {
-      console.warn("[MiaMe] lead insert failed:", error.message);
-    }
-    return !error;
+    return await insertLenient("leads", lead);
   } catch (e) {
     if (process.env.NODE_ENV !== "production") {
       console.warn("[MiaMe] lead insert threw:", e);
@@ -55,12 +106,7 @@ export async function saveLead(lead: LeadRecord): Promise<boolean> {
 
 export async function savePartner(partner: PartnerRecord): Promise<boolean> {
   try {
-    if (!supabase) return false;
-    const { error } = await supabase.from("partners").insert(partner);
-    if (error && process.env.NODE_ENV !== "production") {
-      console.warn("[MiaMe] partner insert failed:", error.message);
-    }
-    return !error;
+    return await insertLenient("partners", partner);
   } catch (e) {
     if (process.env.NODE_ENV !== "production") {
       console.warn("[MiaMe] partner insert threw:", e);
