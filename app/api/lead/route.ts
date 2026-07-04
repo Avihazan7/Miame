@@ -35,7 +35,18 @@ export async function POST(req: Request) {
     const outcome = await processLead(lead, new Date().toISOString());
     return NextResponse.json(outcome);
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "lead pipeline error";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    // Never surface the raw pipeline error to the public client — an upstream model
+    // error can carry provider/account detail (billing, request ids). Keep it in the
+    // server log only. An upstream model failure (billing, rate-limit, provider
+    // outage) is a transient 503; anything else is a genuine 500. The web lead itself
+    // is captured client-side → Supabase independently of this AI-nurture endpoint,
+    // so a failure here never costs us the lead.
+    const raw = e instanceof Error ? e.message : String(e);
+    const upstream = raw.startsWith("[brain]");
+    console.error("[miame-demand-lead] pipeline error:", raw);
+    return NextResponse.json(
+      { error: upstream ? "nurture service temporarily unavailable" : "lead pipeline error" },
+      { status: upstream ? 503 : 500 }
+    );
   }
 }
