@@ -25,6 +25,11 @@ export default function Footer() {
           </a>{" "}
           🎯
         </div>
+        <nav className="foot-links" aria-label="מידע משפטי">
+          <a href="/legal/terms">תקנון ותנאי שימוש</a>
+          <a href="/legal/privacy">מדיניות פרטיות</a>
+          <a href="/legal/accessibility">הצהרת נגישות</a>
+        </nav>
         <p className="foot-legal">
           המחירים, התשלומים החודשיים ותנאי המימון המוצגים באתר הם הערכה ראשונית
           בלבד לצורך התרשמות, ואינם מהווים הצעה מחייבת, ייעוץ או התחייבות למימון.

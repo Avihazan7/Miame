@@ -1,5 +1,4 @@
-import { buildWhatsAppUrl, buildPartnerMessage } from "@/lib/whatsapp";
-import WaIcon from "./WaIcon";
+import PartnerCta from "./PartnerCta";
 import { RENTAL_PRICES, SUCCESS_FEE_PCT } from "@/lib/content";
 
 function Icon({ d }: { d: string }) {
@@ -29,8 +28,6 @@ const FLOW = [
 ];
 
 export default function Partner() {
-  const waUrl = buildWhatsAppUrl(buildPartnerMessage("", "", ""));
-
   return (
     <section className="block partner-sec" id="partner">
       <div className="wrap">
@@ -78,15 +75,7 @@ export default function Partner() {
               ))}
             </div>
             <div className="partner-cta">
-              <a
-                href={waUrl}
-                target="_blank"
-                rel="noopener"
-                className="btn btn-wa btn-block"
-              >
-                <WaIcon size={18} />
-                אני רוצה להיות שותף עסקי
-              </a>
+              <PartnerCta />
             </div>
           </div>
         </div>
