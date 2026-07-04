@@ -30,6 +30,10 @@ MiaMe מוכרת ומשכירה את MiaMe Four — רכב ניידות חשמל
 ## קישורים
 
 - [דף הבית](https://www.miame.co.il/)
+- [מיה פור — כל הדגמים והמפרט](https://www.miame.co.il/mia-four)
+- [קלנועית 4 גלגלים — יציבות ובטיחות](https://www.miame.co.il/klnoit-4-galgalim)
+- [קלנועית מתקפלת — נכנסת לרכב](https://www.miame.co.il/klnoit-mitkapelet)
+- [קלנועית שטח — הנעה כפולה 4×4](https://www.miame.co.il/klnoit-shetach)
 - [מפת אתר (sitemap)](https://www.miame.co.il/sitemap.xml)
 - [Leasing.co.il — אתר האם](https://www.leasing.co.il)
 

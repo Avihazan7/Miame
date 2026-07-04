@@ -25,6 +25,12 @@ export default function Footer() {
           </a>{" "}
           🎯
         </div>
+        <nav className="foot-links" aria-label="עמודי מידע">
+          <a href="/mia-four">מיה פור</a>
+          <a href="/klnoit-4-galgalim">קלנועית 4 גלגלים</a>
+          <a href="/klnoit-mitkapelet">קלנועית מתקפלת</a>
+          <a href="/klnoit-shetach">קלנועית שטח</a>
+        </nav>
         <nav className="foot-links" aria-label="מידע משפטי">
           <a href="/legal/terms">תקנון ותנאי שימוש</a>
           <a href="/legal/privacy">מדיניות פרטיות</a>
