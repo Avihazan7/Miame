@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MODELS, getModel } from "@/lib/models";
-import { MIA_GLB_URL } from "@/lib/content";
 import {
   CustomerType,
   TRACKS,
@@ -18,14 +17,6 @@ import { track } from "@/lib/analytics";
 import { getUtm, utmTag } from "@/lib/utm";
 import Image from "next/image";
 import WaIcon from "./WaIcon";
-// Ultra 360 Vehicle Vision — 4K photos / 360° spin / 3D-GLB viewer. The heavy
-// three.js 3D stack stays lazy (VehicleModelStage is dynamically imported inside,
-// loaded only when the 3D tab opens), so the section's first paint is image-only.
-import {
-  UltraVehicleMediaStage,
-  type UltraVehicleMedia,
-} from "./vehicle-media/UltraVehicleMediaStage";
-import { trackVehicleMediaEvent } from "@/lib/trackVehicleMediaEvent";
 
 /* count-up animation, strict-mode safe (cancelable rAF, continues from last shown value) */
 function useCountUp(target: number, duration = 520): number {
@@ -227,43 +218,6 @@ export default function Configurator() {
     setSent(true);
   }
 
-  // Ultra Vehicle Vision media for the Mia FOUR. Images live in /public (this
-  // vertical isn't in the Supabase car catalog); the live Deal Score + monthly
-  // payment flow through from the simulator.
-  //
-  // 3D-Pro tab: surfaced ONLY when a real, launch-grade GLB has been published
-  // via NEXT_PUBLIC_MIA_GLB_URL. The committed /public copy (and the matching
-  // Supabase bucket copy) is a lightweight procedural placeholder — not good
-  // enough for launch — so until a genuine model is published we lead with the
-  // 4K studio photography (our current tech). Drop the env var in and the 3D tab
-  // lights up automatically, no code change needed.
-  const glbUrl = MIA_GLB_URL || undefined;
-  const vehicleMedia: UltraVehicleMedia = {
-    id: "mia-four-x4",
-    make: "Mia FOUR",
-    model: "X4",
-    trim: model.name,
-    dealScore: score?.score,
-    monthlyPaymentLabel: `₪${animatedMonthly.toLocaleString("he-IL")}`,
-    cover: { url: "/mia-four-x4-studio-hero.jpg", alt: "מיה פור X4 · צילום סטודיו · ניידות חשמלית פרימיום" },
-    gallery: [
-      { url: "/mia-four-x4-night-rear.jpg", alt: "מיה פור X4 · גימור סטודיו, מתלה אחורי ושיכוך חשוף" },
-      { url: "/mia-four-x4-night-front.jpg", alt: "מיה פור X4 · עיצוב פרימיום מלפנים" },
-      { url: "/mia-four-x4-seat.webp", alt: "מיה פור X4 עם כיסא בשחרור מהיר" },
-      { url: "/mia-four-x4-pure-freedom.png", alt: "MIA FOUR · Pure Freedom · מוגן פטנט" },
-      { url: "/mia-studio.jpg", alt: "מיה פור X4 בסטודיו" },
-      { url: "/mia-four-ride.jpg", alt: "רכיבה על מיה פור X4" },
-      { url: "/miame-cockpit.webp", alt: "תא הנהג של מיה פור" },
-      { url: "/mia-wheel-detail.webp", alt: "פרט גלגל שטח" },
-      { url: "/miame-life-1.webp", alt: "מיה פור באורח חיים" },
-      { url: "/mia-beach.webp", alt: "מיה פור על החוף" },
-    ],
-    model3d: glbUrl ? { glbUrl, posterUrl: "/mia-four-x4-night-rear.jpg" } : undefined,
-    badges: glbUrl
-      ? ["סטודיו פרימיום", "3D Pro · GLB", "מוגן פטנט"]
-      : ["סטודיו פרימיום", "מוגן פטנט"],
-  };
-
   return (
     <>
       {/* ===== models ===== */}
@@ -339,18 +293,6 @@ export default function Configurator() {
             <p className="sec-desc">
               בחרו מסלול, גררו את הפרמטרים, וקבלו תשלום חודשי משוער בזמן אמת.
             </p>
-          </div>
-
-          {/* Ultra 360 Vehicle Vision — 4K photos / 360° spin / 3D-GLB, driven by
-              the live sealed Deal Score. Replaces the former 3D Deal Aura billboard. */}
-          <div className="ultra-stage-wrap">
-            <UltraVehicleMediaStage
-              media={vehicleMedia}
-              brand="miame"
-              onInteraction={(e) =>
-                trackVehicleMediaEvent({ vehicleId: e.vehicleId, type: e.type, payload: e.payload })
-              }
-            />
           </div>
 
           <div className="sim">
