@@ -22,9 +22,12 @@ function record(r) { results.push({ severity: 'medium', status: 'pass', ...r });
 function sh(cmd, timeoutMs = 15 * 60 * 1000) {
   try {
     const out = execSync(cmd, { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8', timeout: timeoutMs });
-    return { ok: true, out };
+    return { ok: true, out, stdout: out };
   } catch (e) {
-    return { ok: false, out: `${e.stdout || ''}${e.stderr || ''}${e.message || ''}`.trim() };
+    // stdout is kept separate: commands like `npm audit --json` exit non-zero
+    // WITH valid JSON on stdout — consumers that parse must get it clean, not
+    // concatenated with stderr/message (which breaks JSON.parse silently).
+    return { ok: false, out: `${e.stdout || ''}${e.stderr || ''}${e.message || ''}`.trim(), stdout: String(e.stdout || '') };
   }
 }
 
@@ -155,11 +158,14 @@ function checkSecrets() {
     status: leaked.length ? 'fail' : 'pass',
     detail: leaked.length ? `סודות עלולים לדלוף: ${leaked.join(', ')}` : 'נקי' });
 
+  // Parse stdout ONLY: on vulnerabilities npm audit exits 1 but still emits
+  // valid JSON to stdout. Parsing the concatenated failure blob made this gate
+  // un-failable (JSON.parse always threw → permanent warn).
   const audit = sh('npm audit --omit=dev --audit-level=high --json', 4 * 60 * 1000);
   let vulnSummary = 'נקי';
   let vulnStatus = 'pass';
   try {
-    const j = JSON.parse(audit.out);
+    const j = JSON.parse((audit.stdout || audit.out || '').trim());
     const v = j.metadata?.vulnerabilities || {};
     const bad = (v.high || 0) + (v.critical || 0);
     if (bad > 0) { vulnStatus = 'fail'; vulnSummary = `${v.critical || 0} critical, ${v.high || 0} high`; }

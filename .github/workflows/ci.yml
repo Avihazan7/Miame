@@ -1,0 +1,120 @@
+name: CI
+
+# M4 — production quality gate: every PR to main (and every push to main) must
+# pass typecheck, lint, tests, a production Next.js build, a redacted secret
+# scan, and a prod-dependency npm audit. One failing step fails the PR.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        id: typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        id: lint
+        run: npm run lint
+
+      - name: Tests
+        id: tests
+        run: npm test
+
+      - name: Build (Next.js production)
+        id: build
+        run: npm run build
+
+      # PR quality report (M4 §6): one glance shows the state of every gate.
+      - name: Quality summary
+        if: always()
+        run: |
+          {
+            echo "## PR quality report — miame"
+            echo "| Gate | Result |"
+            echo "|---|---|"
+            echo "| Typecheck | ${{ steps.typecheck.outcome }} |"
+            echo "| Lint | ${{ steps.lint.outcome }} |"
+            echo "| Tests | ${{ steps.tests.outcome }} |"
+            echo "| Build | ${{ steps.build.outcome }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Secret scan over the full git history. --redact guarantees no secret value
+  # is ever printed to the log; .gitleaks.toml allowlists only public-by-design
+  # values, so a hit here is a real, high-confidence leak.
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks (redacted, full history)
+        run: |
+          curl -sSL -o /tmp/gitleaks.tgz https://github.com/gitleaks/gitleaks/releases/download/v8.18.4/gitleaks_8.18.4_linux_x64.tar.gz
+          tar -C /tmp -xzf /tmp/gitleaks.tgz gitleaks
+          /tmp/gitleaks detect --source . --config .gitleaks.toml --redact --no-banner --exit-code 1 \
+            --report-format json --report-path /tmp/gitleaks-report.json
+          echo "**Secret scan:** clean" >> "$GITHUB_STEP_SUMMARY"
+
+      # On failure: print WHERE (rule/file/commit/line) — never the secret value.
+      - name: Remediation (on failure)
+        if: failure()
+        run: |
+          node -e '
+            const fs = require("fs");
+            try {
+              const findings = JSON.parse(fs.readFileSync("/tmp/gitleaks-report.json", "utf8"));
+              for (const f of findings) {
+                console.log(`- rule=${f.RuleID} file=${f.File} line=${f.StartLine} commit=${(f.Commit||"").slice(0,10)}`);
+              }
+            } catch { console.log("(no report file)"); }
+          '
+          echo "::error::Possible secret leak found (values are redacted; locations above). Remediate: (1) rotate the secret at the provider; (2) remove it from the code and move it to an environment variable; (3) if it is public-by-design, add a precise regex to .gitleaks.toml with a comment explaining why."
+
+  # Dependency safety (prod only). Report always; the gate fails ONLY on
+  # critical advisories — no auto-fix, no upgrades (those need explicit approval).
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: npm audit (prod) — report always, fail on critical only
+        run: |
+          npm audit --omit=dev --json > /tmp/audit.json || true
+          node -e '
+            const fs = require("fs");
+            const a = JSON.parse(fs.readFileSync("/tmp/audit.json", "utf8"));
+            const v = (a.metadata && a.metadata.vulnerabilities) || {};
+            const line = `info:${v.info||0} | low:${v.low||0} | moderate:${v.moderate||0} | high:${v.high||0} | critical:${v.critical||0}`;
+            console.log("npm audit (prod):", line);
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n**npm audit (prod):** ${line}\n`);
+            if ((v.critical||0) > 0) { console.error("critical vulnerabilities present - failing (policy: critical-only gate; fixes/upgrades require approval)"); process.exit(1); }
+          '
