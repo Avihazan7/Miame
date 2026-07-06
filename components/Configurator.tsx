@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { MODELS, getModel } from "@/lib/models";
 import {
   CustomerType,
@@ -93,6 +94,7 @@ export default function Configurator() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [hp, setHp] = useState(""); // honeypot — humans never see or fill it
+  const router = useRouter();
   const [sent, setSent] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
   const [score, setScore] = useState<SealedScore | null>(null);
@@ -223,6 +225,9 @@ export default function Configurator() {
     );
     if (typeof window !== "undefined") window.open(url, "_blank");
     setSent(true);
+    // Dedicated confirmation URL (task-pack: עמוד תודה): WhatsApp opened in a new
+    // tab; this tab lands on /thank-you so ad platforms get a real destination.
+    router.push("/thank-you");
   }
 
   return (

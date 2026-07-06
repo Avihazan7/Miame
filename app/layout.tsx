@@ -70,7 +70,7 @@ const JSON_LD = {
       "@id": SITE_URL + "/#organization",
       name: "MiaMe",
       url: SITE_URL,
-      logo: SITE_URL + "/miame-logo.webp",
+      logo: SITE_URL + "/mia-four-logo.png",
       description: "ניידות חשמלית פרימיום במחיר חכם, מבית Leasing.co.il.",
       contactPoint: {
         "@type": "ContactPoint",
@@ -165,6 +165,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="he" dir="rtl" className={heebo.variable}>
       <body>
+        {/* WCAG 2.4.1 (Bypass Blocks): first focusable element jumps to content */}
+        <a href="#main" className="skip-link">דילוג לתוכן הראשי</a>
         <script dangerouslySetInnerHTML={{ __html: INTRO_GATE }} />
         <ScrollProgress />
         <ScrollTop />
