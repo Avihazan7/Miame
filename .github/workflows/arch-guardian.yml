@@ -12,7 +12,7 @@ on:
         description: 'תחומים (code,live,seo,secrets)'
         default: 'code,live,seo,secrets'
   push:
-    branches: [main, claude/agent-skills-architecture-kvtgnh]
+    branches: [main]
 
 permissions:
   contents: write

@@ -1,0 +1,19 @@
+# Gitleaks config — MiaMe (M4 secret-scan gate).
+# Extends the default ruleset; allowlists ONLY values that are public by design
+# (verified in the production-readiness audit). Anything else that looks like a
+# secret fails CI.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Public-by-design values and documented placeholders"
+regexes = [
+  # The project's Supabase ANON JWT (lib/supabase.ts, brain/config.ts).
+  # The base64 below decodes to {"iss":"supabase","ref":"thhyfwoeybkptxvbpcmg","role":"anon"...}
+  # — the role is pinned to `anon` inside the match, so a service_role token
+  # for the same project would NOT be allowlisted.
+  '''eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoaHlmd29leWJrcHR4dmJwY21nIiwicm9sZSI6ImFub24i''',
+  # .env.example placeholder for the Anthropic key (all x's, not a real key)
+  '''sk-ant-x{4,}''',
+]
