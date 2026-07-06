@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { guardJsonPost } from "@/lib/apiGuard";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,17 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
-  const parsed = schema.safeParse(await request.json().catch(() => null));
+  // M1: origin allowlist + per-IP rate limit + body cap before the
+  // service-role insert — this is an unauthenticated public write.
+  const guarded = await guardJsonPost(request, {
+    bucket: "media-events",
+    max: 60,
+    maxEnv: "RATE_LIMIT_MEDIA_EVENTS_MAX",
+    maxBodyBytes: 8_000,
+  });
+  if (guarded.reject) return guarded.reject;
+
+  const parsed = schema.safeParse(guarded.body);
   if (!parsed.success) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }

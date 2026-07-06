@@ -6,7 +6,14 @@
 // SUPABASE_SERVICE_ROLE_KEY (to write). Until both are set the brain runs on keyword
 // retrieval — which is accurate at the current corpus size — so nothing breaks.
 //
-// Run once after adding the keys:  curl -X POST https://<site>/api/embed
+// Run once after adding the keys:
+//   curl -X POST -H "x-admin-token: $EMBED_ADMIN_TOKEN" https://<site>/api/embed
+//
+// M1 hardening: BOTH methods are admin-gated. The route drives a paid embedding
+// provider and a service-role write, so it fails CLOSED: without EMBED_ADMIN_TOKEN
+// in the environment the route is disabled (503); with it, requests must present
+// the same value in the x-admin-token header (compared in constant time).
+import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import {
   SUPABASE_URL,
@@ -18,6 +25,24 @@ import { embedDocuments } from "@/brain/embeddings";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+const sha256 = (s: string) => createHash("sha256").update(s).digest();
+
+/** null = pass; otherwise the rejection response. Fail-closed by design. */
+function adminGate(req: Request): NextResponse | null {
+  const expected = process.env.EMBED_ADMIN_TOKEN;
+  if (!expected) {
+    return NextResponse.json(
+      { ok: false, error: "embed route disabled — EMBED_ADMIN_TOKEN not configured" },
+      { status: 503 }
+    );
+  }
+  const presented = req.headers.get("x-admin-token") ?? "";
+  if (!presented || !timingSafeEqual(sha256(presented), sha256(expected))) {
+    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  }
+  return null;
+}
 
 interface PendingRow {
   id: string;
@@ -37,7 +62,9 @@ async function pendingRows(): Promise<PendingRow[]> {
 }
 
 /** Health: how many rows still need embeddings, and whether the keys are present. */
-export async function GET() {
+export async function GET(req: Request) {
+  const rejected = adminGate(req);
+  if (rejected) return rejected;
   let pending = -1;
   try {
     pending = (await pendingRows()).length;
@@ -53,7 +80,9 @@ export async function GET() {
   });
 }
 
-export async function POST() {
+export async function POST(req: Request) {
+  const rejected = adminGate(req);
+  if (rejected) return rejected;
   if (!embeddingsReady) {
     return NextResponse.json(
       { ok: false, error: "VOYAGE_API_KEY not set — embeddings provider not configured" },
