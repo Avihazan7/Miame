@@ -92,6 +92,7 @@ export default function Configurator() {
   const [months, setMonths] = useState<number>(TRACKS.private.months.default);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [hp, setHp] = useState(""); // honeypot — humans never see or fill it
   const [sent, setSent] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
   const [score, setScore] = useState<SealedScore | null>(null);
@@ -155,6 +156,12 @@ export default function Configurator() {
       return;
     }
     setPhoneError(false);
+    // Honeypot tripped → a bot filled the hidden field. Mimic success (so the bot
+    // learns nothing) without saving, tracking, or opening WhatsApp.
+    if (hp.trim() !== "") {
+      setSent(true);
+      return;
+    }
     if (digits.length >= 9) {
       const utm = getUtm();
       const lead: LeadRecord = {
@@ -466,6 +473,17 @@ export default function Configurator() {
 
               {/* lead */}
               <div className="lead">
+                {/* Honeypot: hidden from humans and AT; bots that fill every field trip it */}
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  value={hp}
+                  onChange={(e) => setHp(e.target.value)}
+                  style={{ position: "absolute", left: "-9999px", top: "-9999px", height: 1, width: 1, opacity: 0 }}
+                />
                 <div className="lead-row">
                   <input
                     className="inp"

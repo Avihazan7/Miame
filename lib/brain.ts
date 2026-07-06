@@ -78,19 +78,29 @@ export interface LeadPayload {
   contact?: { name?: string; phone?: string };
 }
 
+// The relay hop hides the visitor behind our egress IP; forwarding it as
+// x-client-ip keeps the brain's per-visitor public rate buckets accurate
+// (the brain pairs that key with a per-peer ceiling, so it is not trusted alone).
+const clientIpHeader = (ip?: string): Record<string, string> =>
+  ip && ip !== "unknown" ? { "x-client-ip": ip } : {};
+
 /** Persist a submitted simulator deal in the central brain; returns the sealed score. */
-export function postLead(payload: LeadPayload, idempotencyKey?: string): Promise<LeadResult | null> {
+export function postLead(payload: LeadPayload, idempotencyKey?: string, visitorIp?: string): Promise<LeadResult | null> {
   return call<LeadResult>("/v1/public/lead", {
     method: "POST",
-    headers: idempotencyKey ? { "idempotency-key": idempotencyKey } : {},
+    headers: {
+      ...(idempotencyKey ? { "idempotency-key": idempotencyKey } : {}),
+      ...clientIpHeader(visitorIp),
+    },
     body: JSON.stringify(payload),
   });
 }
 
 /** Nudge the visitor's Big Five from a known interaction signal (best-effort). */
-export function postSignal(ref: string, signal: string, vin?: string): Promise<unknown | null> {
+export function postSignal(ref: string, signal: string, vin?: string, visitorIp?: string): Promise<unknown | null> {
   return call("/v1/public/signal", {
     method: "POST",
+    headers: clientIpHeader(visitorIp),
     body: JSON.stringify(vin ? { ref, signal, vin } : { ref, signal }),
   });
 }
@@ -140,6 +150,10 @@ export interface MatchResponse {
 }
 
 /** Master Match — the best-fit model for a visitor (by ref → stored Big Five). */
-export function matchModel(body: { ref?: string; bigfive?: Record<string, number>; make?: string }): Promise<MatchResponse | null> {
-  return call<MatchResponse>("/v1/public/catalog/match", { method: "POST", body: JSON.stringify(body) });
+export function matchModel(body: { ref?: string; bigfive?: Record<string, number>; make?: string }, visitorIp?: string): Promise<MatchResponse | null> {
+  return call<MatchResponse>("/v1/public/catalog/match", {
+    method: "POST",
+    headers: clientIpHeader(visitorIp),
+    body: JSON.stringify(body),
+  });
 }
