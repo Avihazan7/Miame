@@ -48,7 +48,11 @@
   --my:30%;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;background:var(--snow)}
+/* overflow-x:clip — the decorative ambient layers (amb-blob/MarkField) extend a
+   few px past the viewport on mobile; clip (not hidden) kills the horizontal
+   wiggle without breaking position:sticky descendants. */
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;background:var(--snow);overflow-x:clip}
+body{overflow-x:clip}
 body{
   margin:0;
   font-family:var(--font-heebo),system-ui,-apple-system,sans-serif;
@@ -1213,3 +1217,9 @@ a,button,.btn,.tab,.mp,input,.dealer-btn,.imp-btn{touch-action:manipulation}
 .seo-final>p{color:#22314f;font-size:16.5px;margin:0 0 20px}
 .seo-final .seo-cta{justify-content:center}
 .seo-note{font-size:12.5px;color:var(--slate);line-height:1.6;margin:20px 0 0}
+
+/* ── Skip link (WCAG 2.4.1 — Bypass Blocks): hidden until keyboard focus ── */
+.skip-link{position:fixed;top:-100px;right:16px;z-index:200;background:var(--ink);color:#fff;
+  padding:10px 18px;border-radius:999px;font-weight:700;font-size:15px;
+  transition:top .15s ease;box-shadow:0 8px 20px rgba(11,15,20,.25)}
+.skip-link:focus-visible{top:14px;outline:2px solid var(--sky-300);outline-offset:2px}
