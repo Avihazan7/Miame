@@ -1336,3 +1336,40 @@ a,button,.btn,.tab,.mp,input,.dealer-btn,.imp-btn{touch-action:manipulation}
   .status-card::after,.buzz-card::after,.seo-spec::after{display:none}
   .launch-badge::after{animation:none;opacity:.7}
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Finishing sweep · the last surfaces  (ליטוש · נאנו — pass אחרון)
+   ──────────────────────────────────────────────────────────────────
+   A restrained final wax-shine on the remaining premium panels & cards
+   that still lacked it (service/dealers · test-ride · tribute · Spyqe),
+   plus a crisp underline reveal on the nav chrome. Same subtle language
+   as the rest of the site; fully reduced-motion safe.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── ואקס · hover light-sweep on the last premium panels + cards ── */
+.dealer,.elig-card,.testride-card,.tribute-calc,.flagship,.rental-strip,.soon-card{
+  position:relative;overflow:hidden}
+.dealer::after,.elig-card::after,.testride-card::after,.tribute-calc::after,
+.flagship::after,.rental-strip::after,.soon-card::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.18) 50%,transparent 58%);
+  transform:translateX(-130%);transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+.dealer:hover::after,.elig-card:hover::after,.testride-card:hover::after,.tribute-calc:hover::after,
+.flagship:hover::after,.rental-strip:hover::after,.soon-card:hover::after{transform:translateX(130%)}
+/* keep interactive children above the sheen so hover/taps read cleanly */
+.dealer>*,.elig-card>*,.testride-card>*,.tribute-calc>*,.flagship>*,.rental-strip>*,.soon-card>*{position:relative;z-index:2}
+
+/* ── ליטוש · crisp תכלת underline reveal on the nav links (RTL-aware) ── */
+.nav-link{position:relative}
+.nav-link::after{content:"";position:absolute;inset-inline:6px;bottom:2px;height:2px;border-radius:2px;
+  background:var(--grad-teal);opacity:.9;transform:scaleX(0);transform-origin:100% 50%;
+  transition:transform .22s cubic-bezier(.2,.7,.2,1)}
+.nav-link:hover::after{transform:scaleX(1)}
+.foot-links a{transition:color .18s ease}
+
+/* keep the finishing sweep calm for reduced-motion visitors */
+@media (prefers-reduced-motion: reduce){
+  .dealer::after,.elig-card::after,.testride-card::after,.tribute-calc::after,
+  .flagship::after,.rental-strip::after,.soon-card::after{display:none}
+  .nav-link::after{transition:none}
+}
