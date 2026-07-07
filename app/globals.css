@@ -1280,3 +1280,59 @@ a,button,.btn,.tab,.mp,input,.dealer-btn,.imp-btn{touch-action:manipulation}
 .ty-step-t{font-weight:800;font-size:15.5px;color:var(--ink)}
 .ty-step-d{font-size:13px;color:var(--slate)}
 .ty-note{max-width:520px;margin:22px auto 0;font-size:11.5px;line-height:1.6;color:var(--slate)}
+
+/* ════════════════════════════════════════════════════════════════════
+   Concours Detailing · site-wide  (ליטוש · ואקס · נאנו על כל MiaMe.co.il)
+   ──────────────────────────────────────────────────────────────────
+   Extends the existing polish → wax → nano finish CONSISTENTLY to every
+   surface that still lacked it: the deal-buzz layer, the legal-status &
+   engineering cards, and the SEO / legal / thank-you pages — so the whole
+   domain reads as one showroom-grade finish. Subtle by design (premium,
+   not flashy; elderly/family-friendly) and fully reduced-motion safe.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── ואקס · glossy top-edge rim on every remaining light card surface ── */
+.status-card,.buzz-card,.seo-spec,.seo-final,.ty-step,.legal .legal-note{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), var(--shadow-sm)}
+.eng-card{box-shadow:inset 0 1px 0 rgba(255,255,255,.14), var(--shadow-sm)}   /* dark card */
+
+/* ── נאנו · crystalline top hairline that reveals on hover ── */
+.status-card,.buzz-card,.eng-card,.seo-spec{position:relative}
+.status-card::before,.buzz-card::before,.eng-card::before,.seo-spec::before{
+  content:"";position:absolute;top:0;left:14%;right:14%;height:2px;border-radius:2px;
+  background:var(--grad-teal);opacity:0;transition:opacity .25s ease;z-index:2}
+.status-card:hover::before,.buzz-card:hover::before,.eng-card:hover::before,.seo-spec:hover::before{opacity:.9}
+
+/* ── ואקס · glossy light-sweep across the card on hover (the "wax shine") ── */
+.status-card,.buzz-card,.seo-spec{overflow:hidden}
+.status-card::after,.buzz-card::after,.seo-spec::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.22) 50%,transparent 60%);
+  transform:translateX(-130%);transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.status-card:hover::after,.buzz-card:hover::after,.seo-spec:hover::after{transform:translateX(130%)}
+
+/* ── ליטוש · consistent micro-lift + cyan glow on the newly-detailed cards ── */
+.status-card,.buzz-card,.eng-card,.seo-spec,.ty-step,.seo-faq details{
+  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease}
+.status-card:hover,.seo-spec:hover{transform:translateY(-4px);border-color:rgba(12,229,221,.4);box-shadow:var(--glow), var(--shadow-md)}
+.eng-card:hover{transform:translateY(-4px);border-color:rgba(122,200,250,.42);box-shadow:var(--glow), var(--shadow-md)}
+.ty-step:hover{transform:translateY(-2px);box-shadow:var(--glow), var(--shadow-sm)}
+.seo-faq details:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.8), var(--glow), var(--shadow-sm)}
+
+/* ── נאנו · gloss on the remaining icon tiles + deal-buzz chrome ── */
+.status-ic{box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 6px 14px rgba(19,182,223,.18)}
+.trust-ic{box-shadow:inset 0 1px 0 rgba(255,255,255,.6), var(--shadow-sm)}
+.launch-strip{box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.seo-hero-img{box-shadow:inset 0 1px 0 rgba(255,255,255,.5), var(--shadow-md)}
+
+/* ── נאנו · one restrained ✦ sparkle glint on the launch badge (premium anchor) ── */
+.launch-badge{position:relative}
+.launch-badge::after{content:"✦";position:absolute;top:-3px;inset-inline-end:7px;font-size:9px;color:#eafbff;
+  pointer-events:none;z-index:2;line-height:1;text-shadow:0 0 8px rgba(12,229,221,.95),0 0 3px #fff;
+  animation:spk 3.6s ease-in-out infinite}
+
+/* keep the detailing calm for reduced-motion visitors */
+@media (prefers-reduced-motion: reduce){
+  .status-card::after,.buzz-card::after,.seo-spec::after{display:none}
+  .launch-badge::after{animation:none;opacity:.7}
+}
