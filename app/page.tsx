@@ -18,13 +18,18 @@ import Importer from "@/components/Importer";
 import Footer from "@/components/Footer";
 import FloatingWa from "@/components/FloatingWa";
 import StickyCta from "@/components/StickyCta";
+import LaunchOfferStrip from "@/components/LaunchOfferStrip";
+import TrustSignalBar from "@/components/TrustSignalBar";
+import DealBuzz from "@/components/DealBuzz";
 
 export default function Page() {
   return (
     <>
       <Header />
+      <LaunchOfferStrip />
       <main id="main">
         <Hero />
+        <TrustSignalBar />
         <About />
         <Lifestyle />
         <TestRide />
@@ -34,6 +39,7 @@ export default function Page() {
         <Patents />
         <LegalStatus />
         <Configurator />
+        <DealBuzz />
         <AskBrain />
         <Spyqe />
         <Tribute />
