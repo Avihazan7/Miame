@@ -8,7 +8,8 @@ export type EventName =
   | "SimulatorChanged"
   | "LeadSubmitted"
   | "WhatsAppClicked"
-  | "PartnerInterest";
+  | "PartnerInterest"
+  | "DealBuzzClicked";
 
 /**
  * One event, three sinks: the Supabase `events` table (owned analytics), GA4,
@@ -55,6 +56,12 @@ function forwardToPixels(event: EventName, params: Record<string, unknown>): voi
     case "PartnerInterest":
       ga4Event("generate_lead", { ...params, lead_type: "b2b" });
       metaEvent("Lead", { ...params, lead_type: "b2b" });
+      break;
+    case "DealBuzzClicked":
+      // Engagement, not a conversion — GA4's promotion-interaction event + a Meta
+      // custom event. No Google Ads conversion is fired for a deal-buzz click.
+      ga4Event("select_promotion", params);
+      metaEvent("DealBuzzClick", params, false);
       break;
     // PageViewed is covered by GA4 config + Pixel PageView on load.
     default:
