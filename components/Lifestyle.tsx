@@ -29,7 +29,7 @@ export default function Lifestyle() {
             <img src="/mia-four-x4-night-rear.jpg" alt="מיה פור X4 · גימור סטודיו, מתלה אחורי ומערכת שיכוך חשופה" loading="lazy" />
             <div className="life-cap">
               <b>עיצוב שמדבר</b>
-              <span>נוכחות פרימיום · גימור ננו־קריסטל, אמין ורגוע</span>
+              <span>נוכחות פרימיום · קווים נקיים, אמין ורגוע</span>
             </div>
           </div>
           <div className="life-card">
