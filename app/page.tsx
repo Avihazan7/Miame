@@ -22,6 +22,7 @@ import LaunchOfferStrip from "@/components/LaunchOfferStrip";
 import TrustSignalBar from "@/components/TrustSignalBar";
 import DealBuzz from "@/components/DealBuzz";
 import EilatBranch from "@/components/EilatBranch";
+import RentalFleet from "@/components/RentalFleet";
 
 export default function Page() {
   return (
@@ -41,6 +42,7 @@ export default function Page() {
         <LegalStatus />
         <Configurator />
         <EilatBranch />
+        <RentalFleet />
         <DealBuzz />
         <AskBrain />
         <Spyqe />
