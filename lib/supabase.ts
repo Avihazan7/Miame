@@ -66,6 +66,19 @@ export interface PartnerRecord extends UtmFields {
 }
 
 /**
+ * Rental Fleet OS v1 — an Eilat/Green Extreme rental inquiry. The `rental_leads`
+ * table is a schema PROPOSAL (docs/rental-fleet-schema-proposal.sql) and may not
+ * exist yet; saveRentalLead() is best-effort and never blocks the WhatsApp funnel.
+ */
+export interface RentalLeadRecord extends UtmFields {
+  full_name: string;
+  phone: string;
+  hub: string;
+  requested_hours: string;
+  source: string;
+}
+
+/**
  * Insert with forward/backward schema compatibility: try the full row first; if
  * it fails referencing an unknown UTM column (migration not yet applied on this
  * project), strip the UTM fields and retry so the core lead is never lost.
@@ -110,6 +123,22 @@ export async function savePartner(partner: PartnerRecord): Promise<boolean> {
   } catch (e) {
     if (process.env.NODE_ENV !== "production") {
       console.warn("[MiaMe] partner insert threw:", e);
+    }
+    return false;
+  }
+}
+
+/**
+ * Best-effort rental-inquiry persistence. If `rental_leads` isn't provisioned
+ * yet (schema proposal pending), this fails quietly and returns false — the
+ * WhatsApp funnel is the source of truth for v1, so a rental lead is never lost.
+ */
+export async function saveRentalLead(lead: RentalLeadRecord): Promise<boolean> {
+  try {
+    return await insertLenient("rental_leads", lead);
+  } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[MiaMe] rental lead insert threw:", e);
     }
     return false;
   }

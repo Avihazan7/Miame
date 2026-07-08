@@ -554,3 +554,54 @@ body{text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
   .eilat-facts{grid-template-columns:1fr}
   .eilat-actions .btn{width:100%}
 }
+
+/* ============================================================================
+   RENTAL FLEET OS — Eilat / Green Extreme rental section (mint/cream language)
+   ========================================================================== */
+
+.rental-sec{position:relative;overflow:hidden}
+.rental-card{
+  border-radius:30px;
+  padding:clamp(24px,4vw,44px);
+  background:
+    radial-gradient(64% 48% at 14% 10%,rgba(24,224,189,.20),transparent 70%),
+    radial-gradient(56% 46% at 92% 100%,rgba(255,248,235,.80),transparent 72%),
+    linear-gradient(180deg,#ffffff,#f7fffb);
+  border:1px solid rgba(24,224,189,.20);
+  box-shadow:0 24px 60px rgba(8,70,66,.12);
+}
+.rental-kicker{
+  display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:0 14px;
+  border-radius:999px;background:linear-gradient(180deg,#ffffff,#eafff8);
+  color:#078c7b;font-weight:900;border:1px solid rgba(24,224,189,.24);
+}
+.rental-title{
+  margin:16px 0 10px;font-size:clamp(26px,4.6vw,48px);line-height:1.05;
+  letter-spacing:-.04em;color:#08275a;
+}
+.rental-copy{max-width:720px;line-height:1.75;color:#344054}
+
+.rental-stats{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:24px 0 8px;
+}
+.rental-stat{
+  padding:18px 16px;border-radius:20px;text-align:center;
+  background:rgba(255,255,255,.82);border:1px solid rgba(24,224,189,.16);
+}
+.rs-n{font-size:clamp(28px,4vw,40px);font-weight:900;color:#063f3a;line-height:1;font-variant-numeric:tabular-nums}
+.rs-n .rs-cur{font-size:.6em;font-weight:800;color:#078c7b}
+.rs-n.rs-soon{color:#078c7b;font-size:clamp(20px,3vw,26px)}
+.rs-k{margin-top:8px;font-size:13px;color:#5b6675;font-weight:700}
+
+.rental-lead{margin-top:22px}
+.rental-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.rental-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
+.rental-disc{margin-top:14px;font-size:12.5px;line-height:1.6;color:#5b6675;max-width:640px}
+.rental-alt{margin-top:16px;font-size:14px;color:#344054}
+.rental-alt a{color:#078c7b;font-weight:800;text-decoration:underline}
+
+@media(max-width:760px){
+  .rental-stats{grid-template-columns:1fr}
+  .rental-row{grid-template-columns:1fr}
+  .rental-actions .btn{width:100%}
+}
