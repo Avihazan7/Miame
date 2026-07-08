@@ -45,10 +45,6 @@ export function buildLeadMessage(input: LeadMessageInput): string {
     `מקדמה: ${quote.downPct}% (${ils(quote.downAmount)})`
   );
 
-  if (quote.balloonAmount > 0) {
-    lines.push(`תשלום בלון: ${quote.balloonPct}% (${ils(quote.balloonAmount)})`);
-  }
-
   lines.push(
     `תקופה: ${quote.months} תשלומים`,
     `תשלום חודשי משוער: ${ils(quote.monthlyPayment)}`,
