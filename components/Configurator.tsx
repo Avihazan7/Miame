@@ -420,6 +420,7 @@ export default function Configurator() {
               <div className="res-badges">
                 <span className="res-badge accent">0% ריבית</span>
                 <span className="res-badge">ללא הצמדה</span>
+                <span className="res-badge">עד 18 תשלומים</span>
                 <span className="res-badge">Free Feel</span>
               </div>
 
