@@ -26,7 +26,7 @@ export default function Hero() {
           <span aria-hidden="true">🗽</span> Free&nbsp;Feel
         </div>
         <p className="hero-sub">
-          ניידות חשמלית פרימיום במחיר חכם. <span className="strong">הצעת תשלום מותאמת תוך דקה</span>, ישירות לוואטסאפ.
+          ניידות חשמלית פרימיום במחיר חכם. <span className="strong">עד 18 תשלומים ללא ריבית והצמדה</span>, ישירות לוואטסאפ.
         </p>
         <div className="hero-actions">
           <a href="#sim" className="btn btn-primary">קבל הצעת תשלום</a>
@@ -41,8 +41,8 @@ export default function Hero() {
         </div>
 
         <ul className="hero-bullets">
-          <li>MIA&nbsp;FOUR מגיעה עד אליך — הריבית והמשלוח עלינו.</li>
-          <li>ומשלמים מה שבא לכם.</li>
+          <li>MIA&nbsp;FOUR מגיעה עד אליך — עד 18 תשלומים ללא ריבית והצמדה.</li>
+          <li>בוחרים מקדמה, מספר תשלומים, ומקבלים הצעה מותאמת תוך דקה.</li>
           <li>יבואן מורשה · שירות ואחריות 12 חודשים · MEU.</li>
         </ul>
 

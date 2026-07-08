@@ -19,33 +19,38 @@ export interface TrackRule {
   note: string;
 }
 
+const DOWN_RULE: SliderRule = { min: 0, max: 50, default: 50, step: 1, locked: false, hidden: false };
+const MONTHS_RULE: SliderRule = { min: 3, max: 18, default: 18, step: 1, locked: false, hidden: false };
+// Balloon stays in the contract for old lead/WhatsApp/API payloads, but is no longer exposed.
+const NO_BALLOON_RULE: SliderRule = { min: 0, max: 0, default: 0, step: 1, locked: true, hidden: true };
+
 export const TRACKS: Record<CustomerType, TrackRule> = {
   private: {
     id: "private",
     label: "פרטי",
     discountPct: 0,
-    down: { min: 0, max: 50, default: 20, step: 1, locked: false, hidden: false },
-    balloon: { min: 0, max: 20, default: 0, step: 1, locked: false, hidden: false },
-    months: { min: 1, max: 18, default: 18, step: 1, locked: false, hidden: false },
-    note: "גמישות מלאה. מקדמה 0 עד 50 אחוז, בלון עד 20 אחוז, עד 18 תשלומים."
+    down: DOWN_RULE,
+    balloon: NO_BALLOON_RULE,
+    months: MONTHS_RULE,
+    note: "מסלול פרטי נקי: מקדמה גמישה 0%–50%, 3–18 תשלומים, ללא ריבית והצמדה."
   },
   business: {
     id: "business",
     label: "עסקי",
     discountPct: 0,
-    down: { min: 18, max: 18, default: 18, step: 1, locked: true, hidden: false },
-    balloon: { min: 0, max: 0, default: 0, step: 1, locked: true, hidden: true },
-    months: { min: 1, max: 18, default: 18, step: 1, locked: false, hidden: false },
-    note: "מסלול עסקי. מקדמה 18 אחוז, יתרה עד 18 תשלומים."
+    down: DOWN_RULE,
+    balloon: NO_BALLOON_RULE,
+    months: MONTHS_RULE,
+    note: "מסלול עסקי מהיר: מקדמה 0%–50%, עד 18 תשלומים ללא ריבית והצמדה."
   },
   partner: {
     id: "partner",
     label: "שותף עסקי",
     discountPct: 8,
-    down: { min: 18, max: 18, default: 18, step: 1, locked: true, hidden: false },
-    balloon: { min: 0, max: 0, default: 0, step: 1, locked: true, hidden: true },
-    months: { min: 12, max: 12, default: 12, step: 1, locked: true, hidden: false },
-    note: "מסלול שותף. 8 אחוז הנחה, מקדמה 18 אחוז, יתרה ב-12 תשלומים."
+    down: DOWN_RULE,
+    balloon: NO_BALLOON_RULE,
+    months: MONTHS_RULE,
+    note: "מסלול שותף: 8% הנחת שותף, מקדמה 0%–50%, עד 18 תשלומים ללא ריבית והצמדה."
   }
 };
 
