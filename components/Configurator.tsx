@@ -545,7 +545,7 @@ export default function Configurator() {
                     className="btn btn-primary btn-block"
                     onClick={() => openDeal("אישור עסקה", "LeadSubmitted")}
                   >
-                    קבל הצעת עסקה בוואטסאפ
+                    בדיקת התאמה בוואטסאפ
                   </button>
                   <button
                     className="btn btn-light btn-block"

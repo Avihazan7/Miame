@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
+import EntryPaths from "@/components/EntryPaths";
 import About from "@/components/About";
 import Lifestyle from "@/components/Lifestyle";
 import TestRide from "@/components/TestRide";
@@ -32,6 +33,7 @@ export default function Page() {
       <main id="main">
         <Hero />
         <TrustSignalBar />
+        <EntryPaths />
         <About />
         <Lifestyle />
         <TestRide />

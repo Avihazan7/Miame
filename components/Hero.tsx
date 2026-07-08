@@ -29,7 +29,7 @@ export default function Hero() {
           ניידות חשמלית פרימיום במחיר חכם. <span className="strong">עד 18 תשלומים ללא ריבית והצמדה</span>, ישירות לוואטסאפ.
         </p>
         <div className="hero-actions">
-          <a href="#sim" className="btn btn-primary">קבל הצעת תשלום</a>
+          <a href="#sim" className="btn btn-primary">בדיקת התאמה</a>
           <a href="#partner" className="btn btn-ghost">אני רוצה להיות שותף עסקי</a>
         </div>
         <div className="hero-trust">

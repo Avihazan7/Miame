@@ -600,6 +600,54 @@ body{text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
 .rental-alt{margin-top:16px;font-size:14px;color:#344054}
 .rental-alt a{color:#078c7b;font-weight:800;text-decoration:underline}
 
+/* Isolate LTR runs (patents, standards, model names) inside RTL copy. */
+.ltr{direction:ltr;unicode-bidi:isolate}
+
+/* ============================================================================
+   CONVERSION UX — entry paths + legal brief (additive, same mint language)
+   ========================================================================== */
+
+.entry-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2.2vw,20px);
+}
+.entry-card{
+  display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+  padding:clamp(20px,2.6vw,26px);border-radius:24px;height:100%;
+  background:linear-gradient(180deg,#ffffff,#f7fffb);
+  border:1px solid rgba(24,224,189,.20);
+  box-shadow:0 16px 40px rgba(8,70,66,.08);
+  transition:transform .18s ease, box-shadow .22s ease, border-color .18s ease;
+}
+.entry-card:hover{
+  transform:translateY(-3px);border-color:rgba(24,224,189,.42);
+  box-shadow:0 24px 54px rgba(8,70,66,.14);
+}
+.entry-ic{
+  display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;
+  border-radius:16px;font-size:26px;
+  background:linear-gradient(180deg,#eafff8,#fff8eb);border:1px solid rgba(24,224,189,.22);
+}
+.entry-title{font-size:clamp(18px,2.2vw,21px);font-weight:900;color:#08275a;letter-spacing:-.02em}
+.entry-desc{font-size:14px;line-height:1.6;color:#475569;flex:1}
+.entry-cta{
+  margin-top:6px;font-weight:900;color:#078c7b;
+}
+.entry-card:hover .entry-cta{color:#0b6}
+@media(max-width:760px){
+  .entry-grid{grid-template-columns:1fr;max-width:460px;margin-inline:auto}
+}
+
+/* Legal brief — quick bullets + short disclaimer under LegalStatus. */
+.legal-brief{
+  max-width:620px;margin:22px auto 0;padding:18px 20px;border-radius:20px;
+  background:rgba(234,255,248,.6);border:1px solid rgba(24,224,189,.18);
+}
+.lb-title{font-weight:900;color:#063f3a;margin-bottom:8px}
+.lb-list{margin:0;padding-inline-start:20px;color:#344054;line-height:1.9;font-size:14.5px}
+.status-legal{
+  max-width:620px;margin:14px auto 0;font-size:12.5px;line-height:1.65;color:#5b6675;text-align:center;
+}
+
 @media(max-width:760px){
   .rental-stats{grid-template-columns:1fr}
   .rental-row{grid-template-columns:1fr}

@@ -74,9 +74,10 @@ export default function RentalFleet() {
             השכרת MIA FOUR באילת · Green Extreme
           </h2>
           <p className="rental-copy">
-            צי השכרה של MIA FOUR בפארק הטרמינל אילת — חוויית Free Feel חשמלית, ירוקה
-            ומשפחתית, החל מ-{RENTAL_HOURLY_FROM} ₪ לשעה. משריינים מראש, מגיעים ל-Green
-            Extreme ויוצאים לדרך.
+            צי פתיחה מתוכנן של כ-{FLEET_SIZE} כלי MiaMe להשכרה לפי שעה באילת, סביב מתחם
+            Green Extreme בפארק הטרמינל — חוויית Free Feel חשמלית, ירוקה ומשפחתית, החל
+            מ-{RENTAL_HOURLY_FROM} ₪ לשעה. זמינות, מחיר ותנאי שימוש כפופים לאישור הסניף
+            ולמצב הכלים.
           </p>
 
           <div className="rental-stats">
@@ -145,10 +146,10 @@ export default function RentalFleet() {
             <div className="rental-actions">
               <button type="button" className="btn btn-primary" onClick={submit}>
                 <WaIcon size={20} />
-                שריינו השכרה בוואטסאפ
+                שריון שעה ב-Green Extreme
               </button>
               <a href={wazeUrl()} target="_blank" rel="noopener" className="btn btn-ghost">
-                נווטו ל-Green Extreme
+                נווט ל-Green Extreme
               </a>
             </div>
             {sent && <div className="lead-ok">נפתחה שיחת וואטסאפ ✓ נחזור אליכם לתיאום</div>}
@@ -159,7 +160,7 @@ export default function RentalFleet() {
           </div>
 
           <p className="rental-alt">
-            מעדיפים לדבר? <a href={waPlain} target="_blank" rel="noopener">דברו איתנו בוואטסאפ</a>.
+            מעדיפים לדבר? <a href={waPlain} target="_blank" rel="noopener">דברו איתי על השכרה</a>.
           </p>
         </div>
       </div>
