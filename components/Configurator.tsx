@@ -9,6 +9,7 @@ import {
   computeQuote,
   ils
 } from "@/lib/finance";
+import { getZonePrice, type PricingZone } from "@/lib/pricing-zones";
 import {
   buildWhatsAppUrl,
   buildLeadMessage
@@ -88,6 +89,7 @@ interface SealedScore {
 export default function Configurator() {
   const [modelId, setModelId] = useState<string>(MODELS[0].id);
   const [type, setType] = useState<CustomerType>("private");
+  const [pricingZone, setPricingZone] = useState<PricingZone>("nationwide");
   const [downPct, setDownPct] = useState<number>(TRACKS.private.down.default);
   const balloonPct = 0; // תשלום בתום התקופה (בלון) בוטל — נשאר 0 לתאימות ה-API/ליד.
   const [months, setMonths] = useState<number>(TRACKS.private.months.default);
@@ -101,8 +103,12 @@ export default function Configurator() {
 
   const model = getModel(modelId);
   const track_ = TRACKS[type];
+  // Price zone is a pricing CONTEXT over the same model — Eilat swaps in the
+  // ex-VAT base price; everything downstream (down/months/monthly) is identical.
+  const zonePrice = getZonePrice(model.price, pricingZone);
+  const isEilat = pricingZone === "eilat";
   const quote = computeQuote({
-    basePrice: model.price,
+    basePrice: zonePrice.price,
     type,
     downPct,
     balloonPct,
@@ -121,6 +127,13 @@ export default function Configurator() {
     setMonths(r.months.default);
     setSent(false);
     track("SimulatorChanged", { field: "type", type: t });
+  }
+
+  function selectZone(z: PricingZone) {
+    setPricingZone(z);
+    setSent(false);
+    track("SimulatorChanged", { field: "pricingZone", pricingZone: z });
+    emitSignal("compare_many"); // exploring the Eilat price → active-intent nudge
   }
 
   function selectModel(id: string, scroll = false) {
@@ -175,7 +188,10 @@ export default function Configurator() {
         balloon: quote.balloonAmount,
         months: quote.months,
         monthly_payment: quote.monthlyPayment,
-        source: `miame-web · ${intent} · ${utmTag(utm)}`,
+        // Zone attribution rides in `source` — no new Supabase column (schema unchanged).
+        source: `miame-web · ${intent} · ${pricingZone} · ${
+          isEilat ? "green_extreme_terminal_park_eilat" : "nationwide"
+        } · ${utmTag(utm)}`,
         ...utm
       };
       void saveLead(lead);
@@ -219,7 +235,8 @@ export default function Configurator() {
         customerLabel: track_.label,
         modelName: model.name,
         quote,
-        source: "אתר MiaMe · " + intent
+        source:
+          "אתר MiaMe · " + intent + (isEilat ? " · מחיר אילת (ללא מע״מ) · Green Extreme" : "")
       })
     );
     if (typeof window !== "undefined") window.open(url, "_blank");
@@ -309,6 +326,29 @@ export default function Configurator() {
           <div className="sim">
             {/* controls */}
             <div className="sim-controls">
+              {/* price zone — nationwide vs Eilat (Green Extreme) */}
+              <div className="zone-toggle" role="radiogroup" aria-label="בחירת אזור מחיר">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={!isEilat}
+                  className={!isEilat ? "zone on" : "zone"}
+                  onClick={() => selectZone("nationwide")}
+                >
+                  מחיר ארצי
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={isEilat}
+                  className={isEilat ? "zone eilat on" : "zone eilat"}
+                  onClick={() => selectZone("eilat")}
+                >
+                  מחיר אילת · Green Extreme
+                </button>
+              </div>
+              {isEilat && <p className="eilat-note">{zonePrice.legalNote}</p>}
+
               <div className="tabs" role="tablist">
                 {TYPES.map((t) => (
                   <button
@@ -407,7 +447,9 @@ export default function Configurator() {
                 className="res-product"
               />
               <img src="/mia-four-logo.png" alt="MIA FOUR" className="res-logo" />
-              <div className="res-eyebrow">עד 18 תשלומים ללא ריבית והצמדה</div>
+              <div className="res-eyebrow">
+                {isEilat ? "מחיר אילת · Green Extreme" : "עד 18 תשלומים ללא ריבית והצמדה"}
+              </div>
               <div className="res-model">
                 {model.name} · מסלול {track_.label}
               </div>
@@ -421,14 +463,14 @@ export default function Configurator() {
                 <span className="res-badge accent">0% ריבית</span>
                 <span className="res-badge">ללא הצמדה</span>
                 <span className="res-badge">עד 18 תשלומים</span>
-                <span className="res-badge">Free Feel</span>
+                <span className="res-badge">{isEilat ? "ללא מע״מ בכפוף לדין" : "Free Feel"}</span>
               </div>
 
               <div className="res-line" />
 
               <div className="res-grid">
                 <div className="res-cell">
-                  <div className="k">מחיר מלא</div>
+                  <div className="k">{isEilat ? "מחיר אילת" : "מחיר מלא"}</div>
                   <div className="v">{ils(quote.basePrice)}</div>
                 </div>
                 <div className="res-cell">
