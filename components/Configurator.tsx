@@ -295,6 +295,11 @@ export default function Configurator() {
                         <span className="cur">₪</span>
                         {m.price.toLocaleString("he-IL")}
                       </div>
+                      <div className="card-eilat">
+                        <span aria-hidden="true">♻️</span> באילת{" "}
+                        <b>{ils(getZonePrice(m.price, "eilat").price)}</b>
+                        <span className="ce-tag">ללא מע״מ</span>
+                      </div>
                     </div>
                     <div className="card-cta">
                       <button
@@ -379,7 +384,10 @@ export default function Configurator() {
                     onClick={() => selectModel(m.id)}
                   >
                     <div className="mp-n">{m.name}</div>
-                    <div className="mp-p">{ils(m.price)}</div>
+                    <div className="mp-p">
+                      {isEilat && <span className="mp-eilat">אילת · </span>}
+                      {ils(getZonePrice(m.price, pricingZone).price)}
+                    </div>
                   </button>
                 ))}
               </div>

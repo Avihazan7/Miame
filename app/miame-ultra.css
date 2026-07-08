@@ -143,6 +143,17 @@
   background:linear-gradient(180deg,#eafff8,#fff8eb);
   box-shadow:0 0 0 3px rgba(24,224,189,.14);
 }
+/* Eilat price on catalog cards + zone-aware simulator chips */
+.card-eilat{
+  margin-top:8px;display:flex;align-items:center;justify-content:flex-end;gap:6px;
+  font-size:13px;font-weight:800;color:#078c7b;flex-wrap:wrap;
+}
+.card-eilat b{color:#063f3a;font-weight:900}
+.ce-tag{
+  font-size:10.5px;font-weight:800;color:#078c7b;padding:2px 8px;border-radius:999px;
+  background:rgba(234,255,248,.9);border:1px solid rgba(24,224,189,.28);
+}
+.mp-eilat{color:#078c7b;font-weight:900}
 .field-val{color:var(--mint-deep)}
 .rng{
   height:9px;
