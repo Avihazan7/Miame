@@ -15,7 +15,7 @@ export default function StickyCta() {
         <WaIcon size={24} />
       </a>
       <a href="#sim" className="btn btn-primary sticky-main">
-        קבל הצעת תשלום
+        בדיקת התאמה
       </a>
     </div>
   );

@@ -28,12 +28,12 @@ export default function Patents() {
         <div className="patents-grid">
           <div className="patent">
             <div className="patent-flag">🇺🇸</div>
-            <div className="patent-no">US 11,878,763 B2</div>
+            <div className="patent-no ltr">US 11,878,763 B2</div>
             <div className="patent-rg">United States Patent</div>
           </div>
           <div className="patent">
             <div className="patent-flag">🇺🇸</div>
-            <div className="patent-no">US 12,097,926 B2</div>
+            <div className="patent-no ltr">US 12,097,926 B2</div>
             <div className="patent-rg">United States Patent</div>
           </div>
           <div className="patent">
