@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Heebo } from "next/font/google";
 import "./globals.css";
+import "./miame-ultra.css";
 import AmbientLight from "@/components/AmbientLight";
 import MarkField from "@/components/MarkField";
 import MotionFx from "@/components/MotionFx";

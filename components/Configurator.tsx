@@ -89,7 +89,7 @@ export default function Configurator() {
   const [modelId, setModelId] = useState<string>(MODELS[0].id);
   const [type, setType] = useState<CustomerType>("private");
   const [downPct, setDownPct] = useState<number>(TRACKS.private.down.default);
-  const [balloonPct, setBalloonPct] = useState<number>(TRACKS.private.balloon.default);
+  const balloonPct = 0; // תשלום בתום התקופה (בלון) בוטל — נשאר 0 לתאימות ה-API/ליד.
   const [months, setMonths] = useState<number>(TRACKS.private.months.default);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -118,7 +118,6 @@ export default function Configurator() {
     const r = TRACKS[t];
     setType(t);
     setDownPct(r.down.default);
-    setBalloonPct(r.balloon.default);
     setMonths(r.months.default);
     setSent(false);
     track("SimulatorChanged", { field: "type", type: t });
@@ -303,7 +302,7 @@ export default function Configurator() {
             <div className="sec-kicker">סימולטור תשלומים</div>
             <h2 className="sec-title">בנו את העסקה שלכם</h2>
             <p className="sec-desc">
-              בחרו מסלול, גררו את הפרמטרים, וקבלו תשלום חודשי משוער בזמן אמת.
+              בחרו דגם, מקדמה ומספר תשלומים — עד 18 תשלומים ללא ריבית והצמדה.
             </p>
           </div>
 
@@ -326,6 +325,10 @@ export default function Configurator() {
 
               <div className="field-note" style={{ marginTop: "-12px", marginBottom: "20px" }}>
                 {track_.note}
+              </div>
+
+              <div className="zero-interest-pill">
+                עד 18 תשלומים ללא ריבית והצמדה
               </div>
 
               <div className="model-pick">
@@ -363,44 +366,14 @@ export default function Configurator() {
                   onTouchEnd={() => emitChange("down")}
                 />
                 <div className="field-note">
-                  {track_.down.locked
-                    ? "קבוע במסלול זה"
-                    : `טווח ${track_.down.min}% עד ${track_.down.max}%`}
+                  מקדמה גמישה מ-{track_.down.min}% עד {track_.down.max}%
                 </div>
               </div>
-
-              {/* balloon */}
-              {!track_.balloon.hidden && (
-                <div className="field">
-                  <div className="field-top">
-                    <span className="field-label">תשלום בלון בסוף התקופה</span>
-                    <span className={track_.balloon.locked ? "field-val locked" : "field-val"}>
-                      {balloonPct}% · {ils(quote.balloonAmount)}
-                    </span>
-                  </div>
-                  <input
-                    className="rng"
-                    type="range"
-                    aria-label="תשלום בלון"
-                    min={track_.balloon.min}
-                    max={track_.balloon.max}
-                    step={track_.balloon.step}
-                    value={balloonPct}
-                    disabled={track_.balloon.locked}
-                    onChange={(e) => setBalloonPct(Number(e.target.value))}
-                    onMouseUp={() => emitChange("balloon")}
-                    onTouchEnd={() => emitChange("balloon")}
-                  />
-                  <div className="field-note">
-                    {`טווח ${track_.balloon.min}% עד ${track_.balloon.max}% · מקטין את התשלום החודשי`}
-                  </div>
-                </div>
-              )}
 
               {/* months */}
               <div className="field">
                 <div className="field-top">
-                  <span className="field-label">תקופת תשלומים</span>
+                  <span className="field-label">מספר התשלומים</span>
                   <span className={track_.months.locked ? "field-val locked" : "field-val"}>
                     {months} תשלומים
                   </span>
@@ -419,16 +392,22 @@ export default function Configurator() {
                   onTouchEnd={() => emitChange("months")}
                 />
                 <div className="field-note">
-                  {track_.months.locked
-                    ? "קבוע במסלול זה"
-                    : `טווח ${track_.months.min} עד ${track_.months.max} תשלומים`}
+                  {track_.months.min} עד {track_.months.max} תשלומים · ללא ריבית והצמדה
                 </div>
               </div>
             </div>
 
             {/* result */}
             <div className="sim-result">
-              <div className="res-eyebrow">תשלום חודשי משוער</div>
+              <Image
+                src="/mia-four-x4-hero.webp"
+                alt="MIA FOUR כלי חשמלי ארבעה גלגלים"
+                width={774}
+                height={860}
+                className="res-product"
+              />
+              <img src="/mia-four-logo.png" alt="MIA FOUR" className="res-logo" />
+              <div className="res-eyebrow">עד 18 תשלומים ללא ריבית והצמדה</div>
               <div className="res-model">
                 {model.name} · מסלול {track_.label}
               </div>
@@ -439,8 +418,9 @@ export default function Configurator() {
               </div>
 
               <div className="res-badges">
-                <span className="res-badge accent">0% ריבית*</span>
-                <span className="res-badge">זמינות מיידית*</span>
+                <span className="res-badge accent">0% ריבית</span>
+                <span className="res-badge">ללא הצמדה</span>
+                <span className="res-badge">Free Feel</span>
               </div>
 
               <div className="res-line" />
@@ -470,12 +450,6 @@ export default function Configurator() {
                   <strong>{ils(quote.basePrice - quote.effectivePrice)}</strong>
                 </div>
               )}
-              {quote.balloonAmount > 0 && (
-                <div className="res-disc" style={{ color: "#9fc2ff" }}>
-                  • תשלום בלון {quote.balloonPct}% ({ils(quote.balloonAmount)}) בסוף התקופה
-                </div>
-              )}
-
               {/* lead */}
               <div className="lead">
                 {/* Honeypot: hidden from humans and AT; bots that fill every field trip it */}
@@ -535,8 +509,7 @@ export default function Configurator() {
                   <a href="/legal/privacy">מדיניות הפרטיות</a>.
                 </p>
                 <p className="disclaimer">
-                  הסימולטור להמחשה בלבד. המחירים, המלאי והתנאים כפופים לעדכון ולאישור החברה/היבואן. השימוש
-                  באתר אינו מהווה התחייבות לאישור מימון או זמינות מלאי. ההערכה אינה הצעת אשראי.
+                  הסימולטור להמחשה בלבד. עד 18 תשלומים ללא ריבית והצמדה בכפוף לאישור עסקה, זמינות מלאי ותנאי החברה/היבואן. האתר אינו מהווה התחייבות לאישור מימון.
                 </p>
                 {sent && <div className="lead-ok">נפתחה שיחת וואטסאפ ✓ נחזור אליכם מיד</div>}
                 {score && (
