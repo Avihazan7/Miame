@@ -1,0 +1,318 @@
+/* M31 — Advanced Calm Marketplace UX (demo-safe preview).
+ * RTL-first: uses CSS LOGICAL PROPERTIES ONLY (margin-inline / padding-inline /
+ * inset-inline / border-inline / text-align:start-end / inline-size). No physical
+ * direction props (no left/right/margin-left/…). CSS-only micro-interactions, all
+ * gated behind prefers-reduced-motion. No network, no asset — visual only. */
+
+.mp-page {
+  max-inline-size: 900px;
+  margin-inline: auto;
+  padding-inline: 20px;
+  padding-block: 40px 72px;
+  text-align: start;
+}
+
+.mp-head {
+  margin-block-end: 24px;
+}
+.mp-eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--azure, #0a84ff);
+  margin-block-end: 6px;
+}
+.mp-title {
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--ink, #0b0f14);
+}
+.mp-sub {
+  margin-block-start: 8px;
+  color: #51606f;
+  max-inline-size: 60ch;
+}
+
+/* Trust copy — calm, disclosed, non-promissory. */
+.mp-trust {
+  margin-block: 18px;
+  padding-inline: 18px;
+  padding-block: 14px;
+  border-inline-start: 3px solid var(--azure, #0a84ff);
+  background: var(--mist, #f2f8fd);
+  border-radius: 12px;
+  color: #223;
+  font-size: 15px;
+}
+
+/* Inert, spatial-ready hero slot — layout area only, no renderer. */
+.mp-hero-slot {
+  position: relative;
+  inline-size: 100%;
+  block-size: clamp(160px, 34vw, 300px);
+  margin-block: 20px;
+  border-radius: 20px;
+  border: 1px dashed rgba(10, 132, 255, 0.32);
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(10, 132, 255, 0.1), transparent 60%),
+    linear-gradient(180deg, #f7fbff, #eef5ff);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.mp-hero-caption {
+  padding-inline: 16px;
+  padding-block: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #4a5b6b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Stepper */
+.mp-stepper {
+  display: flex;
+  gap: 10px;
+  margin-block: 20px;
+  padding: 0;
+  list-style: none;
+}
+.mp-step {
+  flex: 1 1 0;
+  padding-block: 10px;
+  padding-inline: 12px;
+  border-radius: 12px;
+  background: #eef2f7;
+  color: #6a7787;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.mp-step[data-active="true"] {
+  background: var(--azure, #0a84ff);
+  color: #fff;
+}
+.mp-step[data-done="true"] {
+  background: #d8ecff;
+  color: #0061cf;
+}
+
+/* Stage + fields */
+.mp-stage {
+  animation: mp-fade 0.32s ease both;
+}
+.mp-stage-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink, #0b0f14);
+}
+.mp-stage-sub {
+  margin-block: 4px 16px;
+  color: #64717f;
+  font-size: 14px;
+}
+.mp-field {
+  margin-block-end: 16px;
+}
+.mp-label {
+  display: block;
+  margin-block-end: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #223;
+}
+.mp-req {
+  color: #c0392b;
+  margin-inline-start: 4px;
+}
+.mp-control {
+  inline-size: 100%;
+  padding-block: 12px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line, #e6eef6);
+  background: #fff;
+  font: inherit;
+  color: var(--ink, #0b0f14);
+}
+.mp-control:focus-visible {
+  outline: 2px solid var(--azure, #0a84ff);
+  outline-offset: 1px;
+  border-color: var(--azure, #0a84ff);
+}
+.mp-radio-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.mp-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-block: 10px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line, #e6eef6);
+  background: #fff;
+  cursor: pointer;
+}
+.mp-radio input {
+  accent-color: var(--azure, #0a84ff);
+}
+
+/* Consent */
+.mp-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-block: 18px;
+  padding-inline: 14px;
+  padding-block: 12px;
+  border-radius: 12px;
+  background: var(--mist, #f2f8fd);
+}
+.mp-consent input {
+  margin-block-start: 3px;
+  accent-color: var(--azure, #0a84ff);
+}
+.mp-consent label {
+  font-size: 14px;
+  color: #334;
+  line-height: 1.4;
+}
+
+/* Actions */
+.mp-actions {
+  display: flex;
+  gap: 12px;
+  margin-block-start: 8px;
+}
+.mp-actions .mp-spacer {
+  flex: 1 1 auto;
+}
+
+/* Off-screen honeypot — logical inset, never a physical left/right. */
+.mp-hp {
+  position: absolute;
+  inset-inline-start: -9999px;
+  inset-block-start: -9999px;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+}
+
+/* Calm agentic skeleton */
+.mp-skeleton {
+  margin-block: 12px;
+}
+.mp-skel-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+.mp-skel-card {
+  block-size: 150px;
+  border-radius: 16px;
+  border: 1px solid var(--line, #e6eef6);
+  background: linear-gradient(100deg, #f1f5fa 30%, #e7eef6 50%, #f1f5fa 70%);
+  background-size: 300% 100%;
+  animation: mp-shimmer 1.4s ease-in-out infinite;
+}
+.mp-skel-caption {
+  margin-block-start: 14px;
+  text-align: center;
+  color: #5a6775;
+  font-size: 14px;
+  min-block-size: 1.4em;
+}
+.mp-skel-line {
+  opacity: 0;
+  animation: mp-step-in 0.5s ease forwards;
+}
+.mp-skel-line[data-i="1"] { animation-delay: 0.1s; }
+.mp-skel-line[data-i="2"] { animation-delay: 0.7s; }
+.mp-skel-line[data-i="3"] { animation-delay: 1.3s; }
+
+/* Demo decision cards */
+.mp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-block-start: 8px;
+}
+.mp-card {
+  padding-inline: 16px;
+  padding-block: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--line, #e6eef6);
+  background: #fff;
+  box-shadow: var(--shadow-card, 0 1px 2px rgba(11, 15, 20, 0.04), 0 12px 32px rgba(11, 15, 20, 0.06));
+}
+.mp-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink, #0b0f14);
+}
+.mp-card-tag {
+  margin-block: 4px 12px;
+  color: #64717f;
+  font-size: 13px;
+}
+.mp-card-attr {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding-block: 6px;
+  border-block-start: 1px solid #eef3f8;
+  font-size: 14px;
+}
+.mp-card-attr .mp-attr-label { color: #6a7787; }
+.mp-card-attr .mp-attr-value { font-weight: 600; color: #223; }
+.mp-card-note {
+  margin-block-start: 10px;
+  font-size: 12px;
+  color: #8a97a5;
+}
+
+/* Demo-safety notice */
+.mp-notice {
+  margin-block-start: 18px;
+  padding-inline: 16px;
+  padding-block: 12px;
+  border-radius: 12px;
+  background: #fff7e6;
+  border-inline-start: 3px solid #f0a020;
+  color: #6b4e12;
+  font-size: 13px;
+}
+
+@keyframes mp-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes mp-shimmer {
+  from { background-position: 150% 0; }
+  to { background-position: -150% 0; }
+}
+@keyframes mp-step-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Motion safety — reduced-motion disables every animation/transition. */
+@media (prefers-reduced-motion: reduce) {
+  .mp-stage,
+  .mp-step,
+  .mp-skel-card,
+  .mp-skel-line {
+    animation: none !important;
+    transition: none !important;
+  }
+  .mp-skel-line { opacity: 1; }
+}
