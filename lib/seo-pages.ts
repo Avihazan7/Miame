@@ -37,6 +37,8 @@ export interface SeoPage {
   /** Optional real-time 3D model (GLB), served from /public or a full URL. When
    *  set, the product stage offers a lazy, dynamic-imported 3D view. */
   glb?: string;
+  /** Optional YouTube id for a lazy "how it works / unboxing" section. */
+  howToVideoId?: string;
 }
 
 const CTA_NOTE =
@@ -119,7 +121,8 @@ export const SEO_PAGES: SeoPage[] = [
       { href: "/klnoit-shetach", label: "קלנועית שטח — הנעה כפולה 4×4" }
     ],
     breadcrumbName: "מיה פור",
-    glb: "/models/mia-four-x4.glb"
+    glb: "/models/mia-four-x4.glb",
+    howToVideoId: "gbioqYddCxE"
   },
   {
     slug: "klnoit-4-galgalim",
