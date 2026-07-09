@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 
 // PWA / install manifest. Deep-navy anchors the brand on the home-screen and PWA
-// splash; the icon is the sharp mint-on-navy monogram (app/icon.svg).
+// splash; the icon is the sharp mint-on-navy monogram. Raster PNGs (192/512 +
+// maskable-512) are mandatory for installability — SVG alone is not enough.
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "MiaMe.co.il — Free Feel",
@@ -15,8 +16,9 @@ export default function manifest(): MetadataRoute.Manifest {
     dir: "rtl",
     icons: [
       { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
-      { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "maskable" },
-      { src: "/apple-icon", sizes: "180x180", type: "image/png" },
+      { src: "/icons/miame-icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icons/miame-icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/icons/miame-icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }

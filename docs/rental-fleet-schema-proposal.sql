@@ -1,10 +1,12 @@
 -- ============================================================================
--- MiaMe Rental Fleet OS · v1 — Supabase SCHEMA PROPOSAL (NOT APPLIED)
+-- MiaMe Rental Fleet OS · v1 — Supabase SCHEMA PROPOSAL (superseded)
 -- ============================================================================
--- This file is a PROPOSAL for review, deliberately placed under docs/ and NOT in
--- supabase/migrations/, so nothing here runs automatically. Apply it only after
--- business sign-off, by copying it into a dated migration and running the normal
--- migration flow.
+-- SUPERSEDED: this proposal has been realized (and extended with rental_branches
+-- + rental_events) as the additive migration
+--   supabase/migrations/20260709_rental_fleet_os.sql
+-- Kept here for design context only. The migration file is the source of truth;
+-- it is NOT auto-applied — run it through the normal migration flow after
+-- business sign-off. Nothing in this docs/ copy runs automatically.
 --
 -- Design goals (mirrors the existing lead schema conventions):
 --   * anon may INSERT a rental inquiry (bounded), but may NOT SELECT.

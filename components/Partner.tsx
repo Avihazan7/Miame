@@ -1,4 +1,5 @@
 import PartnerCta from "./PartnerCta";
+import PartnerHubForm from "./PartnerHubForm";
 import { RENTAL_PRICES, SUCCESS_FEE_PCT } from "@/lib/content";
 
 function Icon({ d }: { d: string }) {
@@ -74,6 +75,7 @@ export default function Partner() {
                 </div>
               ))}
             </div>
+            <PartnerHubForm />
             <div className="partner-cta">
               <PartnerCta />
             </div>

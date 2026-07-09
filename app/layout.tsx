@@ -44,6 +44,10 @@ export const metadata: Metadata = {
   applicationName: "MiaMe",
   keywords: ["MiaMe", "רכב חשמלי", "ניידות חשמלית", "ליסינג", "השכרה", "Leasing.co.il"],
   alternates: { canonical: "/" },
+  // Icons are resolved by the file conventions in app/ (favicon.ico, icon.svg,
+  // icon.png, apple-icon.png) — those take precedence over a metadata.icons object,
+  // so we let the files drive the <head> links and keep this object focused on the
+  // rest of the metadata.
   openGraph: {
     title: "MiaMe — החופש שלך על ארבעה גלגלים",
     description:
