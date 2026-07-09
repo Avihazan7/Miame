@@ -835,3 +835,47 @@ body{text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
   padding:9px 18px;border-radius:999px;font-weight:800;font-size:13.5px;color:#eafff8;
   background:rgba(5,7,13,.5);border:1px solid rgba(87,224,180,.3);backdrop-filter:blur(6px);
 }
+
+/* ============================================================================
+   FREEDOM MOMENT — second, self-hosted VERTICAL brand video between the entry
+   paths and the MIA FOUR brand block. Deep-navy stage, calm (no bloom). The
+   "diamond polish" is a single mint cut-edge + one diagonal gleam — restrained.
+   ========================================================================== */
+.freedom-moment{position:relative}
+.fm-shell{
+  position:relative;overflow:hidden;border-radius:34px;padding:clamp(24px,4vw,44px);
+  background:
+    radial-gradient(64% 46% at 82% 6%,rgba(87,224,180,.16),transparent 72%),
+    linear-gradient(180deg,#0E2747 0%,#081B33 70%,#05070D 100%);
+  border:1px solid rgba(87,224,180,.20);
+  box-shadow:0 28px 84px rgba(5,7,13,.26),inset 0 1px 0 rgba(255,255,255,.07);
+}
+.fm-copy{max-width:640px;margin:0 auto 22px;text-align:center}
+.fm-kicker{
+  display:inline-flex;align-items:center;min-height:32px;padding:0 15px;border-radius:999px;
+  font-weight:900;color:#79E8C5;background:rgba(87,224,180,.10);border:1px solid rgba(87,224,180,.24);
+  font-size:13.5px;letter-spacing:.03em;
+}
+.fm-title{margin:14px 0 0;color:#fff;font-size:clamp(26px,4vw,44px);line-height:1.05;letter-spacing:-.03em;text-shadow:none}
+.fm-desc{max-width:560px;margin:12px auto 0;color:rgba(255,255,255,.74);line-height:1.7;font-size:clamp(15px,1.5vw,18px)}
+.fm-frame{
+  position:relative;width:min(100%,360px);aspect-ratio:9/16;margin:0 auto;
+  border-radius:26px;overflow:hidden;background:#05070D;
+  /* diamond cut-edge: crisp mint hairline + one faint outer facet */
+  box-shadow:
+    0 0 0 1px rgba(87,224,180,.45),
+    0 0 0 6px rgba(87,224,180,.07),
+    0 26px 68px rgba(0,0,0,.42);
+}
+.fm-frame::after{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(135deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,0) 30%);
+  mix-blend-mode:screen;opacity:.45;
+}
+.fm-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#05070D}
+.fm-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:26px}
+@media(max-width:620px){
+  .fm-shell{border-radius:26px;padding:22px 16px}
+  .fm-frame{width:min(100%,300px);border-radius:20px}
+  .fm-actions .btn{width:100%}
+}
