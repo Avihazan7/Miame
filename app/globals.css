@@ -324,7 +324,18 @@ svg{display:block}
 .pl-k{font-size:15px;font-weight:500}
 .pl-v{font-size:19px;font-weight:800}
 .pl-v .cur{font-size:14px;font-weight:700;color:#9fc2ff}
-.partner-cta{margin-top:22px}
+.partner-cta{margin-top:14px}
+
+/* §10 MiaMe Hub partner lead form — lives on the dark partner card */
+.partner-form{margin-top:24px;padding-top:22px;border-top:1px solid rgba(255,255,255,.12)}
+.partner-form-head{margin-bottom:14px}
+.pf-title{font-size:18px;font-weight:800;letter-spacing:-.3px;color:#fff}
+.pf-desc{margin:5px 0 0;font-size:13.5px;color:#cfe0ff;line-height:1.5}
+.partner-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.partner-form-grid .inp:nth-child(5){grid-column:1 / -1}
+.partner-form .btn-block{margin-top:12px}
+.pf-disc{margin:12px 0 0;font-size:11.5px;color:#9fc2ff;line-height:1.55}
+@media (max-width:560px){.partner-form-grid{grid-template-columns:1fr}}
 
 /* footer */
 /* importer band */
