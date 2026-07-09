@@ -835,6 +835,25 @@ body{text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
   padding:9px 18px;border-radius:999px;font-weight:800;font-size:13.5px;color:#eafff8;
   background:rgba(5,7,13,.5);border:1px solid rgba(87,224,180,.3);backdrop-filter:blur(6px);
 }
+/* Phase 2 — 3D (GLB) view. three.js loads only on click; the canvas fills the
+   stage transparently over the navy backdrop. */
+.p360-3d{position:absolute;inset:0;width:100%;height:100%}
+.p360-3d-loading{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:#eafff8;font-weight:800;font-size:14px;
+}
+.p360-controls{position:absolute;inset:auto clamp(12px,3vw,20px) clamp(12px,3vw,20px) auto;z-index:3}
+.p360-btn{
+  cursor:pointer;padding:9px 18px;border-radius:999px;font-weight:900;font-size:13.5px;
+  color:#eafff8;background:rgba(5,7,13,.55);border:1px solid rgba(87,224,180,.35);
+  backdrop-filter:blur(6px);transition:border-color .18s ease, background .18s ease;
+}
+.p360-btn:hover{border-color:rgba(87,224,180,.6);background:rgba(5,7,13,.7)}
+.p360-btn-3d{
+  color:#062d28;background:linear-gradient(180deg,#7EE7C9,#4FD5B1 55%,#2EBE97);
+  border-color:transparent;box-shadow:0 10px 26px rgba(87,224,180,.28);
+}
+.p360-btn-3d:hover{background:linear-gradient(180deg,#8bf0d4,#57e0b8 55%,#33c9a0);border-color:transparent}
 
 /* ============================================================================
    FREEDOM MOMENT — second, self-hosted VERTICAL brand video between the entry

@@ -101,7 +101,7 @@ export default function SeoLanding({ page }: { page: SeoPage }) {
           </section>
         )}
 
-        <Product360Stage vehicleId={page.slug} poster={page.hero.image} alt={page.hero.alt} />
+        <Product360Stage vehicleId={page.slug} poster={page.hero.image} alt={page.hero.alt} glb={page.glb} />
 
         <article className="seo-body">
           {page.sections.map((sec) => (
