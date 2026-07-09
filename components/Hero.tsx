@@ -30,7 +30,7 @@ export default function Hero() {
         </p>
         <div className="hero-actions">
           <a href="#sim" className="btn btn-primary">בדיקת התאמה</a>
-          <a href="#partner" className="btn btn-ghost">אני רוצה להיות שותף עסקי</a>
+          <a href="/partners" className="btn btn-ghost">אני רוצה להיות שותף עסקי</a>
         </div>
         <div className="hero-trust">
           <span className="tchip"><Check />הכי חכם</span>

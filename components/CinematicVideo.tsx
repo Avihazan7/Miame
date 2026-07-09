@@ -94,7 +94,7 @@ export default function CinematicVideo() {
             </a>
             <a
               className="btn btn-ghost"
-              href="#rental"
+              href="/rent-eilat"
               onClick={() =>
                 void track("CinematicVideoCTA", {
                   cta: "rental_eilat",
