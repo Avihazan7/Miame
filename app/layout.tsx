@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Heebo } from "next/font/google";
+import { Heebo, Suez_One } from "next/font/google";
 import "./globals.css";
 import "./miame-ultra.css";
 import AmbientLight from "@/components/AmbientLight";
@@ -28,6 +28,15 @@ const heebo = Heebo({
   subsets: ["hebrew", "latin"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
   variable: "--font-heebo",
+  display: "swap"
+});
+
+// Suez One — the MIA FOUR display type (Hebrew + Latin, single 400 weight).
+// Wired as --font-display; used on hero/section display headings only.
+const suezOne = Suez_One({
+  subsets: ["hebrew", "latin"],
+  weight: "400",
+  variable: "--font-display",
   display: "swap"
 });
 
@@ -149,7 +158,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl" className={heebo.variable}>
+    <html lang="he" dir="rtl" className={`${heebo.variable} ${suezOne.variable}`}>
       <body>
         {/* WCAG 2.4.1 (Bypass Blocks): first focusable element jumps to content */}
         <a href="#main" className="skip-link">דילוג לתוכן הראשי</a>

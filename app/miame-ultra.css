@@ -272,6 +272,10 @@
 .sec-head{max-width:720px;margin:0 auto clamp(26px,4vw,42px);text-align:center}
 .sec-kicker{display:inline-flex;align-items:center;justify-content:center;min-height:24px;margin-bottom:8px}
 .sec-title{margin:0;line-height:1.08;letter-spacing:-.035em}
+/* Ultra Color P Master display type — Suez One on the big display headings
+   (hero + section titles). Single 400 weight: presence comes from scale, not
+   bold. Falls back to a serif stack before the web font loads. */
+.hero-title,.sec-title{font-family:var(--font-display),"Georgia",serif;letter-spacing:-.02em}
 .sec-desc{max-width:620px;margin:12px auto 0;line-height:1.7}
 
 /* --- header: single baseline, comfortable tap targets --- */
