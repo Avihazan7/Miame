@@ -23,6 +23,7 @@ import TrustSignalBar from "@/components/TrustSignalBar";
 import DealBuzz from "@/components/DealBuzz";
 import CinematicVideo from "@/components/CinematicVideo";
 import FreedomMomentVideo from "@/components/FreedomMomentVideo";
+import FaqHome from "@/components/FaqHome";
 
 export default function Page() {
   return (
@@ -53,6 +54,7 @@ export default function Page() {
         <AskBrain />
         <Spyqe />
         <Service />
+        <FaqHome />
       </main>
       <Importer />
       <Footer />
