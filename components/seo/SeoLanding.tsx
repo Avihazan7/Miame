@@ -4,6 +4,7 @@ import type { SeoPage } from "@/lib/seo-pages";
 import { SEO_CTA_NOTE } from "@/lib/seo-pages";
 import { MODELS } from "@/lib/models";
 import { buildProductJsonLd } from "@/lib/seo/product-jsonld";
+import Product360Stage from "@/components/Product360Stage";
 import SeoCta from "./SeoCta";
 
 const SITE_URL = "https://www.miame.co.il";
@@ -99,6 +100,8 @@ export default function SeoLanding({ page }: { page: SeoPage }) {
             ))}
           </section>
         )}
+
+        <Product360Stage vehicleId={page.slug} poster={page.hero.image} alt={page.hero.alt} />
 
         <article className="seo-body">
           {page.sections.map((sec) => (
