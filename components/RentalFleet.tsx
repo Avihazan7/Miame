@@ -70,9 +70,9 @@ export default function RentalFleet() {
           <span className="rental-kicker">
             <span aria-hidden="true">♻️</span> השכרה · אילת
           </span>
-          <h2 className="rental-title" id="rental-title">
+          <h1 className="rental-title" id="rental-title">
             השכרת MIA FOUR באילת · Green Extreme
-          </h2>
+          </h1>
           <p className="rental-copy">
             צי פתיחה מתוכנן של כ-{FLEET_SIZE} כלי MiaMe להשכרה לפי שעה באילת, סביב מתחם
             Green Extreme בפארק הטרמינל — חוויית Free Feel חשמלית, ירוקה ומשפחתית, החל

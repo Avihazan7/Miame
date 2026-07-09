@@ -34,7 +34,7 @@ export default function Partner() {
       <div className="wrap">
         <div className="sec-head">
           <div className="sec-kicker">שותפות עסקית</div>
-          <h2 className="sec-title">הפכו ל-MiaMe Hub</h2>
+          <h1 className="sec-title">הפכו ל-MiaMe Hub</h1>
           <p className="sec-desc">
             מודל שותפות פשוט להפעלת צי השכרה רווחי, בלי להיכנס לעולם השיווק לבד.
           </p>

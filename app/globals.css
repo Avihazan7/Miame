@@ -1386,3 +1386,6 @@ a,button,.btn,.tab,.mp,input,.dealer-btn,.imp-btn{touch-action:manipulation}
   .flagship::after,.rental-strip::after,.soon-card::after{display:none}
   .nav-link::after{transition:none}
 }
+
+/* Visually-hidden but accessible (screen readers + SEO) main heading. */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}

@@ -25,6 +25,7 @@ export default function EligibilityPage() {
     <>
       <Header />
       <main id="main">
+        <h1 className="sr-only">זכאות כוחות הביטחון · MiaMe</h1>
         <Tribute />
         <LegalStatus />
       </main>
