@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import "./marketplace-preview.css";
-import { TRUST_COPY } from "@/lib/marketplace-preview";
+import { TRUST_COPY, TRUST_TIE_IN } from "@/lib/marketplace-preview";
 import SpatialHeroSlot from "@/components/marketplace/SpatialHeroSlot";
+import HowItWorksFlow from "@/components/marketplace/HowItWorksFlow";
 import MarketplaceLeadFlow from "@/components/marketplace/MarketplaceLeadFlow";
+import LeasingTermsExplainer from "@/components/marketplace/LeasingTermsExplainer";
 
-// M31 — demo-safe marketplace preview. A standalone, NON-INDEXED surface that showcases
+// M30.1 — demo-safe marketplace preview. A standalone, NON-INDEXED surface that showcases
 // the calm lead flow, the agentic skeleton, and the spatial-ready hero slot WITHOUT any
 // live action: no provider, no Supabase write, no network, no supplier transfer.
 export const metadata: Metadata = {
@@ -29,7 +31,13 @@ export default function MarketplacePreviewPage() {
 
       <SpatialHeroSlot />
 
+      <HowItWorksFlow />
+
+      <p className="mp-tie-in">{TRUST_TIE_IN}</p>
+
       <MarketplaceLeadFlow />
+
+      <LeasingTermsExplainer />
     </main>
   );
 }

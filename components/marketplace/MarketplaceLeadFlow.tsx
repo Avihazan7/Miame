@@ -1,6 +1,6 @@
 "use client";
 
-// M31 — Cognitive lead flow as PROGRESSIVE DISCLOSURE (not one long intimidating form).
+// M30.1 — Cognitive lead flow as PROGRESSIVE DISCLOSURE (not one long intimidating form).
 // Stage 1: customer type + usage intent · Stage 2: route / budget / preferred vehicle ·
 // Stage 3: contact + EXPLICIT consent. Every field has a visible label (never
 // placeholder-only). DEMO-SAFE: submit performs NO network call, NO Supabase write, NO

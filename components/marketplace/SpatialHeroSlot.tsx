@@ -1,4 +1,4 @@
-// M31 — Spatial-ready hero slot. An INERT placeholder that reserves the layout for a
+// M30.1 — Spatial-ready hero slot. An INERT placeholder that reserves the layout for a
 // future 3D/AR experience WITHOUT activating anything. No canvas, no WebGL, no Three.js,
 // no ZeroLight, no iframe, no external asset, no network, no hidden live renderer — it is
 // a static, layout-ready, aria-hidden decorative area only.

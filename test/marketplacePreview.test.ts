@@ -1,6 +1,6 @@
-// M31 — Advanced Calm Marketplace UX: enforcement tests. Pure + offline (node env). They
+// M30.1 — Advanced Calm Marketplace UX: enforcement tests. Pure + offline (node env). They
 // prove the demo-safe invariants by (a) asserting the pure data/copy module, (b) statically
-// scanning the touched M31 source files, and (c) rendering the flow to static markup. No
+// scanning the touched M30.1 source files, and (c) rendering the flow to static markup. No
 // jsdom, no network — matching the repo's static-guarantee test style.
 
 import { readFileSync } from "node:fs";
@@ -16,21 +16,28 @@ import {
   HERO_SLOT,
   FORBIDDEN_TRUST_PHRASES,
   allLeadFields,
+  HOW_IT_WORKS_STEPS,
+  HOW_IT_WORKS_CAPTION,
+  TRUST_TIE_IN,
+  LEASING_TERMS,
+  LEASING_TERMS_TITLE,
 } from "@/lib/marketplace-preview";
 
 // The exact set of files this milestone touches — the logical-properties policy and the
 // non-live scans apply to these and only these.
-const M31_FILES = [
+const M30_1_FILES = [
   "lib/marketplace-preview.ts",
   "app/marketplace-preview/page.tsx",
   "app/marketplace-preview/marketplace-preview.css",
   "components/marketplace/MarketplaceLeadFlow.tsx",
   "components/marketplace/CalmSkeleton.tsx",
   "components/marketplace/SpatialHeroSlot.tsx",
+  "components/marketplace/HowItWorksFlow.tsx",
+  "components/marketplace/LeasingTermsExplainer.tsx",
 ];
 
 const read = (rel: string): string => readFileSync(resolve(process.cwd(), rel), "utf8");
-const M31_SOURCES: Record<string, string> = Object.fromEntries(M31_FILES.map((f) => [f, read(f)]));
+const M30_1_SOURCES: Record<string, string> = Object.fromEntries(M30_1_FILES.map((f) => [f, read(f)]));
 
 // Remove JS line comments and JS/CSS block comments (the http-colon guard keeps URLs).
 function stripComments(src: string): string {
@@ -39,7 +46,7 @@ function stripComments(src: string): string {
     .replace(/(^|[^:])\/\/.*$/gm, "$1");
 }
 
-describe("M31 · logical-properties policy (no new physical-direction CSS)", () => {
+describe("M30.1 · logical-properties policy (no new physical-direction CSS)", () => {
   // Physical CSS props + physical Tailwind direction utilities. Logical equivalents
   // (margin-inline, padding-inline, inset-inline, border-inline, text-align:start/end,
   // inline-size/block-size) do NOT match. A line may opt out with `logical-exception`.
@@ -56,9 +63,9 @@ describe("M31 · logical-properties policy (no new physical-direction CSS)", () 
     /\brounded-[lr]\b/,
   ];
 
-  it("no touched M31 file introduces a physical-direction property/utility", () => {
+  it("no touched M30.1 file introduces a physical-direction property/utility", () => {
     const violations: string[] = [];
-    for (const [file, src] of Object.entries(M31_SOURCES)) {
+    for (const [file, src] of Object.entries(M30_1_SOURCES)) {
       // Scan real code only — comments (which may name physical props in prose) are stripped.
       stripComments(src).split("\n").forEach((line, i) => {
         if (line.includes("logical-exception")) return; // documented opt-out
@@ -70,8 +77,8 @@ describe("M31 · logical-properties policy (no new physical-direction CSS)", () 
     expect(violations).toEqual([]);
   });
 
-  it("the M31 stylesheet actively uses logical properties", () => {
-    const css = M31_SOURCES["app/marketplace-preview/marketplace-preview.css"];
+  it("the M30.1 stylesheet actively uses logical properties", () => {
+    const css = M30_1_SOURCES["app/marketplace-preview/marketplace-preview.css"];
     for (const prop of ["margin-inline", "padding-inline", "inset-inline-start", "border-inline-start", "inline-size", "block-size"]) {
       expect(css, prop).toContain(prop);
     }
@@ -79,7 +86,7 @@ describe("M31 · logical-properties policy (no new physical-direction CSS)", () 
   });
 });
 
-describe("M31 · progressive disclosure (three stages, labelled fields, explicit consent)", () => {
+describe("M30.1 · progressive disclosure (three stages, labelled fields, explicit consent)", () => {
   it("has exactly the three ordered stages", () => {
     expect(LEAD_STAGES.map((s) => s.id)).toEqual(["profile", "match", "contact"]);
     expect(LEAD_STAGES.map((s) => s.index)).toEqual([1, 2, 3]);
@@ -101,20 +108,20 @@ describe("M31 · progressive disclosure (three stages, labelled fields, explicit
     expect(CONSENT.required).toBe(true);
     expect(CONSENT.label.trim().length).toBeGreaterThan(10);
     // the flow initialises consent state to false (opt-in, not pre-checked)
-    expect(M31_SOURCES["components/marketplace/MarketplaceLeadFlow.tsx"]).toMatch(
+    expect(M30_1_SOURCES["components/marketplace/MarketplaceLeadFlow.tsx"]).toMatch(
       /useState\(false\)/,
     );
   });
 
   it("wraps every control in a real label element (no placeholder-only labels)", () => {
-    const flow = M31_SOURCES["components/marketplace/MarketplaceLeadFlow.tsx"];
+    const flow = M30_1_SOURCES["components/marketplace/MarketplaceLeadFlow.tsx"];
     expect(flow).toContain("htmlFor={id}"); // select + text/tel inputs are label-associated
     expect(flow).toContain("<legend"); // radio group uses a fieldset legend
     expect(flow).toContain('htmlFor="mp-consent"'); // the consent checkbox has a real label
   });
 });
 
-describe("M31 · calm skeleton is non-live (visual only)", () => {
+describe("M30.1 · calm skeleton is non-live (visual only)", () => {
   it("exposes exactly the three approved copy lines", () => {
     expect(SKELETON_STEPS).toEqual([
       "מנוע ההשוואה בוחן מסלולים...",
@@ -124,14 +131,14 @@ describe("M31 · calm skeleton is non-live (visual only)", () => {
   });
 
   it("the skeleton component calls no network / AI / provider primitive", () => {
-    const code = stripComments(M31_SOURCES["components/marketplace/CalmSkeleton.tsx"]).toLowerCase();
+    const code = stripComments(M30_1_SOURCES["components/marketplace/CalmSkeleton.tsx"]).toLowerCase();
     for (const bad of ["fetch(", "http", "openai", "canva", "zerolight", "supabase", "three", "webgl", "canvas", "useeffect", "setinterval"]) {
       expect(code, bad).not.toContain(bad);
     }
   });
 });
 
-describe("M31 · trust copy explains without over-promising", () => {
+describe("M30.1 · trust copy explains without over-promising", () => {
   it("uses the approved game-theory framing", () => {
     expect(TRUST_COPY).toContain("התאמה שקופה");
     expect(TRUST_COPY).toContain("רק כאשר מתקדמת עסקה מוסכמת ושקופה");
@@ -166,9 +173,9 @@ describe("M31 · trust copy explains without over-promising", () => {
   });
 });
 
-describe("M31 · spatial-ready hero slot is inert", () => {
+describe("M30.1 · spatial-ready hero slot is inert", () => {
   it("declares the future-3d data hook and is aria-hidden, with no renderer", () => {
-    const src = M31_SOURCES["components/marketplace/SpatialHeroSlot.tsx"];
+    const src = M30_1_SOURCES["components/marketplace/SpatialHeroSlot.tsx"];
     expect(src).toContain('data-future-3d-slot="true"');
     expect(src).toContain('aria-hidden="true"');
     const code = stripComments(src).toLowerCase();
@@ -178,7 +185,7 @@ describe("M31 · spatial-ready hero slot is inert", () => {
   });
 
   it("declares a captioned, layout-ready slot (no live renderer element)", () => {
-    const src = M31_SOURCES["components/marketplace/SpatialHeroSlot.tsx"];
+    const src = M30_1_SOURCES["components/marketplace/SpatialHeroSlot.tsx"];
     expect(src).not.toContain("<canvas");
     expect(src).not.toContain("<iframe");
     expect(src).toContain("HERO_SLOT.caption"); // static caption, not an asset/renderer
@@ -186,9 +193,9 @@ describe("M31 · spatial-ready hero slot is inert", () => {
   });
 });
 
-describe("M31 · no 3D / provider / OpenAI / Canva runtime anywhere in M31", () => {
+describe("M30.1 · no 3D / provider / OpenAI / Canva runtime anywhere in M30.1", () => {
   it("no touched file imports or invokes a forbidden runtime", () => {
-    for (const [file, src] of Object.entries(M31_SOURCES)) {
+    for (const [file, src] of Object.entries(M30_1_SOURCES)) {
       const code = stripComments(src).toLowerCase();
       for (const bad of [
         "canvas", "webgl", "webglrenderer", "three", "@react-three",
@@ -201,7 +208,7 @@ describe("M31 · no 3D / provider / OpenAI / Canva runtime anywhere in M31", () 
   });
 
   it("the lead-flow submit performs no live action and no supplier transfer", () => {
-    const flow = stripComments(M31_SOURCES["components/marketplace/MarketplaceLeadFlow.tsx"]);
+    const flow = stripComments(M30_1_SOURCES["components/marketplace/MarketplaceLeadFlow.tsx"]);
     for (const bad of ["fetch(", "savePartner", "buildWhatsAppUrl", "window.open", "supabase", "http"]) {
       expect(flow, bad).not.toContain(bad);
     }
@@ -213,19 +220,94 @@ describe("M31 · no 3D / provider / OpenAI / Canva runtime anywhere in M31", () 
   });
 });
 
-describe("M31 · motion safety (reduced-motion respected, no heavy animation dep)", () => {
+describe("M30.1 · motion safety (reduced-motion respected, no heavy animation dep)", () => {
   it("the stylesheet disables its animations under prefers-reduced-motion", () => {
-    const css = M31_SOURCES["app/marketplace-preview/marketplace-preview.css"];
+    const css = M30_1_SOURCES["app/marketplace-preview/marketplace-preview.css"];
     expect(css).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)/);
     const block = css.slice(css.indexOf("prefers-reduced-motion"));
     expect(block).toMatch(/animation:\s*none/);
     expect(block).toMatch(/transition:\s*none/);
   });
 
-  it("no M31 file pulls in a heavy animation dependency", () => {
-    for (const [file, src] of Object.entries(M31_SOURCES)) {
+  it("no M30.1 file pulls in a heavy animation dependency", () => {
+    for (const [file, src] of Object.entries(M30_1_SOURCES)) {
       expect(src.includes("framer-motion"), `${file} framer-motion`).toBe(false);
       expect(src.includes("gsap"), `${file} gsap`).toBe(false);
+    }
+  });
+});
+
+describe("M30.1 · lead-orchestration & leasing-education layer (non-live)", () => {
+  it("the How-ULease-Works flow strip exists with the seven ordered steps", () => {
+    expect(HOW_IT_WORKS_STEPS.map((s) => s.index)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(HOW_IT_WORKS_STEPS.map((s) => s.text)).toEqual([
+      "ממלאים בקשה קצרה",
+      "המערכת מנקה ומבינה את הצורך",
+      "בוחרים מסלול: פרטי / עסקי / חברה",
+      "מקבלים השוואה לדוגמה",
+      "מאשרים אם להעביר פרטים לספק",
+      "ספק מתאים חוזר עם הצעה",
+      "ULease מלווה עד החלטה",
+    ]);
+    expect(M30_1_SOURCES["components/marketplace/HowItWorksFlow.tsx"]).toContain("HOW_IT_WORKS_STEPS");
+  });
+
+  it("the flow marks itself as a simulation and makes no negotiation-happened claim", () => {
+    // the sample-comparison step is flagged demo, and the strip carries a demo caption
+    expect(HOW_IT_WORKS_STEPS.find((s) => s.text.includes("השוואה לדוגמה"))?.demo).toBe(true);
+    expect(HOW_IT_WORKS_CAPTION).toContain("להמחשה");
+    expect(HOW_IT_WORKS_CAPTION).toContain("אין אוטומציה חיה");
+    const flow = stripComments(M30_1_SOURCES["components/marketplace/HowItWorksFlow.tsx"]).toLowerCase();
+    for (const bad of ["fetch(", "http", "n8n", "make.com", "zapier", "openai", "canva", "supabase", "window.open"]) {
+      expect(flow, bad).not.toContain(bad);
+    }
+  });
+
+  it("the leasing-terms explainer exists with all ten terms in order", () => {
+    expect(LEASING_TERMS).toHaveLength(10);
+    expect(LEASING_TERMS.map((t) => t.term)).toEqual([
+      "ליסינג תפעולי", "ליסינג מימוני", "מקדמה", "תשלום חודשי", "תקופת עסקה",
+      "שווי שימוש", "עלות כוללת / TCO", "Deal Score", "ספק מאושר", "העברת פרטים באישור",
+    ]);
+    expect(LEASING_TERMS_TITLE).toContain("10 מושגים");
+    expect(M30_1_SOURCES["components/marketplace/LeasingTermsExplainer.tsx"]).toContain("LEASING_TERMS");
+  });
+
+  it("every term is Hebrew-first with a plain explanation and a practical meaning", () => {
+    const hebrew = /[֐-׿]/;
+    for (const t of LEASING_TERMS) {
+      expect(hebrew.test(t.explain), `${t.term} explain`).toBe(true);
+      expect(hebrew.test(t.meaning), `${t.term} meaning`).toBe(true);
+      expect(t.explain.trim().length, `${t.term} explain len`).toBeGreaterThan(10);
+      expect(t.meaning.trim().length, `${t.term} meaning len`).toBeGreaterThan(10);
+    }
+  });
+
+  it("Deal Score is marked demo (illustrative, not a live score)", () => {
+    const dealScore = LEASING_TERMS.find((t) => t.term === "Deal Score");
+    expect(dealScore?.demo).toBe(true);
+    expect(dealScore?.meaning).toContain("לדוגמה");
+  });
+
+  it("the consent-before-transfer tie-in is present, rendered, and echoed in the flow", () => {
+    expect(TRUST_TIE_IN).toBe("אנחנו מסבירים את התהליך לפני שאנחנו מבקשים פרטים.");
+    expect(M30_1_SOURCES["app/marketplace-preview/page.tsx"]).toContain("TRUST_TIE_IN");
+    expect(HOW_IT_WORKS_STEPS.some((s) => s.text.includes("מאשרים אם להעביר פרטים לספק"))).toBe(true);
+  });
+
+  it("no education file imports or references an external image asset", () => {
+    for (const [file, src] of Object.entries(M30_1_SOURCES)) {
+      expect(src, `${file} <img`).not.toContain("<img");
+      expect(src, `${file} next/image`).not.toContain("next/image");
+      expect(src, `${file} url(`).not.toContain("url(");
+      expect(src, `${file} image-ext`).not.toMatch(/["'`][^"'`\n]*\.(png|jpe?g|svg|webp|gif|avif)\b/i);
+    }
+  });
+
+  it("the leasing terms avoid legal overpromise and fake-AI claims", () => {
+    const copy = LEASING_TERMS.flatMap((t) => [t.explain, t.meaning]).join("\n");
+    for (const bad of ["מובטח", "guaranteed", "AI מנתח", "בינה מלאכותית מנהלת", "תמיד זול"]) {
+      expect(copy.includes(bad), bad).toBe(false);
     }
   });
 });
