@@ -14,7 +14,6 @@ import AskBrain from "@/components/AskBrain";
 import Spyqe from "@/components/Spyqe";
 import Tribute from "@/components/Tribute";
 import Service from "@/components/Service";
-import Partner from "@/components/Partner";
 import Importer from "@/components/Importer";
 import Footer from "@/components/Footer";
 import FloatingWa from "@/components/FloatingWa";
@@ -22,8 +21,6 @@ import StickyCta from "@/components/StickyCta";
 import LaunchOfferStrip from "@/components/LaunchOfferStrip";
 import TrustSignalBar from "@/components/TrustSignalBar";
 import DealBuzz from "@/components/DealBuzz";
-import EilatBranch from "@/components/EilatBranch";
-import RentalFleet from "@/components/RentalFleet";
 import CinematicVideo from "@/components/CinematicVideo";
 
 export default function Page() {
@@ -34,7 +31,7 @@ export default function Page() {
       <main id="main">
         <Hero />
         <TrustSignalBar />
-        <EntryPaths />
+        <EntryPaths variant="homepage" />
         <About />
         <Lifestyle />
         <TestRide />
@@ -45,14 +42,11 @@ export default function Page() {
         <LegalStatus />
         <CinematicVideo />
         <Configurator />
-        <EilatBranch />
-        <RentalFleet />
         <DealBuzz />
         <AskBrain />
         <Spyqe />
         <Tribute />
         <Service />
-        <Partner />
       </main>
       <Importer />
       <Footer />

@@ -1,47 +1,114 @@
 import { CTA } from "@/lib/cta";
 
-// Entry paths — give a first-time visitor a clear route within 3 seconds:
-// buy · rent in Eilat · defence-forces eligibility · partner Hub. The four living
-// paths named in the Master Spec (docs/MIAME_MASTER_SPEC.md, principle 10). Pure
-// anchors to existing in-page sections (no JS, no new flow). Additive; calm,
-// dark-navy anchored — the site is not redesigned.
+// Entry paths — give a first-time visitor a clear route within 3 seconds.
+// Two shapes (Market-OS funnel hierarchy):
+//   • "homepage" — B2C clarity: two dominant primary cards (buy · eligibility)
+//     plus two reduced secondary links (rent · partner) to their dedicated pages.
+//   • "full" — the complete four-card grid (used where all routes are equal).
+// Pure anchors/links to existing sections and dedicated pages (no JS, no new flow).
 
-const PATHS = [
-  {
-    href: "#sim",
-    icon: "🛒",
-    title: "רכישת MIA FOUR",
-    desc: "בונים הצעת תשלום — עד 18 תשלומים ללא ריבית והצמדה.",
-    cta: CTA.fit,
-    tone: "buy",
-  },
-  {
-    href: "#rental",
-    icon: "♻️",
-    title: "השכרה באילת",
-    desc: "צי השכרה לפי שעה ב-Green Extreme · פארק הטרמינל.",
-    cta: CTA.rental,
-    tone: "rent",
-  },
-  {
-    href: "#tribute",
-    icon: "🇮🇱",
-    title: "זכאות כוחות הביטחון",
-    desc: "נכי צה\"ל ומשפחות שכולות — עד 100% בכפוף לאישור.",
-    cta: CTA.tribute,
-    tone: "tribute",
-  },
-  {
-    href: "#partner",
-    icon: "🤝",
-    title: "MiaMe Hub לשותפים",
-    desc: "מפעילים צי השכרה רווחי — אתם הבעלים, אנחנו מביאים ביקוש.",
-    cta: CTA.partner,
-    tone: "partner",
-  },
-] as const;
+type Path = {
+  href: string;
+  icon: string;
+  title: string;
+  desc: string;
+  cta: string;
+  tone: string;
+};
 
-export default function EntryPaths() {
+const BUY: Path = {
+  href: "#sim",
+  icon: "🛒",
+  title: "רכישת MIA FOUR",
+  desc: "בונים הצעת תשלום — עד 18 תשלומים ללא ריבית והצמדה.",
+  cta: CTA.fit,
+  tone: "buy",
+};
+const ELIGIBILITY: Path = {
+  href: "/eligibility",
+  icon: "🇮🇱",
+  title: "זכאות כוחות הביטחון",
+  desc: "נכי צה\"ל ומשפחות שכולות — עד 100% בכפוף לאישור.",
+  cta: CTA.tribute,
+  tone: "tribute",
+};
+const RENT: Path = {
+  href: "/rent-eilat",
+  icon: "♻️",
+  title: "השכרה באילת",
+  desc: "צי השכרה לפי שעה ב-Green Extreme · פארק הטרמינל.",
+  cta: CTA.rental,
+  tone: "rent",
+};
+const PARTNER: Path = {
+  href: "/partners",
+  icon: "🤝",
+  title: "MiaMe Hub לשותפים",
+  desc: "מפעילים צי השכרה רווחי — אתם הבעלים, אנחנו מביאים ביקוש.",
+  cta: CTA.partner,
+  tone: "partner",
+};
+
+const FULL: Path[] = [BUY, RENT, ELIGIBILITY, PARTNER];
+const PRIMARY: Path[] = [BUY, ELIGIBILITY];
+const SECONDARY: Path[] = [RENT, PARTNER];
+
+function Card({ p }: { p: Path }) {
+  return (
+    <a className={`entry-card entry-${p.tone}`} href={p.href}>
+      <span className="entry-ic" aria-hidden="true">
+        {p.icon}
+      </span>
+      <span className="entry-title">{p.title}</span>
+      <span className="entry-desc">{p.desc}</span>
+      <span className="entry-cta">{p.cta} ›</span>
+    </a>
+  );
+}
+
+function MiniCard({ p }: { p: Path }) {
+  return (
+    <a className={`entry-mini entry-${p.tone}`} href={p.href}>
+      <span className="entry-mini-ic" aria-hidden="true">
+        {p.icon}
+      </span>
+      <span className="entry-mini-body">
+        <span className="entry-mini-title">{p.title}</span>
+        <span className="entry-mini-cta">{p.cta} ›</span>
+      </span>
+    </a>
+  );
+}
+
+export default function EntryPaths({ variant = "full" }: { variant?: "homepage" | "full" }) {
+  if (variant === "homepage") {
+    return (
+      <section className="block entry-sec" id="start" aria-labelledby="entry-title">
+        <div className="wrap">
+          <div className="sec-head">
+            <div className="sec-kicker">איך תרצו להתחיל?</div>
+            <h2 className="sec-title" id="entry-title">
+              רכישה או זכאות — נתחיל מכאן
+            </h2>
+            <p className="sec-desc">שני המסלולים המובילים. השכרה באילת ושותפות MiaMe Hub — במרחק קליק.</p>
+          </div>
+
+          <div className="entry-grid entry-grid-primary">
+            {PRIMARY.map((p) => (
+              <Card p={p} key={p.href} />
+            ))}
+          </div>
+
+          <div className="entry-secondary" aria-label="מסלולים נוספים">
+            {SECONDARY.map((p) => (
+              <MiniCard p={p} key={p.href} />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="block entry-sec" id="start" aria-labelledby="entry-title">
       <div className="wrap">
@@ -54,15 +121,8 @@ export default function EntryPaths() {
         </div>
 
         <div className="entry-grid">
-          {PATHS.map((p) => (
-            <a className={`entry-card entry-${p.tone}`} href={p.href} key={p.href}>
-              <span className="entry-ic" aria-hidden="true">
-                {p.icon}
-              </span>
-              <span className="entry-title">{p.title}</span>
-              <span className="entry-desc">{p.desc}</span>
-              <span className="entry-cta">{p.cta} ›</span>
-            </a>
+          {FULL.map((p) => (
+            <Card p={p} key={p.href} />
           ))}
         </div>
       </div>

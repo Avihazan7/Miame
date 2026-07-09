@@ -45,7 +45,7 @@ export default function EilatBranch() {
           </div>
 
           <div className="eilat-actions">
-            <a href="#sim" className="btn btn-primary">
+            <a href="/#sim" className="btn btn-primary">
               בדוק מחיר אילת
             </a>
             <a href={wa} target="_blank" rel="noopener" className="btn btn-light">
