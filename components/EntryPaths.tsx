@@ -1,8 +1,10 @@
 import { CTA } from "@/lib/cta";
 
 // Entry paths — give a first-time visitor a clear route within 3 seconds:
-// buy · rent in Eilat · defence-forces eligibility. Pure anchors to existing
-// in-page sections (no JS, no new flow). Additive; the site is not redesigned.
+// buy · rent in Eilat · defence-forces eligibility · partner Hub. The four living
+// paths named in the Master Spec (docs/MIAME_MASTER_SPEC.md, principle 10). Pure
+// anchors to existing in-page sections (no JS, no new flow). Additive; calm,
+// dark-navy anchored — the site is not redesigned.
 
 const PATHS = [
   {
@@ -29,6 +31,14 @@ const PATHS = [
     cta: CTA.tribute,
     tone: "tribute",
   },
+  {
+    href: "#partner",
+    icon: "🤝",
+    title: "MiaMe Hub לשותפים",
+    desc: "מפעילים צי השכרה רווחי — אתם הבעלים, אנחנו מביאים ביקוש.",
+    cta: CTA.partner,
+    tone: "partner",
+  },
 ] as const;
 
 export default function EntryPaths() {
@@ -36,7 +46,7 @@ export default function EntryPaths() {
     <section className="block entry-sec" id="start" aria-labelledby="entry-title">
       <div className="wrap">
         <div className="sec-head">
-          <div className="sec-kicker">שלושה מסלולים</div>
+          <div className="sec-kicker">ארבעה מסלולים</div>
           <h2 className="sec-title" id="entry-title">
             איך תרצו להתחיל?
           </h2>
