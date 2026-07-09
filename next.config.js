@@ -31,7 +31,9 @@ const SECURITY_HEADERS = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://vercel.live",
+      // 'wasm-unsafe-eval' permits WebAssembly compilation ONLY (three.js/@react-three
+      // decoders for the lazy 3D product viewer) — it does NOT enable JS eval().
+      "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://connect.facebook.net https://vercel.live",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
