@@ -12,15 +12,24 @@
 import { useState } from "react";
 import { track } from "@/lib/analytics";
 
-const VIDEO_ID = "LCxIzRiOlTk";
+const VIDEO_ID = "gf1rxCEwu-c";
 const SOURCE = "miame_home_cinema_stage";
+const VIDEO_PROVIDER = "youtube-nocookie";
+// High-quality poster with a graceful fallback: not every upload has a
+// maxresdefault, so drop to hqdefault (always present) if the first 404s.
+const POSTER_MAX = `https://i.ytimg.com/vi/${VIDEO_ID}/maxresdefault.jpg`;
+const POSTER_FALLBACK = `https://i.ytimg.com/vi/${VIDEO_ID}/hqdefault.jpg`;
 
 export default function CinematicVideo() {
   const [play, setPlay] = useState(false);
 
   function startPlayback() {
     setPlay(true);
-    void track("CinematicVideoPlay", { videoId: VIDEO_ID, source: SOURCE });
+    void track("CinematicVideoPlay", {
+      videoId: VIDEO_ID,
+      source: SOURCE,
+      videoProvider: VIDEO_PROVIDER,
+    });
   }
 
   return (
@@ -48,9 +57,13 @@ export default function CinematicVideo() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`https://i.ytimg.com/vi/${VIDEO_ID}/hqdefault.jpg`}
+                  src={POSTER_MAX}
                   alt="תצוגת וידאו MiaMe"
                   loading="lazy"
+                  onError={(event) => {
+                    const img = event.currentTarget;
+                    if (img.src !== POSTER_FALLBACK) img.src = POSTER_FALLBACK;
+                  }}
                 />
                 <span className="cinema-play" aria-hidden="true">▶</span>
               </button>
@@ -69,14 +82,26 @@ export default function CinematicVideo() {
             <a
               className="btn btn-primary"
               href="#sim"
-              onClick={() => void track("CinematicVideoCTA", { cta: "fit_check", source: SOURCE })}
+              onClick={() =>
+                void track("CinematicVideoCTA", {
+                  cta: "fit_check",
+                  source: SOURCE,
+                  videoProvider: VIDEO_PROVIDER,
+                })
+              }
             >
               בדיקת התאמה בוואטסאפ
             </a>
             <a
               className="btn btn-ghost"
               href="#rental"
-              onClick={() => void track("CinematicVideoCTA", { cta: "rental_eilat", source: SOURCE })}
+              onClick={() =>
+                void track("CinematicVideoCTA", {
+                  cta: "rental_eilat",
+                  source: SOURCE,
+                  videoProvider: VIDEO_PROVIDER,
+                })
+              }
             >
               השכרה באילת
             </a>
