@@ -392,31 +392,43 @@ export default function Configurator() {
                 ))}
               </div>
 
-              {/* down payment */}
-              <div className="field">
-                <div className="field-top">
-                  <span className="field-label">מקדמה</span>
-                  <span className={track_.down.locked ? "field-val locked" : "field-val"}>
-                    {downPct}% · {ils(quote.downAmount)}
-                  </span>
+              {/* down payment — private: 0%–50% slider · business/partner: fixed VAT, no slider */}
+              {track_.down.hidden ? (
+                <div className="field field-vatdown">
+                  <div className="field-top">
+                    <span className="field-label">מקדמה (מע״מ)</span>
+                    <span className="field-val">{ils(quote.downAmount)}</span>
+                  </div>
+                  <div className="field-note">
+                    במסלול עסקי/שותף המקדמה היא רכיב המע״מ (קבועה) — היתרה נפרסת לתשלומים.
+                  </div>
                 </div>
-                <input
-                  className="rng"
-                  type="range"
-                  aria-label="מקדמה"
-                  min={track_.down.min}
-                  max={track_.down.max}
-                  step={track_.down.step}
-                  value={downPct}
-                  disabled={track_.down.locked}
-                  onChange={(e) => setDownPct(Number(e.target.value))}
-                  onMouseUp={() => emitChange("down")}
-                  onTouchEnd={() => emitChange("down")}
-                />
-                <div className="field-note">
-                  מקדמה גמישה מ-{track_.down.min}% עד {track_.down.max}%
+              ) : (
+                <div className="field">
+                  <div className="field-top">
+                    <span className="field-label">מקדמה</span>
+                    <span className={track_.down.locked ? "field-val locked" : "field-val"}>
+                      {downPct}% · {ils(quote.downAmount)}
+                    </span>
+                  </div>
+                  <input
+                    className="rng"
+                    type="range"
+                    aria-label="מקדמה"
+                    min={track_.down.min}
+                    max={track_.down.max}
+                    step={track_.down.step}
+                    value={downPct}
+                    disabled={track_.down.locked}
+                    onChange={(e) => setDownPct(Number(e.target.value))}
+                    onMouseUp={() => emitChange("down")}
+                    onTouchEnd={() => emitChange("down")}
+                  />
+                  <div className="field-note">
+                    מקדמה גמישה מ-{track_.down.min}% עד {track_.down.max}%
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* months */}
               <div className="field">
