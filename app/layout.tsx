@@ -171,7 +171,11 @@ const JSON_LD = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  // Ultra Color P Master: Pearl on light, Abyss on dark (= manifest theme_color).
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FDFBF6" },
+    { media: "(prefers-color-scheme: dark)", color: "#04121F" }
+  ],
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover"

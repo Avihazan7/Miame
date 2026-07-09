@@ -10,8 +10,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "MiaMe — ניידות חשמלית פרימיום, MIA FOUR, קנייה, ליסינג והשכרה.",
     start_url: "/",
     display: "standalone",
-    background_color: "#081B33",
-    theme_color: "#081B33",
+    background_color: "#04121F",
+    theme_color: "#04121F",
     lang: "he",
     dir: "rtl",
     icons: [
