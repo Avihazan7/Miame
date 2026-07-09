@@ -360,6 +360,7 @@ export default function Configurator() {
                     key={t}
                     role="tab"
                     aria-selected={type === t}
+                    data-track={t}
                     className={type === t ? "tab on" : "tab"}
                     onClick={() => selectType(t)}
                   >

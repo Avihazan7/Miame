@@ -17,7 +17,21 @@ const config: Config = {
         // brand reads --slate/--sky CSS vars in globals.css), so they're removed to
         // restore the full default scales.
         ink: "#0B0F14",
-        line: "#E6EEF6"
+        line: "#E6EEF6",
+        // Ultra Color P Master — utilities read the CSS tokens so the palette stays
+        // single-source (styles/tokens.miame.css). Do not hardcode these hexes here.
+        abyss: "var(--bg-abyss)",
+        reef: "var(--surface-reef)",
+        frost: "var(--ink-frost)",
+        "glow-teal": "var(--glow-teal)",
+        "glow-ice": "var(--glow-ice)",
+        "gold-bright": "var(--gold-bright)",
+        "mint-zero": "var(--mint-zero)",
+        "ink-teal": "var(--ink-teal)",
+        "ink-gold": "var(--ink-gold)",
+        "track-private": "var(--track-private)",
+        "track-business": "var(--track-business)",
+        "track-partner": "var(--track-partner)"
       },
       fontFamily: {
         sans: ["var(--font-heebo)", "system-ui", "sans-serif"]
