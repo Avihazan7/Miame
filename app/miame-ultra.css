@@ -653,3 +653,59 @@ body{text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
   .rental-row{grid-template-columns:1fr}
   .rental-actions .btn{width:100%}
 }
+
+/* ============================================================================
+   ULTRA PRIMUM — anti-bloom + deep-navy anchors (calm technology, 8K clarity)
+   Sharper type, less haze, controlled depth. Preserves Mint/Cyan/Cream DNA.
+   NOTE: rules below target LIGHT surfaces only — the dark result panel keeps its
+   own light-on-dark text (.res-monthly / .disclaimer / .lead-consent untouched).
+   ========================================================================== */
+
+:root{
+  --lux-navy-950:#081B33;
+  --lux-navy-900:#0E2747;
+  --lux-black:#05070D;
+  --lux-mint-500:#57E0B4;
+  --lux-cyan-400:#6EE7F3;
+  --lux-cream-100:#FFF8EC;
+  --lux-line:rgba(87,224,180,.22);
+}
+
+.hero,.stage-card,.sim-sec,.block{
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+
+/* Titles on light surfaces → crisp deep-navy, no glow. */
+.hero-title,.sec-title,.card-name,.eilat-title,.rental-title,.entry-title{
+  color:var(--lux-navy-950);text-shadow:none;
+}
+/* Body copy on light surfaces → readable slate, no text-shadow. */
+.hero-sub,.sec-desc,.field-note{color:#344054;text-shadow:none}
+
+/* Tighter, less-blurry premium shadows on light cards (crisp edge line). */
+.stage-card,.card,.sim,.eilat-card,.rental-card,.entry-card{
+  box-shadow:0 18px 48px rgba(8,27,51,.10),0 0 0 1px rgba(87,224,180,.14);
+}
+/* Dial back atmospheric bloom behind hero/stage — reduce, don't erase. */
+.stage-card::before,.hero::before,.hero::after{opacity:.38}
+
+/* Deep-navy product stage — future 3D/360 luxury showroom container. */
+.product-stage-dark{
+  background:
+    radial-gradient(65% 45% at 50% 70%,rgba(87,224,180,.16),transparent 70%),
+    linear-gradient(180deg,#0E2747,#081B33 70%,#05070D);
+  border:1px solid rgba(87,224,180,.20);
+  border-radius:32px;
+  box-shadow:0 28px 80px rgba(5,7,13,.26);
+}
+
+/* Bounded "jewel box" wrapper for vibrant campaign modules. */
+.campaign-jewel{
+  border-radius:34px;
+  padding:clamp(24px,4vw,46px);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,248,236,.92)),
+    radial-gradient(70% 60% at 80% 10%,rgba(87,224,180,.22),transparent 72%);
+  border:1px solid rgba(87,224,180,.24);
+  box-shadow:0 24px 70px rgba(8,27,51,.14),inset 0 1px 0 rgba(255,255,255,.7);
+}
