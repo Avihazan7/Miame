@@ -2,18 +2,36 @@ import Link from "next/link";
 import Image from "next/image";
 import type { SeoPage } from "@/lib/seo-pages";
 import { SEO_CTA_NOTE } from "@/lib/seo-pages";
+import { MODELS } from "@/lib/models";
+import { buildProductJsonLd } from "@/lib/seo/product-jsonld";
 import SeoCta from "./SeoCta";
 
 const SITE_URL = "https://www.miame.co.il";
 
-// FAQPage + BreadcrumbList structured data, derived from the same content model
-// that renders the page (single source of truth — the schema can never drift
-// from the visible copy).
+// The "from" price is the cheapest live model — single source of truth (lib/models.ts),
+// so the Offer price can never drift from the catalogue.
+const FROM_PRICE = Math.min(...MODELS.map((m) => m.price));
+
+// Product + FAQPage + BreadcrumbList structured data, derived from the same content
+// model that renders the page (single source of truth — the schema can never drift
+// from the visible copy). Product is grounded: single Offer, no ratings/reviews.
 function jsonLd(page: SeoPage) {
   const url = `${SITE_URL}/${page.slug}`;
+  const image = page.hero.image.startsWith("http") ? page.hero.image : SITE_URL + page.hero.image;
   return {
     "@context": "https://schema.org",
     "@graph": [
+      buildProductJsonLd({
+        id: url,
+        name: page.h1,
+        description: page.description,
+        image: [image],
+        price: FROM_PRICE,
+        currency: "ILS",
+        availability: "https://schema.org/InStock",
+        url,
+        brand: "MiaMe",
+      }),
       {
         "@type": "FAQPage",
         "@id": `${url}#faq`,

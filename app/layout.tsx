@@ -11,6 +11,7 @@ import ScrollTop from "@/components/ScrollTop";
 import StaffToolbar from "@/components/StaffToolbar";
 import MarketingScripts from "@/components/MarketingScripts";
 import ConsentBanner from "@/components/ConsentBanner";
+import { PRODUCT_PROPERTIES } from "@/lib/seo/product-jsonld";
 
 // Gate the cinematic entrance before first paint (no flash, no-JS safe).
 // Full sequence on first visit per session, a quick settle afterwards,
@@ -110,7 +111,8 @@ const JSON_LD = {
         offerCount: "3",
         availability: "https://schema.org/InStock",
         url: SITE_URL
-      }
+      },
+      additionalProperty: PRODUCT_PROPERTIES
     },
     {
       "@type": "LocalBusiness",
