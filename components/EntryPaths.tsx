@@ -1,11 +1,16 @@
+"use client";
+
 import { CTA } from "@/lib/cta";
+import { track } from "@/lib/analytics";
 
 // Entry paths — give a first-time visitor a clear route within 3 seconds.
 // Two shapes (Market-OS funnel hierarchy):
 //   • "homepage" — B2C clarity: two dominant primary cards (buy · eligibility)
 //     plus two reduced secondary links (rent · partner) to their dedicated pages.
 //   • "full" — the complete four-card grid (used where all routes are equal).
-// Pure anchors/links to existing sections and dedicated pages (no JS, no new flow).
+// Links to existing sections and dedicated pages. The one behaviour: a best-effort
+// EntryPathSelect event on click (public.events) — the funnel fork is the single
+// highest-signal analytics question. Navigation is never blocked.
 
 type Path = {
   href: string;
@@ -53,9 +58,13 @@ const FULL: Path[] = [BUY, RENT, ELIGIBILITY, PARTNER];
 const PRIMARY: Path[] = [BUY, ELIGIBILITY];
 const SECONDARY: Path[] = [RENT, PARTNER];
 
+function selectPath(p: Path) {
+  void track("EntryPathSelect", { path: p.tone, href: p.href });
+}
+
 function Card({ p }: { p: Path }) {
   return (
-    <a className={`entry-card entry-${p.tone}`} href={p.href}>
+    <a className={`entry-card entry-${p.tone}`} href={p.href} onClick={() => selectPath(p)}>
       <span className="entry-ic" aria-hidden="true">
         {p.icon}
       </span>
@@ -68,7 +77,7 @@ function Card({ p }: { p: Path }) {
 
 function MiniCard({ p }: { p: Path }) {
   return (
-    <a className={`entry-mini entry-${p.tone}`} href={p.href}>
+    <a className={`entry-mini entry-${p.tone}`} href={p.href} onClick={() => selectPath(p)}>
       <span className="entry-mini-ic" aria-hidden="true">
         {p.icon}
       </span>
