@@ -16,6 +16,11 @@ import {
   HERO_SLOT,
   FORBIDDEN_TRUST_PHRASES,
   allLeadFields,
+  HOW_IT_WORKS_STEPS,
+  HOW_IT_WORKS_CAPTION,
+  TRUST_TIE_IN,
+  LEASING_TERMS,
+  LEASING_TERMS_TITLE,
 } from "@/lib/marketplace-preview";
 
 // The exact set of files this milestone touches — the logical-properties policy and the
@@ -27,6 +32,8 @@ const M30_1_FILES = [
   "components/marketplace/MarketplaceLeadFlow.tsx",
   "components/marketplace/CalmSkeleton.tsx",
   "components/marketplace/SpatialHeroSlot.tsx",
+  "components/marketplace/HowItWorksFlow.tsx",
+  "components/marketplace/LeasingTermsExplainer.tsx",
 ];
 
 const read = (rel: string): string => readFileSync(resolve(process.cwd(), rel), "utf8");
@@ -226,6 +233,81 @@ describe("M30.1 · motion safety (reduced-motion respected, no heavy animation d
     for (const [file, src] of Object.entries(M30_1_SOURCES)) {
       expect(src.includes("framer-motion"), `${file} framer-motion`).toBe(false);
       expect(src.includes("gsap"), `${file} gsap`).toBe(false);
+    }
+  });
+});
+
+describe("M30.1 · lead-orchestration & leasing-education layer (non-live)", () => {
+  it("the How-ULease-Works flow strip exists with the seven ordered steps", () => {
+    expect(HOW_IT_WORKS_STEPS.map((s) => s.index)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(HOW_IT_WORKS_STEPS.map((s) => s.text)).toEqual([
+      "ממלאים בקשה קצרה",
+      "המערכת מנקה ומבינה את הצורך",
+      "בוחרים מסלול: פרטי / עסקי / חברה",
+      "מקבלים השוואה לדוגמה",
+      "מאשרים אם להעביר פרטים לספק",
+      "ספק מתאים חוזר עם הצעה",
+      "ULease מלווה עד החלטה",
+    ]);
+    expect(M30_1_SOURCES["components/marketplace/HowItWorksFlow.tsx"]).toContain("HOW_IT_WORKS_STEPS");
+  });
+
+  it("the flow marks itself as a simulation and makes no negotiation-happened claim", () => {
+    // the sample-comparison step is flagged demo, and the strip carries a demo caption
+    expect(HOW_IT_WORKS_STEPS.find((s) => s.text.includes("השוואה לדוגמה"))?.demo).toBe(true);
+    expect(HOW_IT_WORKS_CAPTION).toContain("להמחשה");
+    expect(HOW_IT_WORKS_CAPTION).toContain("אין אוטומציה חיה");
+    const flow = stripComments(M30_1_SOURCES["components/marketplace/HowItWorksFlow.tsx"]).toLowerCase();
+    for (const bad of ["fetch(", "http", "n8n", "make.com", "zapier", "openai", "canva", "supabase", "window.open"]) {
+      expect(flow, bad).not.toContain(bad);
+    }
+  });
+
+  it("the leasing-terms explainer exists with all ten terms in order", () => {
+    expect(LEASING_TERMS).toHaveLength(10);
+    expect(LEASING_TERMS.map((t) => t.term)).toEqual([
+      "ליסינג תפעולי", "ליסינג מימוני", "מקדמה", "תשלום חודשי", "תקופת עסקה",
+      "שווי שימוש", "עלות כוללת / TCO", "Deal Score", "ספק מאושר", "העברת פרטים באישור",
+    ]);
+    expect(LEASING_TERMS_TITLE).toContain("10 מושגים");
+    expect(M30_1_SOURCES["components/marketplace/LeasingTermsExplainer.tsx"]).toContain("LEASING_TERMS");
+  });
+
+  it("every term is Hebrew-first with a plain explanation and a practical meaning", () => {
+    const hebrew = /[֐-׿]/;
+    for (const t of LEASING_TERMS) {
+      expect(hebrew.test(t.explain), `${t.term} explain`).toBe(true);
+      expect(hebrew.test(t.meaning), `${t.term} meaning`).toBe(true);
+      expect(t.explain.trim().length, `${t.term} explain len`).toBeGreaterThan(10);
+      expect(t.meaning.trim().length, `${t.term} meaning len`).toBeGreaterThan(10);
+    }
+  });
+
+  it("Deal Score is marked demo (illustrative, not a live score)", () => {
+    const dealScore = LEASING_TERMS.find((t) => t.term === "Deal Score");
+    expect(dealScore?.demo).toBe(true);
+    expect(dealScore?.meaning).toContain("לדוגמה");
+  });
+
+  it("the consent-before-transfer tie-in is present, rendered, and echoed in the flow", () => {
+    expect(TRUST_TIE_IN).toBe("אנחנו מסבירים את התהליך לפני שאנחנו מבקשים פרטים.");
+    expect(M30_1_SOURCES["app/marketplace-preview/page.tsx"]).toContain("TRUST_TIE_IN");
+    expect(HOW_IT_WORKS_STEPS.some((s) => s.text.includes("מאשרים אם להעביר פרטים לספק"))).toBe(true);
+  });
+
+  it("no education file imports or references an external image asset", () => {
+    for (const [file, src] of Object.entries(M30_1_SOURCES)) {
+      expect(src, `${file} <img`).not.toContain("<img");
+      expect(src, `${file} next/image`).not.toContain("next/image");
+      expect(src, `${file} url(`).not.toContain("url(");
+      expect(src, `${file} image-ext`).not.toMatch(/["'`][^"'`\n]*\.(png|jpe?g|svg|webp|gif|avif)\b/i);
+    }
+  });
+
+  it("the leasing terms avoid legal overpromise and fake-AI claims", () => {
+    const copy = LEASING_TERMS.flatMap((t) => [t.explain, t.meaning]).join("\n");
+    for (const bad of ["מובטח", "guaranteed", "AI מנתח", "בינה מלאכותית מנהלת", "תמיד זול"]) {
+      expect(copy.includes(bad), bad).toBe(false);
     }
   });
 });

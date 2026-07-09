@@ -292,6 +292,119 @@
   font-size: 13px;
 }
 
+/* ── M30.1 education layer: section title, flow strip, tie-in, terms ── */
+.mp-section-title {
+  font-size: clamp(19px, 3vw, 24px);
+  font-weight: 800;
+  color: var(--ink, #0b0f14);
+  margin-block: 28px 14px;
+}
+
+.mp-flow {
+  margin-block: 8px;
+}
+.mp-flow-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.mp-flow-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-inline: 14px;
+  padding-block: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line, #e6eef6);
+  background: #fff;
+}
+.mp-flow-num {
+  flex: 0 0 auto;
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  background: var(--azure, #0a84ff);
+}
+.mp-flow-text {
+  font-size: 14px;
+  color: #223;
+  line-height: 1.45;
+}
+.mp-flow-caption {
+  margin-block-start: 12px;
+  font-size: 12px;
+  color: #8a97a5;
+}
+.mp-demo-badge {
+  display: inline-block;
+  margin-inline-start: 8px;
+  padding-inline: 8px;
+  padding-block: 2px;
+  border-radius: 999px;
+  background: #eef5ff;
+  color: #0061cf;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.mp-tie-in {
+  margin-block: 18px;
+  padding-inline: 16px;
+  padding-block: 12px;
+  border-radius: 12px;
+  background: #f4fbf6;
+  border-inline-start: 3px solid #2fae6a;
+  color: #1f5138;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.mp-terms {
+  margin-block-start: 8px;
+}
+.mp-terms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+.mp-term {
+  padding-inline: 16px;
+  padding-block: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--line, #e6eef6);
+  background: #fff;
+}
+.mp-term-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink, #0b0f14);
+  margin-block-end: 6px;
+}
+.mp-term-explain {
+  font-size: 14px;
+  color: #3a4652;
+  line-height: 1.5;
+}
+.mp-term-meaning {
+  margin-block-start: 8px;
+  font-size: 13px;
+  color: #55636f;
+  line-height: 1.5;
+}
+.mp-term-meaning-label {
+  font-weight: 600;
+  color: #0061cf;
+}
+
 @keyframes mp-fade {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
