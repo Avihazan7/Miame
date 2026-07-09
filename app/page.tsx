@@ -24,6 +24,7 @@ import TrustSignalBar from "@/components/TrustSignalBar";
 import DealBuzz from "@/components/DealBuzz";
 import EilatBranch from "@/components/EilatBranch";
 import RentalFleet from "@/components/RentalFleet";
+import CinematicVideo from "@/components/CinematicVideo";
 
 export default function Page() {
   return (
@@ -42,6 +43,7 @@ export default function Page() {
         <Engineering />
         <Patents />
         <LegalStatus />
+        <CinematicVideo />
         <Configurator />
         <EilatBranch />
         <RentalFleet />

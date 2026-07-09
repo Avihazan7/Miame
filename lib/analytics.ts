@@ -10,7 +10,9 @@ export type EventName =
   | "WhatsAppClicked"
   | "PartnerInterest"
   | "DealBuzzClicked"
-  | "RentalInterest";
+  | "RentalInterest"
+  | "CinematicVideoPlay"
+  | "CinematicVideoCTA";
 
 /**
  * One event, three sinks: the Supabase `events` table (owned analytics), GA4,
