@@ -1,4 +1,4 @@
-// M31 — Advanced Calm Marketplace UX: pure, presentation-agnostic data + copy for the
+// M30.1 — Marketplace Trust, Cognitive Conversion & RTL: pure, presentation-agnostic data + copy for the
 // demo-safe marketplace preview. Data ONLY — NO network, NO provider, NO Supabase write,
 // NO 3D runtime. Every user-facing string lives here (rendered via {curly} interpolation)
 // so the JSX stays quote-safe for `next lint` and the copy is unit-testable in node.

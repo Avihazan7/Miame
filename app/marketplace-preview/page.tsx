@@ -4,7 +4,7 @@ import { TRUST_COPY } from "@/lib/marketplace-preview";
 import SpatialHeroSlot from "@/components/marketplace/SpatialHeroSlot";
 import MarketplaceLeadFlow from "@/components/marketplace/MarketplaceLeadFlow";
 
-// M31 — demo-safe marketplace preview. A standalone, NON-INDEXED surface that showcases
+// M30.1 — demo-safe marketplace preview. A standalone, NON-INDEXED surface that showcases
 // the calm lead flow, the agentic skeleton, and the spatial-ready hero slot WITHOUT any
 // live action: no provider, no Supabase write, no network, no supplier transfer.
 export const metadata: Metadata = {

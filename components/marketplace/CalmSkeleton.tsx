@@ -1,4 +1,4 @@
-// M31 — Calm agentic skeleton. A VISUAL-ONLY loading state shown before the demo
+// M30.1 — Calm agentic skeleton. A VISUAL-ONLY loading state shown before the demo
 // comparison cards. It renders shimmer placeholders + the approved reassurance copy.
 // It must NEVER call AI, a provider, Supabase, OpenAI, Canva, ZeroLight, or any network
 // endpoint — there is no fetch, no timer that loads data, no renderer here. Pure markup.
