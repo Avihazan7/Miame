@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 const UPDATED = "4 ביולי 2026";
 
 export const metadata: Metadata = {
-  title: "הצהרת נגישות · MiaMe",
+  title: "הצהרת נגישות",
   description:
     "הצהרת הנגישות של אתר MiaMe: מחויבות לנגישות דיגיטלית לפי תקן ישראלי 5568 ורמה AA, אמצעי הנגישות הקיימים ודרכי פנייה לרכז הנגישות.",
   alternates: { canonical: "/legal/accessibility" },

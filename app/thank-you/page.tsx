@@ -9,7 +9,7 @@ import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import WaIcon from "@/components/WaIcon";
 
 export const metadata: Metadata = {
-  title: "תודה! הפרטים התקבלו — MiaMe",
+  title: "תודה! הפרטים התקבלו",
   description: "הפנייה שלך התקבלה. נחזור אליך בהקדם עם ההצעה המותאמת.",
   robots: { index: false, follow: false },
   alternates: { canonical: "/thank-you" },

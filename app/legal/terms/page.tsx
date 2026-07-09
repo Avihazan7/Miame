@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 const UPDATED = "4 ביולי 2026";
 
 export const metadata: Metadata = {
-  title: "תקנון ותנאי שימוש · MiaMe",
+  title: "תקנון ותנאי שימוש",
   description:
     "תקנון האתר ותנאי הרכישה, המקדמות, הביטולים, המסירה, האחריות והשירות של MiaMe. הצעות התשלום באתר הן הערכה ואינן מחייבות.",
   alternates: { canonical: "/legal/terms" },
