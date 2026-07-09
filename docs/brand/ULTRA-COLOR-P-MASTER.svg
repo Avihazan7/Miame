@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" font-family="Heebo, Arial, sans-serif">
+  <!-- ULTRA COLOR P MASTER v1.0 · M21-A11 · MiaMe.co.il — visual appendix.
+       Every foreground/background pair is measured to WCAG AA or better.
+       Source: the two brand images + the deployed palette. -->
+  <rect width="1200" height="760" fill="#FDFBF6"/>
+
+  <!-- header -->
+  <text x="60" y="64" font-size="34" font-weight="900" fill="#04121F">ULTRA COLOR P MASTER</text>
+  <text x="60" y="94" font-size="18" font-weight="700" fill="#0F6B5E">Night Energy × Vision Gold · 🏗️ MiaMe.co.il</text>
+  <text x="60" y="118" font-size="14" fill="#465856">כל צמד נמדד WCAG · מקור: שתי התמונות + הפלטה הפרוסה</text>
+
+  <!-- NIGHT DRIVE card -->
+  <rect x="60" y="150" width="520" height="410" rx="24" fill="#04121F"/>
+  <text x="90" y="196" font-size="20" font-weight="900" fill="#EAF7F3">NIGHT DRIVE · אנרגיה</text>
+  <g font-size="13" font-weight="700">
+    <rect x="90" y="220" width="60" height="60" rx="10" fill="#04121F" stroke="#123B3F"/><text x="162" y="246" fill="#EAF7F3">bg-abyss</text><text x="162" y="266" fill="#7FA3A0">#04121F</text>
+    <rect x="290" y="220" width="60" height="60" rx="10" fill="#123B3F"/><text x="362" y="246" fill="#EAF7F3">surface-reef</text><text x="362" y="266" fill="#7FA3A0">#123B3F</text>
+    <rect x="90" y="300" width="60" height="60" rx="10" fill="#18E0BD"/><text x="162" y="326" fill="#EAF7F3">glow-teal · motion</text><text x="162" y="346" fill="#7FA3A0">#18E0BD · 11.19:1</text>
+    <rect x="290" y="300" width="60" height="60" rx="10" fill="#9DDCF0"/><text x="362" y="326" fill="#EAF7F3">glow-ice · data</text><text x="362" y="346" fill="#7FA3A0">#9DDCF0 · 12.53:1</text>
+    <rect x="90" y="380" width="60" height="60" rx="10" fill="#D7B45A"/><text x="162" y="406" fill="#EAF7F3">gold-bright · price</text><text x="162" y="426" fill="#7FA3A0">#D7B45A · 9.51:1</text>
+    <rect x="290" y="380" width="60" height="60" rx="10" fill="#B8F5A1"/><text x="362" y="406" fill="#EAF7F3">mint-zero · 0-risk</text><text x="362" y="426" fill="#7FA3A0">#B8F5A1</text>
+    <rect x="90" y="460" width="60" height="60" rx="10" fill="#EAF7F3"/><text x="162" y="486" fill="#EAF7F3">ink-frost · text</text><text x="162" y="506" fill="#7FA3A0">#EAF7F3 · 11.08:1</text>
+    <rect x="290" y="460" width="460" height="60" rx="10" fill="url(#gradEnergy)"/>
+  </g>
+
+  <!-- STUDIO LIGHT card -->
+  <rect x="620" y="150" width="520" height="410" rx="24" fill="#E9EDEC" stroke="#C9D2D1"/>
+  <text x="650" y="196" font-size="20" font-weight="900" fill="#04121F">STUDIO LIGHT · מפרט</text>
+  <g font-size="13" font-weight="700">
+    <rect x="650" y="220" width="60" height="60" rx="10" fill="#FDFBF6" stroke="#C9D2D1"/><text x="722" y="246" fill="#04121F">bg-pearl</text><text x="722" y="266" fill="#465856">#FDFBF6</text>
+    <rect x="850" y="220" width="60" height="60" rx="10" fill="#E9EDEC" stroke="#C9D2D1"/><text x="922" y="246" fill="#04121F">bg-platinum</text><text x="922" y="266" fill="#465856">#E9EDEC</text>
+    <rect x="650" y="300" width="60" height="60" rx="10" fill="#0F6B5E"/><text x="722" y="326" fill="#04121F">ink-teal · link</text><text x="722" y="346" fill="#465856">#0F6B5E · 6.18:1</text>
+    <rect x="850" y="300" width="60" height="60" rx="10" fill="#2E5E86"/><text x="922" y="326" fill="#04121F">ink-blue · data</text><text x="922" y="346" fill="#465856">#2E5E86 · 6.63:1</text>
+    <rect x="650" y="380" width="60" height="60" rx="10" fill="#8A6D1F"/><text x="722" y="406" fill="#04121F">ink-gold · price</text><text x="722" y="426" fill="#465856">#8A6D1F · 4.74:1</text>
+    <rect x="850" y="380" width="60" height="60" rx="10" fill="#465856"/><text x="922" y="406" fill="#04121F">ink-muted</text><text x="922" y="426" fill="#465856">#465856 · 7.28:1</text>
+    <rect x="650" y="460" width="60" height="60" rx="10" fill="#04121F"/><text x="722" y="486" fill="#04121F">ink-navy · text</text><text x="722" y="506" fill="#465856">#04121F · 18.27:1</text>
+    <rect x="850" y="460" width="260" height="60" rx="10" fill="url(#gradGold)"/>
+  </g>
+
+  <!-- track pills -->
+  <g font-size="15" font-weight="900">
+    <rect x="60" y="600" width="340" height="52" rx="26" fill="#04121F"/><circle cx="94" cy="626" r="12" fill="#9DDCF0"/><text x="118" y="632" fill="#EAF7F3">Ice Blue · שותף (partner)</text>
+    <rect x="430" y="600" width="340" height="52" rx="26" fill="#04121F"/><circle cx="464" cy="626" r="12" fill="#D7B45A"/><text x="488" y="632" fill="#EAF7F3">Gold Ray · עסקי (business)</text>
+    <rect x="800" y="600" width="340" height="52" rx="26" fill="#04121F"/><circle cx="834" cy="626" r="12" fill="#18E0BD"/><text x="858" y="632" fill="#EAF7F3">Glow Teal · פרטי (private)</text>
+  </g>
+
+  <!-- footer -->
+  <text x="60" y="710" font-size="14" font-weight="700" fill="#04121F">ULTRA COLOR P MASTER v1.0 · M21-A11</text>
+  <text x="60" y="734" font-size="13" fill="#465856">ניטרלים · משפחת טורקיז · זהב+מנטה+קרח — יחס מסך 60·30·10</text>
+
+  <defs>
+    <linearGradient id="gradEnergy" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#18E0BD"/><stop offset="1" stop-color="#9DDCF0"/></linearGradient>
+    <linearGradient id="gradGold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8A6D1F"/><stop offset="0.55" stop-color="#D7B45A"/><stop offset="1" stop-color="#F5EFE2"/></linearGradient>
+  </defs>
+</svg>

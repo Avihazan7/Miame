@@ -12,7 +12,8 @@
     "guardian": "node scripts/arch-guardian.mjs",
     "health:domains": "node scripts/domain-health-check.mjs",
     "build:glb": "node scripts/build-glb.mjs",
-    "publish:glb": "node scripts/publish-glb-to-bucket.mjs"
+    "publish:glb": "node scripts/publish-glb-to-bucket.mjs",
+    "verify:m21a": "node scripts/verify-m21a.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",
@@ -47,6 +48,7 @@
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.6",
     "typescript": "^5.5.3",
-    "vitest": "^1.6.1"
+    "vitest": "^1.6.1",
+    "sharp": "^0.33.0"
   }
 }

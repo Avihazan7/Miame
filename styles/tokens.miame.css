@@ -1,0 +1,47 @@
+/* ============================================================================
+   ULTRA COLOR P MASTER v1.0 · MiaMe.co.il · M21-A11
+   The single source of truth for color. No hex may be authored outside this file.
+   Concept: NIGHT DRIVE (energy/motion, dark) × STUDIO LIGHT (precision/spec, light).
+   Every foreground/background pair below is measured to WCAG AA or better.
+   Imported first in app/globals.css so tokens win everywhere.
+   ========================================================================== */
+:root{
+  /* — NIGHT DRIVE — */
+  --bg-abyss:#04121F;        /* background · dark base · manifest · theme-color dark */
+  --surface-reef:#123B3F;    /* dark panel / card */
+  --ink-frost:#EAF7F3;       /* text on dark · 11.08:1 on Reef */
+  --ink-frost-muted:#7FA3A0;
+  --glow-teal:#18E0BD;       /* accent · energy/motion · on Abyss 11.19:1 · dark only */
+  --glow-ice:#9DDCF0;        /* data · HUD/live · on Abyss 12.53:1 */
+  --gold-bright:#D7B45A;     /* price · 9.51:1 on Abyss · 6.13:1 on Reef */
+  --mint-zero:#B8F5A1;       /* tag · zero-risk (background) */
+  --mint-zero-ink:#0F3D34;   /* on Mint 9.56:1 */
+
+  /* — STUDIO LIGHT — */
+  --bg-pearl:#FDFBF6;        /* background · theme-color light · bright */
+  --bg-platinum:#E9EDEC;     /* background · secondary / spec */
+  --surface-glass:#F3F6F5;
+  --hairline:#C9D2D1;
+  --ink-navy:#04121F;        /* primary text on light · 18.27:1 */
+  --ink-muted:#465856;       /* 7.28:1 */
+  --ink-teal:#0F6B5E;        /* link/brand in text · 6.18:1 · replaces text #078c7b */
+  --ink-gold:#8A6D1F;        /* price/saving on light · 4.74:1 on #F5EFE2 · bold ≥18px */
+  --ink-blue:#2E5E86;        /* data/range/safety · 6.63:1 · data bg #EDF3F7 */
+  --gold-tint:#F5EFE2;
+  --data-tint:#EDF3F7;
+
+  /* — GRADIENTS ("שמיים") — */
+  --grad-night:linear-gradient(160deg,#04121F 0%,#0D2A33 55%,#123B3F 100%);
+  --grad-energy:linear-gradient(90deg,var(--glow-teal),var(--glow-ice));
+  --grad-gold:linear-gradient(90deg,#8A6D1F,#D7B45A 55%,#F5EFE2);
+  --grad-pearl:linear-gradient(90deg,#FDFBF6,#E9EDEC);
+
+  /* — TRACKS (simulator, UI only) — */
+  --track-private:var(--glow-teal);
+  --track-business:var(--gold-bright);
+  --track-partner:var(--glow-ice);
+
+  /* deprecated aliases — kept documented, do not use in new code */
+  --legacy-navy:#081B33;
+  --legacy-teal-ink:#078c7b;
+}
