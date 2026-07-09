@@ -12,7 +12,8 @@ export type EventName =
   | "DealBuzzClicked"
   | "RentalInterest"
   | "CinematicVideoPlay"
-  | "CinematicVideoCTA";
+  | "CinematicVideoCTA"
+  | "FreedomMomentPlay";
 
 /**
  * One event, three sinks: the Supabase `events` table (owned analytics), GA4,
