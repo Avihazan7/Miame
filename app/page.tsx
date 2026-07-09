@@ -22,6 +22,7 @@ import LaunchOfferStrip from "@/components/LaunchOfferStrip";
 import TrustSignalBar from "@/components/TrustSignalBar";
 import DealBuzz from "@/components/DealBuzz";
 import CinematicVideo from "@/components/CinematicVideo";
+import FreedomMomentVideo from "@/components/FreedomMomentVideo";
 
 export default function Page() {
   return (
@@ -32,6 +33,7 @@ export default function Page() {
         <Hero />
         <TrustSignalBar />
         <EntryPaths variant="homepage" />
+        <FreedomMomentVideo />
         <About />
         <Lifestyle />
         <TestRide />
