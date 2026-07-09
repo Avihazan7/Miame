@@ -30,6 +30,10 @@ export default function Page() {
       <Header />
       <LaunchOfferStrip />
       <main id="main">
+        {/* Homepage flow (Master Spec Part 2 hierarchy): understand the brand →
+            get to know the product → feel it (cinema) → run the numbers
+            (simulator) → legal trust → eligibility → deepen → act. Rental &
+            Partner depth intentionally live on their dedicated pages (#113). */}
         <Hero />
         <TrustSignalBar />
         <EntryPaths variant="homepage" />
@@ -41,13 +45,13 @@ export default function Page() {
         <Specs />
         <Engineering />
         <Patents />
-        <LegalStatus />
         <CinematicVideo />
         <Configurator />
+        <LegalStatus />
+        <Tribute />
         <DealBuzz />
         <AskBrain />
         <Spyqe />
-        <Tribute />
         <Service />
       </main>
       <Importer />
