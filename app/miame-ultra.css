@@ -195,7 +195,7 @@
   align-self:flex-start;
   position:relative;
   z-index:1;
-  /* mia-four-logo.png is a black wordmark → invert to a clean white lockup so it
+  /* mia-four-logo.webp is a black wordmark → invert to a clean white lockup so it
      reads on the dark result panel, with the mint glow kept for premium depth. */
   filter:brightness(0) invert(1) drop-shadow(0 10px 20px rgba(24,224,189,.42));
 }

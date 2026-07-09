@@ -106,7 +106,7 @@ const JSON_LD = {
       "@id": SITE_URL + "/#organization",
       name: "MiaMe",
       url: SITE_URL,
-      logo: SITE_URL + "/mia-four-logo.png",
+      logo: SITE_URL + "/mia-four-logo.webp",
       description: "ניידות חשמלית פרימיום במחיר חכם, מבית Leasing.co.il.",
       contactPoint: {
         "@type": "ContactPoint",

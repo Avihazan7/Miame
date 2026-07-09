@@ -15,7 +15,7 @@ export default function Patents() {
             <span className="k">פטנטים ייחודיים · MIA</span>
           </div>
           <img
-            src="/mia-four-x4-pure-freedom.png"
+            src="/mia-four-x4-pure-freedom.webp"
             alt="MIA FOUR · Pure Freedom · טכנולוגיית ארבעה גלגלים ממוזערת מוגנת פטנט (PATENTED)"
             loading="lazy"
           />

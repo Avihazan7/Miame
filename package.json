@@ -12,6 +12,7 @@
     "guardian": "node scripts/arch-guardian.mjs",
     "health:domains": "node scripts/domain-health-check.mjs",
     "build:glb": "node scripts/build-glb.mjs",
+    "optimize:images": "node scripts/optimize-images.mjs",
     "publish:glb": "node scripts/publish-glb-to-bucket.mjs",
     "verify:m21a": "node scripts/verify-m21a.mjs"
   },

@@ -466,7 +466,7 @@ export default function Configurator() {
                 height={860}
                 className="res-product"
               />
-              <img src="/mia-four-logo.png" alt="MIA FOUR" className="res-logo" />
+              <img src="/mia-four-logo.webp" alt="MIA FOUR" className="res-logo" loading="lazy" />
               <div className="res-eyebrow">
                 {isEilat ? "מחיר אילת · Green Extreme" : "עד 18 תשלומים ללא ריבית והצמדה"}
               </div>

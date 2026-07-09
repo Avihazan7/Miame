@@ -9,13 +9,13 @@ export default function Spyqe() {
             <span className="soon-badge">בקרוב · Coming Soon</span>
             <div className="soon-gallery">
               <div className="soon-tile main">
-                <img className="floaty" src="/mia-four-teal-side.png" alt="SPYQE · פרופיל" />
+                <img className="floaty" src="/mia-four-teal-side.webp" alt="SPYQE · פרופיל" loading="lazy" />
               </div>
               <div className="soon-tile">
-                <img src="/mia-four-teal-wheel.png" alt="SPYQE · גלגל שטח" />
+                <img src="/mia-four-teal-wheel.webp" alt="SPYQE · גלגל שטח" loading="lazy" />
               </div>
               <div className="soon-tile">
-                <img src="/mia-four-teal-cockpit.png" alt="SPYQE · תא נהג" />
+                <img src="/mia-four-teal-cockpit.webp" alt="SPYQE · תא נהג" loading="lazy" />
               </div>
             </div>
           </div>

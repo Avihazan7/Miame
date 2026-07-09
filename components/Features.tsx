@@ -74,7 +74,7 @@ export default function Features() {
 
         <div className="feat-show">
           <div className="feat-show-main photo-frame">
-            <img src="/mia-fold-trunk.jpg" alt="מיה פור מתקפלת ונכנסת לתא המטען" loading="lazy" />
+            <img src="/mia-fold-trunk.webp" alt="מיה פור מתקפלת ונכנסת לתא המטען" loading="lazy" />
             <span className="photo-tag">מתקפל · נייד</span>
             <div className="photo-cap">
               <b>מתקפל ונכנס לתא המטען</b>
