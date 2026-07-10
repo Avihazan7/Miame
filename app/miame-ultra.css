@@ -917,7 +917,7 @@ body{text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
 .howto-head{text-align:center;margin-bottom:18px}
 .howto-kicker{
   display:inline-flex;align-items:center;min-height:30px;padding:0 14px;border-radius:999px;
-  font-weight:900;font-size:12.5px;letter-spacing:.04em;color:#078c7b;
+  font-weight:900;font-size:12.5px;letter-spacing:.04em;color:var(--ink-teal);
   background:rgba(24,224,189,.10);border:1px solid rgba(24,224,189,.26);
 }
 .howto-title{margin:12px 0 0;color:#08275a;font-size:clamp(22px,3vw,34px);line-height:1.1;letter-spacing:-.02em;text-shadow:none}
