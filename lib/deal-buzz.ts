@@ -58,7 +58,7 @@ export const TRUST_SIGNALS: TrustSignal[] = [
 export const DEAL_BUZZ_CARDS: BuzzItem[] = [
   {
     id: "match",
-    icon: "🎯",
+    icon: "🔍",
     title: "בדיקת התאמה מהירה",
     text: "נאתר איתך את הדגם והמסלול שמתאימים לך — לפי שימוש, טווח ותקציב.",
     cta: "התחלת בדיקה",

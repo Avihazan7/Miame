@@ -12,7 +12,7 @@ export default function Lifestyle() {
         </div>
         <div className="life-grid">
           <div className="life-card">
-            <img src="/mia-fold-lot.jpg" alt="מיה פור מקופלת · נכנסת לכל מקום" loading="lazy" />
+            <img src="/mia-fold-lot.webp" alt="מיה פור מקופלת · נכנסת לכל מקום" loading="lazy" />
             <div className="life-cap">
               <b>חכם בעיר</b>
               <span>מתקפל · נייד · 42 ק״ג, נכנס לכל מקום</span>

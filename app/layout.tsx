@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Heebo } from "next/font/google";
+import { Heebo, Suez_One } from "next/font/google";
 import "./globals.css";
 import "./miame-ultra.css";
 import AmbientLight from "@/components/AmbientLight";
@@ -12,6 +12,8 @@ import StaffToolbar from "@/components/StaffToolbar";
 import MarketingScripts from "@/components/MarketingScripts";
 import ConsentBanner from "@/components/ConsentBanner";
 import { PRODUCT_PROPERTIES } from "@/lib/seo/product-jsonld";
+import { MODELS } from "@/lib/models";
+import { buildHomeFaqJsonLd } from "@/lib/home-faq";
 
 // Gate the cinematic entrance before first paint (no flash, no-JS safe).
 // Full sequence on first visit per session, a quick settle afterwards,
@@ -26,6 +28,15 @@ const heebo = Heebo({
   subsets: ["hebrew", "latin"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
   variable: "--font-heebo",
+  display: "swap"
+});
+
+// Suez One — the MIA FOUR display type (Hebrew + Latin, single 400 weight).
+// Wired as --font-display; used on hero/section display headings only.
+const suezOne = Suez_One({
+  subsets: ["hebrew", "latin"],
+  weight: "400",
+  variable: "--font-display",
   display: "swap"
 });
 
@@ -68,6 +79,25 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+// One Product/Offer node per live model (single source of truth: lib/models.ts),
+// so prices can never drift from the catalogue.
+const HOME_PRODUCTS = MODELS.map((m) => ({
+  "@type": "Product",
+  "@id": `${SITE_URL}/#product-${m.id}`,
+  name: `MiaMe Four ${m.name}`,
+  image: SITE_URL + PRODUCT_IMAGE,
+  description: `MIA FOUR ${m.name} — ${m.tagline}. פלטפורמת 4 גלגלים מוגנת פטנט, סוללת ליתיום נשלפת 60V.`,
+  brand: { "@type": "Brand", name: "MiaMe" },
+  offers: {
+    "@type": "Offer",
+    priceCurrency: "ILS",
+    price: m.price,
+    availability: "https://schema.org/InStock",
+    url: SITE_URL
+  },
+  additionalProperty: PRODUCT_PROPERTIES
+}));
+
 const JSON_LD = {
   "@context": "https://schema.org",
   "@graph": [
@@ -85,7 +115,7 @@ const JSON_LD = {
       "@id": SITE_URL + "/#organization",
       name: "MiaMe",
       url: SITE_URL,
-      logo: SITE_URL + "/mia-four-logo.png",
+      logo: SITE_URL + "/mia-four-logo.webp",
       description: "ניידות חשמלית פרימיום במחיר חכם, מבית Leasing.co.il.",
       contactPoint: {
         "@type": "ContactPoint",
@@ -95,25 +125,7 @@ const JSON_LD = {
         availableLanguage: ["he"]
       }
     },
-    {
-      "@type": "Product",
-      "@id": SITE_URL + "/#product",
-      name: "MiaMe Four",
-      image: SITE_URL + PRODUCT_IMAGE,
-      description:
-        "רכב ניידות חשמלי פרימיום על פלטפורמה מוגנת פטנט, סוללת ליתיום נשלפת 60V ועד 4 מנועים.",
-      brand: { "@type": "Brand", name: "MiaMe" },
-      offers: {
-        "@type": "AggregateOffer",
-        priceCurrency: "ILS",
-        lowPrice: "19900",
-        highPrice: "27900",
-        offerCount: "3",
-        availability: "https://schema.org/InStock",
-        url: SITE_URL
-      },
-      additionalProperty: PRODUCT_PROPERTIES
-    },
+    ...HOME_PRODUCTS,
     {
       "@type": "LocalBusiness",
       "@id": SITE_URL + "/#localbusiness",
@@ -129,49 +141,16 @@ const JSON_LD = {
       },
       priceRange: "₪₪"
     },
-    {
-      "@type": "FAQPage",
-      "@id": SITE_URL + "/#faq",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "האם המימון ב-0% ריבית?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "כן, מסלולי התשלום הם ב-0% ריבית, בכפוף לאישור עסקה ולתנאי הספק."
-          }
-        },
-        {
-          "@type": "Question",
-          name: "מה זמן האספקה?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "אספקה מיידית, בכפוף לזמינות מלאי."
-          }
-        },
-        {
-          "@type": "Question",
-          name: "מהו טווח הנסיעה של מיה פור?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "טווח שימוש ריאלי עד 100 ק\"מ; נתון יצרן עד 120 ק\"מ. הסוללה נשלפת וניתנת להחלפה להגדלת הטווח."
-          }
-        },
-        {
-          "@type": "Question",
-          name: "איך הופכים ל-MiaMe Hub?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "מודל שותפות רזה: אתם מחזיקים את הצי, MiaMe מביאה את הביקוש, ומשלמים 13% Success Fee מהפניות בלבד."
-          }
-        }
-      ]
-    }
+    buildHomeFaqJsonLd(SITE_URL + "/#faq")
   ]
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  // Ultra Color P Master: Pearl on light, Abyss on dark (= manifest theme_color).
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FDFBF6" },
+    { media: "(prefers-color-scheme: dark)", color: "#04121F" }
+  ],
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover"
@@ -179,7 +158,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl" className={heebo.variable}>
+    <html lang="he" dir="rtl" className={`${heebo.variable} ${suezOne.variable}`}>
       <body>
         {/* WCAG 2.4.1 (Bypass Blocks): first focusable element jumps to content */}
         <a href="#main" className="skip-link">דילוג לתוכן הראשי</a>

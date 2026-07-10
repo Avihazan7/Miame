@@ -66,7 +66,7 @@ export default function Importer() {
           aria-label="MIA Dynamics · אתר עולמי"
         >
           <span className="imp-logo-tile">
-            <img src="/mia-dynamics-logo.webp" alt="MIA Dynamics · Make it anywhere" />
+            <img src="/mia-dynamics-logo.webp" alt="MIA Dynamics · Make it anywhere" loading="lazy" />
           </span>
           <span className="imp-global">אתר עולמי · miadynamics.com ←</span>
         </a>

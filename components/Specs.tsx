@@ -11,7 +11,7 @@ export default function Specs() {
         </div>
         <div className="specs-wrap">
           <div className="specs-media specs-media--product">
-            <img className="floaty" src="/mia-white.webp" alt="מיה פור X4 · הכלי המלא" />
+            <img className="floaty" src="/mia-white.webp" alt="מיה פור X4 · הכלי המלא" loading="lazy" />
           </div>
           <div className="specs-table">
             <div className="spec-row">

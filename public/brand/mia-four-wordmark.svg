@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 132" role="img" aria-label="MIA FOUR" fill="none">
+  <title>MIA FOUR</title>
+  <!-- MIA FOUR wordmark · Ultra Color P Master. Uses currentColor so it inherits
+       the surrounding ink (dark on light, frost on Abyss). Scalable master of the
+       raster lockup (public/mia-four-logo.webp). -->
+  <g fill="currentColor">
+    <!-- chevron mark — the MIA Dynamics forward motion -->
+    <path d="M14 30 L38 66 L14 102 L26 102 L50 66 L26 30 Z" />
+    <path d="M40 30 L64 66 L40 102 L52 102 L76 66 L52 30 Z" opacity="0.55" />
+  </g>
+  <text x="96" y="60" fill="currentColor" font-family="'Suez One','Georgia',serif"
+        font-size="52" font-weight="400" letter-spacing="2">MIA</text>
+  <text x="96" y="112" fill="currentColor" font-family="'Heebo','Arial',sans-serif"
+        font-size="34" font-weight="800" letter-spacing="14">FOUR</text>
+</svg>

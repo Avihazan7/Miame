@@ -360,6 +360,7 @@ export default function Configurator() {
                     key={t}
                     role="tab"
                     aria-selected={type === t}
+                    data-track={t}
                     className={type === t ? "tab on" : "tab"}
                     onClick={() => selectType(t)}
                   >
@@ -392,31 +393,43 @@ export default function Configurator() {
                 ))}
               </div>
 
-              {/* down payment */}
-              <div className="field">
-                <div className="field-top">
-                  <span className="field-label">מקדמה</span>
-                  <span className={track_.down.locked ? "field-val locked" : "field-val"}>
-                    {downPct}% · {ils(quote.downAmount)}
-                  </span>
+              {/* down payment — private: 0%–50% slider · business/partner: fixed VAT, no slider */}
+              {track_.down.hidden ? (
+                <div className="field field-vatdown">
+                  <div className="field-top">
+                    <span className="field-label">מקדמה (מע״מ)</span>
+                    <span className="field-val">{ils(quote.downAmount)}</span>
+                  </div>
+                  <div className="field-note">
+                    במסלול עסקי/שותף המקדמה היא רכיב המע״מ (קבועה) — היתרה נפרסת לתשלומים.
+                  </div>
                 </div>
-                <input
-                  className="rng"
-                  type="range"
-                  aria-label="מקדמה"
-                  min={track_.down.min}
-                  max={track_.down.max}
-                  step={track_.down.step}
-                  value={downPct}
-                  disabled={track_.down.locked}
-                  onChange={(e) => setDownPct(Number(e.target.value))}
-                  onMouseUp={() => emitChange("down")}
-                  onTouchEnd={() => emitChange("down")}
-                />
-                <div className="field-note">
-                  מקדמה גמישה מ-{track_.down.min}% עד {track_.down.max}%
+              ) : (
+                <div className="field">
+                  <div className="field-top">
+                    <span className="field-label">מקדמה</span>
+                    <span className={track_.down.locked ? "field-val locked" : "field-val"}>
+                      {downPct}% · {ils(quote.downAmount)}
+                    </span>
+                  </div>
+                  <input
+                    className="rng"
+                    type="range"
+                    aria-label="מקדמה"
+                    min={track_.down.min}
+                    max={track_.down.max}
+                    step={track_.down.step}
+                    value={downPct}
+                    disabled={track_.down.locked}
+                    onChange={(e) => setDownPct(Number(e.target.value))}
+                    onMouseUp={() => emitChange("down")}
+                    onTouchEnd={() => emitChange("down")}
+                  />
+                  <div className="field-note">
+                    מקדמה גמישה מ-{track_.down.min}% עד {track_.down.max}%
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* months */}
               <div className="field">
@@ -454,7 +467,7 @@ export default function Configurator() {
                 height={860}
                 className="res-product"
               />
-              <img src="/mia-four-logo.png" alt="MIA FOUR" className="res-logo" />
+              <img src="/mia-four-logo.webp" alt="MIA FOUR" className="res-logo" loading="lazy" />
               <div className="res-eyebrow">
                 {isEilat ? "מחיר אילת · Green Extreme" : "עד 18 תשלומים ללא ריבית והצמדה"}
               </div>
@@ -512,7 +525,8 @@ export default function Configurator() {
                   aria-hidden="true"
                   value={hp}
                   onChange={(e) => setHp(e.target.value)}
-                  style={{ position: "absolute", left: "-9999px", top: "-9999px", height: 1, width: 1, opacity: 0 }}
+                  // RTL-safe off-screen: clip in place (left:-9999px overflows in dir="rtl").
+                  style={{ position: "absolute", width: 1, height: 1, padding: 0, margin: -1, overflow: "hidden", clip: "rect(0 0 0 0)", clipPath: "inset(50%)", whiteSpace: "nowrap", border: 0, opacity: 0 }}
                 />
                 <div className="lead-row">
                   <input

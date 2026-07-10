@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 const UPDATED = "4 ביולי 2026";
 
 export const metadata: Metadata = {
-  title: "מדיניות פרטיות · MiaMe",
+  title: "מדיניות פרטיות",
   description:
     "כיצד MiaMe אוספת, משתמשת ומגנה על המידע האישי שלך: פרטי לידים, וואטסאפ, עוגיות, פיקסלים שיווקיים וזכויותיך לפי חוק הגנת הפרטיות.",
   alternates: { canonical: "/legal/privacy" },

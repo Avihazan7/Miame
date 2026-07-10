@@ -49,7 +49,7 @@ export default function Hero() {
         <div className="stage">
           <div className="stage-card">
             <div className="stage-grid" />
-            <img className="stage-watermark" src="/mia-four-logo.png" alt="" aria-hidden="true" />
+            <img className="stage-watermark" src="/mia-four-logo.webp" alt="" aria-hidden="true" loading="lazy" />
 
             <div className="vehicle-arrive">
               {/* cinematic wake — light trail in the adaptive ambient hue,
