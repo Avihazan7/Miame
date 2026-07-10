@@ -6,7 +6,12 @@
 // already newer/present and the original already lives in the archive, it re-encodes
 // from the archived source.
 //
-// Usage: node scripts/optimize-images.mjs
+// Usage: npm i -D sharp && node scripts/optimize-images.mjs
+//
+// `sharp` is intentionally NOT a committed dependency — this is a one-off,
+// build-time image tool and the generated .webp assets are committed to /public.
+// Install it on demand before running; the app itself never imports sharp, so it
+// stays out of package.json and the deployed dependency tree (npm ci stays green).
 
 import { createHash } from "node:crypto";
 import { mkdir, readFile, rename, stat, writeFile } from "node:fs/promises";
