@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="url(#lexEnergy)" stroke="none"><defs><linearGradient id="lexEnergy" x1="4" y1="20" x2="20" y2="4" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#28C7E8"/>
+      <stop offset="1" stop-color="#A5F35A"/>
+    </linearGradient></defs>
+    <path d="M13.4 2 5.2 12.6h4.3L8.4 22l8.9-11.4h-4.6L14 2Z"/>
+  </svg>
