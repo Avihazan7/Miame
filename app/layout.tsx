@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Heebo, Suez_One } from "next/font/google";
+import { Heebo, Suez_One, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import "./miame-ultra.css";
+import "./miame-hero-v2.css";
 import AmbientLight from "@/components/AmbientLight";
 import MarkField from "@/components/MarkField";
 import MotionFx from "@/components/MotionFx";
@@ -37,6 +38,15 @@ const suezOne = Suez_One({
   subsets: ["hebrew", "latin"],
   weight: "400",
   variable: "--font-display",
+  display: "swap"
+});
+
+// Space Grotesk — the technical-Latin voice (eyebrow, MIA FOUR, FREE FEEL, numbers)
+// of the Ultra Master hero. Wired as --font-grotesk. (V3 §3)
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  variable: "--font-grotesk",
   display: "swap"
 });
 
@@ -158,7 +168,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl" className={`${heebo.variable} ${suezOne.variable}`}>
+    <html lang="he" dir="rtl" className={`${heebo.variable} ${suezOne.variable} ${spaceGrotesk.variable}`}>
       <body>
         {/* WCAG 2.4.1 (Bypass Blocks): first focusable element jumps to content */}
         <a href="#main" className="skip-link">דילוג לתוכן הראשי</a>

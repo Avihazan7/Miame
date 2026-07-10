@@ -15,7 +15,10 @@ export type EventName =
   | "CinematicVideoCTA"
   | "FreedomMomentPlay"
   | "EntryPathSelect"
-  | "HowToVideoPlay";
+  | "HowToVideoPlay"
+  | "HeroPrimaryCTA"
+  | "HeroSecondaryCTA"
+  | "HeroScrollCue";
 
 /**
  * One event, three sinks: the Supabase `events` table (owned analytics), GA4,
