@@ -23,6 +23,7 @@ import TrustSignalBar from "@/components/TrustSignalBar";
 import DealBuzz from "@/components/DealBuzz";
 import CinematicVideo from "@/components/CinematicVideo";
 import FreedomMomentVideo from "@/components/FreedomMomentVideo";
+import HowToVideo from "@/components/HowToVideo";
 import FaqHome from "@/components/FaqHome";
 
 export default function Page() {
@@ -43,6 +44,9 @@ export default function Page() {
         <Lifestyle />
         <TestRide />
         <Features />
+        {/* how-it-works / unboxing — same MIA FOUR video as the product page,
+            surfaced on the homepage per request. Lazy (poster → iframe on click). */}
+        <HowToVideo videoId="gbioqYddCxE" />
         <Specs />
         <Engineering />
         <Patents />
