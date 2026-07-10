@@ -108,7 +108,8 @@ export default function RentalFleet() {
               aria-hidden="true"
               value={hp}
               onChange={(e) => setHp(e.target.value)}
-              style={{ position: "absolute", left: "-9999px", top: "-9999px", height: 1, width: 1, opacity: 0 }}
+              // RTL-safe off-screen: clip in place (left:-9999px overflows in dir="rtl").
+              style={{ position: "absolute", width: 1, height: 1, padding: 0, margin: -1, overflow: "hidden", clip: "rect(0 0 0 0)", clipPath: "inset(50%)", whiteSpace: "nowrap", border: 0, opacity: 0 }}
             />
             <div className="rental-row">
               <input
