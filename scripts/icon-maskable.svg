@@ -8,7 +8,7 @@
       <stop offset="1" stop-color="#6EE7F3"/>
     </linearGradient>
   </defs>
-  <rect width="512" height="512" fill="#081B33"/>
+  <rect width="512" height="512" fill="#04121F"/>
   <g transform="translate(256 256) scale(0.72) translate(-256 -256)">
     <path d="M118 384V150c0-12 10-22 22-22h20c8 0 15 4 19 11l70 122c3 6 11 6 14 0l70-122c4-7 11-11 19-11h20c12 0 22 10 22 22v234c0 12-10 22-22 22h-14c-12 0-22-10-22-22V254c0-5-7-7-9-3l-52 91c-4 7-11 11-19 11h-4c-8 0-15-4-19-11l-52-91c-2-4-9-2-9 3v130c0 12-10 22-22 22h-10c-12 0-22-10-22-22z" fill="url(#m)"/>
   </g>

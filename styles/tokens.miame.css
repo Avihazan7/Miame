@@ -40,8 +40,4 @@
   --track-private:var(--glow-teal);
   --track-business:var(--gold-bright);
   --track-partner:var(--glow-ice);
-
-  /* deprecated aliases — kept documented, do not use in new code */
-  --legacy-navy:#081B33;
-  --legacy-teal-ink:#078c7b;
 }

@@ -19,18 +19,23 @@
   --sky-600:#0a92c4;
   --sky-700:#0a6fa6;
 
-  --azure:#0a84ff;
-  --azure-deep:#0067d6;
-  --sky:#5ac8fa;
-  --cyan:#0ce5dd;
-  --teal:#13b6df;
+  /* P0.1 — the site accent consolidates onto the Ultra Color P Master tokens
+     (styles/tokens.miame.css). No iOS-blue: text/accents on light = --ink-teal
+     (legible, 6.18:1); energy/data = --glow-teal / --glow-ice. Aliases kept so the
+     whole site shifts from one place; WhatsApp green stays only on WA buttons. */
+  --azure:var(--ink-teal);
+  --azure-deep:var(--ink-teal);
+  --sky:var(--glow-ice);
+  --cyan:var(--glow-teal);
+  --teal:var(--glow-teal);
   --ink:#0b1c3f;
   --slate:#5b6675;
   --line:#e6eef6;
 
-  /* signature תכלת gradients */
-  --grad-teal:linear-gradient(120deg,#0ce5dd 0%,#39cdee 40%,#0a84ff 100%);
-  --grad-teal-soft:linear-gradient(120deg,#7fe1f7,#5ac8fa 50%,#3aa0ff);
+  /* signature teal gradients — anchored on --ink-teal so gradient TEXT stays
+     legible on light, with a --glow-teal shimmer in the centre. */
+  --grad-teal:linear-gradient(120deg,var(--ink-teal) 0%,var(--glow-teal) 55%,var(--ink-teal) 100%);
+  --grad-teal-soft:linear-gradient(120deg,var(--ink-teal),var(--glow-ice) 50%,var(--ink-teal));
   --grad-ink:linear-gradient(125deg,#0b2450,#0e3a7a 58%,#0a6fa6);
 
   --shadow-sm:0 1px 2px rgba(11,15,20,.04), 0 4px 14px rgba(11,15,20,.05);
@@ -91,7 +96,7 @@ svg{display:block}
 .btn:focus-visible{outline:none;
   box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--azure), 0 0 0 8px rgba(12,229,221,.28), 0 14px 30px rgba(10,132,255,.34)}
 
-.btn-primary{color:#fff;background:linear-gradient(180deg,#41a4ff,#0a84ff 48%,#0061cf);
+.btn-primary{color:#fff;background:linear-gradient(180deg,var(--glow-teal),var(--ink-teal) 55%,var(--mint-zero-ink));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.5), inset 0 -3px 7px rgba(2,38,86,.4),
     0 2px 0 #0257b4, 0 11px 22px rgba(10,132,255,.42), 0 20px 44px rgba(10,40,90,.2)}
 .btn-primary:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.55), inset 0 -3px 7px rgba(2,38,86,.4),
@@ -552,7 +557,7 @@ svg{display:block}
 .bub{max-width:84%;padding:12px 15px;border-radius:18px;font-size:15px;line-height:1.6;white-space:pre-wrap}
 .bub.bot{align-self:flex-start;background:#fff;border:1px solid var(--line);border-inline-start:3px solid var(--cyan);
   box-shadow:0 8px 20px rgba(11,20,40,.07);color:var(--ink)}
-.bub.user{align-self:flex-end;color:#fff;background:linear-gradient(180deg,#41a4ff,#0a84ff);box-shadow:0 10px 22px rgba(10,132,255,.32)}
+.bub.user{align-self:flex-end;color:#fff;background:linear-gradient(180deg,var(--glow-teal),var(--ink-teal));box-shadow:0 10px 22px rgba(15,107,94,.32)}
 .bub-src{margin-top:6px;font-size:11px;font-weight:600;color:var(--slate);opacity:.85}
 .typing{display:flex;gap:5px;padding:3px 2px}
 .typing span{width:7px;height:7px;border-radius:50%;background:var(--azure);opacity:.45;animation:typing 1.2s infinite}
@@ -568,8 +573,8 @@ svg{display:block}
 .chat3d-input input{flex:1;border:1px solid var(--line);border-radius:999px;padding:13px 18px;font-size:15px;font-family:inherit;background:#fff;outline:none}
 .chat3d-input input:focus{border-color:rgba(10,132,255,.5);box-shadow:0 0 0 4px rgba(10,132,255,.12)}
 .chat3d-send{width:46px;height:46px;flex:0 0 46px;border-radius:50%;color:#fff;font-size:20px;font-weight:800;border:none;cursor:pointer;
-  background:linear-gradient(180deg,#41a4ff,#0a84ff 55%,#0061cf);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 0 #0257b4,0 10px 20px rgba(10,132,255,.4);transition:transform .15s,box-shadow .2s}
+  background:linear-gradient(180deg,var(--glow-teal),var(--ink-teal) 55%,var(--mint-zero-ink));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 0 var(--mint-zero-ink),0 10px 20px rgba(15,107,94,.4);transition:transform .15s,box-shadow .2s}
 .chat3d-send:hover:not(:disabled){transform:translateY(-2px)}
 .chat3d-send:disabled{opacity:.5;cursor:default}
 .chat3d-wa{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;font-size:13px;font-weight:600;
@@ -726,8 +731,8 @@ svg{display:block}
 /* ─── scroll progress ribbon (RTL: fills from the right) ────────────── */
 .scroll-progress{position:fixed;top:0;inset-inline:0;height:3px;z-index:70;pointer-events:none;
   transform-origin:100% 50%;transform:scaleX(var(--sp,0));
-  background:linear-gradient(90deg,#0ce5dd,#39cdee 45%,#0a84ff);
-  box-shadow:0 0 10px rgba(12,229,221,.55),0 1px 4px rgba(10,132,255,.4);
+  background:linear-gradient(90deg,var(--glow-teal),var(--glow-ice) 45%,var(--ink-teal));
+  box-shadow:0 0 10px rgba(24,224,189,.55),0 1px 4px rgba(15,107,94,.4);
   transition:transform .12s linear,opacity .4s ease;opacity:calc(.25 + .75*var(--sp,0))}
 
 /* ─── scroll reveal ─────────────────────────────────────────────────── */

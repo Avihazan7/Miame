@@ -19,7 +19,7 @@
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: var(--azure, #0a84ff);
+  color: var(--azure);
   margin-block-end: 6px;
 }
 .mp-title {
@@ -39,7 +39,7 @@
   margin-block: 18px;
   padding-inline: 18px;
   padding-block: 14px;
-  border-inline-start: 3px solid var(--azure, #0a84ff);
+  border-inline-start: 3px solid var(--azure);
   background: var(--mist, #f2f8fd);
   border-radius: 12px;
   color: #223;
@@ -92,7 +92,7 @@
   transition: background 0.25s ease, color 0.25s ease;
 }
 .mp-step[data-active="true"] {
-  background: var(--azure, #0a84ff);
+  background: var(--azure);
   color: #fff;
 }
 .mp-step[data-done="true"] {
@@ -139,9 +139,9 @@
   color: var(--ink, #0b0f14);
 }
 .mp-control:focus-visible {
-  outline: 2px solid var(--azure, #0a84ff);
+  outline: 2px solid var(--azure);
   outline-offset: 1px;
-  border-color: var(--azure, #0a84ff);
+  border-color: var(--azure);
 }
 .mp-radio-row {
   display: flex;
@@ -163,7 +163,7 @@
   cursor: pointer;
 }
 .mp-radio input {
-  accent-color: var(--azure, #0a84ff);
+  accent-color: var(--azure);
 }
 
 /* Consent */
@@ -179,7 +179,7 @@
 }
 .mp-consent input {
   margin-block-start: 3px;
-  accent-color: var(--azure, #0a84ff);
+  accent-color: var(--azure);
 }
 .mp-consent label {
   font-size: 14px;
@@ -331,7 +331,7 @@
   font-weight: 700;
   font-size: 14px;
   color: #fff;
-  background: var(--azure, #0a84ff);
+  background: var(--azure);
 }
 .mp-flow-text {
   font-size: 14px;
