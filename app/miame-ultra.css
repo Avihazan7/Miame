@@ -20,50 +20,85 @@
   --glow:0 0 0 1px rgba(24,224,189,.20),0 16px 42px rgba(17,205,174,.20);
 }
 
-/* Global CTA language — mint + cream + nano polish */
-.btn-primary{
-  color:#063f3a;
+/* ============================================================================
+   P0.2 · CRYSTAL ENERGY — one button system, three tiers.
+   .btn-energy (primary · lime energy) · .btn-gold (beside a price) · .btn-ghost
+   (secondary). Unified spec: radius 15px, top shine, inner+outer shadow, hover
+   lift 2px. The legacy primary/secondary classes are aliased onto the tiers so
+   the whole site speaks ONE button language. WhatsApp keeps its native green.
+   ========================================================================== */
+
+/* — Tier 1 · Energy (primary CTA · lime, same energy as the Hero) — */
+.btn-energy,
+.btn-primary, .btn-testride, .flagship-tel {
+  color: var(--mint-zero-ink);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, .28);
   background:
-    linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,0) 38%),
-    linear-gradient(135deg,#fff8eb 0%,#8af4da 38%,var(--glow-teal) 70%,#079982 100%);
+    linear-gradient(180deg, rgba(255, 255, 255, .72), rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, #C9FF8F 0%, #A5F35A 48%, #72D43E 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.86),
-    inset 0 -3px 8px rgba(4,95,80,.28),
-    0 2px 0 var(--ink-teal),
-    0 16px 34px rgba(17,205,174,.38),
-    0 30px 70px rgba(8,76,70,.16);
+    inset 0 1px 0 rgba(255, 255, 255, .6),
+    inset 0 -3px 8px rgba(28, 90, 40, .22),
+    0 2px 0 #5CAE33,
+    0 16px 34px rgba(165, 243, 90, .28),
+    0 30px 64px rgba(20, 60, 30, .14);
 }
-.btn-primary:hover{
+.btn-energy:hover,
+.btn-primary:hover, .btn-testride:hover, .flagship-tel:hover {
+  transform: translateY(-2px);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.9),
-    inset 0 -3px 8px rgba(4,95,80,.30),
-    0 4px 0 var(--ink-teal),
-    0 22px 42px rgba(17,205,174,.46),
-    0 38px 86px rgba(8,76,70,.18);
+    inset 0 1px 0 rgba(255, 255, 255, .7),
+    inset 0 -3px 8px rgba(28, 90, 40, .24),
+    0 4px 0 #5CAE33,
+    0 22px 44px rgba(165, 243, 90, .36),
+    0 38px 80px rgba(20, 60, 30, .16);
 }
 
-.btn-ghost,.btn-light{
-  color:var(--mint-ink);
+/* — Tier 2 · Gold (a CTA that sits beside a price) — */
+.btn-gold {
+  color: var(--mint-zero-ink);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, .28);
   background:
-    linear-gradient(180deg,#ffffff,#fff8eb 56%,#eafff8);
-  border:1px solid rgba(17,205,174,.24);
+    linear-gradient(180deg, rgba(255, 255, 255, .7), rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, #F0D98A 0%, var(--gold-bright) 50%, #B8923C 100%);
   box-shadow:
-    inset 0 1px 0 #fff,
-    0 2px 0 #d7efe4,
-    0 14px 28px rgba(7,140,123,.12);
+    inset 0 1px 0 rgba(255, 255, 255, .6),
+    0 2px 0 #9A7A2E,
+    0 16px 32px rgba(215, 180, 90, .3);
 }
-.btn-ghost:hover,.btn-light:hover{
-  color:var(--mint-deep);
-  border-color:rgba(17,205,174,.44);
-  box-shadow:
-    inset 0 1px 0 #fff,
-    0 4px 0 #d7efe4,
-    0 20px 38px rgba(7,140,123,.17);
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 4px 0 #9A7A2E, 0 22px 42px rgba(215, 180, 90, .38);
 }
 
-.btn-wa,.sticky-wa,.wa-float{
-  background:linear-gradient(180deg,#6ff3c0,#25d366 50%,#10a964);
-  box-shadow:0 12px 28px rgba(37,211,102,.42);
+/* — Tier 3 · Ghost (secondary) — */
+.btn-ghost, .btn-light, .dealer-btn {
+  color: var(--ink-teal);
+  border-radius: 15px;
+  background: linear-gradient(180deg, #ffffff, var(--surface-glass));
+  border: 1px solid var(--hairline);
+  box-shadow: inset 0 1px 0 #fff, 0 2px 0 #E4EBEA, 0 12px 26px rgba(8, 40, 36, .1);
+}
+.btn-ghost:hover, .btn-light:hover, .dealer-btn:hover {
+  transform: translateY(-2px);
+  color: var(--ink-teal);
+  border-color: var(--glow-teal);
+  box-shadow: inset 0 1px 0 #fff, 0 4px 0 #E4EBEA, 0 18px 34px rgba(8, 40, 36, .14);
+}
+
+/* — WhatsApp — native channel, keeps its green. .wa-float stays a round icon. — */
+.btn-wa, .sticky-wa {
+  color: #fff;
+  border-radius: 15px;
+  background: linear-gradient(180deg, #6ff3c0, #25d366 50%, #10a964);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 2px 0 #119a48, 0 12px 28px rgba(37, 211, 102, .42);
+}
+.wa-float { background: linear-gradient(180deg, #6ff3c0, #25d366 50%, #10a964); }
+.btn-wa:hover, .sticky-wa:hover, .wa-float:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), 0 4px 0 #119a48, 0 18px 34px rgba(37, 211, 102, .5);
 }
 
 .btn:focus-visible,
@@ -343,7 +378,7 @@
 
 /* --- buttons: one system — consistent height, radius, centered text --- */
 .btn{min-height:52px;display:inline-flex;align-items:center;justify-content:center;gap:9px;
-  padding:0 24px;border-radius:999px;line-height:1;text-align:center;white-space:nowrap;
+  padding:0 26px;border-radius:15px;line-height:1;text-align:center;white-space:nowrap;
   will-change:transform,box-shadow;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .btn-block{width:100%}
 .btn-sm{min-height:42px;padding-inline:16px;font-size:14px}
@@ -389,26 +424,28 @@ img,svg,video,canvas{max-width:100%}
    Short, measured overlay: refine the light on the existing capsules — no redesign.
    ========================================================================== */
 
-/* Primary CTA — glass mint-turquoise capsule with a white top highlight and
-   crisp white text (keeps the existing 3D lift/box-shadow from the layer above). */
+/* Primary CTA — Crystal Energy (lime), same energy as the Hero. The white top
+   shine + 3D lift/shadow come from the .btn-energy tier above; this keeps the
+   crisp readable ink and a bright top highlight. */
 .btn-primary{
-  color:#fff;
-  text-shadow:0 1px 2px rgba(4,55,50,.28);
+  color:var(--mint-zero-ink);
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
   background:
-    radial-gradient(120% 110% at 50% 0%, rgba(255,255,255,.78), rgba(255,255,255,.10) 38%, transparent 58%),
-    linear-gradient(180deg, #73fff0 0%, #35e5d7 36%, var(--glow-teal) 66%, #079982 100%);
+    linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,0) 42%),
+    linear-gradient(180deg, #C9FF8F 0%, #A5F35A 48%, #72D43E 100%);
 }
 .btn-primary:hover{
-  transform:translateY(-1px);
-  filter:saturate(1.02) brightness(1.01);
+  transform:translateY(-2px);
+  filter:saturate(1.02) brightness(1.02);
 }
 
-/* Secondary/white capsules — cleaner cream glass, brighter top light. */
+/* Secondary capsules — clean teal-tinted glass. */
 .btn-ghost,
 .btn-light{
+  color:var(--ink-teal);
   background:
-    radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.90), rgba(255,255,255,0) 58%),
-    linear-gradient(180deg,#ffffff 0%,#fff8eb 54%,#eafff8 100%);
+    radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.92), rgba(255,255,255,0) 58%),
+    linear-gradient(180deg,#ffffff 0%,var(--surface-glass) 100%);
 }
 
 /* Product — a touch more depth + a faint mint halo. Scale is unchanged. */

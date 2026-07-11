@@ -31,7 +31,7 @@ export default function Importer() {
           <div className="importer-sub">יבואן MIA Dynamics ישראל · MIA FOUR</div>
           <div className="importer-meta">📍 אליעזר קפלן 21, תל אביב · מתחם דה וינצ׳י</div>
           <div className="importer-actions">
-            <a className="imp-btn" href="tel:0778038321">📞 077-8038321</a>
+            <a className="imp-btn" href="tel:0778038321">077-8038321</a>
             <a
               className="imp-btn"
               href="https://www.miafour.co.il/"

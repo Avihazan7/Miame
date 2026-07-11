@@ -94,7 +94,7 @@ svg{display:block}
 .btn:active{transform:translateY(1px) scale(.992)}
 /* crisp, accessible focus halo that rides over the 3D shadow */
 .btn:focus-visible{outline:none;
-  box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--azure), 0 0 0 8px rgba(12,229,221,.28), 0 14px 30px rgba(10,132,255,.34)}
+  box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--glow-teal), 0 0 0 8px rgba(24,224,189,.28), 0 14px 30px rgba(15,107,94,.34)}
 
 .btn-primary{color:#fff;background:linear-gradient(180deg,var(--glow-teal),var(--ink-teal) 55%,var(--mint-zero-ink));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.5), inset 0 -3px 7px rgba(2,38,86,.4),

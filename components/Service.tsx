@@ -54,7 +54,7 @@ export default function Service() {
               </div>
               <div className="dealer-btns">
                 <a className="dealer-btn" href={"tel:" + phone.replace(/[^0-9]/g, "")}>
-                  📞 חיוג
+                  חיוג
                 </a>
                 <a
                   className="dealer-btn nav"
