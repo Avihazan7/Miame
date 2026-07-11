@@ -10,7 +10,7 @@ const config: Config = {
       colors: {
         snow: "#FFFFFF",
         mist: "#F2F8FD",
-        azure: "#0A84FF",
+        azure: "var(--ink-teal)",
         // NOTE: `slate` and `sky` were brand single-colors here, but they clobbered
         // Tailwind's default slate-*/sky-* scales that the vehicle-media components
         // need (bg-slate-950, from-sky-400, …). Nothing uses them as utilities (the
