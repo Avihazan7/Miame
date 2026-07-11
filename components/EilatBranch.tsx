@@ -1,4 +1,5 @@
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import LexIcon from "@/components/LexIcon";
 import WaIcon from "./WaIcon";
 
 // Eilat / Green Extreme activity point. Wording is deliberately careful — a
@@ -24,7 +25,7 @@ export default function EilatBranch() {
       <div className="wrap">
         <div className="eilat-card">
           <span className="eilat-kicker">
-            <span aria-hidden="true">♻️</span> אילת · Green Extreme
+            <LexIcon name="recycle" /> אילת · Green Extreme
           </span>
           <h2 className="eilat-title" id="eilat-title">
             MiaMe × Green Extreme — נקודת הפעילות שלנו באילת

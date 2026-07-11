@@ -1,4 +1,5 @@
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import LexIcon from "@/components/LexIcon";
 
 export default function Tribute() {
   return (
@@ -55,7 +56,7 @@ export default function Tribute() {
               </a>
             </div>
             <div className="tribute-calc">
-              <div className="tc-head">🎁 לזכאי כוחות הביטחון · מיה פור 4×2</div>
+              <div className="tc-head"><LexIcon name="gift" /> לזכאי כוחות הביטחון · מיה פור 4×2</div>
               <div className="tc-row">
                 <b>מחיר מיה פור 4×2</b>
                 <span>19,900 ₪</span>
@@ -65,7 +66,7 @@ export default function Tribute() {
                 <span>עד 90%</span>
               </div>
               <div className="tc-row tc-sub">
-                <b>MEU · מענק מתנה והוקרה 🎁</b>
+                <b>MEU · מענק מתנה והוקרה <LexIcon name="gift" /></b>
                 <span>10%</span>
               </div>
               <div className="tc-row tc-pay">

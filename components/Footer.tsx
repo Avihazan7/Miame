@@ -1,4 +1,5 @@
 import MiaMark from "./MiaMark";
+import LexIcon from "@/components/LexIcon";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -14,16 +15,15 @@ export default function Footer() {
           </div>
         </div>
         <div className="foot-tag">
-          <span aria-hidden="true">🌐</span> Free Feel
+          <LexIcon name="globe" /> Free Feel
           <span className="sep">·</span>
-          <span aria-hidden="true">🗽</span>
+          <LexIcon name="liberty" />
         </div>
         <div className="foot-powered">
           מבוסס מנוע העסקאות של{" "}
           <a href="https://www.leasing.co.il" target="_blank" rel="noopener">
             <b>Leasing.co.il</b>
           </a>{" "}
-          🎯
         </div>
         <nav className="foot-links" aria-label="עמודי מידע">
           <a href="/mia-four">מיה פור</a>

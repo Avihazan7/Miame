@@ -1,5 +1,6 @@
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { DEALERS, RENTAL_FROM } from "@/lib/content";
+import LexIcon from "@/components/LexIcon";
 
 export default function Service() {
   return (
@@ -22,7 +23,7 @@ export default function Service() {
           </div>
           <div className="flagship-btns">
             <a className="flagship-tel" href="tel:0778038321">
-              📞 077-8038321
+              <LexIcon name="phone" /> 077-8038321
             </a>
             <a
               className="flagship-nav"
@@ -30,7 +31,7 @@ export default function Service() {
               target="_blank"
               rel="noopener"
             >
-              📍 ניווט
+              <LexIcon name="pin" /> ניווט
             </a>
           </div>
         </div>
@@ -42,7 +43,7 @@ export default function Service() {
             referrerPolicy="no-referrer-when-downgrade"
           ></iframe>
         </div>
-        <p className="dealers-title">משווקים מורשים · לחצו לחיוג או ניווט 📍</p>
+        <p className="dealers-title">משווקים מורשים · לחצו לחיוג או ניווט</p>
         <div className="dealers-grid">
           {DEALERS.map(([name, city, phone]) => (
             <div className="dealer" key={name + city}>
@@ -62,7 +63,7 @@ export default function Service() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  📍 ניווט
+                  <LexIcon name="pin" /> ניווט
                 </a>
               </div>
             </div>

@@ -523,10 +523,8 @@ body{text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
     0 2px 0 var(--ink-teal),
     0 16px 34px rgba(17,205,174,.30);
 }
-.zone.eilat.on::before{
-  content:"♻️";
-  margin-inline-end:6px;
-}
+/* (was a ♻️ emoji ::before — removed per the no-emoji charter; the toggle text
+   carries the meaning) */
 .eilat-note{
   margin:-8px 0 20px;
   padding:10px 14px;

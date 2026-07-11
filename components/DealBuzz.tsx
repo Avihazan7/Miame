@@ -8,6 +8,7 @@
 // by test/dealBuzz.test.ts.
 
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import LexIcon from "@/components/LexIcon";
 import { track } from "@/lib/analytics";
 import WaIcon from "./WaIcon";
 import { DEAL_BUZZ_CARDS, BUZZ_DISCLAIMER, type BuzzItem } from "@/lib/deal-buzz";
@@ -40,7 +41,7 @@ export default function DealBuzz() {
           {DEAL_BUZZ_CARDS.map((c) => (
             <article className="buzz-card" key={c.id}>
               <div className="buzz-ic" aria-hidden="true">
-                {c.icon}
+                <LexIcon name={c.icon} />
               </div>
               <div className="buzz-title">{c.title}</div>
               <p className="buzz-text">{c.text}</p>

@@ -12,12 +12,14 @@
 // the brand voice implicitly (short, direct, trustworthy, premium-but-calm).
 
 /** What a buzz CTA does. "sim" scrolls to the simulator; "wa" opens WhatsApp. */
+import type { LexName } from "@/components/LexIcon";
+
 export type BuzzAction = "sim" | "wa";
 
 export interface BuzzItem {
   id: string;
-  /** Decorative emoji (aria-hidden in the UI). */
-  icon: string;
+  /** Brand-lexicon icon name (aria-hidden in the UI). */
+  icon: LexName;
   title: string;
   text: string;
   cta: string;
@@ -27,8 +29,8 @@ export interface BuzzItem {
 }
 
 export interface TrustSignal {
-  /** Optional decorative emoji. */
-  icon?: string;
+  /** Optional brand-lexicon icon name. */
+  icon?: LexName;
   label: string;
 }
 
@@ -46,11 +48,11 @@ export const LAUNCH_OFFER = {
 // Each is a real, checkable fact grounded in the site's own content
 // (LegalStatus, seo-pages, models) — not a marketing superlative.
 export const TRUST_SIGNALS: TrustSignal[] = [
-  { icon: "🛡️", label: "יבואן מורשה · MEU" },
-  { icon: "🔧", label: "אחריות ושירות 12 חודשים" },
-  { icon: "％", label: "מימון 0% ריבית*" },
-  { icon: "✅", label: "תקן קלנועית EN17128" },
-  { icon: "💬", label: "שירות אישי בעברית" },
+  { icon: "shield", label: "יבואן מורשה · MEU" },
+  { icon: "wrench", label: "אחריות ושירות 12 חודשים" },
+  { icon: "percent", label: "מימון 0% ריבית*" },
+  { icon: "check", label: "תקן קלנועית EN17128" },
+  { icon: "chat", label: "שירות אישי בעברית" },
 ];
 
 // ── Deal buzz cards (conversion nudges, after the simulator) ────────────────
@@ -58,7 +60,7 @@ export const TRUST_SIGNALS: TrustSignal[] = [
 export const DEAL_BUZZ_CARDS: BuzzItem[] = [
   {
     id: "match",
-    icon: "🔍",
+    icon: "search",
     title: "בדיקת התאמה מהירה",
     text: "נאתר איתך את הדגם והמסלול שמתאימים לך — לפי שימוש, טווח ותקציב.",
     cta: "התחלת בדיקה",
@@ -66,7 +68,7 @@ export const DEAL_BUZZ_CARDS: BuzzItem[] = [
   },
   {
     id: "offer",
-    icon: "🧾",
+    icon: "receipt",
     title: "הצעה מותאמת לפי דגם",
     text: "בונים הצעת תשלום מותאמת תוך דקה ומקבלים אותה ישירות לוואטסאפ.",
     cta: "בניית הצעה",
@@ -74,7 +76,7 @@ export const DEAL_BUZZ_CARDS: BuzzItem[] = [
   },
   {
     id: "eligibility",
-    icon: "📋",
+    icon: "clipboard",
     title: "בדיקת זכאות למסלול",
     text: "נבדוק יחד איזה מסלול תשלומים פתוח עבורך — פרטי, עסקי או שותף. בכפוף לאישור עסקה.",
     cta: "בדיקת זכאות",
@@ -83,7 +85,7 @@ export const DEAL_BUZZ_CARDS: BuzzItem[] = [
   },
   {
     id: "consult",
-    icon: "💬",
+    icon: "chat",
     title: "שיחת ייעוץ ב-WhatsApp",
     text: "מעדיפים לדבר? נציג אמיתי יחזור אליך עם כל הפרטים על הדגמים והזמינות.",
     cta: "הזמנת בדיקה / תיאום שיחה",
