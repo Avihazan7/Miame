@@ -463,7 +463,7 @@ export default function Configurator() {
             <div className="sim-result">
               <Image
                 src="/mia-four-x4-hero.webp"
-                alt="MIA FOUR כלי חשמלי ארבעה גלגלים"
+                alt="MIA FOUR קלנועית חשמלית ארבעה גלגלים"
                 width={774}
                 height={860}
                 className="res-product"
