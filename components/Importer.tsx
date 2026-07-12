@@ -39,7 +39,7 @@ export default function Importer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              🌐 miafour.co.il
+              <LexIcon name="globe" /> miafour.co.il
             </a>
           </div>
           <div className="importer-social">

@@ -16,13 +16,6 @@
  */
 import { MODELS } from "./models";
 
-/** Official importer list prices, for reference / comparison only. */
-export const OFFICIAL_LIST_PRICES: Record<string, number> = {
-  "4x2": 19990,
-  "2x4lr": 21990,
-  "4x4": 27990
-};
-
 /** Read-only view of the live MiaMe offer prices (source: lib/models.ts). */
 export const MODEL_PRICING = MODELS.map((m) => ({ id: m.id, name: m.name, price: m.price }));
 

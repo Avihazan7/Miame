@@ -33,7 +33,7 @@ export default function Header() {
               Mia<span className="dot">Me</span>
             </span>
             <span className="brand-tag">
-              <LexIcon name="liberty" /> Free&nbsp;Feel
+              <LexIcon name="butterfly" /> Free&nbsp;Feel
             </span>
           </span>
         </a>

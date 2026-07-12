@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import WaIcon from "@/components/WaIcon";
+import LexIcon from "@/components/LexIcon";
 
 export const metadata: Metadata = {
   title: "תודה! הפרטים התקבלו",
@@ -29,7 +30,7 @@ export default function ThankYouPage() {
   return (
     <main id="main" className="block" style={{ minHeight: "70vh", display: "grid", placeItems: "center" }}>
       <div className="wrap" style={{ textAlign: "center", maxWidth: 600, padding: "48px 20px" }}>
-        <div aria-hidden="true" style={{ fontSize: 56, lineHeight: 1 }}>🎉</div>
+        <div aria-hidden="true" style={{ fontSize: 56, lineHeight: 1 }}><LexIcon name="check" /></div>
         <h1 className="sec-title" style={{ marginTop: 16 }}>תודה! הפרטים התקבלו</h1>
         <p className="sec-desc" style={{ marginTop: 12 }}>
           ההצעה שבנית נשלחה אלינו (ואם נפתח וואטסאפ, היא כבר אצלך בצ׳אט).

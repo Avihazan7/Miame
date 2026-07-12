@@ -71,7 +71,7 @@ export default function Service() {
         </div>
         <div className="rental-strip">
           <b>רוצים לשכור מיה פור לפי שעה?</b>
-          <span>החל מ־{RENTAL_FROM} ₪ לשעה · אתרו נקודת השכרה קרובה ברשת MiaMe Hub</span>
+          <span>החל מ-{RENTAL_FROM} ₪ לשעה · אתרו נקודת השכרה קרובה ברשת MiaMe Hub</span>
           <div className="rental-cta">
             <a
               className="btn btn-light btn-block"
