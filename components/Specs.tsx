@@ -58,7 +58,7 @@ export default function Specs() {
         </div>
         <p
           className="spec-note"
-          style={{ marginTop: "16px", fontSize: "13px", lineHeight: 1.6, color: "#8a93a3" }}
+          style={{ marginTop: "16px", fontSize: "13px", lineHeight: 1.6, color: "var(--ink-muted)" }}
         >
           * נתון טווח היצרן נמדד בתנאי מעבדה. הטווח בפועל מושפע ממשקל הנהג, תוואי הדרך, תנאי השטח וסגנון הנהיגה.
         </p>
