@@ -863,7 +863,7 @@ body{text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
 .p360-head{text-align:center;margin-bottom:14px}
 .p360-kicker{
   display:inline-flex;align-items:center;min-height:32px;padding:0 15px;border-radius:999px;
-  font-weight:900;color:#79E8C5;background:rgba(87,224,180,.10);border:1px solid rgba(87,224,180,.24);
+  font-weight:900;color:var(--ink-teal);background:rgba(87,224,180,.10);border:1px solid rgba(87,224,180,.24);
   font-size:13.5px;letter-spacing:.02em;
 }
 .p360-stage{
