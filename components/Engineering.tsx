@@ -1,5 +1,5 @@
 import LexIcon from "@/components/LexIcon";
-// Engineering — the chassis deep-dive. Shows the real Mia FOUR X4 frame (rear
+// Engineering — the chassis deep-dive. Shows the real Mia FOUR 4×4 Pro Max frame (rear
 // 3/4 cutout) on a dark stage with an azure glow that echoes the Deal Aura, plus
 // the engineering highlights that the spec table only lists as numbers.
 export default function Engineering() {
@@ -7,7 +7,7 @@ export default function Engineering() {
     <section className="block eng-sec" id="engineering">
       <div className="wrap">
         <div className="sec-head">
-          <div className="sec-kicker">הנדסה · שלדת MIA FOUR X4</div>
+          <div className="sec-kicker">הנדסה · שלדת MIA FOUR 4×4 Pro Max</div>
           <h2 className="sec-title">מתחת למעטפת — שלדה שנבנתה לשטח</h2>
           <p className="sec-desc">
             מתלים עצמאיים לכל גלגל, פלטפורמת ארבעה גלגלים מוגנת פטנט וצמיגי שטח —
@@ -19,7 +19,7 @@ export default function Engineering() {
           <img
             className="eng-veh floaty"
             src="/mia-four-x4-rear.webp"
-            alt="שלדת מיה פור X4 · מתלים עצמאיים ופלטפורמת ארבעה גלגלים מוגנת פטנט"
+            alt="שלדת מיה פור 4×4 Pro Max · מתלים עצמאיים ופלטפורמת ארבעה גלגלים מוגנת פטנט"
             loading="lazy"
           />
         </div>

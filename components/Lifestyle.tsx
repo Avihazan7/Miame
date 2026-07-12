@@ -26,14 +26,14 @@ export default function Lifestyle() {
             </div>
           </div>
           <div className="life-card">
-            <img src="/mia-four-x4-night-rear.jpg" alt="מיה פור X4 · גימור סטודיו, מתלה אחורי ומערכת שיכוך חשופה" loading="lazy" />
+            <img src="/mia-four-x4-night-rear.jpg" alt="מיה פור 4×4 Pro Max · גימור סטודיו, מתלה אחורי ומערכת שיכוך חשופה" loading="lazy" />
             <div className="life-cap">
               <b>עיצוב שמדבר</b>
               <span>נוכחות פרימיום · קווים נקיים, אמין ורגוע</span>
             </div>
           </div>
           <div className="life-card">
-            <img src="/mia-four-x4-seat.webp" alt="מיה פור X4 עם כיסא בשחרור מהיר · ישיבה או עמידה" loading="lazy" />
+            <img src="/mia-four-x4-seat.webp" alt="מיה פור 4×4 Pro Max עם כיסא בשחרור מהיר · ישיבה או עמידה" loading="lazy" />
             <div className="life-cap">
               <b>ישיבה או עמידה</b>
               <span>כיסא בשחרור מהיר ביד אחת · נוחות לכל אורך הדרך</span>
