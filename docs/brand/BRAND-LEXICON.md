@@ -58,3 +58,25 @@ Petrol = Abyss · Cyan = Glow · Lime = Mint-Zero.
 
 Logotype: `public/brand/miame-logotype-{dark,light,mono}.svg` — Space Grotesk 700 "MiaMe",
 the **i-dot replaced by the butterfly** (Free Feel lives inside the name).
+
+## Model lineup (verbatim names · prices frozen)
+
+The product line is **MIA FOUR**; the three trims are the canonical `name` in
+`lib/models.ts` (internal `id`s stay `4x2`/`2x4lr`/`4x4` for stability).
+
+| id | Model name | Tagline | Price (frozen) |
+|----|-----------|---------|----------------|
+| `4x2`   | **2×4 City** | העירוני החכם | 19,900 ₪ |
+| `2x4lr` | **2×4 City Long Range** | הטווח המורחב | 21,900 ₪ |
+| `4x4`   | **4×4 Pro Max** | הכוח לכל מסלול | 27,900 ₪ |
+
+Prices are frozen — never change them. Brand+model reads "MIA FOUR 4×4 Pro Max".
+In SEO copy the drive-config token `4×4` doubles as a keyword ("קלנועית שטח
+4×4", "הנעה כפולה 4×4"): keep it in h1/title/labels; the model **name** is
+"4×4 Pro Max".
+
+## Positioning line
+
+**MIA FOUR · מחקר ופיתוח ישראלי 🇮🇱** — Israeli R&D. A trust signal (hero trust
+row). The 🇮🇱 is a country flag (semantic data, native — the lexicon's
+system-emoji ban is for decorative glyphs, not country flags).

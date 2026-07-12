@@ -11,7 +11,7 @@ export default function Specs() {
         </div>
         <div className="specs-wrap">
           <div className="specs-media specs-media--product">
-            <img className="floaty" src="/mia-white.webp" alt="מיה פור X4 · הכלי המלא" loading="lazy" />
+            <img className="floaty" src="/mia-white.webp" alt="מיה פור 4×4 Pro Max · הכלי המלא" loading="lazy" />
           </div>
           <div className="specs-table">
             <div className="spec-row">
@@ -44,7 +44,7 @@ export default function Specs() {
             </div>
             <div className="spec-row">
               <span className="spec-k">משקל הכלי</span>
-              <span className="spec-v">42 ק"ג (דגם X2) · עד 136 ק"ג עומס</span>
+              <span className="spec-v">42 ק"ג (דגם <bdi dir="ltr">2×4 City</bdi>) · עד 136 ק"ג עומס</span>
             </div>
             <div className="spec-row">
               <span className="spec-k">בלמים</span>

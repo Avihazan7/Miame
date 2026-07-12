@@ -82,9 +82,9 @@ export default function Features() {
             </div>
           </div>
           <div className="feat-show-detail photo-frame">
-            <img src="/mia-four-x4-night-front.jpg" alt="מיה פור X4 · גימור סטודיו פרימיום, פלטפורמת ארבעה גלגלים" loading="lazy" />
+            <img src="/mia-four-x4-night-front.jpg" alt="מיה פור 4×4 Pro Max · גימור סטודיו פרימיום, פלטפורמת ארבעה גלגלים" loading="lazy" />
             <div className="photo-cap">
-              <b>MIA FOUR X4</b>
+              <b>MIA FOUR 4×4 Pro Max</b>
               <span>עיצוב פרימיום · פלטפורמת 4×4</span>
             </div>
           </div>

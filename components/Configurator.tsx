@@ -281,7 +281,7 @@ export default function Configurator() {
                     />
                   </div>
                   <div className="card-body">
-                    <div className="card-name">{m.name}</div>
+                    <div className="card-name" dir="ltr">{m.name}</div>
                     <div className="card-tagline">{m.tagline}</div>
                     <div className="card-specs">
                       {m.highlights.map((h) => (
@@ -385,7 +385,7 @@ export default function Configurator() {
                     className={m.id === modelId ? "mp on" : "mp"}
                     onClick={() => selectModel(m.id)}
                   >
-                    <div className="mp-n">{m.name}</div>
+                    <div className="mp-n" dir="ltr">{m.name}</div>
                     <div className="mp-p">
                       {isEilat && <span className="mp-eilat">אילת · </span>}
                       {ils(getZonePrice(m.price, pricingZone).price)}
@@ -473,7 +473,7 @@ export default function Configurator() {
                 {isEilat ? "מחיר אילת · Green Extreme" : "עד 18 תשלומים ללא ריבית והצמדה"}
               </div>
               <div className="res-model">
-                {model.name} · מסלול {track_.label}
+                <bdi dir="ltr">{model.name}</bdi> · מסלול {track_.label}
               </div>
               <div className="res-monthly">
                 <span className="cur">₪</span>

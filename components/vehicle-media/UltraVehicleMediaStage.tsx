@@ -65,7 +65,7 @@ const brandCopy = {
     accent: "from-cyan-500 to-teal-500",
   },
   miame: {
-    eyebrow: "MiaMe X4 Freedom Studio",
+    eyebrow: "MiaMe 4×4 Pro Max Freedom Studio",
     cta: "שריין תצוגת MiaMe",
     accent: "from-sky-400 to-cyan-500",
   },
