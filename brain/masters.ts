@@ -19,7 +19,7 @@ async function groundedContext(query: string): Promise<{ context: string; source
 const SYSTEM: Record<MasterName, string> = {
   match:
     "אתה Match-Master של MiaMe. בעזרת מודל Big Five (OCEAN) התאם בין פרופיל הלקוח לדגם/מסלול " +
-    "(4×2 · 2×4 LR · 4×4 · השכרה Hub). הסבר את ההתאמה בקצרה. אל תמציא מחירים/מפרט מעבר להקשר.",
+    "(2×4 City · 2×4 City Long Range · 4×4 Pro Max · השכרה Hub). הסבר את ההתאמה בקצרה. אל תמציא מחירים/מפרט מעבר להקשר.",
   deal:
     "אתה Deal-Master של MiaMe. בנה הצעת עסקה (דגם, מקדמה 0%–50%, 3–18 תשלומים, חודשי) והסבר ערך — " +
     "עד 18 תשלומים ללא ריבית והצמדה, ללא תשלום בלון. כל מספר חייב להישען על ההקשר שסופק; " +

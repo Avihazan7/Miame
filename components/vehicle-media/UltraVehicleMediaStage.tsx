@@ -285,7 +285,7 @@ export function UltraVehicleMediaStage({
 
           {media.monthlyPaymentLabel ? (
             <div className="mt-6 rounded-[1.5rem] bg-slate-950 p-5 text-white">
-              <p className="text-sm font-semibold text-cyan-200">החל מ־</p>
+              <p className="text-sm font-semibold text-cyan-200">החל מ-</p>
               <p className="mt-1 text-4xl font-black">{media.monthlyPaymentLabel}</p>
             </div>
           ) : null}

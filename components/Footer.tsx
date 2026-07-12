@@ -15,9 +15,9 @@ export default function Footer() {
           </div>
         </div>
         <div className="foot-tag">
-          <LexIcon name="globe" /> Free Feel
+          <LexIcon name="butterfly" /> Free Feel
           <span className="sep">·</span>
-          <LexIcon name="liberty" />
+          <LexIcon name="globe" /> MiaMe.co.il
         </div>
         <div className="foot-powered">
           מבוסס מנוע העסקאות של{" "}

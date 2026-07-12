@@ -58,7 +58,7 @@ export default function Hero() {
           </div>
 
           <div className="hero-v2-trust">
-            <span><LexIcon name="p-roundel" /> יבואן מורשה</span>
+            <span><LexIcon name="p-roundel" /> יבואן רשמי</span>
             <span>מחקר ופיתוח ישראלי 🇮🇱</span>
             <span>אחריות ושירות 12 חודשים</span>
             <span dir="ltr">EN17128</span>

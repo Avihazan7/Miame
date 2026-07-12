@@ -48,7 +48,7 @@ export const LAUNCH_OFFER = {
 // Each is a real, checkable fact grounded in the site's own content
 // (LegalStatus, seo-pages, models) — not a marketing superlative.
 export const TRUST_SIGNALS: TrustSignal[] = [
-  { icon: "shield", label: "יבואן מורשה · MEU" },
+  { icon: "shield", label: "יבואן רשמי · MEU" },
   { icon: "wrench", label: "אחריות ושירות 12 חודשים" },
   { icon: "percent", label: "מימון 0% ריבית*" },
   { icon: "check", label: "תקן קלנועית EN17128" },
