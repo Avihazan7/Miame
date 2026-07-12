@@ -1061,3 +1061,31 @@ body::before{
    movements. */
 .movement{position:relative}
 .movement > .block + .block{padding-top:0}
+
+/* ============================================================================
+   P2.1 — LOGO · distinctive MiaMe wordmark (respectful, crafted lockup)
+   The Latin wordmark now speaks the V3 brand voice — Space Grotesk, the same
+   geometric grotesque as the hero eyebrow / FREE FEEL / MIA FOUR — instead of a
+   generic bold sans. Two-tone lockup: solid ink "Mia" · teal-gradient "Me".
+   ========================================================================== */
+.logo,.foot-logo{
+  font-family:var(--font-grotesk),system-ui,sans-serif;
+  font-weight:700;letter-spacing:-.012em;
+  background:none;-webkit-text-fill-color:currentColor;color:var(--ink-navy);
+}
+.logo{font-size:29px}
+.foot-logo{font-size:36px}
+/* "Me" carries the teal-gradient accent — legible on light (grad-teal, 6.18:1) */
+.logo .dot,.foot-logo .dot{
+  background:var(--grad-teal);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:var(--ink-teal);
+}
+/* FREE FEEL descender — the technical-Latin voice, matched to the hero eyebrow */
+.brand-tag,.foot-tag{
+  font-family:var(--font-grotesk),system-ui,sans-serif;
+  font-weight:600;letter-spacing:.15em;
+}
+/* refine the blade glow — premium sheen, not neon */
+.brand-mark{filter:drop-shadow(0 4px 10px rgba(24,224,189,.34))}
+.foot-mark{filter:drop-shadow(0 5px 13px rgba(24,224,189,.32))}
+@media(max-width:430px){ .logo{font-size:25px} }
