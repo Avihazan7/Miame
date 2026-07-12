@@ -56,9 +56,9 @@ export default function Tribute() {
               </a>
             </div>
             <div className="tribute-calc">
-              <div className="tc-head"><LexIcon name="gift" /> לזכאי כוחות הביטחון · מיה פור 4×2</div>
+              <div className="tc-head"><LexIcon name="gift" /> לזכאי כוחות הביטחון · מיה פור X2</div>
               <div className="tc-row">
-                <b>מחיר מיה פור 4×2</b>
+                <b>מחיר מיה פור X2</b>
                 <span>19,900 ₪</span>
               </div>
               <div className="tc-row tc-sub">

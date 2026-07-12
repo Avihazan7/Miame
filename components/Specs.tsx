@@ -44,7 +44,7 @@ export default function Specs() {
             </div>
             <div className="spec-row">
               <span className="spec-k">משקל הכלי</span>
-              <span className="spec-v">42 ק"ג (דגם 4×2) · עד 136 ק"ג עומס</span>
+              <span className="spec-v">42 ק"ג (דגם X2) · עד 136 ק"ג עומס</span>
             </div>
             <div className="spec-row">
               <span className="spec-k">בלמים</span>
