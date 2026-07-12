@@ -24,7 +24,7 @@ const NEXT_STEPS = [
 
 export default function ThankYouPage() {
   const waUrl = buildWhatsAppUrl(
-    "היי MiaMe, השארתי פרטים באתר ואשמח להמשיך את השיחה על ההצעה שבניתי 🙂"
+    "היי MiaMe, השארתי פרטים באתר ואשמח להמשיך את השיחה על ההצעה שבניתי 🦋"
   );
 
   return (

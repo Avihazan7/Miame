@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 
 const UPDATED = "4 ביולי 2026";
 
+const DESC =
+  "כיצד MiaMe אוספת, משתמשת ומגנה על המידע האישי שלך: פרטי לידים, וואטסאפ, עוגיות, פיקסלים שיווקיים וזכויותיך לפי חוק הגנת הפרטיות.";
+
 export const metadata: Metadata = {
   title: "מדיניות פרטיות",
-  description:
-    "כיצד MiaMe אוספת, משתמשת ומגנה על המידע האישי שלך: פרטי לידים, וואטסאפ, עוגיות, פיקסלים שיווקיים וזכויותיך לפי חוק הגנת הפרטיות.",
+  description: DESC,
   alternates: { canonical: "/legal/privacy" },
+  openGraph: { title: "מדיניות פרטיות · MiaMe", description: DESC, url: "/legal/privacy", type: "article" },
   robots: { index: true, follow: true }
 };
 

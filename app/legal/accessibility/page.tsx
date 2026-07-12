@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 
 const UPDATED = "4 ביולי 2026";
 
+const DESC =
+  "הצהרת הנגישות של אתר MiaMe: מחויבות לנגישות דיגיטלית לפי תקן ישראלי 5568 ורמה AA, אמצעי הנגישות הקיימים ודרכי פנייה לרכז הנגישות.";
+
 export const metadata: Metadata = {
   title: "הצהרת נגישות",
-  description:
-    "הצהרת הנגישות של אתר MiaMe: מחויבות לנגישות דיגיטלית לפי תקן ישראלי 5568 ורמה AA, אמצעי הנגישות הקיימים ודרכי פנייה לרכז הנגישות.",
+  description: DESC,
   alternates: { canonical: "/legal/accessibility" },
+  openGraph: { title: "הצהרת נגישות · MiaMe", description: DESC, url: "/legal/accessibility", type: "article" },
   robots: { index: true, follow: true }
 };
 

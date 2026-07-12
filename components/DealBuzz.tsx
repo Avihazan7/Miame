@@ -17,7 +17,7 @@ export default function DealBuzz() {
   function onCta(item: BuzzItem) {
     void track("DealBuzzClicked", { placement: "deal-buzz", id: item.id, action: item.action });
     if (item.action === "wa") {
-      const url = buildWhatsAppUrl(item.waMessage || "היי MiaMe, אשמח לפרטים על מיה פור 🙂");
+      const url = buildWhatsAppUrl(item.waMessage || "היי MiaMe, אשמח לפרטים על מיה פור 🦋");
       if (typeof window !== "undefined") window.open(url, "_blank", "noopener");
       return;
     }

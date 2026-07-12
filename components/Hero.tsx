@@ -22,9 +22,9 @@ export default function Hero() {
             <LexIcon name="m-roundel" /> MIA FOUR · ELECTRIC FREEDOM <LexIcon name="bolt" />
           </span>
 
-          <h1 className="hero-v2-title">
-            <span>החופש שלך.</span>
-            <strong>
+          <h1 className="hero-v2-title" aria-label="החופש שלך. עכשיו בתנועה.">
+            <span aria-hidden="true">החופש שלך.</span>
+            <strong aria-hidden="true">
               עכשיו בתנועה.<LexIcon name="liberty" className="hero-v2-h1-icon" />
             </strong>
           </h1>
