@@ -1001,3 +1001,63 @@ body{text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
 .faq-home-item summary::after{content:"+";color:var(--ink-teal);font-weight:900;font-size:20px}
 .faq-home-item[open] summary::after{content:"−"}
 .faq-home-item p{margin:0 0 16px;color:var(--ink-muted);line-height:1.7;font-size:15px}
+
+/* ============================================================================
+   P1 — ULTRA MASTER RHYTHM  ·  ≤8 movements · locked type · tnum · flowing aurora
+   Loads after globals.css so these refinements win. Additive only.
+   ========================================================================== */
+
+/* ── C1 · Locked typographic scale ─────────────────────────────────────────
+   ONE modular scale for the whole page. Display headings ride Suez One at a
+   single 400 weight — presence comes from SIZE, never a synthetic bold (Suez
+   One ships only 400, so the old weight:900 was faux-bolding the glyphs). */
+:root{
+  --type-hero:clamp(40px,7.2vw,72px);
+  --type-h2:clamp(30px,4.4vw,44px);
+  --type-h3:clamp(20px,2.3vw,25px);
+  --type-lead:clamp(18px,2vw,22px);
+  --type-body:17px;
+  --type-small:15px;
+  --trk-display:-.02em;
+}
+.hero-title{font-size:var(--type-hero);font-weight:400;line-height:1.02;letter-spacing:var(--trk-display)}
+.sec-title{font-size:var(--type-h2);font-weight:400;line-height:1.08;letter-spacing:var(--trk-display)}
+.hero-sub{font-size:var(--type-lead);line-height:1.7}
+.sec-desc{font-size:var(--type-body);line-height:1.7}
+
+/* ── C2 · Tabular numerals wherever a price / spec / number appears ─────────
+   Digits sit in fixed-width columns so prices never jitter between states. */
+.price-num,.price-from,.card-price,.spec-v,.tc-row span,.tc-row b,
+.res-monthly .num,.res-cell .v,.value-n,.stat-n,.pl-v,.field-val,
+.num,.rs-n,.tribute-badge{
+  font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1,"kern" 1;
+}
+
+/* ── B · Flowing aurora ────────────────────────────────────────────────────
+   ONE continuous atmosphere behind the whole scroll instead of a patchwork of
+   competing per-section fills. Fixed to the viewport so it reads as light in
+   the room, not a texture bolted to each block. */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(58% 42% at 14% 6%,rgba(24,224,189,.10),transparent 70%),
+    radial-gradient(52% 46% at 88% 26%,rgba(157,220,240,.11),transparent 72%),
+    radial-gradient(60% 48% at 50% 104%,rgba(215,180,90,.06),transparent 70%),
+    linear-gradient(180deg,var(--bg-pearl,#fff) 0%,#f3f8f6 62%,#eef5f2 100%);
+}
+/* retire the loud cool-blue per-section fills of the GROUPED light sections so
+   the teal/mint atmosphere is continuous through a movement. The dark
+   Engineering beat keeps its opaque fill as intentional night contrast. */
+.movement .entry-sec,.movement .about-sec,.movement .life-sec,
+.movement .features-sec,.movement .specs-sec,.movement .patents-sec,
+.movement .status-sec,.movement .tribute-sec,.movement .buzz-sec,
+.movement .ask-sec,.movement .service-sec,.movement .freedom-moment{
+  background:transparent;
+}
+
+/* ── A · Eight movements, not twenty beats ─────────────────────────────────
+   Collapse the seam between blocks INSIDE a movement so the group reads as a
+   single section with sub-parts; the full section rhythm stays BETWEEN
+   movements. */
+.movement{position:relative}
+.movement > .block + .block{padding-top:0}
