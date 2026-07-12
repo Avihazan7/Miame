@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import LexIcon from "@/components/LexIcon";
 import { useRouter } from "next/navigation";
 import { MODELS, getModel } from "@/lib/models";
 import {
@@ -296,7 +297,7 @@ export default function Configurator() {
                         {m.price.toLocaleString("he-IL")}
                       </div>
                       <div className="card-eilat">
-                        <span aria-hidden="true">♻️</span> באילת{" "}
+                        <LexIcon name="recycle" /> באילת{" "}
                         <b>{ils(getZonePrice(m.price, "eilat").price)}</b>
                         <span className="ce-tag">ללא מע״מ</span>
                       </div>
@@ -551,7 +552,7 @@ export default function Configurator() {
                 </div>
                 {phoneError && (
                   <div className="lead-err" role="alert">
-                    נא להזין מספר טלפון תקין כדי שנחזור אליכם 📱
+                    נא להזין מספר טלפון תקין כדי שנחזור אליכם
                   </div>
                 )}
                 <div className="cta-stack">

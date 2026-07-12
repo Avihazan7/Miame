@@ -12,7 +12,23 @@ export type LexName =
   | "bolt"
   | "p-roundel"
   | "globe"
-  | "butterfly";
+  | "butterfly"
+  | "cart"
+  | "handshake"
+  | "recycle"
+  | "gift"
+  | "phone"
+  | "pin"
+  | "shield"
+  | "search"
+  | "trophy"
+  | "wrench"
+  | "percent"
+  | "chat"
+  | "receipt"
+  | "clipboard"
+  | "wheel"
+  | "brake";
 
 export default function LexIcon({
   name,

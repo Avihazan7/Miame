@@ -1,3 +1,4 @@
+import LexIcon from "@/components/LexIcon";
 export default function Patents() {
   return (
     <section className="block patents-sec">
@@ -48,7 +49,7 @@ export default function Patents() {
           </div>
         </div>
         <div className="patents-tag-wrap">
-          <span className="patents-tag">🏆 PATENTED · Miniaturized Four-Wheel Technology</span>
+          <span className="patents-tag"><LexIcon name="trophy" /> PATENTED · Miniaturized Four-Wheel Technology</span>
         </div>
       </div>
     </section>

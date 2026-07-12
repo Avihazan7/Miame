@@ -1,6 +1,7 @@
 "use client";
 
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import LexIcon from "@/components/LexIcon";
 import WaIcon from "./WaIcon";
 import MiaMark from "./MiaMark";
 
@@ -32,7 +33,7 @@ export default function Header() {
               Mia<span className="dot">Me</span>
             </span>
             <span className="brand-tag">
-              <span aria-hidden="true">🗽</span> Free&nbsp;Feel
+              <LexIcon name="liberty" /> Free&nbsp;Feel
             </span>
           </span>
         </a>

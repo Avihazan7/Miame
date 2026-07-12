@@ -129,7 +129,7 @@ export default function PartnerHubForm() {
 
       {phoneError && (
         <div className="lead-err" role="alert">
-          נא להזין מספר טלפון תקין כדי שנחזור אליכם 📱
+          נא להזין מספר טלפון תקין כדי שנחזור אליכם
         </div>
       )}
 

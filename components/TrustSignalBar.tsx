@@ -4,6 +4,7 @@
 // models) — not a marketing superlative. Server component: pure display.
 
 import { TRUST_SIGNALS } from "@/lib/deal-buzz";
+import LexIcon from "@/components/LexIcon";
 
 export default function TrustSignalBar() {
   return (
@@ -13,7 +14,7 @@ export default function TrustSignalBar() {
           <span className="trust-item" key={s.label}>
             {s.icon && (
               <span className="trust-ic" aria-hidden="true">
-                {s.icon}
+                <LexIcon name={s.icon} />
               </span>
             )}
             <span>{s.label}</span>

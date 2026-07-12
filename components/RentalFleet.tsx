@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import LexIcon from "@/components/LexIcon";
 import { saveRentalLead, RentalLeadRecord } from "@/lib/supabase";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { buildRentalMessage, wazeUrl, RENTAL_HOURLY_FROM } from "@/lib/rental";
@@ -68,7 +69,7 @@ export default function RentalFleet() {
       <div className="wrap">
         <div className="rental-card">
           <span className="rental-kicker">
-            <span aria-hidden="true">♻️</span> השכרה · אילת
+            <LexIcon name="recycle" /> השכרה · אילת
           </span>
           <h1 className="rental-title" id="rental-title">
             השכרת MIA FOUR באילת · Green Extreme
@@ -141,7 +142,7 @@ export default function RentalFleet() {
             </div>
             {phoneError && (
               <div className="lead-err" role="alert">
-                נא להזין מספר טלפון תקין כדי שנחזור אליכם 📱
+                נא להזין מספר טלפון תקין כדי שנחזור אליכם
               </div>
             )}
             <div className="rental-actions">

@@ -1,3 +1,4 @@
+import LexIcon from "@/components/LexIcon";
 // Engineering — the chassis deep-dive. Shows the real Mia FOUR X4 frame (rear
 // 3/4 cutout) on a dark stage with an azure glow that echoes the Deal Aura, plus
 // the engineering highlights that the spec table only lists as numbers.
@@ -25,22 +26,22 @@ export default function Engineering() {
 
         <div className="eng-grid">
           <div className="eng-card">
-            <div className="eng-ic">🔧</div>
+            <div className="eng-ic"><LexIcon name="wrench" /></div>
             <div className="eng-k">מתלים עצמאיים</div>
             <div className="eng-v">קפיץ ספיגה ייעודי לכל גלגל — אחיזה ויציבות בכל תוואי.</div>
           </div>
           <div className="eng-card">
-            <div className="eng-ic">🛡️</div>
+            <div className="eng-ic"><LexIcon name="shield" /></div>
             <div className="eng-k">פלטפורמת 4 גלגלים</div>
             <div className="eng-v">טכנולוגיית מזעור מוגנת פטנט — יציבות אמיתית בכלי קומפקטי.</div>
           </div>
           <div className="eng-card">
-            <div className="eng-ic">🛞</div>
+            <div className="eng-ic"><LexIcon name="wheel" /></div>
             <div className="eng-k">צמיגי שטח</div>
             <div className="eng-v">אחיזה רחבה לכל סוג כביש ושביל — בלי לוותר על נוחות.</div>
           </div>
           <div className="eng-card">
-            <div className="eng-ic">🛑</div>
+            <div className="eng-ic"><LexIcon name="brake" /></div>
             <div className="eng-k">בלימה הידראולית</div>
             <div className="eng-v">דיסק הידראולי כפול 140 מ"מ — עצירה בטוחה ומדויקת.</div>
           </div>

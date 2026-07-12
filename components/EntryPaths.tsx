@@ -2,6 +2,7 @@
 
 import { CTA } from "@/lib/cta";
 import { track } from "@/lib/analytics";
+import LexIcon, { type LexName } from "@/components/LexIcon";
 
 // Entry paths — give a first-time visitor a clear route within 3 seconds.
 // Two shapes (Market-OS funnel hierarchy):
@@ -14,7 +15,7 @@ import { track } from "@/lib/analytics";
 
 type Path = {
   href: string;
-  icon: string;
+  icon: LexName;
   title: string;
   desc: string;
   cta: string;
@@ -23,7 +24,7 @@ type Path = {
 
 const BUY: Path = {
   href: "#sim",
-  icon: "🛒",
+  icon: "cart",
   title: "רכישת MIA FOUR",
   desc: "בונים הצעת תשלום — עד 18 תשלומים ללא ריבית והצמדה.",
   cta: CTA.fit,
@@ -31,7 +32,7 @@ const BUY: Path = {
 };
 const ELIGIBILITY: Path = {
   href: "/eligibility",
-  icon: "🇮🇱",
+  icon: "shield",
   title: "זכאות כוחות הביטחון",
   desc: "נכי צה\"ל ומשפחות שכולות — עד 100% בכפוף לאישור.",
   cta: CTA.tribute,
@@ -39,7 +40,7 @@ const ELIGIBILITY: Path = {
 };
 const RENT: Path = {
   href: "/rent-eilat",
-  icon: "♻️",
+  icon: "recycle",
   title: "השכרה באילת",
   desc: "צי השכרה לפי שעה ב-Green Extreme · פארק הטרמינל.",
   cta: CTA.rental,
@@ -47,7 +48,7 @@ const RENT: Path = {
 };
 const PARTNER: Path = {
   href: "/partners",
-  icon: "🤝",
+  icon: "handshake",
   title: "MiaMe Hub לשותפים",
   desc: "מפעילים צי השכרה רווחי — אתם הבעלים, אנחנו מביאים ביקוש.",
   cta: CTA.partner,
@@ -66,7 +67,7 @@ function Card({ p }: { p: Path }) {
   return (
     <a className={`entry-card entry-${p.tone}`} href={p.href} onClick={() => selectPath(p)}>
       <span className="entry-ic" aria-hidden="true">
-        {p.icon}
+        <LexIcon name={p.icon} />
       </span>
       <span className="entry-title">{p.title}</span>
       <span className="entry-desc">{p.desc}</span>
@@ -79,7 +80,7 @@ function MiniCard({ p }: { p: Path }) {
   return (
     <a className={`entry-mini entry-${p.tone}`} href={p.href} onClick={() => selectPath(p)}>
       <span className="entry-mini-ic" aria-hidden="true">
-        {p.icon}
+        <LexIcon name={p.icon} />
       </span>
       <span className="entry-mini-body">
         <span className="entry-mini-title">{p.title}</span>
