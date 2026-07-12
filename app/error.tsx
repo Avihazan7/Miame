@@ -24,7 +24,7 @@ export default function ErrorPage({
         <div aria-hidden="true" style={{ fontSize: 56, lineHeight: 1 }}><LexIcon name="bolt" /></div>
         <h1 className="sec-title" style={{ marginTop: 16 }}>משהו השתבש לרגע</h1>
         <p className="sec-desc" style={{ marginTop: 12 }}>
-          קרתה תקלה זמנית בטעינת העמוד. אפשר לנסות שוב — או לחזור לעמוד הבית.
+          קרתה תקלה זמנית בטעינת העמוד. אפשר לנסות שוב, או לחזור לעמוד הבית.
         </p>
         <div style={{ marginTop: 28, display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
           <button type="button" className="btn btn-primary" onClick={reset}>לנסות שוב</button>

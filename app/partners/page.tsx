@@ -9,7 +9,7 @@ import Partner from "@/components/Partner";
 export const metadata: Metadata = {
   title: "MiaMe Hub · שותפות עסקית",
   description:
-    "הפכו ל-MiaMe Hub: מודל שותפות רזה להפעלת צי השכרה רווחי — אתם מחזיקים את הצי, MiaMe מביאה את הביקוש. מלונות, אטרקציות ומתחמי תיירות מוזמנים.",
+    "הפכו ל-MiaMe Hub: מודל שותפות רזה להפעלת צי השכרה רווחי, אתם מחזיקים את הצי, MiaMe מביאה את הביקוש. מלונות, אטרקציות ומתחמי תיירות מוזמנים.",
   alternates: { canonical: "/partners" },
   openGraph: {
     title: "MiaMe Hub · פתחו נקודת השכרה/מכירה",

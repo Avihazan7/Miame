@@ -30,7 +30,7 @@ export default function Hero() {
           </h1>
 
           <p className="hero-v2-sub">
-            <bdi dir="ltr">MIA FOUR</bdi> — ניידות חשמלית פרימיום על ארבעה גלגלים.
+            <bdi dir="ltr">MIA FOUR</bdi>, ניידות חשמלית פרימיום על ארבעה גלגלים.
             עוצמה, יציבות וחופש שמתאימים לחיים שלכם.
           </p>
 
@@ -76,7 +76,7 @@ export default function Hero() {
 
             <Image
               src="/mia-four-x6-studio.webp"
-              alt="MIA FOUR — קלנועית חשמלית פרימיום על ארבעה גלגלים"
+              alt="MIA FOUR, קלנועית חשמלית פרימיום על ארבעה גלגלים"
               width={1400}
               height={1498}
               priority

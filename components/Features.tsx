@@ -59,7 +59,7 @@ export default function Features() {
           <span className="deliver-banner">
             <TruckIcon />
             <span>
-              משלוח <b>MIA FOUR</b> עד אליך — <span className="db-free">עלינו.</span>
+              משלוח <b>MIA FOUR</b> עד אליך, <span className="db-free">עלינו.</span>
             </span>
           </span>
         </div>

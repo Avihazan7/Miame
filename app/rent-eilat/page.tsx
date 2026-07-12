@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/rent-eilat" },
   openGraph: {
     title: "MiaMe באילת · השכרה לפי שעה · Green Extreme",
-    description: "צי MiaMe להשכרה באילת — חוויית Free Feel חשמלית, ירוקה ומשפחתית.",
+    description: "צי MiaMe להשכרה באילת, חוויית Free Feel חשמלית, ירוקה ומשפחתית.",
     url: "/rent-eilat",
     type: "website",
   },

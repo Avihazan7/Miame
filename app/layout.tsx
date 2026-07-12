@@ -58,7 +58,7 @@ const PRODUCT_IMAGE = "/mia-four-x4-hero.webp";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "MiaMe — החופש שלך על ארבעה גלגלים",
+    default: "MiaMe · החופש שלך על ארבעה גלגלים",
     template: "%s | MiaMe",
   },
   description:
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   // so we let the files drive the <head> links and keep this object focused on the
   // rest of the metadata.
   openGraph: {
-    title: "MiaMe — החופש שלך על ארבעה גלגלים",
+    title: "MiaMe · החופש שלך על ארבעה גלגלים",
     description:
       "ניידות חשמלית פרימיום במחיר חכם. הצעת תשלום מותאמת תוך דקה, ישירות לוואטסאפ.",
     url: SITE_URL,
@@ -82,7 +82,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "MiaMe — החופש שלך על ארבעה גלגלים",
+    title: "MiaMe · החופש שלך על ארבעה גלגלים",
     description:
       "ניידות חשמלית פרימיום במחיר חכם. הצעת תשלום מותאמת תוך דקה, ישירות לוואטסאפ.",
   },
@@ -96,7 +96,7 @@ const HOME_PRODUCTS = MODELS.map((m) => ({
   "@id": `${SITE_URL}/#product-${m.id}`,
   name: `MiaMe Four ${m.name}`,
   image: SITE_URL + PRODUCT_IMAGE,
-  description: `MIA FOUR ${m.name} — ${m.tagline}. פלטפורמת 4 גלגלים מוגנת פטנט, סוללת ליתיום נשלפת 60V.`,
+  description: `MIA FOUR ${m.name}, ${m.tagline}. פלטפורמת 4 גלגלים מוגנת פטנט, סוללת ליתיום נשלפת 60V.`,
   brand: { "@type": "Brand", name: "MiaMe" },
   offers: {
     "@type": "Offer",

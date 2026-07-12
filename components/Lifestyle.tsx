@@ -7,7 +7,7 @@ export default function Lifestyle() {
           <h2 className="sec-title">חכם בעיר ועוצמתי בשטח</h2>
           <p className="sec-desc">
             חוויה של דו־גלגלי עם יציבות ובטיחות של ארבעה. נסיעה חלקה, בטוחה ומהנה בתוואי
-            רכיבה משתנה — הודות למערכת מתלים מתקדמת מוגנת פטנט והנעה חשמלית שקטה וירוקה.
+            רכיבה משתנה, הודות למערכת מתלים מתקדמת מוגנת פטנט והנעה חשמלית שקטה וירוקה.
           </p>
         </div>
         <div className="life-grid">
@@ -43,7 +43,7 @@ export default function Lifestyle() {
         <div className="life-band photo-frame">
           <img src="/mia-beach.webp" alt="מיה פור על קו החוף · חופש בכל מקום" loading="lazy" />
           <div className="photo-cap">
-            <b>חופש אמיתי — בכל מקום</b>
+            <b>חופש אמיתי, בכל מקום</b>
             <span>מהעיר, דרך החוף, אל השטח</span>
           </div>
         </div>

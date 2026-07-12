@@ -44,7 +44,7 @@ export default function Tribute() {
                 <span className="elig-tag">אגף משפחות הנצחה</span>
               </div>
               <p className="elig-body">
-                מענק לרכישת קלנועית יחיד, פעם ב־4 שנים · <b>עד 17,988 ₪</b> לאלמן/ה — <b>שהם עד 90% מוכרים לסבסוד*</b>.
+                מענק לרכישת קלנועית יחיד, פעם ב־4 שנים · <b>עד 17,988 ₪</b> לאלמן/ה, <b>שהם עד 90% מוכרים לסבסוד*</b>.
               </p>
               <a
                 className="elig-link"

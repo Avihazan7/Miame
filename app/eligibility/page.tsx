@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/eligibility" },
   openGraph: {
     title: "MiaMe לזכאי כוחות הביטחון · בדיקת התאמה וזכאות",
-    description: "ניידות חשמלית פרימיום לזכאי משרד הביטחון — בדיקת התאמה אישית, בכפוף לאישור.",
+    description: "ניידות חשמלית פרימיום לזכאי משרד הביטחון, בדיקת התאמה אישית, בכפוף לאישור.",
     url: "/eligibility",
     type: "website",
   },

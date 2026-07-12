@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 // Dark luxury OpenGraph/share card — deep-navy anchor, mint-cyan monogram, Latin
 // wordmark (Latin avoids Satori Hebrew-font gaps). Same DNA as the search mark.
-export const alt = "MiaMe — Free Feel";
+export const alt = "MiaMe · Free Feel";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

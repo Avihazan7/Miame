@@ -12,7 +12,7 @@ import { track } from "@/lib/analytics";
 export default function HowToVideo({
   videoId,
   title = "איך זה עובד · הוצאה מהקופסה",
-  lede = "הצצה קצרה: מה יש בקופסה ואיך מתחילים לרכוב על MIA FOUR — צעד אחר צעד.",
+  lede = "הצצה קצרה: מה יש בקופסה ואיך מתחילים לרכוב על MIA FOUR, צעד אחר צעד.",
 }: {
   videoId: string;
   title?: string;
@@ -42,7 +42,7 @@ export default function HowToVideo({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
-              alt="MIA FOUR — הוצאה מהקופסה ומדריך"
+              alt="MIA FOUR, הוצאה מהקופסה ומדריך"
               loading="lazy"
               onError={(e) => {
                 const img = e.currentTarget;
