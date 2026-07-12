@@ -3,7 +3,6 @@ import Hero from "@/components/Hero";
 import EntryPaths from "@/components/EntryPaths";
 import About from "@/components/About";
 import Lifestyle from "@/components/Lifestyle";
-import TestRide from "@/components/TestRide";
 import Features from "@/components/Features";
 import Specs from "@/components/Specs";
 import Engineering from "@/components/Engineering";
@@ -30,30 +29,56 @@ export default function Page() {
     <>
       <Header />
       <LaunchOfferStrip />
+      {/* P1 — Ultra Master Rhythm: the homepage reads as EIGHT movements, not
+          twenty separate beats. Each `.movement` groups its sub-blocks over one
+          continuous aurora so the eye counts a single section, not a stack. The
+          narrative arc is unchanged (brand → paths → feel → product → deal →
+          trust → act → answers); TestRide's redundant CTA folded away (sticky WA
+          + Configurator + DealBuzz carry it), Spyqe folded into the closing act. */}
       <main id="main">
-        {/* Homepage flow (Master Spec Part 2 hierarchy): understand the brand →
-            get to know the product → feel it (cinema) → run the numbers
-            (simulator) → legal trust → eligibility → deepen → act. Rental &
-            Partner depth intentionally live on their dedicated pages (#113). */}
+        {/* 1 · Hero */}
         <Hero />
-        <TrustSignalBar />
-        <EntryPaths variant="homepage" />
-        <FreedomMomentVideo />
-        <About />
-        <Lifestyle />
-        <TestRide />
-        <Features />
-        <Specs />
-        <Engineering />
-        <Patents />
-        <CinematicVideo />
+
+        {/* 2 · מסלולי כניסה + אמון */}
+        <section className="movement" data-beat="paths" aria-label="מסלולי כניסה">
+          <TrustSignalBar />
+          <EntryPaths variant="homepage" />
+        </section>
+
+        {/* 3 · הסיפור והתחושה */}
+        <section className="movement" data-beat="story" aria-label="הסיפור והתחושה">
+          <About />
+          <Lifestyle />
+          <FreedomMomentVideo />
+        </section>
+
+        {/* 4 · מתחת למעטפת — המוצר */}
+        <section className="movement" data-beat="product" aria-label="המוצר">
+          <Features />
+          <Specs />
+          <Engineering />
+          <Patents />
+          <CinematicVideo />
+        </section>
+
+        {/* 5 · בנו את העסקה */}
         <Configurator />
-        <LegalStatus />
-        <Tribute />
-        <DealBuzz />
-        <AskBrain />
-        <Spyqe />
-        <Service />
+
+        {/* 6 · קלנועית, לא רכב + זכאות */}
+        <section className="movement" data-beat="trust" aria-label="מעמד חוקי וזכאות">
+          <LegalStatus />
+          <Tribute />
+        </section>
+
+        {/* 7 · הצעד הבא */}
+        <section className="movement" data-beat="act" aria-label="הצעד הבא">
+          <DealBuzz />
+          <AskBrain />
+          <Service />
+          <Spyqe />
+        </section>
+
+        {/* 8 · שאלות נפוצות */}
         <FaqHome />
       </main>
       <Importer />

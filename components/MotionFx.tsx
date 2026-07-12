@@ -23,7 +23,6 @@ const SELECTORS = [
   ".elig-card",
   ".tribute-calc",
   ".life-card",
-  ".testride-card",
   ".soon-card",
   ".flagship",
   ".dealer",
