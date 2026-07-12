@@ -45,7 +45,7 @@ export default function AskBrain() {
   const [msgs, setMsgs] = useState<Msg[]>([
     {
       role: "bot",
-      text: "היי! אני העוזר החכם של MiaMe 🛵 שאלו אותי כל דבר על מיה פור — טווח, מחיר, השכרה, שירות או סבסוד."
+      text: "היי, כאן MiaMe. שאלו אותי כל דבר על מיה פור — טווח, מחיר, השכרה, שירות או סבסוד. החופש שלכם מתחיל בשאלה טובה."
     }
   ]);
   const [input, setInput] = useState("");
@@ -91,13 +91,13 @@ export default function AskBrain() {
     }
 
     if (!answer) {
-      answer = faqAnswer(question) || "שאלה מצוינת — בואו נמשיך בוואטסאפ ונענה על הכל במהירות 🙂";
+      answer = faqAnswer(question) || "שאלה טובה — בואו נמשיך בוואטסאפ ונענה על הכל במהירות. Free Feel.";
     }
     setMsgs((m) => [...m, { role: "bot", text: answer, source }]);
     setBusy(false);
   }
 
-  const waUrl = buildWhatsAppUrl("היי MiaMe, יש לי שאלה על מיה פור 🛵");
+  const waUrl = buildWhatsAppUrl("היי MiaMe, יש לי שאלה על מיה פור 🦋");
 
   return (
     <section className="block ask-sec" id="ask">
