@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 
 const UPDATED = "4 ביולי 2026";
 
+const DESC =
+  "תקנון האתר ותנאי הרכישה, המקדמות, הביטולים, המסירה, האחריות והשירות של MiaMe. הצעות התשלום באתר הן הערכה ואינן מחייבות.";
+
 export const metadata: Metadata = {
   title: "תקנון ותנאי שימוש",
-  description:
-    "תקנון האתר ותנאי הרכישה, המקדמות, הביטולים, המסירה, האחריות והשירות של MiaMe. הצעות התשלום באתר הן הערכה ואינן מחייבות.",
+  description: DESC,
   alternates: { canonical: "/legal/terms" },
+  openGraph: { title: "תקנון ותנאי שימוש · MiaMe", description: DESC, url: "/legal/terms", type: "article" },
   robots: { index: true, follow: true }
 };
 

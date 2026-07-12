@@ -26,7 +26,7 @@ export default function Spyqe() {
             </p>
             <a
               className="btn soon-link"
-              href={buildWhatsAppUrl("היי, אשמח לעדכון על SPYQE כשמשיקים 🚀")}
+              href={buildWhatsAppUrl("היי, אשמח לעדכון על SPYQE כשמשיקים 🦋")}
               target="_blank"
               rel="noopener noreferrer"
             >

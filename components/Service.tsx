@@ -76,7 +76,7 @@ export default function Service() {
             <a
               className="btn btn-light btn-block"
               href={buildWhatsAppUrl(
-                "היי, אשמח לאתר נקודת השכרה של מיה פור קרובה אליי 🛵"
+                "היי, אשמח לאתר נקודת השכרה של מיה פור קרובה אליי 🦋"
               )}
               target="_blank"
               rel="noopener noreferrer"

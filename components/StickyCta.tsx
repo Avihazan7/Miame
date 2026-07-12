@@ -2,7 +2,7 @@ import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import WaIcon from "./WaIcon";
 
 export default function StickyCta() {
-  const waUrl = buildWhatsAppUrl("היי MiaMe, אשמח לפרטים ולהצעת תשלום 🙂");
+  const waUrl = buildWhatsAppUrl("היי MiaMe, אשמח לפרטים ולהצעת תשלום 🦋");
   return (
     <div className="sticky-cta">
       <a

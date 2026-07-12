@@ -6,7 +6,7 @@ import WaIcon from "./WaIcon";
 import MiaMark from "./MiaMark";
 
 export default function Header() {
-  const waUrl = buildWhatsAppUrl("היי MiaMe, אשמח לפרטים על הדגמים 🙂");
+  const waUrl = buildWhatsAppUrl("היי MiaMe, אשמח לפרטים על הדגמים 🦋");
 
   function toTop(e: React.MouseEvent<HTMLAnchorElement>) {
     // Logo always goes home. If we're already on the home page, scroll to the

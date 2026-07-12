@@ -17,7 +17,7 @@ const FACTS = [
 
 export default function EilatBranch() {
   const wa = buildWhatsAppUrl(
-    "היי MiaMe, אשמח לבדוק מחיר אילת וזמינות סביב Green Extreme 🙂"
+    "היי MiaMe, אשמח לבדוק מחיר אילת וזמינות סביב Green Extreme 🦋"
   );
 
   return (
