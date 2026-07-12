@@ -5,8 +5,10 @@
 // (EntryPaths) and the MIA FOUR brand block (About). Not a replacement for the
 // existing MiaMe Cinema (YouTube) section — an additional, calmer moment.
 //
-// No autoplay, no background video: native controls, playsInline, preload=metadata,
-// a required poster so there's a sharp first frame and no layout shift (fixed 9:16).
+// No autoplay, no background video: native controls, playsInline, and preload=none
+// so the ~8.7MB clip is NOT fetched on page load — it streams only when the visitor
+// hits play. A required poster gives a sharp first frame and no layout shift (fixed
+// 9:16), so the deferred load is invisible until intended.
 // Tracking rides the existing analytics sink (public.events) — no schema change.
 
 import { useRef } from "react";
@@ -41,7 +43,7 @@ export default function FreedomMomentVideo() {
               poster="/videos/miame-freedom-moment-poster.jpg"
               controls
               playsInline
-              preload="metadata"
+              preload="none"
               onPlay={onPlay}
               aria-label="MiaMe · Free Feel Moment"
             >
