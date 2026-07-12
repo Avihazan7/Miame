@@ -18,7 +18,7 @@ export default function Tribute() {
               <span className="tb-pre">עד</span>
               100%<small>סבסוד*</small>
             </div>
-            <img className="floaty" src="/mia-white.webp" alt="מיה פור · הכלי המלא לכוחות הביטחון" loading="lazy" />
+            <img className="floaty" src="/mia-white.webp" alt="מיה פור · הקלנועית המלאה לכוחות הביטחון" loading="lazy" />
           </div>
           <div>
             <div className="elig-card">

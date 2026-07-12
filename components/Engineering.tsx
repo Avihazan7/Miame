@@ -33,7 +33,7 @@ export default function Engineering() {
           <div className="eng-card">
             <div className="eng-ic"><LexIcon name="shield" /></div>
             <div className="eng-k">פלטפורמת 4 גלגלים</div>
-            <div className="eng-v">טכנולוגיית מזעור מוגנת פטנט — יציבות אמיתית בכלי קומפקטי.</div>
+            <div className="eng-v">טכנולוגיית מזעור מוגנת פטנט — יציבות אמיתית בקלנועית קומפקטית.</div>
           </div>
           <div className="eng-card">
             <div className="eng-ic"><LexIcon name="wheel" /></div>
