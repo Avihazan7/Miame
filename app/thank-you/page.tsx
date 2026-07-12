@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const NEXT_STEPS = [
   { n: "1", t: "קיבלנו את הפרטים", d: "ההצעה שבנית נשמרה אצלנו." },
   { n: "2", t: "נציג יחזור אליך", d: "בטלפון או בוואטסאפ, לתיאום ובדיקת התאמה." },
-  { n: "3", t: "סוגרים את הפרטים", d: "מסלול, זמינות ומועד מסירה — בכפוף לאישור." },
+  { n: "3", t: "סוגרים את הפרטים", d: "מסלול, זמינות ומועד מסירה, בכפוף לאישור." },
 ];
 
 export default function ThankYouPage() {
@@ -32,7 +32,7 @@ export default function ThankYouPage() {
         <div aria-hidden="true" style={{ fontSize: 56, lineHeight: 1 }}>🎉</div>
         <h1 className="sec-title" style={{ marginTop: 16 }}>תודה! הפרטים התקבלו</h1>
         <p className="sec-desc" style={{ marginTop: 12 }}>
-          ההצעה שבנית נשלחה אלינו (ואם נפתח וואטסאפ — היא כבר אצלך בצ׳אט).
+          ההצעה שבנית נשלחה אלינו (ואם נפתח וואטסאפ, היא כבר אצלך בצ׳אט).
           נציג MiaMe יחזור אליך בהקדם כדי לסגור את הפרטים האחרונים.
         </p>
 

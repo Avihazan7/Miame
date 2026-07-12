@@ -28,11 +28,11 @@ export default function EilatBranch() {
             <LexIcon name="recycle" /> אילת · Green Extreme
           </span>
           <h2 className="eilat-title" id="eilat-title">
-            MiaMe × Green Extreme — נקודת הפעילות שלנו באילת
+            MiaMe × Green Extreme, נקודת הפעילות שלנו באילת
           </h2>
           <p className="eilat-copy">
             מתחם Green Extreme בפארק הטרמינל אילת מתוכנן להיות נקודת החוויה והפעילות של
-            MiaMe באילת — מקום חי, חשמלי, ירוק ואקסטרימי שמחבר בין תצוגה, נסיעת היכרות
+            MiaMe באילת, מקום חי, חשמלי, ירוק ואקסטרימי שמחבר בין תצוגה, נסיעת היכרות
             וחוויית Free Feel אמיתית. מחיר אילת זמין בכפוף לדין, מקום העסקה, תנאי החברה
             והפקת חשבונית כדין.
           </p>

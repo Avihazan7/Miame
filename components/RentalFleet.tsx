@@ -76,7 +76,7 @@ export default function RentalFleet() {
           </h1>
           <p className="rental-copy">
             צי פתיחה מתוכנן של כ-{FLEET_SIZE} כלי MiaMe להשכרה לפי שעה באילת, סביב מתחם
-            Green Extreme בפארק הטרמינל — חוויית Free Feel חשמלית, ירוקה ומשפחתית, החל
+            Green Extreme בפארק הטרמינל, חוויית Free Feel חשמלית, ירוקה ומשפחתית, החל
             מ-{RENTAL_HOURLY_FROM} ₪ לשעה. זמינות, מחיר ותנאי שימוש כפופים לאישור הסניף
             ולמצב הכלים.
           </p>
@@ -157,7 +157,7 @@ export default function RentalFleet() {
             {sent && <div className="lead-ok">נפתחה שיחת וואטסאפ ✓ נחזור אליכם לתיאום</div>}
             <p className="rental-disc">
               ההשכרה בתיאום מראש ובכפוף לזמינות מלאי, לתנאי המפעיל ולדין. זמינות בזמן אמת
-              תיפתח עם השלמת חיבור המעקב (Ituran Tick Track) — עד אז הזמינות מאושרת מול הצוות.
+              תיפתח עם השלמת חיבור המעקב (Ituran Tick Track), עד אז הזמינות מאושרת מול הצוות.
             </p>
           </div>
 

@@ -42,7 +42,7 @@ export default function CinematicVideo() {
               לא רק כלי. חוויית Free Feel בתנועה.
             </h2>
             <p className="cinema-desc">
-              הצצה לאנרגיה, לעומק ולתחושת החופש שמובילה את MiaMe — מוביליטי חשמלית,
+              הצצה לאנרגיה, לעומק ולתחושת החופש שמובילה את MiaMe, מוביליטי חשמלית,
               יוקרתית וזורמת.
             </p>
           </div>

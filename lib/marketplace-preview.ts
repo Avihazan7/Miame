@@ -38,7 +38,7 @@ export const LEAD_STAGES: LeadStage[] = [
     id: "profile",
     index: 1,
     title: "מי אתם, ולמה",
-    subtitle: "שני פרטים בלבד — כדי להבין את נקודת ההתחלה.",
+    subtitle: "שני פרטים בלבד, כדי להבין את נקודת ההתחלה.",
     fields: [
       {
         name: "customer_type",
@@ -68,7 +68,7 @@ export const LEAD_STAGES: LeadStage[] = [
     id: "match",
     index: 2,
     title: "מה מתאים לכם",
-    subtitle: "כמה מסלולים — כדי לכוון את ההשוואה. הכול אופציונלי.",
+    subtitle: "כמה מסלולים, כדי לכוון את ההשוואה. הכול אופציונלי.",
     fields: [
       {
         name: "route",
@@ -109,7 +109,7 @@ export const LEAD_STAGES: LeadStage[] = [
     id: "contact",
     index: 3,
     title: "איך נחזור אליכם",
-    subtitle: "פרטי קשר — לשמירה על המכשיר בלבד בתצוגה זו.",
+    subtitle: "פרטי קשר, לשמירה על המכשיר בלבד בתצוגה זו.",
     fields: [
       {
         name: "full_name",
@@ -133,7 +133,7 @@ export const LEAD_STAGES: LeadStage[] = [
 export const CONSENT = {
   name: "consent",
   label:
-    "אני מאשר/ת שנוכל לחזור אליי בנוגע להצעה. זו תצוגת דמו — לא נשלחת פנייה בפועל ולא מתבצעת העברה לספק.",
+    "אני מאשר/ת שנוכל לחזור אליי בנוגע להצעה. זו תצוגת דמו, לא נשלחת פנייה בפועל ולא מתבצעת העברה לספק.",
   required: true,
 };
 
@@ -151,7 +151,7 @@ export const TRUST_COPY =
 
 // Demo-safety disclosure — shown on submit so the user knows nothing left the device.
 export const DEMO_NOTICE =
-  "תצוגת דמו — לא נשלחת פנייה, לא מתבצעת קריאת רשת, ולא מתבצעת העברה לספק. הנתונים נשארים על המכשיר בלבד.";
+  "תצוגת דמו, לא נשלחת פנייה, לא מתבצעת קריאת רשת, ולא מתבצעת העברה לספק. הנתונים נשארים על המכשיר בלבד.";
 
 export interface DemoDecisionCard {
   id: string;
@@ -173,7 +173,7 @@ export const DEMO_DECISION_CARDS: DemoDecisionCard[] = [
       { label: "טווח לדוגמה", value: "עד 100 ק\"מ" },
       { label: "טעינה", value: "סוללה נשלפת" },
     ],
-    note: "ערכים להמחשה בלבד — אינם הצעה מחייבת.",
+    note: "ערכים להמחשה בלבד, אינם הצעה מחייבת.",
   },
   {
     id: "mixed",
@@ -184,7 +184,7 @@ export const DEMO_DECISION_CARDS: DemoDecisionCard[] = [
       { label: "טווח לדוגמה", value: "עיר ופרברים" },
       { label: "גמישות", value: "סוללה להחלפה" },
     ],
-    note: "ערכים להמחשה בלבד — אינם הצעה מחייבת.",
+    note: "ערכים להמחשה בלבד, אינם הצעה מחייבת.",
   },
   {
     id: "field",
@@ -195,7 +195,7 @@ export const DEMO_DECISION_CARDS: DemoDecisionCard[] = [
       { label: "טווח לדוגמה", value: "תלוי שימוש" },
       { label: "כוח", value: "עד 4 מנועים" },
     ],
-    note: "ערכים להמחשה בלבד — אינם הצעה מחייבת.",
+    note: "ערכים להמחשה בלבד, אינם הצעה מחייבת.",
   },
 ];
 
@@ -203,7 +203,7 @@ export const DEMO_DECISION_CARDS: DemoDecisionCard[] = [
 export const HERO_SLOT = {
   dataAttr: "data-future-3d-slot",
   label: "אזור שמור לתצוגת רכב עתידית",
-  caption: "מקום שמור לחוויית 3D/AR עתידית — אינו פעיל בתצוגה זו.",
+  caption: "מקום שמור לחוויית 3D/AR עתידית, אינו פעיל בתצוגה זו.",
 };
 
 // Phrases the trust / marketing copy must NEVER contain (over-promising / undisclosed
@@ -225,7 +225,7 @@ export const allLeadFields = (): LeadField[] => LEAD_STAGES.flatMap((s) => s.fie
 
 export const HOW_IT_WORKS_TITLE = "איך ULease עובדת";
 export const HOW_IT_WORKS_CAPTION =
-  "התהליך להמחשה בלבד — בתצוגה זו אין אוטומציה חיה, אין קריאת ספק, ואין העברת פרטים בפועל.";
+  "התהליך להמחשה בלבד, בתצוגה זו אין אוטומציה חיה, אין קריאת ספק, ואין העברת פרטים בפועל.";
 
 export interface HowItWorksStep {
   index: number;
@@ -263,12 +263,12 @@ export const LEASING_TERMS: LeasingTerm[] = [
   {
     term: "ליסינג תפעולי",
     explain: "שכירות רכב לתקופה קצובה כשהבעלות נשארת אצל חברת הליסינג; בסוף מחזירים את הרכב.",
-    meaning: "משלמים על השימוש, לא על הבעלות — פחות התחייבות לטווח ארוך.",
+    meaning: "משלמים על השימוש, לא על הבעלות, פחות התחייבות לטווח ארוך.",
   },
   {
     term: "ליסינג מימוני",
     explain: "מסלול שבו התשלומים מובילים לבעלות על הרכב בסוף התקופה, בדומה למימון רכישה.",
-    meaning: "בסוף התהליך הרכב שלכם — מתאים למי שרוצה להחזיק ברכב.",
+    meaning: "בסוף התהליך הרכב שלכם, מתאים למי שרוצה להחזיק ברכב.",
   },
   {
     term: "מקדמה",
@@ -288,12 +288,12 @@ export const LEASING_TERMS: LeasingTerm[] = [
   {
     term: "שווי שימוש",
     explain: "סכום שמתווסף להכנסה החייבת במס כשמעסיק מעמיד רכב לעובד.",
-    meaning: "משפיע על העלות נטו לעובד — חשוב בעסקאות דרך מקום העבודה.",
+    meaning: "משפיע על העלות נטו לעובד, חשוב בעסקאות דרך מקום העבודה.",
   },
   {
     term: "עלות כוללת / TCO",
     explain: "סך כל העלויות לאורך העסקה (Total Cost of Ownership), לא רק התשלום החודשי.",
-    meaning: "המספר להשוואה אמיתית בין הצעות — כולל אנרגיה, ביטוח ותחזוקה.",
+    meaning: "המספר להשוואה אמיתית בין הצעות, כולל אנרגיה, ביטוח ותחזוקה.",
   },
   {
     term: "Deal Score",
@@ -309,6 +309,6 @@ export const LEASING_TERMS: LeasingTerm[] = [
   {
     term: "העברת פרטים באישור",
     explain: "הפרטים שלכם מועברים לספק רק לאחר שאתם מאשרים זאת במפורש.",
-    meaning: "אתם בשליטה — אין העברה אוטומטית ללא הסכמה.",
+    meaning: "אתם בשליטה, אין העברה אוטומטית ללא הסכמה.",
   },
 ];

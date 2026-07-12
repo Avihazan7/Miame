@@ -24,7 +24,7 @@ export default function Header() {
   return (
     <header className="site-header" id="top">
       <div className="wrap nav">
-        <a className="brand" href="/" onClick={toTop} aria-label="MiaMe · Free Feel — דף הבית">
+        <a className="brand" href="/" onClick={toTop} aria-label="MiaMe · Free Feel, דף הבית">
           <span className="brand-mark">
             <MiaMark size={38} title="MiaMe" />
           </span>

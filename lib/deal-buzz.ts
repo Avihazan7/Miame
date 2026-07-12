@@ -39,7 +39,7 @@ export interface TrustSignal {
 // availability language (not a fabricated countdown or a fake unit counter).
 export const LAUNCH_OFFER = {
   kicker: "מבצע השקה",
-  title: "מבצע השקה — מיה פור",
+  title: "מבצע השקה, מיה פור",
   text: "בדיקת התאמה מהירה והצעה מותאמת לפי דגם, ישירות בוואטסאפ. מלאי מוגבל לפי זמינות.",
   cta: "לבדיקת התאמה מהירה",
 } as const;
@@ -62,7 +62,7 @@ export const DEAL_BUZZ_CARDS: BuzzItem[] = [
     id: "match",
     icon: "search",
     title: "בדיקת התאמה מהירה",
-    text: "נאתר איתך את הדגם והמסלול שמתאימים לך — לפי שימוש, טווח ותקציב.",
+    text: "נאתר איתך את הדגם והמסלול שמתאימים לך, לפי שימוש, טווח ותקציב.",
     cta: "התחלת בדיקה",
     action: "sim",
   },
@@ -78,7 +78,7 @@ export const DEAL_BUZZ_CARDS: BuzzItem[] = [
     id: "eligibility",
     icon: "clipboard",
     title: "בדיקת זכאות למסלול",
-    text: "נבדוק יחד איזה מסלול תשלומים פתוח עבורך — פרטי, עסקי או שותף. בכפוף לאישור עסקה.",
+    text: "נבדוק יחד איזה מסלול תשלומים פתוח עבורך, פרטי, עסקי או שותף. בכפוף לאישור עסקה.",
     cta: "בדיקת זכאות",
     action: "wa",
     waMessage: "היי MiaMe, אשמח לבדיקת זכאות למסלול תשלומים על מיה פור 🙂",

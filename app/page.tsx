@@ -52,7 +52,7 @@ export default function Page() {
           <FreedomMomentVideo />
         </section>
 
-        {/* 4 · מתחת למעטפת — המוצר */}
+        {/* 4 · מתחת למעטפת, המוצר */}
         <section className="movement" data-beat="product" aria-label="המוצר">
           <Features />
           <Specs />

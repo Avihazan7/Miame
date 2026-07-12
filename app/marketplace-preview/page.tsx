@@ -11,7 +11,7 @@ import LeasingTermsExplainer from "@/components/marketplace/LeasingTermsExplaine
 // live action: no provider, no Supabase write, no network, no supplier transfer.
 export const metadata: Metadata = {
   title: "תצוגת מרקטפלייס (דמו)",
-  description: "תצוגה מקדימה שקטה של זרימת ההתאמה — דמו בלבד, ללא שליחת פנייה.",
+  description: "תצוגה מקדימה שקטה של זרימת ההתאמה, דמו בלבד, ללא שליחת פנייה.",
   robots: { index: false, follow: false },
   alternates: { canonical: "/marketplace-preview" },
 };
@@ -23,7 +23,7 @@ export default function MarketplacePreviewPage() {
         <div className="mp-eyebrow">תצוגה מקדימה · דמו</div>
         <h1 className="mp-title">התאמה שקטה בין הצורך שלך להצעות ספקים</h1>
         <p className="mp-sub">
-          זרימה מדורגת ורגועה — בלי טופס מאיים, בלי לחץ, ובלי שליחת פנייה בפועל.
+          זרימה מדורגת ורגועה, בלי טופס מאיים, בלי לחץ, ובלי שליחת פנייה בפועל.
         </p>
       </header>
 

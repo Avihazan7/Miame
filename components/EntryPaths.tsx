@@ -26,7 +26,7 @@ const BUY: Path = {
   href: "#sim",
   icon: "cart",
   title: "רכישת MIA FOUR",
-  desc: "בונים הצעת תשלום — עד 18 תשלומים ללא ריבית והצמדה.",
+  desc: "בונים הצעת תשלום, עד 18 תשלומים ללא ריבית והצמדה.",
   cta: CTA.fit,
   tone: "buy",
 };
@@ -34,7 +34,7 @@ const ELIGIBILITY: Path = {
   href: "/eligibility",
   icon: "shield",
   title: "זכאות כוחות הביטחון",
-  desc: "נכי צה\"ל ומשפחות שכולות — עד 100% בכפוף לאישור.",
+  desc: "נכי צה\"ל ומשפחות שכולות, עד 100% בכפוף לאישור.",
   cta: CTA.tribute,
   tone: "tribute",
 };
@@ -50,7 +50,7 @@ const PARTNER: Path = {
   href: "/partners",
   icon: "handshake",
   title: "MiaMe Hub לשותפים",
-  desc: "מפעילים צי השכרה רווחי — אתם הבעלים, אנחנו מביאים ביקוש.",
+  desc: "מפעילים צי השכרה רווחי, אתם הבעלים, אנחנו מביאים ביקוש.",
   cta: CTA.partner,
   tone: "partner",
 };
@@ -98,9 +98,9 @@ export default function EntryPaths({ variant = "full" }: { variant?: "homepage" 
           <div className="sec-head">
             <div className="sec-kicker">איך תרצו להתחיל?</div>
             <h2 className="sec-title" id="entry-title">
-              רכישה או זכאות — נתחיל מכאן
+              רכישה או זכאות, נתחיל מכאן
             </h2>
-            <p className="sec-desc">שני המסלולים המובילים. השכרה באילת ושותפות MiaMe Hub — במרחק קליק.</p>
+            <p className="sec-desc">שני המסלולים המובילים. השכרה באילת ושותפות MiaMe Hub, במרחק קליק.</p>
           </div>
 
           <div className="entry-grid entry-grid-primary">
@@ -127,7 +127,7 @@ export default function EntryPaths({ variant = "full" }: { variant?: "homepage" 
           <h2 className="sec-title" id="entry-title">
             איך תרצו להתחיל?
           </h2>
-          <p className="sec-desc">בחרו מסלול — ונמשיך משם בדיוק למה שמתאים לכם.</p>
+          <p className="sec-desc">בחרו מסלול, ונמשיך משם בדיוק למה שמתאים לכם.</p>
         </div>
 
         <div className="entry-grid">

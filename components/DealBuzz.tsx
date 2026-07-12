@@ -33,7 +33,7 @@ export default function DealBuzz() {
           <div className="sec-kicker">מבצע השקה</div>
           <h2 className="sec-title">מוכנים להתקדם? בחרו את הצעד הבא</h2>
           <p className="sec-desc">
-            בלי לחץ ובלי הפתעות — בוחרים איך נוח לכם להתקדם, ואנחנו איתכם בוואטסאפ.
+            בלי לחץ ובלי הפתעות, בוחרים איך נוח לכם להתקדם, ואנחנו איתכם בוואטסאפ.
           </p>
         </div>
 

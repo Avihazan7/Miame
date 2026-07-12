@@ -64,7 +64,7 @@ export default function PartnerHubForm() {
       <div className="partner-form-head">
         <div className="pf-title">בואו נבנה יחד Hub</div>
         <p className="pf-desc">
-          השאירו פרטים ונחזור אליכם עם מודל ההפעלה המלא — מחירון, לוגיסטיקה וליווי שיווקי.
+          השאירו פרטים ונחזור אליכם עם מודל ההפעלה המלא, מחירון, לוגיסטיקה וליווי שיווקי.
         </p>
       </div>
 

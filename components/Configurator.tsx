@@ -92,7 +92,7 @@ export default function Configurator() {
   const [type, setType] = useState<CustomerType>("private");
   const [pricingZone, setPricingZone] = useState<PricingZone>("nationwide");
   const [downPct, setDownPct] = useState<number>(TRACKS.private.down.default);
-  const balloonPct = 0; // תשלום בתום התקופה (בלון) בוטל — נשאר 0 לתאימות ה-API/ליד.
+  const balloonPct = 0; // תשלום בתום התקופה (בלון) בוטל, נשאר 0 לתאימות ה-API/ליד.
   const [months, setMonths] = useState<number>(TRACKS.private.months.default);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -325,7 +325,7 @@ export default function Configurator() {
             <div className="sec-kicker">סימולטור תשלומים</div>
             <h2 className="sec-title">בנו את העסקה שלכם</h2>
             <p className="sec-desc">
-              בחרו דגם, מקדמה ומספר תשלומים — עד 18 תשלומים ללא ריבית והצמדה.
+              בחרו דגם, מקדמה ומספר תשלומים, עד 18 תשלומים ללא ריבית והצמדה.
             </p>
           </div>
 
@@ -402,7 +402,7 @@ export default function Configurator() {
                     <span className="field-val">{ils(quote.downAmount)}</span>
                   </div>
                   <div className="field-note">
-                    במסלול עסקי/שותף המקדמה היא רכיב המע״מ (קבועה) — היתרה נפרסת לתשלומים.
+                    במסלול עסקי/שותף המקדמה היא רכיב המע״מ (קבועה), היתרה נפרסת לתשלומים.
                   </div>
                 </div>
               ) : (

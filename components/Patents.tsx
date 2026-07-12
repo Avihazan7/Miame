@@ -22,7 +22,7 @@ export default function Patents() {
           />
           <div className="photo-cap">
             <b>Pure Freedom · מוגן פטנט</b>
-            <span>עיצוב שזכה בהגנת פטנט רשום — חדשנות אמיתית, לא חיקוי</span>
+            <span>עיצוב שזכה בהגנת פטנט רשום, חדשנות אמיתית, לא חיקוי</span>
           </div>
         </div>
 

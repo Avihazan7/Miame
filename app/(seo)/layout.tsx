@@ -11,7 +11,7 @@ export default function SeoLayout({ children }: { children: React.ReactNode }) {
     <>
       <header className="site-header">
         <div className="wrap nav">
-          <Link href="/" className="brand" aria-label="MiaMe — לדף הבית">
+          <Link href="/" className="brand" aria-label="MiaMe, לדף הבית">
             <span className="brand-mark">
               <MiaMark size={34} title="MiaMe" />
             </span>
