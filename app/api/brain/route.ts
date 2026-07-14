@@ -10,14 +10,20 @@ import { NextResponse } from "next/server";
 import { runBrain } from "@/brain";
 import type { BrainEvent } from "@/brain/types";
 import { brainReady } from "@/brain/config";
+import { providersHealth } from "@/brain/failover";
 import { guardJsonPost } from "@/lib/apiGuard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** Health check — reports readiness without exposing any secret. */
+/** Health check — readiness + provider/circuit snapshot, zero secrets. */
 export function GET() {
-  return NextResponse.json({ ok: true, ready: brainReady, service: "miame-brain-umm" });
+  return NextResponse.json({
+    ok: true,
+    ready: brainReady,
+    service: "miame-brain-umm",
+    providers: providersHealth()
+  });
 }
 
 export async function POST(req: Request) {

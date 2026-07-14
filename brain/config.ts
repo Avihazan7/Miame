@@ -16,8 +16,29 @@ export const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || "";
 export const ANTHROPIC_BASE = process.env.ANTHROPIC_BASE_URL || "https://api.anthropic.com";
 export const ANTHROPIC_VERSION = "2023-06-01";
 
-/** True only when an API key is present — guards every model call. */
-export const brainReady: boolean = Boolean(ANTHROPIC_API_KEY);
+// ── provider failover (P0 reliability — see brain/failover.ts) ────────────────
+// Primary stays Anthropic unless explicitly overridden; a fallback is honored
+// ONLY when its key is actually present (a provider is never switched blindly).
+export const AI_PRIMARY_PROVIDER = (process.env.AI_PRIMARY_PROVIDER || "anthropic").toLowerCase();
+export const AI_FALLBACK_PROVIDER = (process.env.AI_FALLBACK_PROVIDER || "").toLowerCase();
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
+export const OPENAI_BASE = process.env.OPENAI_BASE_URL || "https://api.openai.com";
+export const OPENAI_MODELS: Record<ModelTier, string> = {
+  ultra: process.env.BRAIN_OPENAI_MODEL_ULTRA || "gpt-4o",
+  master: process.env.BRAIN_OPENAI_MODEL_MASTER || "gpt-4o",
+  max: process.env.BRAIN_OPENAI_MODEL_MAX || "gpt-4o-mini"
+};
+/** Hard per-call timeout (AbortController) for every provider request. */
+export const BRAIN_TIMEOUT_MS = Number(process.env.BRAIN_TIMEOUT_MS || 30_000);
+
+/** True when at least one configured provider has a verified key — guards every model call. */
+export const brainReady: boolean =
+  (AI_PRIMARY_PROVIDER === "openai" ? Boolean(OPENAI_API_KEY) : Boolean(ANTHROPIC_API_KEY)) ||
+  (AI_FALLBACK_PROVIDER === "openai"
+    ? Boolean(OPENAI_API_KEY)
+    : AI_FALLBACK_PROVIDER === "anthropic"
+      ? Boolean(ANTHROPIC_API_KEY)
+      : false);
 
 export const MAX_OUTPUT_TOKENS = 1024;
 
