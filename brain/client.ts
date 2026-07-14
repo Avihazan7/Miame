@@ -1,16 +1,15 @@
-// brain/client.ts — thin Anthropic Messages client (no SDK dependency; global fetch).
+// brain/client.ts — the brain's single model-call choke point.
 //
-// SERVER-SIDE ONLY. Never import this from a client component — it reads the API
-// key from the environment. Intended to be called from an API route, an n8n
+// SERVER-SIDE ONLY. Never import this from a client component — it reads API
+// keys from the environment. Intended to be called from an API route, an n8n
 // function node, or a background worker.
-import {
-  MODELS,
-  ANTHROPIC_API_KEY,
-  ANTHROPIC_BASE,
-  ANTHROPIC_VERSION,
-  MAX_OUTPUT_TOKENS,
-  brainReady
-} from "./config";
+//
+// Since the P0 reliability pass, the actual HTTP work lives in brain/failover.ts:
+// provider abstraction (Anthropic primary · optional OpenAI fallback), a hard
+// per-call timeout, a basic circuit breaker, and structured secret-free logs.
+// This module keeps the stable callModel() surface the pipeline/providers use.
+import { brainReady } from "./config";
+import { generateWithFailover } from "./failover";
 import type { ModelTier } from "./types";
 
 export interface ModelCall {
@@ -20,36 +19,9 @@ export interface ModelCall {
   maxTokens?: number;
 }
 
-interface AnthropicResponse {
-  content?: Array<{ type: string; text?: string }>;
-}
-
 export async function callModel({ tier, system, user, maxTokens }: ModelCall): Promise<string> {
   if (!brainReady) {
-    throw new Error("[brain] ANTHROPIC_API_KEY not set — the brain is not configured.");
+    throw new Error("[brain] no AI provider configured — the brain is not configured.");
   }
-  const res = await fetch(`${ANTHROPIC_BASE}/v1/messages`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": ANTHROPIC_API_KEY,
-      "anthropic-version": ANTHROPIC_VERSION
-    },
-    body: JSON.stringify({
-      model: MODELS[tier],
-      max_tokens: maxTokens ?? MAX_OUTPUT_TOKENS,
-      system,
-      messages: [{ role: "user", content: user }]
-    })
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`[brain] model call failed (${res.status}): ${text.slice(0, 300)}`);
-  }
-  const data = (await res.json()) as AnthropicResponse;
-  return (data.content || [])
-    .filter((b) => b.type === "text")
-    .map((b) => b.text || "")
-    .join("")
-    .trim();
+  return generateWithFailover({ tier, system, user, maxTokens });
 }
