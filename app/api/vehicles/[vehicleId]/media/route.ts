@@ -1,32 +1,29 @@
 import { NextResponse } from "next/server";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
-// Returns null (instead of throwing) when the server Supabase env vars are absent,
-// so a missing/misconfigured env degrades GRACEFULLY to "no media" rather than a
-// 500. The consumer treats any non-ok response as "render nothing".
-function adminSupabase(): SupabaseClient | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!url || !key) {
-    return null;
-  }
-
-  return createClient(url, key, {
-    auth: { persistSession: false },
-  });
-}
+// LEAST PRIVILEGE, MEASURED AGAINST THE LIVE POLICY SET (2026-08-31). This route
+// reads exactly one thing: `vehicle_media_assets` rows with status='published' —
+// and that is exactly what RLS already exposes to anon (policy
+// `public_read_published_vehicle_media`, SELECT to anon + authenticated).
+//
+// The previous version created a client from SUPABASE_SERVICE_ROLE_KEY and
+// answered 503 without it. Two things were wrong with that at once:
+//   · On any deployment where the service key was not configured — production's
+//     actual state — the media/3D API was simply DOWN, degrading every consumer
+//     to "no media" for want of a key the read never needed.
+//   · The key it insisted on grants write powers a public GET must never hold.
+// The anon client is not a downgrade here; it is the correct principal. RLS and
+// the explicit status='published' filter below enforce the same visibility twice.
+// lib/supabase.ts ships public-by-design defaults, so this works with zero env.
 
 export async function GET(
   _request: Request,
   { params }: { params: { vehicleId: string } }
 ) {
-  const supabase = adminSupabase();
-
   if (!supabase) {
-    // Env not configured on this deployment — fail soft so the page renders
+    // No client (env explicitly blanked) — fail soft so the page renders
     // without media instead of surfacing a 500 to the visitor.
     return NextResponse.json(
       { ok: false, error: "vehicle_media_unavailable", media: null },
@@ -45,8 +42,11 @@ export async function GET(
     .maybeSingle();
 
   if (error) {
+    // Generic on purpose: a vendor error string can carry table names, host
+    // names or SQL fragments, and this response is world-readable. The shape
+    // (`ok:false` + a stable code) is all the consumer branches on.
     return NextResponse.json(
-      { ok: false, error: "vehicle_media_query_failed", detail: error.message },
+      { ok: false, error: "vehicle_media_query_failed" },
       { status: 500 }
     );
   }
