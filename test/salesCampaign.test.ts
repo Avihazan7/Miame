@@ -251,3 +251,24 @@ describe("one WhatsApp route, offered everywhere", () => {
     expect(existsSync(resolve(ROOT, "components/EntryPaths.tsx"))).toBe(false);
   });
 });
+
+describe("one route out of the Free Feel moment", () => {
+  // The block used to offer a second button to the Eilat rental page — a
+  // different product, at the exact moment the visitor is deciding whether to
+  // buy. The focused campaign sells one thing, so the fork is gone.
+  const fm = readFileSync("components/FreedomMomentVideo.tsx", "utf8");
+  const sitemap = readFileSync("public/sitemap.xml", "utf8");
+
+  it("offers no rental fork", () => {
+    expect(fm).not.toContain("rent-eilat");
+    expect(fm).not.toContain("השכרה באילת");
+  });
+
+  it("does not submit a page nothing links to", () => {
+    // That link was the site's ONLY inbound route to /rent-eilat. Leaving the
+    // URL in the sitemap after removing it would submit an orphan for indexing —
+    // the same regression the EntryPaths removal caused once already. The page
+    // still answers on a direct URL; it is simply no longer promoted.
+    expect(sitemap).not.toContain("rent-eilat");
+  });
+});

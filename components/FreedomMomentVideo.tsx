@@ -51,12 +51,13 @@ export default function FreedomMomentVideo() {
             </video>
           </div>
 
+          {/* One route out of this block, on the owner's call. The second button
+              sent people to the Eilat rental page — a different product, offered
+              at the exact moment the visitor is deciding whether to buy. The
+              focused campaign sells one thing, and a fork here competed with it. */}
           <div className="fm-actions">
             <a className="btn btn-primary" href="#sim">
               בדיקת התאמה
-            </a>
-            <a className="btn btn-ghost" href="/rent-eilat">
-              השכרה באילת
             </a>
           </div>
         </div>
