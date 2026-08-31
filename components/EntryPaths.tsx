@@ -42,7 +42,7 @@ const RENT: Path = {
   href: "/rent-eilat",
   icon: "recycle",
   title: "השכרה באילת",
-  desc: "צי השכרה לפי שעה ב-Green Extreme · פארק הטרמינל.",
+  desc: "צי השכרה לפי שעה ב-Green Extreme, אילת.",
   cta: CTA.rental,
   tone: "rent",
 };

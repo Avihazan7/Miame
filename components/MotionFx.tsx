@@ -24,15 +24,12 @@ const SELECTORS = [
   ".tribute-calc",
   ".life-card",
   ".soon-card",
-  ".flagship",
-  ".dealer",
-  ".map-embed",
+  ".coverage-map",
   ".specs-table",
   ".specs-media",
   ".importer-inner",
   ".about-wrap",
-  ".sim",
-  ".rental-strip"
+  ".sim"
 ].join(",");
 
 /**
@@ -46,10 +43,10 @@ const SELECTORS = [
 const VARIANTS: Array<{ sel: string; v: string }> = [
   { sel: ".sec-head", v: "v-head" },
   {
-    sel: ".specs-media,.stage,.feat-show-main,.map-embed,.tribute-calc,.importer-inner,.specs-table",
+    sel: ".specs-media,.stage,.feat-show-main,.coverage-map,.tribute-calc,.importer-inner,.specs-table",
     v: "v-zoom"
   },
-  { sel: ".stat-strip,.rental-strip", v: "v-tilt" }
+  { sel: ".stat-strip", v: "v-tilt" }
 ];
 
 function variantFor(el: Element): string | null {

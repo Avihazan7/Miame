@@ -19,10 +19,13 @@ const supabaseHost = (() => {
 //   toolbar / preview feedback).
 // - connect-src covers Supabase (REST + storage + realtime), GA4 regional
 //   collectors, Meta, and vercel.live's websocket.
-// - frame-src allows the Google-Maps embed (components/Service.tsx), the
-//   privacy-mode YouTube player for the cinematic stage (components/CinematicVideo.tsx),
-//   and vercel.live; frame-ancestors allows vercel.live so preview commenting keeps
-//   working while everyone else is denied.
+// - frame-src covers ONLY the two privacy-mode YouTube players
+//   (components/CinematicVideo.tsx, components/HowToVideo.tsx) and vercel.live.
+//   The Google-Maps hosts were dropped when the sales campaign replaced the
+//   flagship map embed with an inline SVG coverage illustration — no third-party
+//   frame, no address leak. Do not re-add a map host without a live consumer.
+//   frame-ancestors allows vercel.live so preview commenting keeps working while
+//   everyone else is denied.
 // - img-src stays https:-broad on purpose: tracking pixels and the image
 //   optimizer's remote fetches render from third-party hosts; the write-side
 //   optimizer abuse is closed by the remotePatterns allowlist above.
@@ -38,7 +41,7 @@ const SECURITY_HEADERS = [
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://www.facebook.com https://connect.facebook.net https://vercel.live wss://*.pusher.com",
-      "frame-src https://maps.google.com https://www.google.com https://www.youtube-nocookie.com https://vercel.live",
+      "frame-src https://www.youtube-nocookie.com https://vercel.live",
       "media-src 'self' blob: https://*.supabase.co",
       "worker-src 'self' blob:",
       "object-src 'none'",

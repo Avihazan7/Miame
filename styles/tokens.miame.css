@@ -36,7 +36,10 @@
   --grad-gold:linear-gradient(90deg,#8A6D1F,#D7B45A 55%,#F5EFE2);
   --grad-pearl:linear-gradient(90deg,#FDFBF6,#E9EDEC);
 
-  /* — TRACKS (simulator, UI only) — */
+  /* — TRACKS (simulator, UI only) —
+     The simulator runs ONE nationwide track (down-payment + up to 18 payments),
+     so nothing reads these today. Kept as declared vocabulary: if a second track
+     ever ships, its colour is already decided here rather than invented inline. */
   --track-private:var(--glow-teal);
   --track-business:var(--gold-bright);
   --track-partner:var(--glow-ice);
