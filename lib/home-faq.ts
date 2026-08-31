@@ -2,7 +2,7 @@
 // <FaqHome> accordion and the FAQPage JSON-LD (they can never drift; the verify
 // gate asserts the schema answers appear verbatim in the visible HTML).
 
-import { SPYQE, SPYQE_TOTAL, SPYQE_SAVING } from "@/lib/spyqe";
+import { SPYQE, SPYQE_TOTAL, SPYQE_BALANCE } from "@/lib/spyqe";
 import { MIA_FOUR_DELIVERY_DAYS } from "@/lib/content";
 
 export const HOME_FAQ: { q: string; a: string }[] = [
@@ -20,7 +20,7 @@ export const HOME_FAQ: { q: string; a: string }[] = [
   },
   {
     q: "מה ההצעה על SPYQE ולמי היא?",
-    a: `הזמנה מוקדמת של ${SPYQE.name}: ${SPYQE.monthlyPayment} ₪ ל-${SPYQE.months} תשלומים, סה״כ ${SPYQE_TOTAL.toLocaleString("he-IL")} ₪ במקום מחיר יבואן ${SPYQE.listPrice.toLocaleString("he-IL")} ₪, ללא ריבית והצמדה. ההטבה ל-${SPYQE.slots} הנרשמים הראשונים, לקראת המשלוח הראשון לישראל.`,
+    a: `הזמנה מוקדמת של ${SPYQE.name}: מקדמה ${SPYQE.deposit.toLocaleString("he-IL")} ₪ ליבואן בהרשמה, והיתרה ${SPYQE_BALANCE.toLocaleString("he-IL")} ₪ ב-${SPYQE.months} תשלומים של ${SPYQE.monthlyPayment} ₪ שמתחילים עם הגעת המשלוח למחסני היבואן. סה״כ ${SPYQE_TOTAL.toLocaleString("he-IL")} ₪ במקום מחיר יבואן ${SPYQE.listPrice.toLocaleString("he-IL")} ₪, ללא ריבית והצמדה. ההטבה ל-${SPYQE.slots} הזוכים הראשונים.`,
   },
   {
     q: "מתי SPYQE יגיע, והאם ההרשמה מחייבת?",

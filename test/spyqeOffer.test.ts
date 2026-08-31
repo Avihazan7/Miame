@@ -11,6 +11,7 @@ import {
   SPYQE,
   SPYQE_TOTAL,
   SPYQE_SAVING,
+  SPYQE_BALANCE,
   SPYQE_SPEC,
   SPYQE_PRODUCT_PROPERTIES,
   spyqeProductJsonLd,
@@ -26,7 +27,7 @@ const truth = readFileSync("lib/spyqe.ts", "utf8");
 
 /**
  * Strip comments before scanning for hard-coded values. A doc comment that
- * EXPLAINS the derivation ("10,782 — derived, never typed") is the opposite of
+ * EXPLAINS the derivation ("10,990 — derived, never typed") is the opposite of
  * the defect the rule targets; without this the rule would punish the very
  * comment that documents it.
  */
@@ -45,36 +46,41 @@ describe("SPYQE offer arithmetic", () => {
   it("derives the total from the payment and the term", () => {
     // Asserting the DERIVATION, not two constants that happen to agree today:
     // change the monthly payment and the total must follow it, not contradict it.
-    expect(SPYQE_TOTAL).toBe(SPYQE.monthlyPayment * SPYQE.months);
+    // The deal is a deposit PLUS a financed balance, so the total must be built
+    // the way it is actually paid — otherwise a later edit to the monthly figure
+    // leaves a sum on the page that no longer adds up.
+    expect(SPYQE_TOTAL).toBe(SPYQE.deposit + SPYQE.monthlyPayment * SPYQE.months);
+    expect(SPYQE_BALANCE).toBe(SPYQE.monthlyPayment * SPYQE.months);
+    expect(SPYQE.deposit + SPYQE_BALANCE).toBe(SPYQE_TOTAL);
     expect(SPYQE_SAVING).toBe(SPYQE.listPrice - SPYQE_TOTAL);
   });
 
   it("carries the owner's numbers", () => {
-    expect(SPYQE.monthlyPayment).toBe(599);
+    expect(SPYQE.deposit).toBe(1_000);
+    expect(SPYQE.monthlyPayment).toBe(555);
     expect(SPYQE.months).toBe(18);
-    expect(SPYQE.listPrice).toBe(11_900);
+    expect(SPYQE.listPrice).toBe(11_990);
     expect(SPYQE.slots).toBe(248);
     expect(SPYQE.deliveryBusinessDays).toBe(33);
-    expect(SPYQE_TOTAL).toBe(10_782);
-    expect(SPYQE_SAVING).toBe(1_118);
+    expect(SPYQE_BALANCE).toBe(9_990);
+    expect(SPYQE_TOTAL).toBe(10_990);
+    expect(SPYQE_SAVING).toBe(1_000);
   });
 
   it("never hard-codes a derived figure in the section or the message", () => {
-    // A literal 10782/10,782 anywhere outside the derivation is a second source
-    // of truth waiting to disagree with the first.
-    // SOURCE, not output. The rendered message must SHOW 10,782 — a buyer needs
+    // SOURCE, not output. The rendered message must SHOW 10,990 — a buyer needs
     // the number. What must not exist is a second place that TYPES it, free to
-    // disagree with 599 × 18 after the next edit.
+    // disagree with 1,000 + 555 × 18 after the next edit.
     for (const file of ["components/Spyqe.tsx", "lib/spyqe.ts", "lib/wa-cta.ts"]) {
       const src = code(readFileSync(file, "utf8"));
-      expect(src, `${file} hard-codes the derived total`).not.toMatch(/10[,.]?782/);
-      expect(src, `${file} hard-codes the derived saving`).not.toMatch(/1[,.]?118/);
+      expect(src, `${file} hard-codes the derived total`).not.toMatch(/10[,.]?990/);
+      expect(src, `${file} hard-codes the derived balance`).not.toMatch(/9[,.]?990/);
     }
   });
 
   it("puts the whole offer into the WhatsApp message", () => {
     const m = WA_CTA.spyqe.message;
-    for (const part of ["599", "18", "10,782", "11,900", "248"]) expect(m).toContain(part);
+    for (const part of ["1,000", "555", "18", "10,990", "11,990", "248"]) expect(m).toContain(part);
     expect(WA_CTA.spyqe.intent).toBe("order");
   });
 
@@ -163,7 +169,7 @@ describe("SPYQE scarcity is real, not manufactured", () => {
   });
 
   it("states the cap as a condition of entry, not as units left", () => {
-    expect(text(section)).toContain("הנרשמים הראשונים");
+    expect(text(section)).toContain("הזוכים הראשונים");
     for (const banned of ["נשארו", "נותרו", "מובטח", "בלבד במלאי"]) {
       expect(copy).not.toContain(banned);
     }
@@ -247,5 +253,22 @@ describe("one delivery story across every surface", () => {
   it("keeps the SPYQE estimate distinct from it", () => {
     expect(faq?.a).toContain(SPYQE.name);
     expect(llms).toContain(`${SPYQE.deliveryBusinessDays} ימי עסקים`);
+  });
+});
+
+describe("SPYQE pays in two steps, and the page says which", () => {
+  // A pre-order that asks for the full amount up front is a different product
+  // from one that asks for a deposit. The structure is the reassurance, so it is
+  // stated before the CTA rather than buried in the small print.
+  it("names the deposit and the balance, in that order", () => {
+    const t = text(section);
+    expect(t).toContain("מקדמה ליבואן, בהרשמה");
+    expect(t).toContain("מהגעת המשלוח למחסני היבואן");
+    expect(t.indexOf("מקדמה ליבואן")).toBeLessThan(t.indexOf("מהגעת המשלוח"));
+  });
+
+  it("puts the structure into the WhatsApp message too", () => {
+    // The rep should never have to explain that only 1,000 ₪ is due now.
+    expect(WA_CTA.spyqe.message).toContain("מקדמה");
   });
 });

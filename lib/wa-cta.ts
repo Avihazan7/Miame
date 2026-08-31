@@ -79,9 +79,9 @@ export const WA_CTA = {
     label: "הרשמה והזמנה מוקדמת",
     message:
       `היי MiaMe, אשמח להירשם להזמנה מוקדמת של ${SPYQE.name} — ` +
-      `${ils(SPYQE.monthlyPayment)} × ${SPYQE.months} תשלומים ` +
+      `${ils(SPYQE.deposit)} מקדמה ועוד ${ils(SPYQE.monthlyPayment)} × ${SPYQE.months} תשלומים ` +
       `(${ils(SPYQE_TOTAL)} במקום ${ils(SPYQE.listPrice)}), ` +
-      `במסגרת ${SPYQE.slots} הנרשמים הראשונים 🦋`,
+      `במסגרת ${SPYQE.slots} הזוכים הראשונים 🦋`,
   },
 } as const satisfies Record<string, WaCta>;
 

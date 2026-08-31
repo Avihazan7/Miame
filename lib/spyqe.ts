@@ -38,25 +38,37 @@ export const SPYQE = {
   sourceUrl: "https://miadynamics.com/products/mia-spyqe-2x4-electric-scooter",
 
   /** Importer list price, ILS. */
-  listPrice: 11_900,
+  listPrice: 11_990,
   /** The pre-order headline: this is the number a buyer feels every month. */
-  monthlyPayment: 599,
+  monthlyPayment: 555,
   /** Zero interest, zero linkage — the same 18-payment ceiling the site sells on. */
   months: 18,
   /** How many registrants the first shipment covers. A real cap, not a live counter. */
   slots: 248,
   /** An ESTIMATE, never a guarantee. */
   deliveryBusinessDays: 33,
+  /**
+   * What secures a place in the first shipment, paid to the importer on
+   * registration. The balance falls due when the shipment reaches the importer's
+   * warehouses — so a registrant is never asked for the full amount against a
+   * vehicle that has not landed.
+   */
+  deposit: 1_000,
 } as const;
 
 /**
- * 10,782 ₪ — DERIVED, never typed. If the monthly payment or the term is ever
- * edited, the total follows automatically instead of silently disagreeing with it.
+ * 10,990 ₪ — DERIVED from all three parts, never typed. The deal is a deposit
+ * PLUS a financed balance, so the total has to be built the way it is actually
+ * paid; writing it as its own constant is how a later edit to the monthly figure
+ * ends up silently disagreeing with the sum shown beside it.
  */
-export const SPYQE_TOTAL = SPYQE.monthlyPayment * SPYQE.months;
+export const SPYQE_TOTAL = SPYQE.deposit + SPYQE.monthlyPayment * SPYQE.months;
 
-/** 1,118 ₪ off the list price. Also derived, for the same reason. */
+/** 1,000 ₪ off the list price. Also derived, for the same reason. */
 export const SPYQE_SAVING = SPYQE.listPrice - SPYQE_TOTAL;
+
+/** 9,990 ₪ — the financed balance, due from the shipment's arrival. Derived. */
+export const SPYQE_BALANCE = SPYQE.monthlyPayment * SPYQE.months;
 
 /** ₪ with thousands separators, matching how prices read elsewhere on the site. */
 export const ils = (n: number) => `${n.toLocaleString("he-IL")} ₪`;
@@ -122,7 +134,7 @@ export const SPYQE_PRODUCT_PROPERTIES = SPYQE_SPEC.map((row) => ({
  * The SPYQE Product node for the homepage graph.
  *
  * `price` is the pre-order total a buyer actually pays, not the list price —
- * quoting 11,900 while the page sells at 10,782 would put a number in the search
+ * quoting the list price while the page sells for less would put a number in the search
  * result that nobody can pay. The list price rides along as `priceSpecification`
  * so the saving is still machine-readable.
  *

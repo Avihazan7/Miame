@@ -5,6 +5,7 @@ import {
   SPYQE,
   SPYQE_TOTAL,
   SPYQE_SAVING,
+  SPYQE_BALANCE,
   SPYQE_SPEC,
   SPYQE_SPEC_SOURCE,
   ils,
@@ -24,7 +25,7 @@ import {
  * and any field the captured table stopped short of. See lib/spyqe.ts.
  *
  * ⚠ The 248 cap is a REAL allocation the owner stated, phrased as a condition of
- *   entry ("248 הנרשמים הראשונים"), never as a live remaining-stock counter. The
+ *   entry ("248 הזוכים הראשונים"), never as a live remaining-stock counter. The
  *   difference is the whole point of lib/deal-buzz.ts's no-fake-scarcity contract,
  *   which test/spyqeOffer.test.ts now applies to this copy too.
  */
@@ -87,9 +88,26 @@ export default function Spyqe() {
                 <s>{ils(SPYQE.listPrice)}</s>
                 <span className="spq-save">חיסכון {ils(SPYQE_SAVING)}</span>
               </div>
+              {/* The two-step structure, stated before the CTA rather than after
+                  it: a registrant is never asked for the full amount against a
+                  vehicle that has not landed, and that is the reassurance that
+                  makes a pre-order signable. */}
+              <ol className="spq-steps">
+                <li>
+                  <b>{ils(SPYQE.deposit)}</b>
+                  <span>מקדמה ליבואן, בהרשמה</span>
+                </li>
+                <li>
+                  <b>{ils(SPYQE_BALANCE)}</b>
+                  <span>
+                    היתרה ב-{SPYQE.months} תשלומים של {ils(SPYQE.monthlyPayment)}, מהגעת המשלוח
+                    למחסני היבואן
+                  </span>
+                </li>
+              </ol>
               <ul className="spq-terms">
                 <li>ללא ריבית והצמדה</li>
-                <li>ל-{SPYQE.slots} הנרשמים הראשונים</li>
+                <li>ל-{SPYQE.slots} הזוכים הראשונים</li>
                 <li>אספקה משוערת עד {SPYQE.deliveryBusinessDays} ימי עסקים</li>
               </ul>
             </div>
