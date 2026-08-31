@@ -13,7 +13,17 @@ import LexIcon from "@/components/LexIcon";
  *
  * `priority` is set on /eligibility only, where the Mia image is the LCP element.
  */
-export default function Tribute({ priority = false }: { priority?: boolean }) {
+export default function Tribute({
+  priority = false,
+  deepLink = false,
+}: {
+  priority?: boolean;
+  /** Homepage only: link through to the dedicated /eligibility page.
+      Without this the removal of the entry-path grid leaves /eligibility with
+      no inbound link from the homepage at all — orphaned for crawlers and
+      invisible to anyone who does not open the WhatsApp chat. */
+  deepLink?: boolean;
+}) {
   return (
     <section className="block tribute-sec" id="tribute">
       <div className="wrap">
@@ -117,6 +127,11 @@ export default function Tribute({ priority = false }: { priority?: boolean }) {
               <p className="tribute-cta-note">
                 בדיקה ראשונית בוואטסאפ, בלי התחייבות · מענה אישי בעברית.
               </p>
+              {deepLink && (
+                <p className="tribute-more">
+                  <a href="/eligibility">כל הפרטים על הזכאות והמסלול המלא ←</a>
+                </p>
+              )}
             </div>
           </div>
         </div>

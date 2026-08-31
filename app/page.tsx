@@ -67,7 +67,7 @@ export default function Page() {
         {/* 6 · קלנועית, לא רכב + זכאות */}
         <section className="movement" data-beat="trust" aria-label="מעמד חוקי וזכאות">
           <LegalStatus />
-          <Tribute />
+          <Tribute deepLink />
         </section>
 
         {/* 7 · הצעד הבא */}
