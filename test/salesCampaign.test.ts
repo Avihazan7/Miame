@@ -75,6 +75,26 @@ describe("simulator runs exactly one track", () => {
     expect(TRACKS.private.discountPct).toBe(0);
   });
 
+  it("opens at the owner's 25% anchor, not at the top of the range", () => {
+    // The default is what every visitor sees before touching anything, so it is
+    // a commercial decision and not a UI default. At 50% the simulator opened on
+    // the largest outlay the track allows. Asserting the RESULT, not just the
+    // number: on the entry model 25% must land on 4,975 ₪ down and 829 ₪ a month.
+    expect(TRACKS.private.down.default).toBe(25);
+
+    const entry = MODELS.find((m) => m.price === 19_900);
+    expect(entry, "the 19,900 ₪ entry model the anchor was chosen against").toBeDefined();
+    const q = computeQuote({
+      basePrice: entry!.price,
+      type: "private",
+      downPct: TRACKS.private.down.default,
+      balloonPct: 0,
+      months: TRACKS.private.months.default,
+    });
+    expect(q.downAmount).toBe(4_975);
+    expect(q.monthlyPayment).toBe(829);
+  });
+
   it("the quote contract is unchanged — no interest, no balloon, no discount", () => {
     for (const m of MODELS) {
       const q = computeQuote({
@@ -229,5 +249,26 @@ describe("one WhatsApp route, offered everywhere", () => {
   it("the four-route entry fork is gone from the homepage", () => {
     expect(read("app/page.tsx")).not.toContain("EntryPaths");
     expect(existsSync(resolve(ROOT, "components/EntryPaths.tsx"))).toBe(false);
+  });
+});
+
+describe("one route out of the Free Feel moment", () => {
+  // The block used to offer a second button to the Eilat rental page — a
+  // different product, at the exact moment the visitor is deciding whether to
+  // buy. The focused campaign sells one thing, so the fork is gone.
+  const fm = readFileSync("components/FreedomMomentVideo.tsx", "utf8");
+  const sitemap = readFileSync("public/sitemap.xml", "utf8");
+
+  it("offers no rental fork", () => {
+    expect(fm).not.toContain("rent-eilat");
+    expect(fm).not.toContain("השכרה באילת");
+  });
+
+  it("does not submit a page nothing links to", () => {
+    // That link was the site's ONLY inbound route to /rent-eilat. Leaving the
+    // URL in the sitemap after removing it would submit an orphan for indexing —
+    // the same regression the EntryPaths removal caused once already. The page
+    // still answers on a direct URL; it is simply no longer promoted.
+    expect(sitemap).not.toContain("rent-eilat");
   });
 });

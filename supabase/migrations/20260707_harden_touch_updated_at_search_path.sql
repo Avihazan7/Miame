@@ -25,5 +25,29 @@
 -- production DB that NEXT_PUBLIC_SUPABASE_URL points MiaMe at). Risk: none —
 -- behaviour-preserving; no data touched; no RLS/policy change; instant catalog op.
 
-alter function public.seo_touch_updated_at()      set search_path = public, pg_temp;
-alter function public.catalog_touch_updated_at()  set search_path = public, pg_temp;
+-- ⚠ GUARDED (2026-08-31). A bare ALTER FUNCTION on an absent function does not
+--   degrade — it THROWS, and takes the whole transaction with it. Measured on the
+--   MiaMe project (thhyfwoeybkptxvbpcmg) on 2026-08-31: NEITHER function exists
+--   there; the MiaMe data plane holds six tables and no seo/catalog surface. So
+--   this file, run as written, aborted any replay that reached it.
+--   The guard makes the migration a no-op where the target is absent and keeps it
+--   behaviour-preserving where the target is present. It is NOT a licence to apply
+--   this file to MiaMe: supabase/phases.json marks it `foreign` for that reason.
+do $pin$
+begin
+  if exists (
+    select 1 from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'seo_touch_updated_at'
+  ) then
+    execute 'alter function public.seo_touch_updated_at() set search_path = public, pg_temp';
+  end if;
+
+  if exists (
+    select 1 from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'catalog_touch_updated_at'
+  ) then
+    execute 'alter function public.catalog_touch_updated_at() set search_path = public, pg_temp';
+  end if;
+end $pin$;

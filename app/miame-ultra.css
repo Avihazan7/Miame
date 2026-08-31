@@ -816,6 +816,28 @@ body{text-rendering:optimizeLegibility;-webkit-font-smoothing:auto;
   .fm-frame{width:min(100%,300px);border-radius:20px}
   .fm-actions .btn{width:100%}
 }
+/* Two columns from 900px up.
+   Stacked and centred, this block put a 360px vertical video in the middle of an
+   ~1,100px card — roughly 370px of dead black on each side of a tall frame, which
+   is what made it read as unfinished rather than cinematic. A 9:16 clip needs a
+   partner beside it, not air. The copy and the CTA take the free width, the frame
+   grows a little, and the card hugs its content instead of framing a void.
+   Mirrors .soon-card, which flips to a row at 780px for the same reason. */
+@media(min-width:900px){
+  .fm-shell{
+    display:grid;grid-template-columns:1fr auto;
+    column-gap:clamp(32px,4.5vw,64px);align-items:center;
+  }
+  /* The frame spans both rows, so the two text rows together stretch to its
+     height and would otherwise pin the copy to the top and the CTA to the floor
+     with ~500px of nothing between them. Anchoring one to the end of its row and
+     the other to the start of the next makes the pair meet in the middle — no
+     wrapper element, and it stays correct at any frame height. */
+  .fm-copy{grid-column:1;grid-row:1;align-self:end;text-align:start;max-width:none;margin:0}
+  .fm-desc{margin-inline:0}
+  .fm-actions{grid-column:1;grid-row:2;align-self:start;justify-content:flex-start;margin-top:24px}
+  .fm-frame{grid-column:2;grid-row:1 / span 2;width:min(32vw,400px);margin:0}
+}
 
 /* ============================================================================
    HOW-TO / UNBOXING VIDEO — a lazy YouTube section on the product page. Poster

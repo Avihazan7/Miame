@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://miame.co.il/schema/supabase-phases.json",
+  "title": "MiaMe migration phase manifest",
+  "description": "The manifest is a CONTRACT, not a log. scripts/migrations-check.mjs validates every phase against this file, and scripts/migrations-apply.mjs refuses any status that is not `pending` before it opens a database connection.",
+  "type": "object",
+  "required": ["project", "phases"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "doc": { "type": "array", "items": { "type": "string" } },
+    "project": {
+      "type": "object",
+      "required": ["ref", "role", "ledgerSchema", "ledgerTable"],
+      "properties": {
+        "ref": { "type": "string", "pattern": "^[a-z]{20}$" },
+        "role": { "type": "string" },
+        "ledgerSchema": { "type": "string" },
+        "ledgerTable": { "type": "string" },
+        "measuredAt": { "type": "string" },
+        "measuredTables": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "status", "migrations"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "status": {
+            "enum": ["applied", "pending", "hold", "superseded", "replay-only", "foreign"],
+            "description": "applied = in the ledger. pending = approved to apply, THE ONLY status the applier accepts. hold = real work, product decision missing. superseded = a later migration already does this. replay-only = needed to build from empty, never applied live. foreign = belongs to another database."
+          },
+          "risk": { "type": "string" },
+          "evidence": { "type": "string" },
+          "why": { "type": "array", "items": { "type": "string" } },
+          "supersededBy": {
+            "type": "string",
+            "description": "Required when status is `superseded`: the migration filename that replaced this one. A phase marked superseded with nothing to point at is an assertion, not a record."
+          },
+          "migrations": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["file"],
+              "properties": {
+                "file": { "type": "string", "pattern": "\\.sql$" },
+                "ledger": {
+                  "type": "string",
+                  "pattern": "^\\d{14}$",
+                  "description": "The version production actually carries. NOT always the filename prefix."
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

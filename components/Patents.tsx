@@ -19,6 +19,8 @@ export default function Patents() {
             src="/mia-four-x4-pure-freedom.webp"
             alt="MIA FOUR · Pure Freedom · טכנולוגיית ארבעה גלגלים ממוזערת מוגנת פטנט (PATENTED)"
             loading="lazy"
+          width={1088}
+          height={1041}
           />
           <div className="photo-cap">
             <b>Pure Freedom · מוגן פטנט</b>

@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import FloatingWa from "@/components/FloatingWa";
 import Tribute from "@/components/Tribute";
 import LegalStatus from "@/components/LegalStatus";
+import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
 // Dedicated conversion route for the defence-forces eligibility funnel. Reuses the
 // existing Tribute + LegalStatus sections; legal-safe wording, no automatic claims.
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
 export default function EligibilityPage() {
   return (
     <>
+      <BreadcrumbJsonLd name="זכאות כוחות הביטחון" path="/eligibility" />
       <Header />
       <main id="main">
         <h1 className="sr-only">זכאות כוחות הביטחון · MiaMe</h1>

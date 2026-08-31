@@ -1436,3 +1436,153 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 
 /* Visually-hidden but accessible (screen readers + SEO) main heading. */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* ============================================================================
+   MIA Dynamics gallery — the engineering close.
+   A mosaic, not a uniform grid: three of the source frames are 225px originals
+   and are laid out as small accent tiles rather than upscaled into a large slot.
+   A crisp small tile reads as considered; a soft large one reads as cheap.
+   ========================================================================== */
+.dyn-sec{background:linear-gradient(180deg,var(--bg-pearl),var(--bg-platinum))}
+.dyn-grid{display:grid;gap:clamp(14px,2vw,20px);grid-template-columns:repeat(2,minmax(0,1fr));
+  margin-top:clamp(22px,3vw,34px)}
+@media(min-width:760px){.dyn-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.dyn-card{margin:0;border-radius:var(--r-lg);overflow:hidden;background:#fff;
+  border:1px solid var(--hairline);box-shadow:var(--shadow-sm);
+  display:flex;flex-direction:column;transition:transform .2s ease,box-shadow .2s ease}
+.dyn-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.dyn-media{position:relative;overflow:hidden;background:var(--surface-glass)}
+.dyn-media img{display:block;width:100%;height:100%;object-fit:cover}
+.dyn-card figcaption{display:grid;gap:5px;padding:clamp(14px,1.8vw,20px)}
+.dyn-card figcaption b{font-size:var(--type-small);font-weight:800;color:var(--ink-navy)}
+.dyn-card figcaption span{font-size:14px;line-height:1.55;color:var(--ink-muted)}
+/* column spans — mobile first, then the six-column desktop mosaic */
+.dyn-hero{grid-column:span 2}
+.dyn-wide{grid-column:span 2}
+.dyn-tile{grid-column:span 2}
+@media(min-width:760px){
+  .dyn-hero{grid-column:span 3}
+  .dyn-wide{grid-column:span 3}
+  .dyn-tile{grid-column:span 2}
+  .dyn-hero .dyn-media{aspect-ratio:1/1}
+  .dyn-wide .dyn-media{aspect-ratio:4/3}
+  .dyn-tile .dyn-media{aspect-ratio:1/1}
+}
+@media(max-width:759px){
+  .dyn-hero .dyn-media,.dyn-wide .dyn-media{aspect-ratio:4/3}
+  .dyn-tile{grid-column:span 1}
+  .dyn-tile .dyn-media{aspect-ratio:1/1}
+  .dyn-tile figcaption span{display:none}
+}
+.dyn-patents{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+  gap:12px 18px;margin-top:clamp(22px,3vw,32px);padding:16px 20px;border-radius:999px;
+  background:var(--surface-glass);border:1px solid var(--hairline)}
+.dyn-patents-tag{display:inline-flex;align-items:center;gap:8px;font-weight:800;
+  font-size:var(--type-small);color:var(--ink-teal)}
+.dyn-patents-list{display:flex;flex-wrap:wrap;gap:8px 16px;
+  font-family:var(--font-grotesk),system-ui,sans-serif;font-size:13px;font-weight:700;
+  color:var(--ink-muted);letter-spacing:.02em}
+.dyn-cta{display:flex;justify-content:center;margin-top:clamp(22px,3vw,30px)}
+
+/* ============================================================================
+   SPYQE pre-order — the offer block inside .soon-card.
+   The monthly payment is the headline at display size; the total, the struck
+   list price and the saving sit under it as support. Reversed hierarchy (total
+   first) was tried and rejected: the owner quotes this deal as "599 × 18", and
+   that is the number a buyer carries away.
+   ========================================================================== */
+.soon-hero{width:100%;max-width:340px;height:auto;margin:0 auto 14px;display:block;
+  filter:drop-shadow(0 22px 38px rgba(0,229,221,.28))}
+.spq-offer{margin-top:18px;padding:16px 18px;border-radius:var(--r-md,14px);
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);text-align:center}
+@media(min-width:780px){.spq-offer{text-align:right}}
+.spq-price{display:flex;align-items:baseline;gap:10px;justify-content:center;flex-wrap:wrap}
+@media(min-width:780px){.spq-price{justify-content:flex-start}}
+.spq-monthly{font-size:clamp(38px,6.4vw,54px);font-weight:900;line-height:1;color:#fff;
+  letter-spacing:-.02em}
+.spq-per{font-size:var(--type-small,15px);font-weight:700;color:#9fe9e4}
+.spq-totals{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;
+  justify-content:center}
+@media(min-width:780px){.spq-totals{justify-content:flex-start}}
+.spq-totals b{font-size:19px;font-weight:800;color:#fff}
+.spq-totals s{font-size:15px;color:rgba(207,224,255,.62)}
+.spq-save{font-size:13px;font-weight:800;color:#06302e;background:var(--cyan,#0ce5dd);
+  border-radius:999px;padding:3px 10px}
+.spq-terms{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;
+  justify-content:center;font-size:13.5px;line-height:1.5;color:#cfe0ff}
+@media(min-width:780px){.spq-terms{justify-content:flex-start}}
+.spq-terms li{position:relative;padding-inline-start:14px}
+.spq-terms li::before{content:"";position:absolute;inset-inline-start:0;top:.55em;
+  width:5px;height:5px;border-radius:50%;background:var(--cyan,#0ce5dd)}
+
+/* .soon-media was `display:flex` with a single child (the tile grid), so row
+   layout was invisible. The hero image is a second child — without an explicit
+   column direction the two share the width and the tiles collapse to ~42px. */
+.soon-media{flex-direction:column;align-items:center;gap:12px}
+.soon-media .soon-gallery{grid-template-columns:repeat(3,1fr);max-width:340px;margin:0}
+/* The badge is in normal flow now, in the text column, so it no longer anchors
+   to .soon-media and landing mid-card. */
+.spq-kicker{display:inline-flex;align-items:center;background:var(--cyan,#0ce5dd);
+  color:#06302e;font-weight:800;font-size:12px;border-radius:999px;padding:6px 14px;
+  letter-spacing:.02em}
+
+/* SPYQE film tile. Fixed 16:9 on the wrapper so the tile holds its space before
+   the poster arrives — the poster is a remote YouTube thumbnail and its
+   dimensions are not known until it lands. */
+.spq-video{position:relative;width:100%;max-width:340px;aspect-ratio:16/9;border-radius:14px;
+  overflow:hidden;background:#04203f;box-shadow:0 14px 28px rgba(0,0,0,.28)}
+.spq-video iframe,.spq-video-poster{position:absolute;inset:0;width:100%;height:100%;border:0}
+.spq-video-poster{padding:0;cursor:pointer;background:#04203f;display:block}
+.spq-video-poster img{width:100%;height:100%;object-fit:cover;display:block}
+.spq-video-play{position:absolute;inset-block-start:50%;inset-inline-start:50%;
+  transform:translate(50%,-50%);width:52px;height:52px;border-radius:50%;
+  display:grid;place-items:center;font-size:19px;color:#06302e;
+  background:var(--cyan,#0ce5dd);box-shadow:0 8px 22px rgba(0,0,0,.35)}
+.spq-video-tag{position:absolute;inset-block-start:10px;inset-inline-end:10px;
+  font-size:11px;font-weight:800;letter-spacing:.04em;color:#06302e;
+  background:rgba(255,255,255,.92);border-radius:999px;padding:4px 10px}
+.spq-video-poster:focus-visible{outline:3px solid var(--cyan,#0ce5dd);outline-offset:2px}
+
+/* SPYQE spec table. A real <table> with row headers, not a div grid: this is
+   tabular data and a screen reader should be able to say "מנוע — BLDC" rather
+   than read two unrelated strings in sequence. */
+.spq-spec{width:100%;margin-top:16px;border-collapse:collapse;font-size:14px;text-align:start}
+.spq-spec th,.spq-spec td{padding:9px 0;vertical-align:top;
+  border-block-end:1px solid rgba(255,255,255,.12)}
+.spq-spec tr:last-child th,.spq-spec tr:last-child td{border-block-end:0}
+.spq-spec th{font-weight:700;color:#9fe9e4;white-space:nowrap;padding-inline-end:16px;width:1%}
+.spq-spec td{color:#fff}
+.spq-spec-v{display:block;font-weight:700}
+.spq-spec-n{display:block;margin-top:2px;font-size:12.5px;line-height:1.5;
+  color:rgba(207,224,255,.7);font-weight:400}
+.spq-spec-src{margin:8px 0 0;font-size:12px;color:rgba(207,224,255,.6)}
+
+/* SPYQE payment steps — deposit now, balance on arrival. Numbered because the
+   order is the whole point: nobody pays the full amount for a vehicle that has
+   not landed. */
+.spq-steps{list-style:none;counter-reset:spq;margin:14px 0 0;padding:0;display:grid;gap:8px}
+.spq-steps li{counter-increment:spq;display:flex;align-items:baseline;gap:8px;
+  padding-inline-start:26px;position:relative;font-size:14px;color:#cfe0ff}
+.spq-steps li::before{content:counter(spq);position:absolute;inset-inline-start:0;top:0;
+  width:19px;height:19px;border-radius:50%;display:grid;place-items:center;
+  font-size:11px;font-weight:800;color:#06302e;background:var(--cyan,#0ce5dd)}
+.spq-steps b{font-size:16px;font-weight:800;color:#fff;white-space:nowrap}
+
+/* CLS · the three <img> whose intrinsic size cannot be known at build time —
+   YouTube posters (remote thumbnails) and the 360 stage frames. width/height
+   attributes are impossible there, so the BOX reserves the space instead.
+   Measured before this: mobile CLS ranged 0.30–1.15 against Google's 0.10
+   threshold, while desktop sat at 0.046 — which is why it went unnoticed. */
+.cinema-poster img,
+.spq-video-poster img,
+.howto-poster img{aspect-ratio:16/9;width:100%;height:100%;object-fit:cover}
+
+/* ROOT CAUSE of the SPYQE section's mobile CLS.
+   .soon-media is a flex item and .soon-card centres its children, so the media
+   column never stretched — its width came from its content, which is ~72px until
+   the images land. .spq-video at width:100% therefore reserved a 72×40 box and
+   then jumped to 340×191, taking the offer, the spec table and the CTA with it.
+   Measured before: mobile CLS 0.28–0.53 with the shift attributed to
+   `<button.spq-video-poster> h:0→170`. Desktop never showed it, because the row
+   layout gave the column a width all along. */
+.soon-media{width:100%;align-self:stretch}

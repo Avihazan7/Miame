@@ -1,4 +1,4 @@
-import { IMPORTER_NAME } from "@/lib/content";
+import { IMPORTER_NAME, MIA_FOUR_DELIVERY_DAYS } from "@/lib/content";
 import LexIcon, { type LexName } from "@/components/LexIcon";
 import WaCta from "@/components/WaCta";
 
@@ -15,7 +15,15 @@ import WaCta from "@/components/WaCta";
  * route on this site is MiaMe's own WhatsApp.
  */
 
+/**
+ * "עד 3 ימי עסקים" is the owner's stated supply commitment for MIA FOUR, which
+ * is in stock now. It leads the list because it is the one thing a ready buyer
+ * actually wants to know, and because it is what separates MIA FOUR from the
+ * SPYQE pre-order further down the page — same platform, two different waits.
+ * Phrased as a ceiling ("עד") and qualified by stock, never as a guarantee.
+ */
 const POINTS: { icon: LexName; k: string; v: string }[] = [
+  { icon: "bolt", k: `אספקה עד ${MIA_FOUR_DELIVERY_DAYS} ימי עסקים`, v: "במלאי, בכפוף לזמינות" },
   { icon: "globe", k: "מסירה בכל הארץ", v: "מתואמת אתכם מראש מול נציג" },
   { icon: "shield", k: "אחריות יבואן רשמי", v: IMPORTER_NAME },
   { icon: "wrench", k: "שירות וחלפים מקוריים", v: "לאורך תקופת האחריות" },
@@ -31,7 +39,8 @@ export default function Service() {
             <h2 className="sec-title">משלוח ומסירה בכל חלקי הארץ</h2>
             <p className="sec-desc">
               מיה פור מיובאת רשמית על ידי {IMPORTER_NAME} ונמכרת עם אחריות יבואן רשמי.
-              בכל אזור בארץ, המסירה מתואמת אתכם מראש.
+              הכלים במלאי, והאספקה אליכם עד {MIA_FOUR_DELIVERY_DAYS} ימי עסקים — בכל אזור בארץ,
+              במסירה מתואמת מראש.
             </p>
           </div>
 

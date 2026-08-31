@@ -22,6 +22,8 @@ export default function Engineering() {
             src="/mia-four-x4-rear.webp"
             alt="שלדת מיה פור 4×4 Pro Max · מתלים עצמאיים ופלטפורמת ארבעה גלגלים מוגנת פטנט"
             loading="lazy"
+          width={934}
+          height={521}
           />
         </div>
 

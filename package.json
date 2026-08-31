@@ -14,7 +14,13 @@
     "build:glb": "node scripts/build-glb.mjs",
     "optimize:images": "node scripts/optimize-images.mjs",
     "publish:glb": "node scripts/publish-glb-to-bucket.mjs",
-    "verify:m21a": "node scripts/verify-m21a.mjs"
+    "verify:m21a": "node scripts/verify-m21a.mjs",
+    "migrations:check": "node scripts/migrations-check.mjs",
+    "migrations:status": "node scripts/migrations-apply.mjs",
+    "migrations:plan": "node scripts/migrations-apply.mjs --plan",
+    "migrations:apply": "node scripts/migrations-apply.mjs --apply",
+    "knowledge:status": "node scripts/knowledge-embed.mjs",
+    "knowledge:embed": "node scripts/knowledge-embed.mjs --embed"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",
@@ -45,6 +51,7 @@
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.35",
+    "pg": "^8.13.1",
     "playwright": "^1.61.1",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.6",

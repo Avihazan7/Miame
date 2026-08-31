@@ -12,7 +12,9 @@ export default function Specs() {
         </div>
         <div className="specs-wrap">
           <div className="specs-media specs-media--product">
-            <img className="floaty" src="/mia-white.webp" alt="מיה פור 4×4 Pro Max · הקלנועית המלאה" loading="lazy" />
+            <img className="floaty" src="/mia-white.webp" alt="מיה פור 4×4 Pro Max · הקלנועית המלאה" loading="lazy"
+          width={900}
+          height={880} />
           </div>
           <div className="specs-table">
             <div className="spec-row">

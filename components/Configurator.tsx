@@ -410,7 +410,9 @@ export default function Configurator() {
                 height={860}
                 className="res-product"
               />
-              <img src="/mia-four-logo.webp" alt="MIA FOUR" className="res-logo" loading="lazy" />
+              <img src="/mia-four-logo.webp" alt="MIA FOUR" className="res-logo" loading="lazy"
+          width={1600}
+          height={599} />
               <div className="res-eyebrow">עד 18 תשלומים ללא ריבית והצמדה</div>
               <div className="res-model">
                 <bdi dir="ltr">{model.name}</bdi>

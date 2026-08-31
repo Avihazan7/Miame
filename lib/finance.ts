@@ -21,7 +21,12 @@ export interface TrackRule {
   note: string;
 }
 
-const DOWN_RULE: SliderRule = { min: 0, max: 50, default: 50, step: 1, locked: false, hidden: false };
+// The slider still spans 0%–50%; what changed is where it OPENS. At 50% the
+// simulator greeted every visitor with the largest cash outlay the track allows,
+// which reads as the price of entry rather than as one end of a range. 25% is the
+// owner's chosen anchor: on the 19,900 ₪ entry model it lands at 4,975 ₪ down and
+// 829 ₪ a month — a number a buyer can picture without moving anything.
+const DOWN_RULE: SliderRule = { min: 0, max: 50, default: 25, step: 1, locked: false, hidden: false };
 const MONTHS_RULE: SliderRule = { min: 3, max: 18, default: 18, step: 1, locked: false, hidden: false };
 // Balloon stays in the contract for old lead/WhatsApp/API payloads, but is no longer exposed.
 const NO_BALLOON_RULE: SliderRule = { min: 0, max: 0, default: 0, step: 1, locked: true, hidden: true };

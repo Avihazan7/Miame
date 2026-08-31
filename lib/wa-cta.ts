@@ -11,6 +11,7 @@
 // Pure string builders: no I/O, no clock. Safe to unit-test.
 
 import { buildWhatsAppUrl } from "./whatsapp";
+import { SPYQE, SPYQE_TOTAL, ils } from "./spyqe";
 
 export type WaIntent = "inquiry" | "order";
 
@@ -69,11 +70,18 @@ export const WA_CTA = {
     label: "לא מצאתם תשובה? דברו איתי",
     message: "היי MiaMe, יש לי שאלה שלא מצאתי עליה תשובה באתר 🦋",
   },
+  // The old message said we would update the buyer "when ordering opens".
+  // Ordering IS open, on stated terms — so the message now carries the exact
+  // offer the sender is accepting. The agent on the other end should never have
+  // to re-quote the price, the term or the delivery estimate.
   spyqe: {
     intent: "order",
-    label: "הרשמה לרכישה מוקדמת",
+    label: "הרשמה והזמנה מוקדמת",
     message:
-      "היי MiaMe, אשמח להירשם לרכישה מוקדמת של SPYQE ולקבל עדכון כשנפתחת ההזמנה 🦋",
+      `היי MiaMe, אשמח להירשם להזמנה מוקדמת של ${SPYQE.name} — ` +
+      `${ils(SPYQE.deposit)} מקדמה ועוד ${ils(SPYQE.monthlyPayment)} × ${SPYQE.months} תשלומים ` +
+      `(${ils(SPYQE_TOTAL)} במקום ${ils(SPYQE.listPrice)}), ` +
+      `במסגרת ${SPYQE.slots} הזוכים הראשונים 🦋`,
   },
 } as const satisfies Record<string, WaCta>;
 

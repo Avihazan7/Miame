@@ -32,13 +32,28 @@ begin
     return;
   end if;
 
+-- ⚠ ALIGNED AT SOURCE (2026-08-31) — SEVEN rows: `contact` · `dealers` · `finance`
+--   · `service` · `simulator-how` · `lead` · `delivery`.
+--   They used to seed the dealer network with five city names, route buyers through
+--   a flagship store WITH ITS STREET ADDRESS, describe a balloon payment and three
+--   customer tracks the simulator no longer has, and state the wrong instalment
+--   count and "immediate delivery". The campaign deleted
+--   all of that from the site, and 20260831_knowledge_sales_campaign_alignment.sql
+--   rewrote the live rows to match.
+--   Patching after the fact is not the same as being correct. This file is the
+--   REPLAY path: on a fresh database it is what fills the corpus, and a seed that
+--   carries content the campaign deleted is a landmine for anyone who applies it
+--   standalone or reorders the phases. The bodies below are now byte-identical to
+--   what production carries, so the file is right in isolation and not only after
+--   a later file runs. Keep the two in step — see supabase/phases.json phase 10.
+
   insert into public.knowledge (id, source, category, body) values
     ('colors', 'MiaMe/Models', 'models', 'מיה פור זמינה בשחור פרימיום עם הדגשי תכלת.'),
-    ('contact', 'MiaMe/Funnel', 'lead', 'יצירת קשר: וואטסאפ ישיר באתר (כפתור "דברו איתי"), או דרך חנות הדגל והמשווקים המורשים.'),
-    ('dealers', 'MiaMe/Service', 'service', 'רשת משווקים מורשים בכל הארץ (הוד-השרון, תל אביב, ירושלים, אשקלון, אילת ועוד) — חיוג וניווט באתר.'),
-    ('delivery', 'MiaMe/Service', 'service', 'אספקה מיידית, בכפוף לזמינות מלאי.'),
-    ('finance', 'MiaMe/Finance', 'finance', 'מסלולי תשלום ב-0% ריבית בכפוף לאישור; עד 26 תשלומים במסלול פרטי. הסימולטור באתר בונה הצעה תוך דקה.'),
-    ('lead', 'MiaMe/Funnel', 'lead', 'פנייה ועסקה דרך WhatsApp: הסימולטור שולח הצעה מלאה (דגם, מקדמה, בלון, תקופה, תשלום חודשי) ישירות לוואטסאפ.'),
+    ('contact', 'MiaMe/Funnel', 'lead', 'יצירת קשר: וואטסאפ ישיר באתר (כפתור "דברו איתי"), או השארת פרטים בסימולטור התשלומים. אין סניפים ואין קווי טלפון נוספים — כל פנייה מגיעה לנציג MiaMe.'),
+    ('dealers', 'MiaMe/Service', 'service', 'מכירה ומסירה מתואמת בכל אזורי הארץ, מול נציג MiaMe. אין רשת סניפים ואין רשימת משווקים באתר.'),
+    ('delivery', 'MiaMe/Service', 'service', 'מיה פור נמצאת במלאי. האספקה אליכם עד 3 ימי עסקים, בכפוף לזמינות מלאי, בכל אזור בארץ ובמסירה מתואמת מראש. זמן האספקה של SPYQE שונה - הוא דגם בהזמנה מוקדמת.'),
+    ('finance', 'MiaMe/Finance', 'finance', 'מסלולי תשלום ב-0% ריבית בכפוף לאישור עסקה; עד 18 תשלומים ללא ריבית והצמדה. הסימולטור באתר בונה הצעה תוך דקה.'),
+    ('lead', 'MiaMe/Funnel', 'lead', 'פנייה ועסקה דרך WhatsApp: הסימולטור שולח הצעה מלאה - דגם, מקדמה, מספר תשלומים ותשלום חודשי - ישירות לוואטסאפ.'),
     ('model-choose', 'MiaMe/Models', 'models', 'איך לבחור דגם: 4×2 לעיר וזריזות · 2×4 Long Range לטווח מורחב (35Ah) · 4×4 לארבעה מנועים והנעה כפולה בשטח.'),
     ('partner', 'MiaMe/Hub', 'partner', 'מודל שותף MiaMe Hub: השותף מחזיק את הצי, MiaMe מביאה ביקוש; 13% Success Fee מהפניות בלבד, ללא עלות קבועה.'),
     ('patent', 'MiaMe/Patents', 'specs', 'הפלטפורמה מוגנת פטנט — יציבות ובטיחות בארבעה גלגלים, יתרון ייחודי בשוק.'),
@@ -47,8 +62,8 @@ begin
     ('price-4x2', 'MiaMe/Models', 'pricing', 'מיה פור 4x2 (העירוני החכם) — מחיר MiaMe החל מ-19,900 ש"ח.'),
     ('price-4x4', 'MiaMe/Models', 'pricing', 'מיה פור 4x4 (4 מנועים, הנעה כפולה לשטח) — מחיר MiaMe החל מ-27,900 ש"ח.'),
     ('rental', 'MiaMe/Hub', 'rental', 'השכרת מיה פור: החל מ-50 ש"ח לשעה (50/100/180/245 ל-1/3/6/9 שעות) דרך רשת MiaMe Hub.'),
-    ('service', 'MiaMe/Service', 'service', 'יבואן רשמי MEU · Mayer Electric Utilities; חנות דגל אליעזר קפלן 21 תל אביב; שירות וחלפים ארצי.'),
-    ('simulator-how', 'MiaMe/Finance', 'finance', 'הסימולטור באתר: בוחרים דגם ומסלול (פרטי/עסקי/שותף), גוררים מקדמה/בלון/תקופה, ומקבלים תשלום חודשי משוער מיידי.'),
+    ('service', 'MiaMe/Service', 'service', 'יבואן רשמי MEU · Mayer Electric Utilities; אחריות יבואן רשמי, שירות וחלפים מקוריים. מסירה מתואמת בכל אזורי הארץ.'),
+    ('simulator-how', 'MiaMe/Finance', 'finance', 'הסימולטור באתר מריץ מסלול אחד: בוחרים דגם, קובעים מקדמה וגוררים את מספר התשלומים (עד 18, ללא ריבית והצמדה), ומקבלים תשלום חודשי משוער מיידי.'),
     ('spec-battery', 'MiaMe/Specs', 'specs', 'סוללת ליתיום נשלפת 60V, קיבולת 25/35Ah, תאי LG 21700, משקל כ-6.3 ק"ג.'),
     ('spec-brakes', 'MiaMe/Specs', 'specs', 'בלמים: דיסק הידראולי כפול 140 מ"מ; מערכת מתלים מלאה קדמית ואחורית, פלטפורמה מוגנת פטנט.'),
     ('spec-motor', 'MiaMe/Specs', 'specs', '2 או 4 מנועי BLDC, 1,800W כל אחד.'),

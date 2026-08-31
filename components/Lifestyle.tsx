@@ -12,28 +12,36 @@ export default function Lifestyle() {
         </div>
         <div className="life-grid">
           <div className="life-card">
-            <img src="/mia-fold-lot.webp" alt="מיה פור מקופלת · נכנסת לכל מקום" loading="lazy" />
+            <img src="/mia-fold-lot.webp" alt="מיה פור מקופלת · נכנסת לכל מקום" loading="lazy"
+          width={1100}
+          height={733} />
             <div className="life-cap">
               <b>חכם בעיר</b>
               <span>מתקפל · נייד · 42 ק״ג, נכנס לכל מקום</span>
             </div>
           </div>
           <div className="life-card">
-            <img src="/mia-wheel-detail.webp" alt="מתלים וצמיגי שטח · MIA Dynamics" loading="lazy" />
+            <img src="/mia-wheel-detail.webp" alt="מתלים וצמיגי שטח · MIA Dynamics" loading="lazy"
+          width={1000}
+          height={1000} />
             <div className="life-cap">
               <b>עוצמתי בשטח</b>
               <span>מתלים מלאים · צמיגי שטח MIA Dynamics</span>
             </div>
           </div>
           <div className="life-card">
-            <img src="/mia-four-x4-night-rear.jpg" alt="מיה פור 4×4 Pro Max · גימור סטודיו, מתלה אחורי ומערכת שיכוך חשופה" loading="lazy" />
+            <img src="/mia-four-x4-night-rear.jpg" alt="מיה פור 4×4 Pro Max · גימור סטודיו, מתלה אחורי ומערכת שיכוך חשופה" loading="lazy"
+          width={1080}
+          height={1080} />
             <div className="life-cap">
               <b>עיצוב שמדבר</b>
               <span>נוכחות פרימיום · קווים נקיים, אמין ורגוע</span>
             </div>
           </div>
           <div className="life-card">
-            <img src="/mia-four-x4-seat.webp" alt="מיה פור 4×4 Pro Max עם כיסא בשחרור מהיר · ישיבה או עמידה" loading="lazy" />
+            <img src="/mia-four-x4-seat.webp" alt="מיה פור 4×4 Pro Max עם כיסא בשחרור מהיר · ישיבה או עמידה" loading="lazy"
+          width={900}
+          height={880} />
             <div className="life-cap">
               <b>ישיבה או עמידה</b>
               <span>כיסא בשחרור מהיר ביד אחת · נוחות לכל אורך הדרך</span>
@@ -41,7 +49,9 @@ export default function Lifestyle() {
           </div>
         </div>
         <div className="life-band photo-frame">
-          <img src="/mia-beach.webp" alt="מיה פור על קו החוף · חופש בכל מקום" loading="lazy" />
+          <img src="/mia-beach.webp" alt="מיה פור על קו החוף · חופש בכל מקום" loading="lazy"
+          width={960}
+          height={640} />
           <div className="photo-cap">
             <b>חופש אמיתי, בכל מקום</b>
             <span>מהעיר, דרך החוף, אל השטח</span>

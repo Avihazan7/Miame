@@ -14,6 +14,7 @@ import MarketingScripts from "@/components/MarketingScripts";
 import ConsentBanner from "@/components/ConsentBanner";
 import { PRODUCT_PROPERTIES } from "@/lib/seo/product-jsonld";
 import { MODELS } from "@/lib/models";
+import { spyqeProductJsonLd } from "@/lib/spyqe";
 import { buildHomeFaqJsonLd } from "@/lib/home-faq";
 
 // Gate the cinematic entrance before first paint (no flash, no-JS safe).
@@ -137,6 +138,9 @@ const JSON_LD = {
       }
     },
     ...HOME_PRODUCTS,
+    // SPYQE is a PRE-ORDER, not stock, and it carries its own properties — the
+    // shared PRODUCT_PROPERTIES list quotes a MIA FOUR motor rating.
+    spyqeProductJsonLd(SITE_URL),
     // NOTE — there is deliberately NO LocalBusiness node here.
     // MiaMe sells and delivers nationwide; it does not publish a storefront.
     // The previous node published a named physical storefront and its street

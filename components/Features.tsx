@@ -74,7 +74,9 @@ export default function Features() {
 
         <div className="feat-show">
           <div className="feat-show-main photo-frame">
-            <img src="/mia-fold-trunk.webp" alt="מיה פור מתקפלת ונכנסת לתא המטען" loading="lazy" />
+            <img src="/mia-fold-trunk.webp" alt="מיה פור מתקפלת ונכנסת לתא המטען" loading="lazy"
+          width={1100}
+          height={733} />
             <span className="photo-tag">מתקפל · נייד</span>
             <div className="photo-cap">
               <b>מתקפל ונכנס לתא המטען</b>
@@ -82,7 +84,9 @@ export default function Features() {
             </div>
           </div>
           <div className="feat-show-detail photo-frame">
-            <img src="/mia-four-x4-night-front.jpg" alt="מיה פור 4×4 Pro Max · גימור סטודיו פרימיום, פלטפורמת ארבעה גלגלים" loading="lazy" />
+            <img src="/mia-four-x4-night-front.jpg" alt="מיה פור 4×4 Pro Max · גימור סטודיו פרימיום, פלטפורמת ארבעה גלגלים" loading="lazy"
+          width={554}
+          height={554} />
             <div className="photo-cap">
               <b>MIA FOUR 4×4 Pro Max</b>
               <span>עיצוב פרימיום · פלטפורמת 4×4</span>
