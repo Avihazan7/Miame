@@ -157,7 +157,30 @@ export async function retrieve(query: string, k = 4): Promise<KnowledgeDoc[]> {
   if (embeddingsReady) {
     try {
       const hits = await vectorRetrieve(query, k);
-      if (hits.length) return hits; // empty ⇒ corpus not backfilled ⇒ fall through
+      if (hits.length >= k) return hits;
+
+      // SHORT, BUT NOT EMPTY — the case this used to get wrong.
+      //
+      // The old condition was `if (hits.length) return hits`, so ONE hit counted as
+      // success and the keyword path never ran. That is not a hypothetical: the
+      // ivfflat index this schema shipped returned exactly one row for any k
+      // (measured 2026-08-31; removed in 20260901_knowledge_exact_vector_search).
+      // Under the old condition the vector path would have answered every question
+      // from a single document, quieter and worse than the keyword path it replaced.
+      //
+      // Dropping the index fixed that instance. This fixes the CLASS: whenever the
+      // vector path returns fewer documents than asked for, top the answer up from
+      // keyword retrieval instead of answering thin. If the corpus genuinely holds
+      // fewer than k rows, both paths are short and the union is simply all of it —
+      // no harm. If the vector path is under-returning for any reason, the gap is
+      // filled with real documents rather than hidden. Never worse than either path
+      // alone, and it cannot fail silently.
+      if (hits.length) {
+        const seen = new Set(hits.map((h) => h.id));
+        const topUp = (await keywordRetrieve(query, k)).filter((d) => !seen.has(d.id));
+        return [...hits, ...topUp].slice(0, k);
+      }
+      // empty ⇒ corpus not backfilled ⇒ fall through
     } catch {
       // provider/RPC hiccup ⇒ degrade gracefully to keyword
     }
