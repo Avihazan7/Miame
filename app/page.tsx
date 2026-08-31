@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import EntryPaths from "@/components/EntryPaths";
 import About from "@/components/About";
 import Lifestyle from "@/components/Lifestyle";
 import Features from "@/components/Features";
@@ -32,17 +31,18 @@ export default function Page() {
       {/* P1 — Ultra Master Rhythm: the homepage reads as EIGHT movements, not
           twenty separate beats. Each `.movement` groups its sub-blocks over one
           continuous aurora so the eye counts a single section, not a stack. The
-          narrative arc is unchanged (brand → paths → feel → product → deal →
-          trust → act → answers); TestRide's redundant CTA folded away (sticky WA
-          + Configurator + DealBuzz carry it), Spyqe folded into the closing act. */}
+          narrative arc is brand → trust → feel → product → deal → eligibility →
+          act → answers. The entry-path fork was removed so the page sells ONE
+          thing; Spyqe closes the act as the "what's next" note. */}
       <main id="main">
         {/* 1 · Hero */}
         <Hero />
 
-        {/* 2 · מסלולי כניסה + אמון */}
-        <section className="movement" data-beat="paths" aria-label="מסלולי כניסה">
+        {/* 2 · אמון — the four-route entry grid was removed: a focused sales
+            campaign offers ONE route (buy MIA FOUR), and a fork into rental and
+            partnership at the top of the page competed with it. */}
+        <section className="movement" data-beat="paths" aria-label="סימני אמון">
           <TrustSignalBar />
-          <EntryPaths variant="homepage" />
         </section>
 
         {/* 3 · הסיפור והתחושה */}

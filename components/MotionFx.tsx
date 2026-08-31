@@ -24,7 +24,7 @@ const SELECTORS = [
   ".tribute-calc",
   ".life-card",
   ".soon-card",
-  ".coverage-map",
+  ".delivery-band",
   ".specs-table",
   ".specs-media",
   ".importer-inner",
@@ -43,7 +43,7 @@ const SELECTORS = [
 const VARIANTS: Array<{ sel: string; v: string }> = [
   { sel: ".sec-head", v: "v-head" },
   {
-    sel: ".specs-media,.stage,.feat-show-main,.coverage-map,.tribute-calc,.importer-inner,.specs-table",
+    sel: ".specs-media,.stage,.feat-show-main,.tribute-calc,.importer-inner,.specs-table",
     v: "v-zoom"
   },
   { sel: ".stat-strip", v: "v-tilt" }

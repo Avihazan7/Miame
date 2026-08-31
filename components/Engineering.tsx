@@ -1,3 +1,4 @@
+import WaCta from "@/components/WaCta";
 import LexIcon from "@/components/LexIcon";
 // Engineering — the chassis deep-dive. Shows the real Mia FOUR 4×4 Pro Max frame (rear
 // 3/4 cutout) on a dark stage with an azure glow that echoes the Deal Aura, plus
@@ -45,6 +46,10 @@ export default function Engineering() {
             <div className="eng-k">בלימה הידראולית</div>
             <div className="eng-v">דיסק הידראולי כפול 140 מ"מ, עצירה בטוחה ומדויקת.</div>
           </div>
+        </div>
+
+        <div className="sec-wa-out">
+          <WaCta cta="engineering" variant="ghost" />
         </div>
       </div>
     </section>

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import WaCta from "@/components/WaCta";
 import LexIcon from "@/components/LexIcon";
 
 /**
@@ -113,16 +113,7 @@ export default function Tribute({ priority = false }: { priority?: boolean }) {
             </div>
 
             <div className="tribute-cta">
-              <a
-                className="btn btn-primary btn-block"
-                href={buildWhatsAppUrl(
-                  "היי, אשמח לבדוק זכאות לרכישת מיה פור דרך משרד הביטחון 🇮🇱"
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                בדיקת זכאות ורכישה דרך MiaMe
-              </a>
+              <WaCta cta="eligibility" variant="primary" block />
               <p className="tribute-cta-note">
                 בדיקה ראשונית בוואטסאפ, בלי התחייבות · מענה אישי בעברית.
               </p>

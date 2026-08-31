@@ -1,4 +1,5 @@
 import { HOME_FAQ } from "@/lib/home-faq";
+import WaCta from "@/components/WaCta";
 
 // Visible homepage FAQ (native <details>, no JS). Shares HOME_FAQ with the FAQPage
 // JSON-LD in app/layout.tsx, so the rich result can never claim an answer the
@@ -20,6 +21,9 @@ export default function FaqHome() {
               <p>{f.a}</p>
             </details>
           ))}
+        </div>
+        <div className="faq-home-out">
+          <WaCta cta="faq" variant="light" />
         </div>
       </div>
     </section>
