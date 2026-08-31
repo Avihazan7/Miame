@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function AccessibilityPage() {
   return (
-    <main className="legal">
+    <main id="main" className="legal">
       <a href="/" className="legal-back">← חזרה לדף הבית</a>
       <h1>הצהרת נגישות</h1>
       <p className="legal-meta">גרסה 1.0 · עודכן: {UPDATED}</p>

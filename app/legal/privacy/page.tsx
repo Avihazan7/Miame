@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <main className="legal">
+    <main id="main" className="legal">
       <a href="/" className="legal-back">← חזרה לדף הבית</a>
       <h1>מדיניות פרטיות</h1>
       <p className="legal-meta">גרסה 1.0 · עודכן: {UPDATED}</p>

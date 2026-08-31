@@ -60,7 +60,10 @@ function jsonLd(page: SeoPage) {
 // Presentational + server-rendered; the only client island is <SeoCta>.
 export default function SeoLanding({ page }: { page: SeoPage }) {
   return (
-    <main className="seo">
+    // id="main" is the target of the skip-link in app/layout.tsx, which renders on
+    // EVERY page. Without it the first focusable element on the page jumps nowhere —
+    // a WCAG 2.4.1 (Bypass Blocks) failure on a site that publicly commits to ת"י 5568.
+    <main id="main" className="seo">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(page)) }}

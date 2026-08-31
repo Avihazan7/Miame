@@ -20,7 +20,8 @@
     "migrations:plan": "node scripts/migrations-apply.mjs --plan",
     "migrations:apply": "node scripts/migrations-apply.mjs --apply",
     "knowledge:status": "node scripts/knowledge-embed.mjs",
-    "knowledge:embed": "node scripts/knowledge-embed.mjs --embed"
+    "knowledge:embed": "node scripts/knowledge-embed.mjs --embed",
+    "live:audit": "node scripts/live-audit.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",
