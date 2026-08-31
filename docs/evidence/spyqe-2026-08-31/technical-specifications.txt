@@ -1,0 +1,17 @@
+Technical Specifications
+Motor
+BLDC Dual Hub
+Top Speed
+25 km/h  | 15 mph | 45 km/h
+* US units are limited by law to 16 mph
+*Depending on rider weight, road conditions, state of charge, and ambient temperature
+Dimensions
+Width 22.12 inch | 562 mm
+Length 48 inch | 1225 mm
+Height 49.13 inch | 1248 mm
+Folded Height 17.3 inch | 439 mm
+Wheels
+12 inch
+Max Mileage
+Up to 50 km | 31 miles(mileage may vary depending on rider weight and road conditions
+View all

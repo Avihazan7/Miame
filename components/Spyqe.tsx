@@ -1,6 +1,14 @@
 import Image from "next/image";
 import WaCta from "@/components/WaCta";
-import { SPYQE, SPYQE_TOTAL, SPYQE_SAVING, ils } from "@/lib/spyqe";
+import SpyqeVideo from "@/components/SpyqeVideo";
+import {
+  SPYQE,
+  SPYQE_TOTAL,
+  SPYQE_SAVING,
+  SPYQE_SPEC,
+  SPYQE_SPEC_SOURCE,
+  ils,
+} from "@/lib/spyqe";
 
 /**
  * SPYQE — the platform's second model, sold as a pre-order.
@@ -10,9 +18,10 @@ import { SPYQE, SPYQE_TOTAL, SPYQE_SAVING, ils } from "@/lib/spyqe";
  * MONTHLY payment, because that is how the owner quoted it and how a buyer feels
  * it — the total and the saving support it rather than compete with it.
  *
- * ⚠ NO SPECIFICATION IS SHOWN, on purpose. See lib/spyqe.ts. The line about the
- *   full spec being published on confirmation is not a placeholder to fill in
- *   later with MIA FOUR's numbers — it is the honest state, said out loud.
+ * The spec table is the manufacturer's own, captured by the owner on 31.08.26 and
+ * recorded in docs/evidence/spyqe-2026-08-31/. Two things it does NOT carry: the
+ * source's foreign top-speed figures (Israel is a קלנועית market, ceiling 25),
+ * and any field the captured table stopped short of. See lib/spyqe.ts.
  *
  * ⚠ The 248 cap is a REAL allocation the owner stated, phrased as a condition of
  *   entry ("248 הנרשמים הראשונים"), never as a live remaining-stock counter. The
@@ -45,6 +54,8 @@ export default function Spyqe() {
               height={582}
               sizes="(max-width: 780px) 88vw, 40vw"
             />
+
+            <SpyqeVideo />
 
             <div className="soon-gallery">
               {SHOTS.map((s) => (
@@ -83,12 +94,31 @@ export default function Spyqe() {
               </ul>
             </div>
 
+            <table className="spq-spec">
+              <caption className="sr-only">מפרט טכני · {SPYQE.full}</caption>
+              <tbody>
+                {SPYQE_SPEC.map((row) => (
+                  <tr key={row.label}>
+                    <th scope="row">{row.label}</th>
+                    <td>
+                      <span className="spq-spec-v">{row.value}</span>
+                      {row.note ? <span className="spq-spec-n">{row.note}</span> : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="spq-spec-src">
+              {SPYQE_SPEC_SOURCE.label} · נקלט {SPYQE_SPEC_SOURCE.capturedAt}
+            </p>
+
             <div className="soon-cta">
               <WaCta cta="spyqe" variant="primary" block />
               <p className="soon-note">
-                המפרט המלא של {SPYQE.name} יפורסם עם אישור היבואן — אנחנו לא מפרסמים
-                נתון שלא אומת. ההרשמה שומרת מקום במשלוח הראשון ואינה מחייבת ברכישה.
-                הכמות, המחיר ומועד האספקה כפופים לעדכון ולאישור החברה/היבואן.
+                המפרט לעיל הוא של היצרן. נתון שאינו מופיע בו — משקל, עומס מרבי, זמן
+                טעינה — יפורסם כשיאומת, ולא לפני. ההרשמה שומרת מקום במשלוח הראשון
+                ואינה מחייבת ברכישה. הכמות, המחיר ומועד האספקה כפופים לעדכון
+                ולאישור החברה/היבואן.
               </p>
             </div>
           </div>

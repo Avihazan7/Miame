@@ -75,6 +75,26 @@ describe("simulator runs exactly one track", () => {
     expect(TRACKS.private.discountPct).toBe(0);
   });
 
+  it("opens at the owner's 25% anchor, not at the top of the range", () => {
+    // The default is what every visitor sees before touching anything, so it is
+    // a commercial decision and not a UI default. At 50% the simulator opened on
+    // the largest outlay the track allows. Asserting the RESULT, not just the
+    // number: on the entry model 25% must land on 4,975 ₪ down and 829 ₪ a month.
+    expect(TRACKS.private.down.default).toBe(25);
+
+    const entry = MODELS.find((m) => m.price === 19_900);
+    expect(entry, "the 19,900 ₪ entry model the anchor was chosen against").toBeDefined();
+    const q = computeQuote({
+      basePrice: entry!.price,
+      type: "private",
+      downPct: TRACKS.private.down.default,
+      balloonPct: 0,
+      months: TRACKS.private.months.default,
+    });
+    expect(q.downAmount).toBe(4_975);
+    expect(q.monthlyPayment).toBe(829);
+  });
+
   it("the quote contract is unchanged — no interest, no balloon, no discount", () => {
     for (const m of MODELS) {
       const q = computeQuote({

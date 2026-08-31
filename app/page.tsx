@@ -50,20 +50,26 @@ export default function Page() {
         <section className="movement" data-beat="story" aria-label="הסיפור והתחושה">
           <About />
           <Lifestyle />
-          <FreedomMomentVideo />
         </section>
 
-        {/* 4 · מתחת למעטפת, המוצר */}
+        {/* 4 · בחרו דגם ובנו את העסקה — MOVED UP, on the owner's call.
+            It used to sit after the whole product movement, so a visitor who
+            already knew what they wanted scrolled through five blocks before
+            reaching a price. Directly under the lifestyle tiles, the three
+            models and the payment simulator are the first thing after "what
+            this is" — and everything below now answers "why this one", for
+            whoever still needs it. */}
+        <Configurator />
+
+        {/* 5 · מתחת למעטפת, המוצר */}
         <section className="movement" data-beat="product" aria-label="המוצר">
+          <FreedomMomentVideo />
           <Features />
           <Specs />
           <Engineering />
           <Patents />
           <CinematicVideo />
         </section>
-
-        {/* 5 · בנו את העסקה */}
-        <Configurator />
 
         {/* 6 · קלנועית, לא רכב + זכאות */}
         <section className="movement" data-beat="trust" aria-label="מעמד חוקי וזכאות">

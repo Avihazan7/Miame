@@ -14,7 +14,7 @@ begin
   end if;
 
   delete from public.knowledge
-   where id in ('spyqe-what','spyqe-price','spyqe-delivery','spyqe-spec','spyqe-register');
+   where id in ('spyqe-what','spyqe-price','spyqe-delivery','spyqe-spec','spyqe-spec-missing','spyqe-register');
 
   update public.knowledge set body = 'אספקה מיידית, בכפוף לזמינות מלאי.'
    where id = 'delivery';

@@ -1525,3 +1525,34 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 .spq-kicker{display:inline-flex;align-items:center;background:var(--cyan,#0ce5dd);
   color:#06302e;font-weight:800;font-size:12px;border-radius:999px;padding:6px 14px;
   letter-spacing:.02em}
+
+/* SPYQE film tile. Fixed 16:9 on the wrapper so the tile holds its space before
+   the poster arrives — the poster is a remote YouTube thumbnail and its
+   dimensions are not known until it lands. */
+.spq-video{position:relative;width:100%;max-width:340px;aspect-ratio:16/9;border-radius:14px;
+  overflow:hidden;background:#04203f;box-shadow:0 14px 28px rgba(0,0,0,.28)}
+.spq-video iframe,.spq-video-poster{position:absolute;inset:0;width:100%;height:100%;border:0}
+.spq-video-poster{padding:0;cursor:pointer;background:#04203f;display:block}
+.spq-video-poster img{width:100%;height:100%;object-fit:cover;display:block}
+.spq-video-play{position:absolute;inset-block-start:50%;inset-inline-start:50%;
+  transform:translate(50%,-50%);width:52px;height:52px;border-radius:50%;
+  display:grid;place-items:center;font-size:19px;color:#06302e;
+  background:var(--cyan,#0ce5dd);box-shadow:0 8px 22px rgba(0,0,0,.35)}
+.spq-video-tag{position:absolute;inset-block-start:10px;inset-inline-end:10px;
+  font-size:11px;font-weight:800;letter-spacing:.04em;color:#06302e;
+  background:rgba(255,255,255,.92);border-radius:999px;padding:4px 10px}
+.spq-video-poster:focus-visible{outline:3px solid var(--cyan,#0ce5dd);outline-offset:2px}
+
+/* SPYQE spec table. A real <table> with row headers, not a div grid: this is
+   tabular data and a screen reader should be able to say "מנוע — BLDC" rather
+   than read two unrelated strings in sequence. */
+.spq-spec{width:100%;margin-top:16px;border-collapse:collapse;font-size:14px;text-align:start}
+.spq-spec th,.spq-spec td{padding:9px 0;vertical-align:top;
+  border-block-end:1px solid rgba(255,255,255,.12)}
+.spq-spec tr:last-child th,.spq-spec tr:last-child td{border-block-end:0}
+.spq-spec th{font-weight:700;color:#9fe9e4;white-space:nowrap;padding-inline-end:16px;width:1%}
+.spq-spec td{color:#fff}
+.spq-spec-v{display:block;font-weight:700}
+.spq-spec-n{display:block;margin-top:2px;font-size:12.5px;line-height:1.5;
+  color:rgba(207,224,255,.7);font-weight:400}
+.spq-spec-src{margin:8px 0 0;font-size:12px;color:rgba(207,224,255,.6)}

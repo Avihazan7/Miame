@@ -7,7 +7,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { SPYQE, SPYQE_TOTAL, SPYQE_SAVING } from "@/lib/spyqe";
+import { SPYQE, SPYQE_TOTAL, SPYQE_SAVING, SPYQE_SPEC } from "@/lib/spyqe";
 import { WA_CTA } from "@/lib/wa-cta";
 import { FORBIDDEN_BUZZ_PATTERNS } from "@/lib/deal-buzz";
 import { MIA_FOUR_DELIVERY_DAYS } from "@/lib/content";
@@ -21,6 +21,14 @@ const truth = readFileSync("lib/spyqe.ts", "utf8");
  * the defect the rule targets; without this the rule would punish the very
  * comment that documents it.
  */
+/**
+ * Collapse whitespace before matching prose. JSX wraps copy across lines, so a
+ * sentence that renders as one string does not exist as one in the source —
+ * asserting on the raw file makes a passing test depend on where Prettier broke
+ * the line.
+ */
+const text = (src: string) => src.replace(/\s+/g, " ");
+
 const code = (src: string) =>
   src.replace(/\/\*[\s\S]*?\*\//g, " ").split("\n").map((l) => l.replace(/\/\/.*$/, "")).join("\n");
 
@@ -66,6 +74,40 @@ describe("SPYQE offer arithmetic", () => {
   });
 });
 
+describe("SPYQE publishes only the Israeli figures", () => {
+  // The manufacturer's table prints "25 km/h | 15 mph | 45 km/h". The two higher
+  // figures are foreign listings — the source itself notes US units are capped at
+  // 16 mph. Israel is a קלנועית market and its ceiling is 25, which is the number
+  // the manufacturer's own Key Features and stat band print. Publishing 45 on a
+  // page that sells on קלנועית status advertises a vehicle outside the category.
+  it("never carries the foreign top-speed figures", () => {
+    for (const src of [code(section), code(truth)]) {
+      expect(src, "45 km/h is not the Israeli figure").not.toMatch(/\b45\s*(km\/h|קמ)/);
+      expect(src, "mph has no place on an Israeli storefront").not.toMatch(/\bmph\b/);
+    }
+  });
+
+  it("publishes 25 km/h and names the standard the manufacturer certifies", () => {
+    const speed = SPYQE_SPEC.find((r) => r.label.includes("מהירות"));
+    expect(speed?.value).toContain("25");
+    expect(speed?.note, "the Israeli ceiling is why 25 is the published number")
+      .toContain("קלנועית");
+    expect(SPYQE_SPEC.some((r) => r.value.includes("EN17128"))).toBe(true);
+  });
+
+  it("keeps every qualifier the manufacturer printed", () => {
+    // A range figure stripped of "may vary" is a promise the maker did not make.
+    const range = SPYQE_SPEC.find((r) => r.label.includes("טווח"));
+    expect(range?.value).toContain("עד");
+    expect(range?.note).toBeTruthy();
+  });
+
+  it("shows the spec's provenance on the page, not only in a comment", () => {
+    expect(section).toContain("SPYQE_SPEC_SOURCE");
+    expect(truth).toContain("docs/evidence/spyqe-2026-08-31");
+  });
+});
+
 describe("SPYQE publishes no unverified specification", () => {
   // MIA FOUR's published figures. SPYQE is a different vehicle at roughly half
   // the price; any of these appearing on the SPYQE surface means someone copied
@@ -82,16 +124,19 @@ describe("SPYQE publishes no unverified specification", () => {
     }
   });
 
-  it("says out loud that the spec is not published yet", () => {
-    // Silence would read as an oversight. Saying it is a trust signal.
-    expect(section).toContain("המפרט המלא");
-    expect(section).toContain("לא מפרסמים");
+  it("still says out loud which figures are missing", () => {
+    // The captured table stops before these. Silence would read as an oversight;
+    // naming them is what keeps the published rows credible.
+    expect(text(section)).toContain("משקל");
+    expect(text(section)).toContain("עומס מרבי");
+    expect(text(section)).toContain("יפורסם כשיאומת");
   });
 
-  it("exposes no spec fields at all in the data module", () => {
-    for (const key of ["motor", "battery", "range", "topSpeed", "weight", "maxLoad", "dimensions"]) {
-      expect(code(truth), `lib/spyqe.ts declares "${key}" — it has no verified value to hold`)
-        .not.toMatch(new RegExp(`\\b${key}\\s*:`));
+  it("carries no row for a figure the source never printed", () => {
+    const labels = SPYQE_SPEC.map((r) => r.label).join(" ");
+    for (const absent of ["משקל", "עומס", "טעינה", "מתח", "הספק"]) {
+      expect(labels, `SPYQE_SPEC has a "${absent}" row but the capture has no such value`)
+        .not.toContain(absent);
     }
   });
 });
@@ -109,15 +154,15 @@ describe("SPYQE scarcity is real, not manufactured", () => {
   });
 
   it("states the cap as a condition of entry, not as units left", () => {
-    expect(section).toContain("הנרשמים הראשונים");
+    expect(text(section)).toContain("הנרשמים הראשונים");
     for (const banned of ["נשארו", "נותרו", "מובטח", "בלבד במלאי"]) {
       expect(copy).not.toContain(banned);
     }
   });
 
   it("frames delivery as an estimate and keeps the approval caveat", () => {
-    expect(section).toContain("אספקה משוערת עד");
-    expect(section).toContain("כפופים לעדכון ולאישור החברה/היבואן");
+    expect(text(section)).toContain("אספקה משוערת עד");
+    expect(text(section)).toContain("כפופים לעדכון ולאישור החברה/היבואן");
   });
 });
 
