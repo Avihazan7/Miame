@@ -38,7 +38,6 @@ const ROLLBACK_BASELINE = new Set([
   "20260630_consolidate_vehicle_media_policies.sql",
   "20260701_catalog_2026_rls_hardening.sql",
   "20260704_harden_match_knowledge_search_path.sql",
-  "20260704_lead_utm.sql",
   "20260707_harden_touch_updated_at_search_path.sql",
   "20260709_rental_fleet_os.sql",
   "20260714_knowledge_full_seed_from_crimson_lever.sql",

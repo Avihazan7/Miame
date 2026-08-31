@@ -12,3 +12,8 @@ begin
   -- alter table public.knowledge drop column if exists category;
 end
 $rb$;
+
+-- The policy convergence is deliberately NOT rolled back. Undoing it would
+-- recreate a PUBLIC-wide read grant and an auth.role() predicate that Supabase
+-- documents as deprecated — reinstating a weaker, older contract is a regression,
+-- not an undo. `anon read knowledge` is what production has always run.
