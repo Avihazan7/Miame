@@ -102,3 +102,57 @@ export const SPYQE_SPEC_SOURCE = {
   label: "מפרט היצרן · MIA Dynamics",
   capturedAt: "31.08.26",
 } as const;
+
+/**
+ * SPYQE's structured-data properties.
+ *
+ * ⚠ Derived from SPYQE_SPEC, NEVER from lib/seo/product-jsonld's
+ *   PRODUCT_PROPERTIES. That shared list opens with "מנוע — עד 1,800W לפי דגם",
+ *   which is a MIA FOUR figure. Reusing it here would emit a MIA FOUR motor
+ *   rating for SPYQE into the JSON-LD — the same leak the component is guarded
+ *   against, in the one layer a human reviewer never looks at.
+ */
+export const SPYQE_PRODUCT_PROPERTIES = SPYQE_SPEC.map((row) => ({
+  "@type": "PropertyValue",
+  name: row.label,
+  value: row.value,
+}));
+
+/**
+ * The SPYQE Product node for the homepage graph.
+ *
+ * `price` is the pre-order total a buyer actually pays, not the list price —
+ * quoting 11,900 while the page sells at 10,782 would put a number in the search
+ * result that nobody can pay. The list price rides along as `priceSpecification`
+ * so the saving is still machine-readable.
+ *
+ * No aggregateRating and no review: none exist, and inventing either is the
+ * fastest way to lose a rich result permanently.
+ */
+export function spyqeProductJsonLd(siteUrl: string) {
+  return {
+    "@type": "Product",
+    "@id": `${siteUrl}/#product-spyqe`,
+    name: SPYQE.full,
+    image: `${siteUrl}/miame-spyqe.webp`,
+    description:
+      `${SPYQE.full} — הדגם השני על פלטפורמת MIA Dynamics. ` +
+      `מנוע BLDC כפול, מהירות מרבית 25 קמ״ש, טווח עד 50 ק״מ לסוללה, תקן EN17128. ` +
+      `נמכר בהזמנה מוקדמת לקראת המשלוח הראשון לישראל.`,
+    brand: { "@type": "Brand", name: "MiaMe" },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "ILS",
+      price: SPYQE_TOTAL,
+      availability: "https://schema.org/PreOrder",
+      url: `${siteUrl}/#spyqe`,
+      priceSpecification: {
+        "@type": "PriceSpecification",
+        priceCurrency: "ILS",
+        price: SPYQE.listPrice,
+        valueAddedTaxIncluded: true,
+      },
+    },
+    additionalProperty: SPYQE_PRODUCT_PROPERTIES,
+  };
+}

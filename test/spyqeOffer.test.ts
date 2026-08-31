@@ -7,10 +7,19 @@
  */
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { SPYQE, SPYQE_TOTAL, SPYQE_SAVING, SPYQE_SPEC } from "@/lib/spyqe";
+import {
+  SPYQE,
+  SPYQE_TOTAL,
+  SPYQE_SAVING,
+  SPYQE_SPEC,
+  SPYQE_PRODUCT_PROPERTIES,
+  spyqeProductJsonLd,
+} from "@/lib/spyqe";
+import { PRODUCT_PROPERTIES } from "@/lib/seo/product-jsonld";
+import { HOME_FAQ } from "@/lib/home-faq";
+import { MIA_FOUR_DELIVERY_DAYS } from "@/lib/content";
 import { WA_CTA } from "@/lib/wa-cta";
 import { FORBIDDEN_BUZZ_PATTERNS } from "@/lib/deal-buzz";
-import { MIA_FOUR_DELIVERY_DAYS } from "@/lib/content";
 
 const section = readFileSync("components/Spyqe.tsx", "utf8");
 const truth = readFileSync("lib/spyqe.ts", "utf8");
@@ -179,5 +188,64 @@ describe("two models, two different waits", () => {
     const service = readFileSync("components/Service.tsx", "utf8");
     expect(service).toContain("אספקה עד ");
     expect(service).toContain("בכפוף לזמינות");
+  });
+});
+
+describe("SPYQE reaches search and answer engines without leaking MIA FOUR", () => {
+  const ld = spyqeProductJsonLd("https://www.miame.co.il");
+  const llms = readFileSync("public/llms.txt", "utf8");
+
+  it("never reuses the shared product properties", () => {
+    // PRODUCT_PROPERTIES opens with "מנוע — עד 1,800W לפי דגם", a MIA FOUR
+    // rating. Reusing it would put a MIA FOUR motor on SPYQE in the one layer
+    // no human reviewer reads.
+    const shared = PRODUCT_PROPERTIES.map((p) => p.value);
+    const mine = SPYQE_PRODUCT_PROPERTIES.map((p) => p.value);
+    for (const v of shared) expect(mine).not.toContain(v);
+    expect(JSON.stringify(ld)).not.toContain("1,800W");
+  });
+
+  it("declares a pre-order at the price a buyer can actually pay", () => {
+    expect(ld.offers.availability).toBe("https://schema.org/PreOrder");
+    expect(ld.offers.price).toBe(SPYQE_TOTAL);
+    expect(ld.offers.priceSpecification.price).toBe(SPYQE.listPrice);
+  });
+
+  it("claims no rating and no review, because none exist", () => {
+    const j = JSON.stringify(ld);
+    expect(j).not.toContain("aggregateRating");
+    expect(j).not.toContain("\"review\"");
+  });
+
+  it("tells answer engines which SPYQE figures do not exist", () => {
+    expect(llms).toContain("SPYQE");
+    expect(llms, "an answer engine must be told not to borrow MIA FOUR's numbers")
+      .toContain("אין להעביר נתון מאחד לשני");
+    expect(llms).not.toMatch(/\bmph\b/);
+    expect(llms).not.toMatch(/45\s*קמ/);
+  });
+});
+
+describe("one delivery story across every surface", () => {
+  // Three surfaces used to answer this differently: the strip said one thing,
+  // llms.txt said "מיידית", and the FAQ said "מיידית" too. A buyer, a crawler
+  // and the assistant must not get three answers to the same question.
+  const llms = readFileSync("public/llms.txt", "utf8");
+  const faq = HOME_FAQ.find((f) => f.q.includes("אספקה"));
+
+  it("quotes MIA FOUR's real supply commitment everywhere", () => {
+    // A boundary, not a substring: "33 ימי עסקים" CONTAINS "3 ימי עסקים", so a
+    // plain toContain passes on a file that only mentions the SPYQE estimate.
+    // This test found that on itself.
+    const days = new RegExp(`(^|\\D)${MIA_FOUR_DELIVERY_DAYS} ימי עסקים`);
+    expect(faq?.a).toMatch(days);
+    expect(llms).toMatch(days);
+    expect(faq?.a, "immediate delivery is no longer the claim").not.toContain("מיידית");
+    expect(llms, "immediate delivery is no longer the claim").not.toContain("מיידית");
+  });
+
+  it("keeps the SPYQE estimate distinct from it", () => {
+    expect(faq?.a).toContain(SPYQE.name);
+    expect(llms).toContain(`${SPYQE.deliveryBusinessDays} ימי עסקים`);
   });
 });
