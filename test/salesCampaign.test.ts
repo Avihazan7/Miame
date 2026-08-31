@@ -11,12 +11,13 @@
 // regulations (תקנות שוויון זכויות לאנשים עם מוגבלות) require the accessibility
 // coordinator's contact details, and consumer/distance-selling rules require the
 // seller's identification. Those carry MiaMe's OWN line, never the importer's.
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { TRACKS, computeQuote } from "@/lib/finance";
 import { MODELS } from "@/lib/models";
 import * as content from "@/lib/content";
+import { WA_CTA, waHref } from "@/lib/wa-cta";
 
 const ROOT = process.cwd();
 const read = (rel: string) => readFileSync(resolve(ROOT, rel), "utf8");
@@ -156,26 +157,61 @@ describe("no addresses, branches, dealers or importer phones on marketing surfac
   });
 });
 
-describe("delivery section is a map and nothing else", () => {
+describe("delivery section is a promise strip, not a directory or a map", () => {
   const src = read("components/Service.tsx");
 
   it("carries the nationwide delivery heading", () => {
     expect(src).toContain("משלוח ומסירה בכל חלקי הארץ");
   });
 
-  it("renders an inline SVG map, not a third-party iframe", () => {
+  it("embeds no map at all — no iframe and no coverage illustration", () => {
     expect(src).not.toContain("<iframe");
-    expect(src).toContain("<svg");
-    expect(src).toContain('role="img"');
-  });
-
-  it("the illustration is labelled as an illustration, not a geographic map", () => {
-    expect(src).toContain("איור להמחשה");
-    expect(src).toContain("אינו מפה גאוגרפית");
+    expect(src).not.toContain("<svg");
+    expect(src).not.toContain("coverage");
   });
 
   it("names the importer and the warranty, and nothing else about them", () => {
     expect(src).toContain("IMPORTER_NAME");
     expect(src).toContain("אחריות יבואן רשמי");
+  });
+
+  it("offers the shared WhatsApp route", () => {
+    expect(src).toContain('cta="delivery"');
+  });
+});
+
+describe("one WhatsApp route, offered everywhere", () => {
+  it("every CTA has a distinct section-specific prefilled message", () => {
+    const messages = Object.values(WA_CTA).map((c) => c.message);
+    expect(new Set(messages).size).toBe(messages.length);
+    for (const c of Object.values(WA_CTA)) {
+      expect(c.message.length, c.label).toBeGreaterThan(20);
+      expect(c.label.length, c.label).toBeGreaterThan(4);
+      expect(["inquiry", "order"]).toContain(c.intent);
+    }
+  });
+
+  it("every href points at MiaMe's own wa.me line", () => {
+    for (const key of Object.keys(WA_CTA) as (keyof typeof WA_CTA)[]) {
+      const href = waHref(key);
+      expect(href.startsWith("https://wa.me/972547477477?text=")).toBe(true);
+    }
+  });
+
+  it("covers both a buying intent and an inquiry intent", () => {
+    const intents = new Set(Object.values(WA_CTA).map((c) => c.intent));
+    expect(intents.has("order")).toBe(true);
+    expect(intents.has("inquiry")).toBe(true);
+  });
+
+  it("SPYQE takes pre-registration without promising a sale", () => {
+    const src = read("components/Spyqe.tsx");
+    expect(src).toContain('cta="spyqe"');
+    expect(src).toContain("אינה מחייבת ברכישה");
+  });
+
+  it("the four-route entry fork is gone from the homepage", () => {
+    expect(read("app/page.tsx")).not.toContain("EntryPaths");
+    expect(existsSync(resolve(ROOT, "components/EntryPaths.tsx"))).toBe(false);
   });
 });

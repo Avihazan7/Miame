@@ -64,9 +64,13 @@ body{
   margin:0;
   font-family:var(--font-heebo),system-ui,-apple-system,sans-serif;
   background:transparent;color:var(--ink);
-  line-height:1.6;font-weight:400;font-size:17px;letter-spacing:-.011em;
-  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  /* Base size is the fluid --type-body (set in miame-ultra.css) with a static
+     fallback for the first paint; weight 450 over 400 because Heebo at 400 on a
+     Pearl background reads thin once the antialiased smoothing is off. */
+  line-height:1.65;font-weight:450;font-size:17px;font-size:var(--type-body,17px);
+  letter-spacing:-.008em;
   text-rendering:optimizeLegibility;font-feature-settings:"kern" 1,"liga" 1,"calt" 1;
+  font-optical-sizing:auto;
   position:relative;z-index:0;
 }
 a{color:inherit;text-decoration:none}
@@ -642,30 +646,39 @@ svg{display:block}
 .tribute-cta-note{margin:9px 0 0;text-align:center;font-size:12.5px;color:var(--ink-muted)}
 .tribute-disclaimer{margin:14px auto 0;max-width:720px;font-size:11.5px;line-height:1.6;color:var(--ink-muted);text-align:center}
 
-/* מסירה ארצית · coverage illustration (replaced the flagship/dealer block + the
-   Google-Maps embed; see components/Service.tsx for why the map is inline SVG) */
-.coverage-map{margin:clamp(18px,3vw,30px) auto 0;max-width:560px}
-.coverage-canvas{position:relative;isolation:isolate;aspect-ratio:420/500;
-  border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--hairline);
-  background:radial-gradient(72% 56% at 50% 10%,rgba(24,224,189,.10),rgba(157,220,240,.06) 46%,transparent 72%),
+/* מסירה ארצית — a compact promise strip. Replaced the coverage illustration,
+   which replaced the flagship/dealer directory. No map, no address, no branch. */
+.delivery-band{margin:clamp(16px,2.6vw,26px) auto 0;max-width:920px;
+  border-radius:var(--r-lg);border:1px solid var(--hairline);
+  padding:clamp(24px,3.4vw,38px) clamp(20px,3vw,34px);
+  background:radial-gradient(80% 60% at 50% 0%,rgba(24,224,189,.10),transparent 68%),
              linear-gradient(180deg,var(--surface-glass),var(--bg-platinum));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), var(--shadow-md)}
-.coverage-svg{position:absolute;inset:0;width:100%;height:100%;display:block;direction:ltr}
-.cov-land{fill:color-mix(in srgb,var(--ink-teal) 12%,transparent);stroke:var(--ink-teal);
-  stroke-opacity:.42;stroke-width:1.6;stroke-linejoin:round}
-/* the delivery spine is the ONE motion element — Glow law allows glow-teal for motion */
-.cov-spine{fill:none;stroke:var(--ink-teal);stroke-opacity:.55;stroke-width:1.8;stroke-linecap:round;
-  stroke-dasharray:4 8;animation:covFlow 2.8s linear infinite}
-@keyframes covFlow{to{stroke-dashoffset:-48}}
-.cov-dot{fill:var(--ink-teal)}
-.cov-leader{stroke:var(--ink-teal);stroke-opacity:.34;stroke-width:1.1}
-.cov-ping{fill:none;stroke:var(--glow-teal);stroke-width:1.4;opacity:0;
-  transform-box:fill-box;transform-origin:50% 50%;
-  animation:covPing 3.4s cubic-bezier(.2,.7,.2,1) infinite}
-@keyframes covPing{0%{opacity:.7;transform:scale(.45)}70%,100%{opacity:0;transform:scale(2.2)}}
-.cov-label{fill:var(--ink-navy);font-size:13px;font-weight:800;
-  font-family:var(--font-heebo),system-ui,sans-serif}
-.coverage-note{margin:12px 0 0;text-align:center;font-size:12.5px;line-height:1.6;color:var(--ink-muted)}
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), var(--shadow-md);text-align:center}
+.delivery-head{max-width:660px;margin-inline:auto}
+.delivery-points{list-style:none;margin:clamp(20px,2.6vw,30px) 0 0;padding:0;
+  display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:720px){.delivery-points{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}}
+.delivery-points li{display:grid;justify-items:center;gap:4px;
+  padding:16px 14px;border-radius:16px;background:rgba(255,255,255,.72);
+  border:1px solid var(--hairline)}
+.dp-ic{display:inline-flex;align-items:center;justify-content:center;
+  width:42px;height:42px;border-radius:13px;margin-bottom:4px;color:#fff;
+  background:var(--grad-teal-text);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.dp-ic .lex-icon{width:21px;height:21px}
+.delivery-points b{font-size:var(--type-small);font-weight:800;color:var(--ink-navy)}
+.dp-v{font-size:14px;line-height:1.5;color:var(--ink-muted)}
+.delivery-cta{margin-top:clamp(20px,2.6vw,28px);min-width:min(100%,320px)}
+
+/* Per-section WhatsApp out — every section that can raise a question offers the
+   same route, with the message prefilled for THAT section (lib/wa-cta.ts). */
+.sec-wa-out{display:flex;justify-content:center;margin-top:clamp(18px,2.4vw,28px)}
+.faq-home-out{display:flex;justify-content:center;margin-top:clamp(20px,2.6vw,30px)}
+.wa-cta{display:inline-flex;align-items:center;justify-content:center;gap:9px}
+
+/* SPYQE pre-registration — the one place the site takes intent on a model that
+   is not on sale yet, so the note under it carries the no-obligation wording. */
+.soon-cta{margin-top:18px;max-width:420px}
+.soon-note{margin:10px 0 0;font-size:13px;line-height:1.6;color:rgba(226,240,255,.72)}
 
 /* accessibility focus */
 :focus-visible{outline:2px solid var(--ink-teal);outline-offset:2px}
@@ -851,7 +864,7 @@ html{scroll-padding-top:92px}
 }
 
 /* ─── WAX · ווקס: שפת-ברק עליונה, צללים עמוקים, ו-sheen בריחוף ──────── */
-.card,.feat-card,.partner-card:not(.dark),.specs-table,.elig-card,.coverage-canvas{
+.card,.feat-card,.partner-card:not(.dark),.specs-table,.elig-card,.delivery-band{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.8), var(--shadow-sm)}
 .partner-card.dark,.sim-result,.testride-card,.soon-card,.tribute-calc,.life-card{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.16), var(--shadow-md)}

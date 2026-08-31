@@ -1,3 +1,4 @@
+import WaCta from "@/components/WaCta";
 export default function Specs() {
   return (
     <section className="block specs-sec" id="specs">
@@ -55,6 +56,9 @@ export default function Specs() {
               <span className="spec-v">EN17128 · מותאם לתקנות הקלנועית בישראל</span>
             </div>
           </div>
+        </div>
+        <div className="sec-wa-out">
+          <WaCta cta="specs" variant="ghost" />
         </div>
         <p
           className="spec-note"

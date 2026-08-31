@@ -1,3 +1,4 @@
+import WaCta from "@/components/WaCta";
 // LegalStatus — the קלנועית differentiation. Mia FOUR is classified as a mobility
 // scooter (קלנועית), NOT a road vehicle like the Leasing.co.il / ULease car
 // catalog: identified by a chassis number (no licence plate), no registration
@@ -74,6 +75,10 @@ export default function LegalStatus() {
             <li>תקן <span className="ltr">EN17128</span>.</li>
             <li>שימוש בכפוף לדין ולתנאי הדרך.</li>
           </ul>
+        </div>
+
+        <div className="sec-wa-out">
+          <WaCta cta="legal" variant="ghost" />
         </div>
 
         <p className="status-legal">

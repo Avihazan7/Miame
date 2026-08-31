@@ -1,4 +1,4 @@
-import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import WaCta from "@/components/WaCta";
 
 export default function Spyqe() {
   return (
@@ -24,14 +24,13 @@ export default function Spyqe() {
             <p className="soon-sub">
               פלטפורמת MIA Dynamics מתרחבת · דגמים חדשים בדרך. MiaMe תהיה הבית הדיגיטלי לכל הקו · עסקה אחת, מנוע אחד, אינסוף אפשרויות.
             </p>
-            <a
-              className="btn soon-link"
-              href={buildWhatsAppUrl("היי, אשמח לעדכון על SPYQE כשמשיקים 🦋")}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              לפרטי SPYQE ←
-            </a>
+            <div className="soon-cta">
+              <WaCta cta="spyqe" variant="primary" block />
+              <p className="soon-note">
+                ההרשמה שומרת לכם מקום בתור ואינה מחייבת ברכישה · נעדכן אתכם ברגע
+                שההזמנה נפתחת, עם המחיר והתנאים המלאים.
+              </p>
+            </div>
           </div>
         </div>
       </div>
