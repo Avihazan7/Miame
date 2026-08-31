@@ -11,6 +11,10 @@
  */
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
+import { FALLBACK } from "../brain/knowledge";
+import { SPYQE, SPYQE_TOTAL, SPYQE_BALANCE } from "../lib/spyqe";
+import { MIA_FOUR_DELIVERY_DAYS } from "../lib/content";
+import { TRACKS } from "../lib/finance";
 
 const MIG = "supabase/migrations";
 
@@ -100,6 +104,62 @@ describe("no rollback restores a falsehood", () => {
     for (const m of migrations.filter((x) => x.file.endsWith(".rollback.sql"))) {
       expect(m.body, `${m.file} restores the flagship address`).not.toMatch(/אליעזר\s*קפלן/);
       expect(m.body, `${m.file} restores the flagship store`).not.toMatch(/חנות\s*(ה)?דגל/);
+    }
+  });
+});
+
+describe("the offline corpus answers the campaign, not last season's site", () => {
+  // `fetchCorpus()` serves FALLBACK whenever Supabase is unreachable, answers
+  // non-2xx, or returns zero rows. That path is invisible in every normal run —
+  // which is precisely why it drifted: the live table carried SPYQE, the supply
+  // commitment and the instalment cap, and the offline copy carried none of the
+  // three. A visitor hitting the fallback would have got a confident answer built
+  // on the previous campaign. Absence is the failure mode here, so absence is what
+  // is asserted.
+  const byId = new Map(FALLBACK.map((d) => [d.id, d.text]));
+  const need = (id: string) => {
+    const t = byId.get(id);
+    expect(t, `the offline corpus has no "${id}" row`).toBeTruthy();
+    return t!;
+  };
+
+  it("carries every campaign row", () => {
+    for (const id of ["finance-terms", "delivery-four", "spyqe-offer", "spyqe-delivery", "spyqe-unpublished"]) {
+      need(id);
+    }
+  });
+
+  it("states the offer exactly as lib/spyqe.ts derives it", () => {
+    // Derived, never typed. Changing a term in one place and not the other is the
+    // only way these can disagree — so this is the assertion that makes the single
+    // source of truth real rather than aspirational.
+    const t = need("spyqe-offer");
+    for (const n of [SPYQE.deposit, SPYQE_BALANCE, SPYQE_TOTAL, SPYQE.listPrice]) {
+      expect(t, `offer row is missing ${n.toLocaleString("he-IL")}`).toContain(n.toLocaleString("he-IL"));
+    }
+    expect(t).toContain(`${SPYQE.months} תשלומים`);
+    expect(t).toContain(`${SPYQE.monthlyPayment} ש"ח`);
+    expect(t).toContain(`${SPYQE.slots} הזוכים הראשונים`);
+    // The saving must be a consequence of the terms, never a fourth typed figure.
+    expect(SPYQE.deposit + SPYQE.monthlyPayment * SPYQE.months).toBe(SPYQE_TOTAL);
+  });
+
+  it("keeps the two delivery times apart", () => {
+    // One vehicle is in stock and one is a pre-order. Collapsing them is how a
+    // 33-business-day estimate becomes a 3-day promise.
+    expect(need("delivery-four")).toMatch(new RegExp(`עד ${MIA_FOUR_DELIVERY_DAYS} ימי עסקים`));
+    expect(need("spyqe-delivery")).toMatch(new RegExp(`עד ${SPYQE.deliveryBusinessDays} ימי עסקים`));
+    expect(MIA_FOUR_DELIVERY_DAYS).not.toBe(SPYQE.deliveryBusinessDays);
+  });
+
+  it("quotes the instalment cap lib/finance.ts actually allows", () => {
+    expect(need("finance-terms")).toContain(`עד ${TRACKS.private.months.max} תשלומים`);
+  });
+
+  it("still refuses the specifications SPYQE has not published", () => {
+    const t = need("spyqe-unpublished");
+    for (const field of ["משקל", "עומס", "זמן טעינה", "מתח סוללה", "הספק מנוע"]) {
+      expect(t, `the refusal row does not name "${field}"`).toContain(field);
     }
   });
 });

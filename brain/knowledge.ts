@@ -8,6 +8,9 @@
 // secret is needed for reads.  (D-022: RAG over fine-tuning.)
 import { SUPABASE_URL, SUPABASE_ANON_KEY, embeddingsReady } from "./config";
 import { embedQueryVia } from "./router";
+import { SPYQE, SPYQE_TOTAL, SPYQE_BALANCE } from "@/lib/spyqe";
+import { MIA_FOUR_DELIVERY_DAYS } from "@/lib/content";
+import { TRACKS } from "@/lib/finance";
 
 export interface KnowledgeDoc {
   id: string;
@@ -23,7 +26,10 @@ export interface KnowledgeDoc {
 // supabase/migrations/20260629_knowledge_seed_miame.sql so the brain stays
 // grounded even fully offline. Keep facts in lock-step with lib/models.ts,
 // components/Specs.tsx and components/LegalStatus.tsx (single source of truth).
-const FALLBACK: KnowledgeDoc[] = [
+// Exported so test/contentTruth.test.ts can read the RESOLVED strings rather than
+// the source text: a template literal that renders the wrong number looks identical
+// to a correct one under a static grep.
+export const FALLBACK: KnowledgeDoc[] = [
   // ── Product spec (MIA FOUR 4×4 Pro Max) ─────────────────────────────────────
   { id: "spec-range", source: "MiaMe/Specs", text: 'טווח ריאלי עד 100 ק"מ; יצרן עד 120 ק"מ. ניתן להאריך טווח בעזרת סוללות נוספות.' },
   { id: "spec-motors", source: "MiaMe/Specs", text: 'מיה פור מונעת ב-2 או 4 מנועים חשמליים, בהספק 1,800W כל אחד (x2/x4). הנעה חשמלית שקטה וירוקה.' },
@@ -47,7 +53,48 @@ const FALLBACK: KnowledgeDoc[] = [
   { id: "method-arch", source: "MiaMe/Brain", text: 'ארכיטקטורת המוח: Ultra (אורקסטרציה) → Masters (החלטות איכות, Sonnet) → Max (פעולות מהירות, Haiku) → Guardian (ציות ובטיחות דטרמיניסטיים). דוקטרינה: RAG על פני fine-tuning, מקור-אמת יחיד.' },
   { id: "method-bigfive", source: "MiaMe/Brain", text: 'התאמת Big Five Deal: מודל OCEAN ממפה את פרופיל הלקוח לדגם ולמסלול (2×4 City · 2×4 City LR · 4×4 Pro Max · השכרה Hub). ההתאמה מוסברת, לא קופסה שחורה.' },
   { id: "method-gametheory", source: "MiaMe/Brain", text: 'שער תורת-משחקים: הצעות נבחנות לאופטימליות פארטו — אין ביצוע אוטומטי להצעה שאינה Pareto-efficient, כדי שכל עסקה תהיה win-win ללקוח ולמערכת.' },
-  { id: "method-enrichment", source: "MiaMe/Brain", text: 'העשרה אינסטרומנטלית (Feuerstein): המערכת לומדת ומשתפרת מכל אינטראקציה (Perceive → Reason → Act → Learn → Deliver), ומעשירה את בסיס הידע באופן מתודולוגי ומתמשך.' }
+  { id: "method-enrichment", source: "MiaMe/Brain", text: 'העשרה אינסטרומנטלית (Feuerstein): המערכת לומדת ומשתפרת מכל אינטראקציה (Perceive → Reason → Act → Learn → Deliver), ומעשירה את בסיס הידע באופן מתודולוגי ומתמשך.' },
+  // ── The sales campaign ──────────────────────────────────────────────────────
+  // These five were missing, and their absence was invisible: the DB corpus has
+  // them, so every path anyone actually exercises answers correctly. They matter
+  // only on the path nobody looks at — Supabase unreachable, non-2xx, or an empty
+  // table — and that is exactly when the brain would have had NO answer at all for
+  // "how many instalments", "when does it arrive", or the campaign's headline
+  // product. A fallback that silently drops the current offer is worse than no
+  // fallback, because it still sounds grounded.
+  //
+  // Every number here is DERIVED, never typed: the offer from lib/spyqe.ts, the
+  // supply commitment from lib/content.ts, the instalment cap from lib/finance.ts.
+  // Guarded by test/contentTruth.test.ts, which compares them to those sources.
+  {
+    id: "finance-terms",
+    source: "MiaMe/Finance",
+    text: `מסלולי תשלום ב-0% ריבית בכפוף לאישור עסקה; עד ${TRACKS.private.months.max} תשלומים ללא ריבית והצמדה. הסימולטור באתר בונה הצעה תוך דקה.`
+  },
+  {
+    id: "delivery-four",
+    source: "MiaMe/Service",
+    text: `מיה פור נמצאת במלאי. האספקה אליכם עד ${MIA_FOUR_DELIVERY_DAYS} ימי עסקים, בכפוף לזמינות מלאי, בכל אזור בארץ ובמסירה מתואמת מראש. זמן האספקה של ${SPYQE.name} שונה — הוא דגם בהזמנה מוקדמת.`
+  },
+  {
+    id: "spyqe-offer",
+    source: "MiaMe/Spyqe",
+    text: `${SPYQE.name} בהזמנה מוקדמת: מקדמה ${SPYQE.deposit.toLocaleString("he-IL")} ש"ח ליבואן בהרשמה, והיתרה ${SPYQE_BALANCE.toLocaleString("he-IL")} ש"ח ב-${SPYQE.months} תשלומים של ${SPYQE.monthlyPayment} ש"ח שמתחילים עם הגעת המשלוח למחסני היבואן. סה"כ ${SPYQE_TOTAL.toLocaleString("he-IL")} ש"ח במקום מחיר יבואן ${SPYQE.listPrice.toLocaleString("he-IL")} ש"ח, ללא ריבית והצמדה. ההטבה ל-${SPYQE.slots} הזוכים הראשונים. זהו מחיר ${SPYQE.name} בלבד ואינו מחיר מיה פור.`
+  },
+  {
+    id: "spyqe-delivery",
+    source: "MiaMe/Spyqe",
+    text: `אספקת ${SPYQE.name} משוערת עד ${SPYQE.deliveryBusinessDays} ימי עסקים, מהמשלוח הראשון לישראל. זו הערכה ולא התחייבות, והיא שונה מזמן האספקה של מיה פור שנמצאת במלאי.`
+  },
+  {
+    // The refusal is itself a fact worth retrieving. Without it the model has a
+    // SPYQE row and a MIA FOUR spec row and nothing telling it they are different
+    // vehicles — which is the exact shape of the mistake that would quote MIA
+    // FOUR's 1,800W motor for a machine at roughly half the price.
+    id: "spyqe-unpublished",
+    source: "MiaMe/Spyqe",
+    text: `עבור ${SPYQE.name} טרם פורסמו משקל הכלי, עומס מרבי, זמן טעינה, מתח סוללה והספק מנוע בוואט. אין למסור עבורם מספר, ובפרט אין להשתמש בנתוני מיה פור. התשובה הנכונה היא שהנתון יפורסם כשיאומת.`
+  }
 ];
 
 async function fetchCorpus(): Promise<KnowledgeDoc[]> {
