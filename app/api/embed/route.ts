@@ -25,6 +25,12 @@ import { embedDocuments } from "@/brain/embeddings";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// The backfill is one provider call plus one PATCH per row, sequentially. At 36 rows
+// that is a few seconds — comfortably inside a default function timeout, but only
+// just, and a timeout here leaves the corpus half-embedded. The route is idempotent
+// (it only ever selects `embedding IS NULL`), so a re-run recovers; this simply
+// removes the need for one. 60s is the ceiling on every Vercel plan.
+export const maxDuration = 60;
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest();
 
