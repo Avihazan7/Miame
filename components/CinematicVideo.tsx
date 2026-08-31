@@ -12,7 +12,11 @@
 import { useState } from "react";
 import { track } from "@/lib/analytics";
 
-const VIDEO_ID = "gf1rxCEwu-c";
+// The owner's cinema cut. REPLACED rather than added: the page already carries
+// CinematicVideo, FreedomMomentVideo and HowToVideo, and a fourth video block reads
+// as clutter, not polish. This stage already sits mid-page in the product movement,
+// which is exactly where the brief asked the film to land.
+const VIDEO_ID = "ThNRmOqPs8Q";
 const SOURCE = "miame_home_cinema_stage";
 const VIDEO_PROVIDER = "youtube-nocookie";
 // High-quality poster with a graceful fallback: not every upload has a
@@ -70,7 +74,7 @@ export default function CinematicVideo() {
             ) : (
               <iframe
                 title="MiaMe cinematic video"
-                src={`https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+                src={`https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&rel=0&modestbranding=1&playsinline=1&vq=hd2160&hd=1`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
                 loading="lazy"
@@ -94,16 +98,16 @@ export default function CinematicVideo() {
             </a>
             <a
               className="btn btn-ghost"
-              href="/rent-eilat"
+              href="#models"
               onClick={() =>
                 void track("CinematicVideoCTA", {
-                  cta: "rental_eilat",
+                  cta: "models",
                   source: SOURCE,
                   videoProvider: VIDEO_PROVIDER,
                 })
               }
             >
-              השכרה באילת
+              לדגמים ולמפרט
             </a>
           </div>
         </div>

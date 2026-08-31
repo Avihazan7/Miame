@@ -22,6 +22,7 @@ import DealBuzz from "@/components/DealBuzz";
 import CinematicVideo from "@/components/CinematicVideo";
 import FreedomMomentVideo from "@/components/FreedomMomentVideo";
 import FaqHome from "@/components/FaqHome";
+import DynamicsGallery from "@/components/DynamicsGallery";
 
 export default function Page() {
   return (
@@ -78,7 +79,10 @@ export default function Page() {
           <Spyqe />
         </section>
 
-        {/* 8 · שאלות נפוצות */}
+        {/* 8 · MIA Dynamics — ההנדסה במבט קרוב, ממש לפני השאלות */}
+        <DynamicsGallery />
+
+        {/* 9 · שאלות נפוצות */}
         <FaqHome />
       </main>
       <Importer />

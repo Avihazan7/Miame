@@ -1,3 +1,11 @@
+-- 20260629_vehicle_media_ultra_glb.sql
+-- ⚠ RENAMED from 20260629_vehicle_media_glb.sql. Filename order IS apply order,
+--   and the old name sorted BEFORE 20260629_vehicle_media_ultra.sql — the file that
+--   CREATES public.vehicle_media_assets. On an empty database the very first
+--   statement here aborted the whole replay. The "_ultra_" infix pins this file
+--   after its dependency; scripts/check-migrations.mjs now fails the build if a
+--   migration references a table a later-sorting file creates.
+--
 -- MiaMe.co.il · register the MIA FOUR X4 Professional GLB in the Ultra media layer
 -- ---------------------------------------------------------------------------
 -- Adds the published 3D asset row that the storefront's Ultra Vehicle Vision
@@ -34,10 +42,19 @@ where not exists (
   where vehicle_id = 'mia-four-x4' and brand = 'miame'
 );
 
--- Refresh asset paths/metadata for the existing row (idempotent re-run).
+-- Refresh the asset PATH for the existing row.
+--
+-- ⚠ `status` is deliberately NOT written here any more. This used to set
+--    status = 'published' unconditionally, so re-applying the migration silently
+--    resurrected an asset an operator had archived or drafted — a data act wearing
+--    a registration's clothes. Publication state belongs to whoever curates media,
+--    not to a replayable migration. The row is only touched while it is still in
+--    the state this migration originally created it in.
 update public.vehicle_media_assets
 set glb_path = 'mia-four-x4/mia-four-x4.glb',
     quality_tier = 'ultra',
-    status = 'published',
     updated_at = now()
-where vehicle_id = 'mia-four-x4' and brand = 'miame';
+where vehicle_id = 'mia-four-x4'
+  and brand = 'miame'
+  and status = 'published'
+  and glb_path is distinct from 'mia-four-x4/mia-four-x4.glb';
