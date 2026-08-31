@@ -256,13 +256,13 @@
     {
       "id": "11-knowledge-spyqe-and-supply",
       "title": "SPYQE knowledge rows + MIA FOUR's real supply commitment",
-      "status": "pending",
+      "status": "applied",
       "migrations": [
         {
-          "file": "20260901_knowledge_spyqe_and_supply.sql"
+          "file": "20260901_knowledge_spyqe_and_supply.sql",
+          "ledger": "20260831210536"
         }
       ],
-      "risk": "low — six additive rows plus two id-keyed UPDATEs on rows that are now factually wrong",
       "why": [
         "Two models now, two different waits: MIA FOUR is in stock and ships in up to",
         "3 business days; SPYQE is a pre-order estimated at up to 33. The corpus knew",
@@ -272,15 +272,16 @@
         "saying so. That is why each new row NAMES its model inside the body text and",
         "not only in the id: the keyword path matches the body, so a model name that",
         "lives only in the id is invisible to it.",
-        "`spyqe-spec` carries no specification on purpose. It exists so the assistant",
-        "has something correct to say when asked for one, instead of reaching for",
-        "MIA FOUR's numbers.",
-        "The offer text lives in this row AND in lib/spyqe.ts. That duplication is",
+        "`spyqe-spec` carries the manufacturer's verified figures; `spyqe-spec-missing`",
+        "exists so the assistant has something correct to say about weight, load and",
+        "charge time instead of reaching for MIA FOUR's numbers.",
+        "It also corrected `lead`, which quoted a balloon payment the simulator does",
+        "not offer (Configurator pins balloonPct to 0).",
+        "The offer text lives in these rows AND in lib/spyqe.ts. That duplication is",
         "real and deliberate — the corpus is a database, not an import of the bundle —",
-        "so when the 248 allocation closes or the price moves, BOTH must be updated.",
-        "The rollback restores the previous `delivery` body verbatim.",
-        "`lead` still quotes a balloon payment; the simulator has none (balloonPct is pinned to 0)."
-      ]
+        "so when the 248 allocation closes or the price moves, BOTH must be updated."
+      ],
+      "evidence": "applied 2026-08-31 · ledger 20260831210536 · verified live: 36 rows (was 30) · 6 spyqe ids · 0 balloon (was 1) · 0 address · delivery and lead rewritten, their embeddings cleared"
     }
   ]
 }
