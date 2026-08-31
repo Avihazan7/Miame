@@ -14,6 +14,8 @@ const DIR = "supabase/migrations";
 const files = readdirSync(DIR).filter((f) => f.endsWith(".sql"));
 const forward = files.filter((f) => !f.endsWith(".rollback.sql")).sort();
 const manifest = JSON.parse(readFileSync("supabase/phases.json", "utf8"));
+const schema = JSON.parse(readFileSync("supabase/phases.schema.json", "utf8"));
+const STATUSES: string[] = schema.properties.phases.items.properties.status.enum;
 
 describe("migrations gate", () => {
   it("passes on the current tree", () => {
@@ -110,10 +112,34 @@ describe("applier refusals (decided by the manifest, before any connection)", ()
     expect(selectPhase(manifest, undefined).error).toContain("--phase <id> is required");
   });
 
+  // `pending` is the one status the applier accepts, and that is a property of the
+  // applier — not of whatever the manifest happens to hold today. The tree is now at
+  // ZERO pending phases (every eligible one has landed), so a test that reached into
+  // the real file for the accepting branch went red the moment the work finished, and
+  // a test that merely looped over the pending phases would have gone SILENT instead:
+  // passing while asserting nothing. A synthetic manifest keeps both directions of the
+  // decision exercised no matter what the live tree looks like.
+  const synth = (status: string) => ({
+    phases: [{ id: "synthetic", status, why: ["synthetic"], migrations: [] }],
+  });
+
   it("accepts a pending phase", () => {
-    const { phase, error } = selectPhase(manifest, "6-knowledge-column-reconcile");
+    const { phase, error } = selectPhase(synth("pending"), "synthetic");
     expect(error).toBeUndefined();
     expect(phase.status).toBe("pending");
+  });
+
+  it("refuses each of the five non-pending statuses by name", () => {
+    // Driven from the schema enum, so a seventh status cannot be introduced and
+    // quietly fall through to the accepting branch — a new status with no refusal
+    // fails here on the day it is declared.
+    const blocked = STATUSES.filter((x) => x !== "pending");
+    expect(blocked).toHaveLength(5);
+    for (const status of blocked) {
+      const { phase, error } = selectPhase(synth(status), "synthetic");
+      expect(phase, `status "${status}" was NOT refused`).toBeUndefined();
+      expect(error, `status "${status}" refused without saying which phase`).toContain("synthetic");
+    }
   });
 
   it("leaves every foreign phase unreachable", () => {
@@ -127,9 +153,6 @@ describe("the manifest enforces the decisions it documents", () => {
   // The whole P0. Phase 9's own `why` said HOLD and phase 10's said "replay path
   // only", but both carried status `pending` — and `pending` is the one status
   // the applier accepts. The file described policy it did not enforce.
-  const schema = JSON.parse(readFileSync("supabase/phases.schema.json", "utf8"));
-  const STATUSES = schema.properties.phases.items.properties.status.enum;
-
   it("declares six statuses, not three", () => {
     expect(STATUSES).toEqual(
       expect.arrayContaining(["applied", "pending", "hold", "superseded", "replay-only", "foreign"]),
@@ -156,6 +179,9 @@ describe("the manifest enforces the decisions it documents", () => {
 
   it("refuses every status except pending, before any connection", () => {
     // A phase the tool must never apply has to be refused by the manifest alone.
+    // Today that is EVERY phase in the file — zero remain pending — so the second
+    // loop below is empty on purpose. The accepting branch is proven synthetically
+    // in "accepts a pending phase"; this test guards the live tree.
     const blocked = manifest.phases.filter((p: { status: string }) => p.status !== "pending");
     expect(blocked.length).toBeGreaterThan(0);
     for (const p of blocked) {

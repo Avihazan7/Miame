@@ -39,6 +39,31 @@ begin
   -- Declared by the repo, missing in production.
   alter table public.knowledge add column if not exists updated_at timestamptz not null default now();
 
-  raise notice '[knowledge-reconcile] category + updated_at present.';
+  -- ── POLICY CONVERGENCE ────────────────────────────────────────────────────
+  -- The same drift, in the other half of the schema. 20260629_knowledge_seed_miame
+  -- creates two policies that production does not have:
+  --
+  --   · "public can read knowledge"  — no explicit TO, so it grants to PUBLIC:
+  --     every role including authenticated, not just anon.
+  --   · "service can manage knowledge" — gated on auth.role(), which Supabase
+  --     documents as deprecated for RLS.
+  --
+  -- Production carries exactly ONE policy: `anon read knowledge`,
+  -- FOR SELECT TO anon USING (true). Measured live 2026-08-31.
+  --
+  -- So the security advisor is green because of the LIVE state, while a replay
+  -- from an empty database rebuilds the older, broader, deprecated contract. This
+  -- block makes the replay converge on what production actually runs.
+  --
+  -- No service policy is recreated: service_role carries BYPASSRLS, so a policy
+  -- for it is decoration that widens the surface without granting anything new.
+  drop policy if exists "public can read knowledge"  on public.knowledge;
+  drop policy if exists "service can manage knowledge" on public.knowledge;
+  drop policy if exists "anon read knowledge"        on public.knowledge;
+  create policy "anon read knowledge"
+    on public.knowledge for select to anon
+    using (true);
+
+  raise notice '[knowledge-reconcile] category + updated_at present; one anon read policy.';
 end
 $reconcile$;

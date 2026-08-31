@@ -133,20 +133,21 @@
     {
       "id": "6-knowledge-column-reconcile",
       "title": "Reconcile knowledge columns with the repo declaration",
-      "status": "pending",
+      "status": "applied",
       "migrations": [
         {
-          "file": "20260629_knowledge_zz_reconcile_columns.sql"
+          "file": "20260629_knowledge_zz_reconcile_columns.sql",
+          "ledger": "20260831210943"
         }
       ],
-      "risk": "none — additive, idempotent, no live consumer branches on either column",
       "why": [
         "Measured drift, both directions. Production carries `category` and no",
         "migration in this repo creates it — so a replay onto a fresh database",
         "ABORTS at the 20260714 seed, which INSERTs into that column. The repo",
         "declares `updated_at` and production does not have it.",
         "Lands first because every later phase assumes the table matches the repo."
-      ]
+      ],
+      "evidence": "applied 2026-08-31 · ledger 20260831210943 · verified live: knowledge now id·source·category·body·embedding·created_at·updated_at · updated_at NOT NULL DEFAULT now() with 0 nulls across 36 rows · exactly one policy, `anon read knowledge` [SELECT {anon}] · no auth.role() anywhere"
     },
     {
       "id": "7-media-policy-consolidation",
@@ -169,18 +170,19 @@
     {
       "id": "8-lead-utm",
       "title": "UTM attribution columns on leads",
-      "status": "pending",
+      "status": "applied",
       "migrations": [
         {
-          "file": "20260704_lead_utm.sql"
+          "file": "20260704_lead_utm.sql",
+          "ledger": "20260831211011"
         }
       ],
-      "risk": "low — additive columns on an existing table",
       "why": [
         "Measured 2026-08-31: public.leads exists and carries ZERO utm columns.",
         "Genuine MiaMe work that never landed. The campaign now drives paid",
         "traffic into nine WhatsApp entry points, so attribution has a consumer."
-      ]
+      ],
+      "evidence": "applied 2026-08-31 · ledger 20260831211011 · verified live: 9 UTM columns on leads and 9 on partners · leads_utm_source_idx present · both anon INSERT policies re-asserted TO anon with bounded UTM · 0 policies using auth.role()"
     },
     {
       "id": "9-rental-fleet-os",
