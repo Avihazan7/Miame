@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingWa from "@/components/FloatingWa";
 import Partner from "@/components/Partner";
+import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
 // Dedicated conversion route for the MiaMe Hub B2B partner funnel. Reuses the
 // existing Partner section (with PartnerHubForm → existing public.partners table).
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
 export default function PartnersPage() {
   return (
     <>
+      <BreadcrumbJsonLd name="שותפים ומשווקים" path="/partners" />
       <Header />
       <main id="main">
         <Partner />
