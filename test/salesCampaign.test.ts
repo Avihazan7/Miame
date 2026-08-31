@@ -210,6 +210,22 @@ describe("one WhatsApp route, offered everywhere", () => {
     expect(src).toContain("אינה מחייבת ברכישה");
   });
 
+  it("the eligibility page keeps an inbound link from the homepage", () => {
+    // Removing the entry-path grid took the homepage's only link to
+    // /eligibility with it. The Tribute deep link replaces it; without this
+    // guard the page silently orphans again the next time Tribute is edited.
+    expect(read("app/page.tsx")).toContain("<Tribute deepLink />");
+    expect(read("components/Tribute.tsx")).toContain('href="/eligibility"');
+  });
+
+  it("robots.txt names the AI answer engines explicitly", () => {
+    const robots = read("public/robots.txt");
+    for (const bot of ["GPTBot", "ClaudeBot", "PerplexityBot", "Google-Extended"]) {
+      expect(robots, `robots.txt missing ${bot}`).toContain(bot);
+    }
+    expect(robots).toMatch(/Sitemap:\s*https:\/\/www\.miame\.co\.il\/sitemap\.xml/);
+  });
+
   it("the four-route entry fork is gone from the homepage", () => {
     expect(read("app/page.tsx")).not.toContain("EntryPaths");
     expect(existsSync(resolve(ROOT, "components/EntryPaths.tsx"))).toBe(false);
