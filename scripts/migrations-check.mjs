@@ -42,10 +42,21 @@ const ROLLBACK_BASELINE = new Set([
   "20260707_harden_touch_updated_at_search_path.sql",
   "20260709_rental_fleet_os.sql",
   "20260714_knowledge_full_seed_from_crimson_lever.sql",
+  // Recovered from the ledger, already live. It replaced `WITH CHECK (true)` on
+  // the three anon INSERT policies with bounded checks; reverting would reopen
+  // the rls_policy_always_true advisor. Undoing a hardening is a regression, not
+  // a rollback, so this one has no undo by design.
+  "20260624053746_harden_anon_insert_bounded_checks.sql",
 ]);
 
 /** M-01 exemption: the single pre-convention filename. Not extensible. */
 const NAMING_BASELINE = new Set(["0001_crm.sql"]);
+
+// Six statuses, because three could not carry the decisions the file already
+// documented in prose: phases marked HOLD and "replay path only" in their own
+// `why` were still `pending`, and `pending` is the one status the applier
+// accepts. The manifest described policy it did not enforce.
+const VALID_STATUSES = new Set(["applied", "pending", "hold", "superseded", "replay-only", "foreign"]);
 
 const errors = [];
 const warnings = [];
@@ -108,7 +119,11 @@ try {
 }
 
 if (phases) {
-  const VALID = new Set(["applied", "pending", "foreign"]);
+  // Six statuses, because three could not carry the decisions the file already
+  // documented in prose: phases marked HOLD and "replay path only" in their own
+  // `why` were still `pending`, and `pending` is the one status the applier
+  // accepts. The manifest described policy it did not enforce.
+  const VALID = VALID_STATUSES;
   const seen = new Map(); // file -> phase id
   for (const p of phases.phases ?? []) {
     if (!p.id || !p.title) err("M-02", PHASES, `phase missing id or title: ${JSON.stringify(p).slice(0, 80)}`);
@@ -124,6 +139,14 @@ if (phases) {
       if (p.status !== "applied" && m.ledger) {
         err("M-03", PHASES, `phase ${p.id} is ${p.status} but "${m.file}" carries a ledger version`);
       }
+      // A `superseded` phase must name what replaced it. Without that the status
+      // is an assertion nobody can check.
+      if (p.status === "superseded" && !p.supersededBy) {
+        err("M-02", PHASES, `phase ${p.id} is superseded but names no supersededBy`);
+      }
+      if (p.supersededBy && !forward.includes(p.supersededBy)) {
+        err("M-02", PHASES, `phase ${p.id} supersededBy "${p.supersededBy}" — not on disk`);
+      }
     }
     // A pending or foreign phase must say WHY — a phase with no rationale is a
     // phase the next reader has to reverse-engineer under time pressure.
@@ -133,6 +156,42 @@ if (phases) {
   }
   for (const f of forward) {
     if (!seen.has(f)) err("M-02", f, "not claimed by any phase in supabase/phases.json");
+  }
+}
+
+// ── M-08 · the manifest matches its own schema ───────────────────────────────
+// `$schema` pointed at a file that did not exist, so nothing checked the shape.
+// A hand-rolled structural check rather than a JSON-Schema dependency: this gate
+// must keep running with no database, no secrets and no install beyond the repo.
+if (phases) {
+  let schema = null;
+  try {
+    schema = JSON.parse(readFileSync("supabase/phases.schema.json", "utf8"));
+  } catch (e) {
+    err("M-08", "supabase/phases.schema.json", `unreadable: ${e.message}`);
+  }
+  if (schema) {
+    const allowedPhaseKeys = new Set(Object.keys(schema.properties.phases.items.properties));
+    const requiredPhaseKeys = schema.properties.phases.items.required;
+    const declaredStatuses = new Set(schema.properties.phases.items.properties.status.enum);
+    for (const p of phases.phases ?? []) {
+      for (const k of Object.keys(p)) {
+        if (!allowedPhaseKeys.has(k)) err("M-08", PHASES, `phase ${p.id}: unknown key "${k}"`);
+      }
+      for (const k of requiredPhaseKeys) {
+        if (!(k in p)) err("M-08", PHASES, `phase ${p.id}: missing required key "${k}"`);
+      }
+      if (!declaredStatuses.has(p.status)) {
+        err("M-08", PHASES, `phase ${p.id}: status "${p.status}" is not in the schema enum`);
+      }
+    }
+    // The gate's own list and the schema's enum must not drift apart.
+    for (const st of VALID_STATUSES) {
+      if (!declaredStatuses.has(st)) err("M-08", "supabase/phases.schema.json", `gate accepts "${st}" but the schema does not`);
+    }
+    for (const st of declaredStatuses) {
+      if (!VALID_STATUSES.has(st)) err("M-08", PHASES, `schema allows "${st}" but the gate does not`);
+    }
   }
 }
 
@@ -203,7 +262,8 @@ for (const f of forward) {
 
 // ── report ───────────────────────────────────────────────────────────────────
 const label = { "M-01": "naming", "M-02": "phase-cover", "M-03": "ledger-map",
-  "M-04": "rollback", "M-05": "idempotency", "M-06": "destructive", "M-07": "search_path" };
+  "M-04": "rollback", "M-05": "idempotency", "M-06": "destructive", "M-07": "search_path",
+  "M-08": "schema" };
 
 console.log(`migrations-check · ${forward.length} forward · ${rollbacks.size} rollback · ${phases?.phases?.length ?? 0} phases\n`);
 for (const w of warnings) console.log(`  warn  ${w.rule.padEnd(11)} ${w.file}: ${w.msg}`);

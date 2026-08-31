@@ -154,18 +154,33 @@ export function selectPhase(manifestArg, phaseId) {
   if (!phaseId) return { error: "--phase <id> is required. `npm run migrations:status` lists them." };
   const phase = manifestArg.phases.find((p) => p.id === phaseId);
   if (!phase) return { error: `no phase "${phaseId}" in supabase/phases.json.` };
-  if (phase.status === "foreign") {
+  // `pending` is the ONLY status that may be applied. Everything else is refused
+  // by name, so a phase whose prose says HOLD cannot be applied merely because
+  // its status was never updated to match — which is exactly what used to happen.
+  const REFUSALS = {
+    applied:
+      `is already applied. Re-running a landed phase is how the live plan and the\n` +
+      `approved plan diverge.`,
+    foreign:
+      `is marked foreign — it targets the shared leasing database, not the MiaMe\n` +
+      `data plane.`,
+    hold:
+      `is on HOLD — the schema is real but no product decision has authorised it,\n` +
+      `so applying it would create structure with no reader.`,
+    superseded:
+      `is superseded: a later migration already does this, and applying the older\n` +
+      `file would roll the database BACKWARDS.`,
+    "replay-only":
+      `is replay-only — it exists to rebuild an empty database and is inert or\n` +
+      `wrong against a live one.`,
+  };
+  if (phase.status !== "pending") {
+    const why = (phase.why ?? []).join("\n  ");
+    const by = phase.supersededBy ? `\n  superseded by: ${phase.supersededBy}` : "";
     return {
       error:
-        `phase "${phaseId}" is marked foreign — it targets the shared leasing database,\n` +
-        `not the MiaMe data plane. Refusing.\n  ${(phase.why ?? []).join("\n  ")}`,
-    };
-  }
-  if (phase.status === "applied") {
-    return {
-      error:
-        `phase "${phaseId}" is already applied. Re-running a landed phase is how the live\n` +
-        `plan and the approved plan diverge. Refusing.`,
+        `phase "${phaseId}" ${REFUSALS[phase.status] ?? `has status "${phase.status}", which is not applicable.`}\n` +
+        `Refusing.${by}${why ? `\n  ${why}` : ""}`,
     };
   }
   return { phase };

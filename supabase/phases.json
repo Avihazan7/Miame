@@ -54,9 +54,13 @@
         {
           "file": "0001_crm.sql",
           "ledger": "20260624051817"
+        },
+        {
+          "file": "20260624053746_harden_anon_insert_bounded_checks.sql",
+          "ledger": "20260624053746"
         }
       ],
-      "evidence": "ledger name: miame_crm_leads_partners_events"
+      "evidence": "ledger names: miame_crm_leads_partners_events · harden_anon_insert_bounded_checks (recovered from the ledger byte-identically, md5 10a6ee346bdfa5983069f93676bff1e6 — see docs/evidence/ledger-recovery-20260624053746/)"
     },
     {
       "id": "1-knowledge-rag",
@@ -147,7 +151,8 @@
     {
       "id": "7-media-policy-consolidation",
       "title": "Consolidate the vehicle_media_assets policy set",
-      "status": "pending",
+      "status": "superseded",
+      "supersededBy": "20260723115108_media_rls_hardening.sql",
       "migrations": [
         {
           "file": "20260630_consolidate_vehicle_media_policies.sql"
@@ -180,7 +185,7 @@
     {
       "id": "9-rental-fleet-os",
       "title": "Rental fleet OS — four tables",
-      "status": "pending",
+      "status": "hold",
       "migrations": [
         {
           "file": "20260709_rental_fleet_os.sql"
@@ -198,7 +203,7 @@
     {
       "id": "10-knowledge-full-seed",
       "title": "Full knowledge corpus seed (replay path only)",
-      "status": "pending",
+      "status": "replay-only",
       "migrations": [
         {
           "file": "20260714_knowledge_full_seed_from_crimson_lever.sql"
@@ -257,7 +262,7 @@
           "file": "20260901_knowledge_spyqe_and_supply.sql"
         }
       ],
-      "risk": "low — five additive rows plus one id-keyed UPDATE on a row that is now factually wrong",
+      "risk": "low — six additive rows plus two id-keyed UPDATEs on rows that are now factually wrong",
       "why": [
         "Two models now, two different waits: MIA FOUR is in stock and ships in up to",
         "3 business days; SPYQE is a pre-order estimated at up to 33. The corpus knew",
@@ -273,7 +278,8 @@
         "The offer text lives in this row AND in lib/spyqe.ts. That duplication is",
         "real and deliberate — the corpus is a database, not an import of the bundle —",
         "so when the 248 allocation closes or the price moves, BOTH must be updated.",
-        "The rollback restores the previous `delivery` body verbatim."
+        "The rollback restores the previous `delivery` body verbatim.",
+        "`lead` still quotes a balloon payment; the simulator has none (balloonPct is pinned to 0)."
       ]
     }
   ]

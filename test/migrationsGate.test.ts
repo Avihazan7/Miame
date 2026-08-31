@@ -7,7 +7,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { execFileSync } from "node:child_process";
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { selectPhase } from "../scripts/migrations-apply.mjs";
 
 const DIR = "supabase/migrations";
@@ -120,5 +120,85 @@ describe("applier refusals (decided by the manifest, before any connection)", ()
     for (const p of manifest.phases) {
       if (p.status === "foreign") expect(selectPhase(manifest, p.id).phase).toBeUndefined();
     }
+  });
+});
+
+describe("the manifest enforces the decisions it documents", () => {
+  // The whole P0. Phase 9's own `why` said HOLD and phase 10's said "replay path
+  // only", but both carried status `pending` — and `pending` is the one status
+  // the applier accepts. The file described policy it did not enforce.
+  const schema = JSON.parse(readFileSync("supabase/phases.schema.json", "utf8"));
+  const STATUSES = schema.properties.phases.items.properties.status.enum;
+
+  it("declares six statuses, not three", () => {
+    expect(STATUSES).toEqual(
+      expect.arrayContaining(["applied", "pending", "hold", "superseded", "replay-only", "foreign"]),
+    );
+  });
+
+  it("has a real schema behind its $schema pointer", () => {
+    // It used to point at a file that did not exist, so nothing checked the shape.
+    expect(manifest.$schema).toBe("./phases.schema.json");
+    expect(schema.properties.phases.items.required).toContain("status");
+  });
+
+  it("puts every phase on a declared status", () => {
+    for (const p of manifest.phases) expect(STATUSES).toContain(p.status);
+  });
+
+  it("makes a superseded phase name what replaced it", () => {
+    for (const p of manifest.phases) {
+      if (p.status !== "superseded") continue;
+      expect(p.supersededBy, `${p.id} is superseded but names nothing`).toBeTruthy();
+      expect(existsSync(`supabase/migrations/${p.supersededBy}`)).toBe(true);
+    }
+  });
+
+  it("refuses every status except pending, before any connection", () => {
+    // A phase the tool must never apply has to be refused by the manifest alone.
+    const blocked = manifest.phases.filter((p: { status: string }) => p.status !== "pending");
+    expect(blocked.length).toBeGreaterThan(0);
+    for (const p of blocked) {
+      const { phase, error } = selectPhase(manifest, p.id);
+      expect(phase, `${p.id} (${p.status}) was NOT refused`).toBeUndefined();
+      expect(error).toContain(p.id);
+    }
+    for (const p of manifest.phases.filter((x: { status: string }) => x.status === "pending")) {
+      expect(selectPhase(manifest, p.id).error, `${p.id} is pending and should pass`).toBeUndefined();
+    }
+  });
+
+  it("pins the three phases whose status IS the decision", () => {
+    // Flipping any of these back to `pending` makes the applier accept it, and
+    // nothing else in the suite would notice — that is precisely the defect this
+    // whole model exists to close. Each is a product decision, not a free
+    // variable, so each is named here and has to be changed on purpose.
+    const DECIDED: Record<string, string> = {
+      // superseded by 20260723115108, which is already live. Applying the older
+      // file would roll the policy set BACKWARDS.
+      "7-media-policy-consolidation": "superseded",
+      // four tables with no reader: the campaign removed the rental surface.
+      "9-rental-fleet-os": "hold",
+      // fills an empty database; inert or wrong against a live one.
+      "10-knowledge-full-seed": "replay-only",
+    };
+    for (const [id, status] of Object.entries(DECIDED)) {
+      const p = manifest.phases.find((x: { id: string }) => x.id === id);
+      expect(p, `phase ${id} disappeared`).toBeTruthy();
+      expect(p.status, `${id} must stay "${status}" — see its own why[]`).toBe(status);
+      expect(selectPhase(manifest, id).phase, `${id} became appliable`).toBeUndefined();
+    }
+  });
+
+  it("keeps the recovered out-of-band migration mapped and evidenced", () => {
+    // It exists in git only because the ledger stores each migration's SQL.
+    const p0 = manifest.phases.find((x: { id: string }) => x.id === "0-baseline-crm");
+    const rec = p0.migrations.find(
+      (m: { file: string }) => m.file === "20260624053746_harden_anon_insert_bounded_checks.sql",
+    );
+    expect(rec, "the recovered migration is not claimed by phase 0").toBeTruthy();
+    expect(rec.ledger).toBe("20260624053746");
+    expect(existsSync(`supabase/migrations/${rec.file}`)).toBe(true);
+    expect(p0.evidence).toContain("10a6ee346bdfa5983069f93676bff1e6");
   });
 });
