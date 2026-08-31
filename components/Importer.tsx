@@ -29,12 +29,20 @@ export default function Importer() {
 
         <div className="importer-brand">
           <span className="imp-logo-tile">
+            {/* The INTRINSIC size, not the rendered one. 220×50 was a guess at how
+                big it looks; the file is 1920×1080. The browser reserved a 4.4:1
+                box from the attributes and then collapsed it to the real 16:9 once
+                the bytes arrived — 220px wide down to ~89px. That single collapse
+                was the last measurable layout shift on the page. CSS still sizes
+                it (height:50px, width:auto); the attributes only have to state the
+                true ratio so the space reserved is the space used. */}
             <img
               src="/mia-dynamics-logo.webp"
               alt={`${MANUFACTURER_NAME} · Make it anywhere`}
-              width={220}
-              height={50}
+              width={1920}
+              height={1080}
               loading="lazy"
+              decoding="async"
             />
           </span>
           <span className="imp-global">היצרן · {MANUFACTURER_NAME}</span>

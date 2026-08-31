@@ -1567,3 +1567,22 @@ a,button,.btn,.mp,input{touch-action:manipulation}
   width:19px;height:19px;border-radius:50%;display:grid;place-items:center;
   font-size:11px;font-weight:800;color:#06302e;background:var(--cyan,#0ce5dd)}
 .spq-steps b{font-size:16px;font-weight:800;color:#fff;white-space:nowrap}
+
+/* CLS · the three <img> whose intrinsic size cannot be known at build time —
+   YouTube posters (remote thumbnails) and the 360 stage frames. width/height
+   attributes are impossible there, so the BOX reserves the space instead.
+   Measured before this: mobile CLS ranged 0.30–1.15 against Google's 0.10
+   threshold, while desktop sat at 0.046 — which is why it went unnoticed. */
+.cinema-poster img,
+.spq-video-poster img,
+.howto-poster img{aspect-ratio:16/9;width:100%;height:100%;object-fit:cover}
+
+/* ROOT CAUSE of the SPYQE section's mobile CLS.
+   .soon-media is a flex item and .soon-card centres its children, so the media
+   column never stretched — its width came from its content, which is ~72px until
+   the images land. .spq-video at width:100% therefore reserved a 72×40 box and
+   then jumped to 340×191, taking the offer, the spec table and the CTA with it.
+   Measured before: mobile CLS 0.28–0.53 with the shift attributed to
+   `<button.spq-video-poster> h:0→170`. Desktop never showed it, because the row
+   layout gave the column a width all along. */
+.soon-media{width:100%;align-self:stretch}
