@@ -61,4 +61,19 @@ $$;
 -- 2) Pin the zero-km enforcement trigger's search_path ------------------------
 --    Prevents search_path hijacking of the unqualified object references inside
 --    the function body (advisor 0011_function_search_path_mutable).
-alter function public.enforce_zero_km_disclosure_2026() set search_path = public, pg_temp;
+-- ⚠ GUARDED (2026-08-31). A bare ALTER FUNCTION on an absent function throws and
+--   takes the transaction with it. This file targets the shared leasing database
+--   (see the header); on the MiaMe data plane the function does not exist, so as
+--   written it aborted any replay that reached it. The guard makes it a no-op
+--   where the target is absent. It does NOT make this file appliable to MiaMe —
+--   supabase/phases.json marks it `foreign`.
+do $pin$
+begin
+  if exists (
+    select 1 from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'enforce_zero_km_disclosure_2026'
+  ) then
+    execute 'alter function public.enforce_zero_km_disclosure_2026() set search_path = public, pg_temp';
+  end if;
+end $pin$;

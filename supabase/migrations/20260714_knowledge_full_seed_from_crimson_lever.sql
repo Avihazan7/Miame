@@ -32,12 +32,24 @@ begin
     return;
   end if;
 
+-- ⚠ ALIGNED AT SOURCE (2026-08-31) — three rows, `contact` · `dealers` · `finance`.
+--   They used to seed the dealer network with five city names, route buyers through
+--   a flagship store, and state the wrong instalment count. The campaign deleted
+--   all of that from the site, and 20260831_knowledge_sales_campaign_alignment.sql
+--   rewrote the live rows to match.
+--   Patching after the fact is not the same as being correct. This file is the
+--   REPLAY path: on a fresh database it is what fills the corpus, and a seed that
+--   carries content the campaign deleted is a landmine for anyone who applies it
+--   standalone or reorders the phases. The bodies below are now byte-identical to
+--   what production carries, so the file is right in isolation and not only after
+--   a later file runs. Keep the two in step — see supabase/phases.json phase 10.
+
   insert into public.knowledge (id, source, category, body) values
     ('colors', 'MiaMe/Models', 'models', 'מיה פור זמינה בשחור פרימיום עם הדגשי תכלת.'),
-    ('contact', 'MiaMe/Funnel', 'lead', 'יצירת קשר: וואטסאפ ישיר באתר (כפתור "דברו איתי"), או דרך חנות הדגל והמשווקים המורשים.'),
-    ('dealers', 'MiaMe/Service', 'service', 'רשת משווקים מורשים בכל הארץ (הוד-השרון, תל אביב, ירושלים, אשקלון, אילת ועוד) — חיוג וניווט באתר.'),
+    ('contact', 'MiaMe/Funnel', 'lead', 'יצירת קשר: וואטסאפ ישיר באתר (כפתור "דברו איתי"), או השארת פרטים בסימולטור התשלומים. אין סניפים ואין קווי טלפון נוספים — כל פנייה מגיעה לנציג MiaMe.'),
+    ('dealers', 'MiaMe/Service', 'service', 'מכירה ומסירה מתואמת בכל אזורי הארץ, מול נציג MiaMe. אין רשת סניפים ואין רשימת משווקים באתר.'),
     ('delivery', 'MiaMe/Service', 'service', 'אספקה מיידית, בכפוף לזמינות מלאי.'),
-    ('finance', 'MiaMe/Finance', 'finance', 'מסלולי תשלום ב-0% ריבית בכפוף לאישור; עד 26 תשלומים במסלול פרטי. הסימולטור באתר בונה הצעה תוך דקה.'),
+    ('finance', 'MiaMe/Finance', 'finance', 'מסלולי תשלום ב-0% ריבית בכפוף לאישור עסקה; עד 18 תשלומים ללא ריבית והצמדה. הסימולטור באתר בונה הצעה תוך דקה.'),
     ('lead', 'MiaMe/Funnel', 'lead', 'פנייה ועסקה דרך WhatsApp: הסימולטור שולח הצעה מלאה (דגם, מקדמה, בלון, תקופה, תשלום חודשי) ישירות לוואטסאפ.'),
     ('model-choose', 'MiaMe/Models', 'models', 'איך לבחור דגם: 4×2 לעיר וזריזות · 2×4 Long Range לטווח מורחב (35Ah) · 4×4 לארבעה מנועים והנעה כפולה בשטח.'),
     ('partner', 'MiaMe/Hub', 'partner', 'מודל שותף MiaMe Hub: השותף מחזיק את הצי, MiaMe מביאה ביקוש; 13% Success Fee מהפניות בלבד, ללא עלות קבועה.'),

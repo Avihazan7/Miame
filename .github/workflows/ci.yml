@@ -37,6 +37,13 @@ jobs:
         id: lint
         run: npm run lint
 
+      # Static migration gate — no database, no secrets, so it runs on every PR
+      # including forks. Naming/apply order · phase coverage · ledger mapping ·
+      # rollback ratchet · idempotency · destructive DDL · search_path pinning.
+      - name: Migrations (static gate)
+        id: migrations
+        run: npm run migrations:check
+
       - name: Tests
         id: tests
         run: npm test
@@ -55,6 +62,7 @@ jobs:
             echo "|---|---|"
             echo "| Typecheck | ${{ steps.typecheck.outcome }} |"
             echo "| Lint | ${{ steps.lint.outcome }} |"
+            echo "| Migrations | ${{ steps.migrations.outcome }} |"
             echo "| Tests | ${{ steps.tests.outcome }} |"
             echo "| Build | ${{ steps.build.outcome }} |"
           } >> "$GITHUB_STEP_SUMMARY"

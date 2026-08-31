@@ -1,0 +1,252 @@
+{
+  "$schema": "./phases.schema.json",
+  "doc": [
+    "MiaMe.co.il — the migration phase manifest.",
+    "",
+    "WHY THIS FILE EXISTS. Code deployed to Vercel lands IMMEDIATELY; a migration",
+    "lands only when a human runs an approved apply. That asymmetry is the whole",
+    "reason a phase model is needed: without one, a reader ships before the column",
+    "it reads exists, and the site answers 500 until someone notices.",
+    "",
+    "A PHASE IS ONE APPROVED UNIT OF WORK. One phase per apply run. A phase that",
+    "has landed moves to status 'applied' and drops out of the pending menu — a",
+    "phase left in the menu after it landed makes the live plan and the approved",
+    "plan diverge, and the next run aborts on a plan it cannot reconcile.",
+    "",
+    "THE THREE STATUSES ARE NOT COSMETIC:",
+    "  applied — present in supabase_migrations.schema_migrations on the MiaMe",
+    "            project. 'ledger' records the version string production actually",
+    "            carries, which is NOT always the repo filename prefix.",
+    "  pending — a real MiaMe migration that has never landed. Eligible to apply.",
+    "  foreign — written against the SHARED leasing-co-il-prod database, not the",
+    "            MiaMe data plane. NEVER applied here. See 'why' on each entry.",
+    "",
+    "The 'foreign' status is the finding this file was built to carry. The MiaMe",
+    "project holds exactly six tables (events · knowledge · leads · partners ·",
+    "vehicle_media_assets · vehicle_media_events). Three files in this directory",
+    "address catalog_2026 tables and seo/catalog trigger functions that do not",
+    "exist here and never will — they were authored while MiaMe and the leasing",
+    "platform shared one database. Applying them against MiaMe does not degrade",
+    "anything; it ABORTS, because ALTER FUNCTION on an absent function throws.",
+    "Marking them keeps them reviewable without leaving them armed."
+  ],
+  "project": {
+    "ref": "thhyfwoeybkptxvbpcmg",
+    "role": "MiaMe.co.il isolated data plane",
+    "ledgerSchema": "supabase_migrations",
+    "ledgerTable": "schema_migrations",
+    "measuredAt": "2026-08-31",
+    "measuredTables": [
+      "events",
+      "knowledge",
+      "leads",
+      "partners",
+      "vehicle_media_assets",
+      "vehicle_media_events"
+    ]
+  },
+  "phases": [
+    {
+      "id": "0-baseline-crm",
+      "title": "CRM core — leads · partners · events",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "0001_crm.sql",
+          "ledger": "20260624051817"
+        }
+      ],
+      "evidence": "ledger name: miame_crm_leads_partners_events"
+    },
+    {
+      "id": "1-knowledge-rag",
+      "title": "RAG corpus — knowledge table, pgvector, match_knowledge",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260629_knowledge_seed_miame.sql",
+          "ledger": "20260624124740"
+        }
+      ],
+      "evidence": "ledger name: brain_rag_pgvector_knowledge · 30 rows measured 2026-08-31"
+    },
+    {
+      "id": "2-vehicle-media",
+      "title": "Vehicle media assets + events, GLB pointer",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260629_vehicle_media_ultra.sql",
+          "ledger": "20260629175405"
+        },
+        {
+          "file": "20260629_vehicle_media_ultra_glb.sql",
+          "ledger": "20260629205729"
+        }
+      ],
+      "evidence": "ledger names: vehicle_media_ultra · vehicle_media_glb_mia_four_x4"
+    },
+    {
+      "id": "3-match-knowledge-pin",
+      "title": "Pin search_path on match_knowledge",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260704_harden_match_knowledge_search_path.sql",
+          "ledger": "20260704203647"
+        }
+      ],
+      "evidence": "pg_proc.proconfig = {search_path=pg_catalog} measured 2026-08-31"
+    },
+    {
+      "id": "4-media-rls-and-vector-isolation",
+      "title": "Media RLS hardening + vector extension moved to extensions schema",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260723115108_media_rls_hardening.sql",
+          "ledger": "20260723115108"
+        },
+        {
+          "file": "20260723115312_vector_extension_isolation.sql",
+          "ledger": "20260723115312"
+        }
+      ],
+      "evidence": "recovered into git byte-identically; md5 verified against docs/evidence/out-of-band-2026-07-23/"
+    },
+    {
+      "id": "5-sales-campaign-alignment",
+      "title": "Knowledge corpus aligned to the focused sales campaign",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260831_knowledge_sales_campaign_alignment.sql",
+          "ledger": "20260831150247"
+        }
+      ],
+      "evidence": "5 rows rewritten: dealer network and addresses removed, 26 payments corrected to 18"
+    },
+    {
+      "id": "6-knowledge-column-reconcile",
+      "title": "Reconcile knowledge columns with the repo declaration",
+      "status": "pending",
+      "migrations": [
+        {
+          "file": "20260629_knowledge_zz_reconcile_columns.sql"
+        }
+      ],
+      "risk": "none — additive, idempotent, no live consumer branches on either column",
+      "why": [
+        "Measured drift, both directions. Production carries `category` and no",
+        "migration in this repo creates it — so a replay onto a fresh database",
+        "ABORTS at the 20260714 seed, which INSERTs into that column. The repo",
+        "declares `updated_at` and production does not have it.",
+        "Lands first because every later phase assumes the table matches the repo."
+      ]
+    },
+    {
+      "id": "7-media-policy-consolidation",
+      "title": "Consolidate the vehicle_media_assets policy set",
+      "status": "pending",
+      "migrations": [
+        {
+          "file": "20260630_consolidate_vehicle_media_policies.sql"
+        }
+      ],
+      "risk": "low — policy replacement on a table with no anon write path",
+      "why": [
+        "Measured 2026-08-31: vehicle_media_assets carries 2 policies; this file",
+        "declares 4. Review against 20260723115108 (already applied) BEFORE the",
+        "apply — that later file also rewrote this policy set, and the winner",
+        "must be decided by reading, not by apply order."
+      ]
+    },
+    {
+      "id": "8-lead-utm",
+      "title": "UTM attribution columns on leads",
+      "status": "pending",
+      "migrations": [
+        {
+          "file": "20260704_lead_utm.sql"
+        }
+      ],
+      "risk": "low — additive columns on an existing table",
+      "why": [
+        "Measured 2026-08-31: public.leads exists and carries ZERO utm columns.",
+        "Genuine MiaMe work that never landed. The campaign now drives paid",
+        "traffic into nine WhatsApp entry points, so attribution has a consumer."
+      ]
+    },
+    {
+      "id": "9-rental-fleet-os",
+      "title": "Rental fleet OS — four tables",
+      "status": "pending",
+      "migrations": [
+        {
+          "file": "20260709_rental_fleet_os.sql"
+        }
+      ],
+      "risk": "medium — creates four new tables",
+      "why": [
+        "Measured 2026-08-31: none of the four tables exist.",
+        "HOLD. The focused sales campaign removed the rental surface from the",
+        "site, so this schema currently has no reader. Landing it would create",
+        "four empty tables nobody queries. Apply only if rental returns as a",
+        "product decision — not as migration housekeeping."
+      ]
+    },
+    {
+      "id": "10-knowledge-full-seed",
+      "title": "Full knowledge corpus seed (replay path only)",
+      "status": "pending",
+      "migrations": [
+        {
+          "file": "20260714_knowledge_full_seed_from_crimson_lever.sql"
+        }
+      ],
+      "risk": "none on production — ON CONFLICT (id) DO NOTHING, and all 29 ids already exist",
+      "why": [
+        "Inert against the live database by construction. It matters for REPLAY:",
+        "on a fresh database this is what fills the corpus before the campaign",
+        "alignment runs.",
+        "Its three campaign-sensitive rows were aligned at source on 2026-08-31",
+        "so the file is correct in isolation, not only after a later patch."
+      ]
+    },
+    {
+      "id": "F1-catalog-2026-rls",
+      "title": "catalog_2026 RLS hardening — SHARED LEASING DATABASE",
+      "status": "foreign",
+      "migrations": [
+        {
+          "file": "20260701_catalog_2026_rls_hardening.sql"
+        }
+      ],
+      "why": [
+        "Targets leads_2026 · deals_2026 · catalog_audit_log_2026 ·",
+        "vehicle_inventory_units_2026 · zero_km_disclosures_2026 ·",
+        "catalog_health_snapshots_2026. NONE of them exist on the MiaMe project",
+        "(six tables measured 2026-08-31). The file says so itself in its header:",
+        "its target is leasing-co-il-prod.",
+        "Kept in git as a reviewable artifact. Never applied here."
+      ]
+    },
+    {
+      "id": "F2-seo-catalog-touch-pin",
+      "title": "Pin search_path on seo/catalog trigger fns — SHARED LEASING DATABASE",
+      "status": "foreign",
+      "migrations": [
+        {
+          "file": "20260707_harden_touch_updated_at_search_path.sql"
+        }
+      ],
+      "why": [
+        "ALTERs public.seo_touch_updated_at() and public.catalog_touch_updated_at().",
+        "Measured 2026-08-31 on the MiaMe project: NEITHER function exists, so the",
+        "bare ALTER does not degrade — it THROWS, and takes the transaction with it.",
+        "Guarded at source on 2026-08-31 so a replay cannot abort on it, but the",
+        "status stays foreign: the functions belong to the leasing data plane."
+      ]
+    }
+  ]
+}
