@@ -49,6 +49,17 @@ export const WARRANTY = "אחריות יבואן רשמי · MEU · Mayer Electr
  */
 export const IMPORTER_NAME = "MEU · Mayer Electric Utilities";
 
+/**
+ * MIA FOUR's supply commitment, in business days, stated by the owner.
+ *
+ * It lives here rather than inside the delivery component because it is a
+ * commercial fact and more than one surface quotes it — the delivery strip and
+ * the knowledge corpus the on-site assistant answers from. It is a CEILING
+ * ("עד"), conditioned on stock, and it is what distinguishes MIA FOUR (in stock)
+ * from the SPYQE pre-order, whose own estimate lives in lib/spyqe.ts.
+ */
+export const MIA_FOUR_DELIVERY_DAYS = 3;
+
 /** The manufacturer brand behind MIA FOUR. */
 export const MANUFACTURER_NAME = "MIA Dynamics";
 

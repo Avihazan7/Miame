@@ -247,6 +247,34 @@
         "Guarded at source on 2026-08-31 so a replay cannot abort on it, but the",
         "status stays foreign: the functions belong to the leasing data plane."
       ]
+    },
+    {
+      "id": "11-knowledge-spyqe-and-supply",
+      "title": "SPYQE knowledge rows + MIA FOUR's real supply commitment",
+      "status": "pending",
+      "migrations": [
+        {
+          "file": "20260901_knowledge_spyqe_and_supply.sql"
+        }
+      ],
+      "risk": "low — five additive rows plus one id-keyed UPDATE on a row that is now factually wrong",
+      "why": [
+        "Two models now, two different waits: MIA FOUR is in stock and ships in up to",
+        "3 business days; SPYQE is a pre-order estimated at up to 33. The corpus knew",
+        "about neither, so a SPYQE question was answered out of MIA FOUR's rows.",
+        "Every embedding is NULL, so retrieval runs entirely on the Hebrew keyword",
+        "fallback — and every existing spec-*/price-* row describes MIA FOUR without",
+        "saying so. That is why each new row NAMES its model inside the body text and",
+        "not only in the id: the keyword path matches the body, so a model name that",
+        "lives only in the id is invisible to it.",
+        "`spyqe-spec` carries no specification on purpose. It exists so the assistant",
+        "has something correct to say when asked for one, instead of reaching for",
+        "MIA FOUR's numbers.",
+        "The offer text lives in this row AND in lib/spyqe.ts. That duplication is",
+        "real and deliberate — the corpus is a database, not an import of the bundle —",
+        "so when the 248 allocation closes or the price moves, BOTH must be updated.",
+        "The rollback restores the previous `delivery` body verbatim."
+      ]
     }
   ]
 }
