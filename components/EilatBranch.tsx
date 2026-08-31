@@ -5,19 +5,23 @@ import WaIcon from "./WaIcon";
 // Eilat / Green Extreme activity point. Wording is deliberately careful — a
 // planned activity/experience point, NOT an "official branch" (no such claim
 // until a signed agreement). Only publicly-known facts are stated in copy.
-const MAPS_URL =
-  "https://www.google.com/maps/search/?api=1&query=" +
-  encodeURIComponent("גרין אקסטרים פארק הטרמינל אילת דרך הערבה 3");
+//
+// Campaign rule 2: no street address and no navigation deep link. MiaMe
+// publishes no branch and no navigable location anywhere on the site; the way
+// to reach us — here as everywhere — is WhatsApp.
+// Campaign rule 4: the simulator now runs ONE nationwide track, so the old
+// "בדוק מחיר אילת" CTA (which pointed at a price zone that no longer exists)
+// is gone. Do not point a CTA at #sim expecting a regional price.
 
 const FACTS = [
-  "פארק הטרמינל · דרך הערבה 3, אילת",
+  "Green Extreme · אילת",
   "אטרקציות 16:00–22:00",
-  "Green Extreme · חוויה חשמלית לכל המשפחה",
+  "חוויה חשמלית לכל המשפחה",
 ];
 
 export default function EilatBranch() {
   const wa = buildWhatsAppUrl(
-    "היי MiaMe, אשמח לבדוק מחיר אילת וזמינות סביב Green Extreme 🦋"
+    "היי MiaMe, אשמח לפרטים על MIA FOUR וזמינות סביב Green Extreme באילת 🦋"
   );
 
   return (
@@ -31,10 +35,9 @@ export default function EilatBranch() {
             MiaMe × Green Extreme, נקודת הפעילות שלנו באילת
           </h2>
           <p className="eilat-copy">
-            מתחם Green Extreme בפארק הטרמינל אילת מתוכנן להיות נקודת החוויה והפעילות של
-            MiaMe באילת, מקום חי, חשמלי, ירוק ואקסטרימי שמחבר בין תצוגה, נסיעת היכרות
-            וחוויית Free Feel אמיתית. מחיר אילת זמין בכפוף לדין, מקום העסקה, תנאי החברה
-            והפקת חשבונית כדין.
+            מתחם Green Extreme באילת מתוכנן להיות נקודת החוויה והפעילות של MiaMe בעיר,
+            מקום חי, חשמלי, ירוק ואקסטרימי שמחבר בין תצוגה, נסיעת היכרות וחוויית
+            Free Feel אמיתית. תיאום, זמינות ותנאים מול נציג MiaMe.
           </p>
 
           <div className="eilat-facts">
@@ -46,15 +49,12 @@ export default function EilatBranch() {
           </div>
 
           <div className="eilat-actions">
-            <a href="/#sim" className="btn btn-primary">
-              בדוק מחיר אילת
-            </a>
-            <a href={wa} target="_blank" rel="noopener" className="btn btn-light">
+            <a href={wa} target="_blank" rel="noopener" className="btn btn-primary">
               <WaIcon size={20} />
               דברו איתי על אילת
             </a>
-            <a href={MAPS_URL} target="_blank" rel="noopener" className="btn btn-ghost">
-              נווטו ל-Green Extreme
+            <a href="/#sim" className="btn btn-light">
+              בניית הצעת תשלום
             </a>
           </div>
         </div>

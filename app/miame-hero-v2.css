@@ -80,12 +80,16 @@
   display: grid;
   gap: 2px;
   font-family: var(--font-heebo), system-ui, sans-serif;
-  font-size: clamp(48px, 6.4vw, 92px);
+  /* Ceiling lowered from 92px and `white-space:nowrap` removed: the copy column is
+     ~482px at 1440px, so the old value could not fit "עכשיו בתנועה." and
+     .hero-v2{overflow:hidden} clipped it into the product column. nowrap was also
+     defeating the text-wrap:balance below. `display:grid` already gives each line
+     its own row. ONE clamp governs every width — do not re-add a size override. */
+  font-size: clamp(40px, 5.2vw, 74px);
   line-height: .96;
   letter-spacing: -.012em; /* Hebrew stays legible; no letter-clamping */
   text-wrap: balance;
 }
-.hero-v2-title span, .hero-v2-title strong { white-space: nowrap; }
 .hero-v2-title span { color: var(--hero-white); font-weight: 850; }
 .hero-v2-title strong { color: var(--hero-cyan); font-weight: 900; }
 
@@ -267,7 +271,6 @@
 }
 @media (max-width: 560px) {
   .hero-v2-grid { padding-block: 92px 60px; gap: 26px; }
-  .hero-v2-title { font-size: clamp(42px, 13.5vw, 60px); }
   .hero-v2-actions { display: grid; grid-template-columns: 1fr; width: 100%; }
   .hero-v2-primary, .hero-v2-secondary { width: 100%; }
   .hero-v2-product-stage { min-height: 340px; }

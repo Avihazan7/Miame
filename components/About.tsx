@@ -8,10 +8,10 @@ export default function About() {
         <h2 className="about-title">
           לחיות את החלום
           <br />
-          <span style={{ color: "var(--azure)" }}>להרגיש חופשי</span>
+          <span className="about-accent">להרגיש חופשי</span>
         </h2>
 
-        <div className="about-logo" aria-label="MIA FOUR">
+        <div className="about-logo">
           <span className="about-logo-halo" aria-hidden="true" />
           <span className="about-logo-disc">
             <Image

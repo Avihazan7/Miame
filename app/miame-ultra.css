@@ -16,6 +16,11 @@
   --mist:#f7fff9;
   --line:#dff3ec;
   --grad-teal:linear-gradient(120deg,var(--glow-teal) 0%,#9ff7df 42%,#fff3d9 100%);
+  /* Foreground twin of --grad-teal. Use this wherever the gradient carries TEXT
+     or a white glyph ON LIGHT: --grad-teal ends on cream (1.10:1 on white), and
+     under RTL the reader meets that end first. Keep decorative hairlines and any
+     gradient text on a DARK ground (.ps-kicker .k) on --grad-teal. */
+  --grad-teal-text:linear-gradient(120deg,var(--ink-teal) 0%,#0C8F7A 52%,var(--ink-teal) 100%);
   --grad-teal-soft:linear-gradient(120deg,#dffff5,#8af4da 48%,#fff3d9);
   --glow:0 0 0 1px rgba(24,224,189,.20),0 16px 42px rgba(17,205,174,.20);
 }
@@ -30,7 +35,7 @@
 
 /* — Tier 1 · Energy (primary CTA · lime, same energy as the Hero) — */
 .btn-energy,
-.btn-primary, .btn-testride, .flagship-tel {
+.btn-primary, .btn-testride {
   color: var(--mint-zero-ink);
   border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, .28);
@@ -45,7 +50,7 @@
     0 30px 64px rgba(20, 60, 30, .14);
 }
 .btn-energy:hover,
-.btn-primary:hover, .btn-testride:hover, .flagship-tel:hover {
+.btn-primary:hover, .btn-testride:hover {
   transform: translateY(-2px);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, .7),
@@ -74,14 +79,14 @@
 }
 
 /* — Tier 3 · Ghost (secondary) — */
-.btn-ghost, .btn-light, .dealer-btn {
+.btn-ghost, .btn-light {
   color: var(--ink-teal);
   border-radius: 15px;
   background: linear-gradient(180deg, #ffffff, var(--surface-glass));
   border: 1px solid var(--hairline);
   box-shadow: inset 0 1px 0 #fff, 0 2px 0 #E4EBEA, 0 12px 26px rgba(8, 40, 36, .1);
 }
-.btn-ghost:hover, .btn-light:hover, .dealer-btn:hover {
+.btn-ghost:hover, .btn-light:hover {
   transform: translateY(-2px);
   color: var(--ink-teal);
   border-color: var(--glow-teal);
@@ -102,8 +107,8 @@
 }
 
 .btn:focus-visible,
-.btn-testride:focus-visible,.dealer-btn:focus-visible,.imp-btn:focus-visible,
-.tab:focus-visible,.mp:focus-visible{
+.btn-testride:focus-visible,
+.mp:focus-visible{
   outline:none;
   box-shadow:0 0 0 2px #fff,0 0 0 4px var(--mint),0 0 0 8px rgba(255,248,235,.75),0 16px 34px rgba(17,205,174,.30);
 }
@@ -160,21 +165,6 @@
   filter:drop-shadow(0 0 8px rgba(24,224,189,.8));
 }
 
-.tabs{
-  background:linear-gradient(180deg,#f8fffb,#fff8eb);
-  border:1px solid rgba(17,205,174,.16);
-}
-.tab.on{
-  color:#063f3a;
-  background:linear-gradient(180deg,#ffffff,#eafff8);
-  box-shadow:0 8px 22px rgba(17,205,174,.14),inset 0 1px 0 #fff;
-}
-/* Ultra Color track coding — the active track is stamped with its own token
-   (private=glow-teal · business=gold · partner=ice) so the color reads the
-   selected financing lane at a glance. */
-.tab.on[data-track="private"]{box-shadow:0 8px 22px rgba(17,205,174,.14),inset 0 1px 0 #fff,inset 0 -3px 0 var(--track-private)}
-.tab.on[data-track="business"]{box-shadow:0 8px 22px rgba(17,205,174,.14),inset 0 1px 0 #fff,inset 0 -3px 0 var(--track-business)}
-.tab.on[data-track="partner"]{box-shadow:0 8px 22px rgba(17,205,174,.14),inset 0 1px 0 #fff,inset 0 -3px 0 var(--track-partner)}
 .mp{
   border-color:rgba(17,205,174,.16);
   background:linear-gradient(180deg,#ffffff,#fffdf8);
@@ -184,17 +174,6 @@
   background:linear-gradient(180deg,#eafff8,#fff8eb);
   box-shadow:0 0 0 3px rgba(24,224,189,.14);
 }
-/* Eilat price on catalog cards + zone-aware simulator chips */
-.card-eilat{
-  margin-top:8px;display:flex;align-items:center;justify-content:flex-end;gap:6px;
-  font-size:13px;font-weight:800;color:var(--ink-teal);flex-wrap:wrap;
-}
-.card-eilat b{color:#063f3a;font-weight:900}
-.ce-tag{
-  font-size:10.5px;font-weight:800;color:var(--ink-teal);padding:2px 8px;border-radius:999px;
-  background:rgba(234,255,248,.9);border:1px solid rgba(24,224,189,.28);
-}
-.mp-eilat{color:var(--ink-teal);font-weight:900}
 .field-val{color:var(--mint-deep)}
 .rng{
   height:9px;
@@ -366,8 +345,11 @@
 .res-eyebrow,.res-model,.res-monthly{text-align:center}
 .res-badges{justify-content:center}
 .res-line{width:100%;margin:18px 0}
-.res-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.res-cell{min-height:72px;display:flex;flex-direction:column;justify-content:center}
+/* clears the 1px-hairline plate inherited from globals.css: with a 10px gap it
+   rendered as a milky frame, and .res-cell is translucent so it tinted the cells */
+.res-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+  background:transparent;border-radius:0;overflow:visible}
+.res-cell{min-height:72px;display:flex;flex-direction:column;justify-content:center;border-radius:12px}
 @media(max-width:880px){
   .sim{grid-template-columns:1fr;max-width:560px;margin-inline:auto}
 }
@@ -406,10 +388,10 @@ html,body{overflow-x:clip}
 img,svg,video,canvas{max-width:100%}
 
 /* --- performance-safe mint-crystal sweep also on secondary controls --- */
-.btn::after,.btn-testride::after,.dealer-btn::after,.imp-btn::after,
+.btn::after,.btn-testride::after,
 .chat3d-send::after,.sticky-main::after,.chat3d-chip::after{will-change:opacity,background-position}
 @media(prefers-reduced-motion:reduce){
-  .btn,.btn-testride,.dealer-btn,.imp-btn,.chat3d-send,.sticky-main,.chat3d-chip,.mp,.tab{
+  .btn,.btn-testride,.chat3d-send,.sticky-main,.chat3d-chip,.mp{
     transition:none;will-change:auto}
 }
 
@@ -478,66 +460,9 @@ img,svg,video,canvas{max-width:100%}
 body{text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
 
 /* ============================================================================
-   EILAT PRICE ZONE + GREEN EXTREME — balanced mint/azure nano crystal
-   Same design language; the Eilat toggle draws a touch more eye than a tab.
+   GREEN EXTREME — Eilat activity point (the price-zone toggle that used to live
+   here was removed with the simulator's multi-track UI: one nationwide track).
    ========================================================================== */
-
-.zone-toggle{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
-  margin:0 0 18px;
-  padding:8px;
-  border-radius:22px;
-  background:linear-gradient(180deg,#ffffff,#fff8eb 55%,#eafff8);
-  border:1px solid rgba(24,224,189,.18);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.88),0 14px 28px rgba(7,140,123,.08);
-}
-.zone{
-  min-height:54px;
-  border:0;
-  border-radius:18px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  font-weight:900;
-  color:#063f3a;
-  background:transparent;
-  transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
-}
-.zone.on{
-  background:linear-gradient(180deg,#ffffff,#eafff8);
-  box-shadow:0 8px 22px rgba(24,224,189,.14),inset 0 1px 0 #fff;
-}
-.zone.eilat.on{
-  color:#fff;
-  text-shadow:0 1px 2px rgba(4,55,50,.28);
-  background:
-    radial-gradient(120% 110% at 50% 0%,rgba(255,255,255,.78),rgba(255,255,255,.10) 38%,transparent 58%),
-    linear-gradient(180deg,#73fff0 0%,#35e5d7 36%,var(--glow-teal) 66%,#079982 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.86),
-    inset 0 -3px 8px rgba(4,95,80,.25),
-    0 2px 0 var(--ink-teal),
-    0 16px 34px rgba(17,205,174,.30);
-}
-/* (was a ♻️ emoji ::before — removed per the no-emoji charter; the toggle text
-   carries the meaning) */
-.eilat-note{
-  margin:-8px 0 20px;
-  padding:10px 14px;
-  border-radius:18px;
-  color:#063f3a;
-  background:rgba(234,255,248,.74);
-  border:1px solid rgba(24,224,189,.18);
-  font-size:13px;
-  line-height:1.55;
-}
-@media(max-width:520px){
-  .zone-toggle{grid-template-columns:1fr}
-}
 
 /* Green Extreme / Eilat section */
 .eilat-branch{position:relative;overflow:hidden}
@@ -1075,9 +1000,10 @@ body::before{
 }
 .logo{font-size:29px}
 .foot-logo{font-size:36px}
-/* "Me" carries the teal-gradient accent — legible on light (grad-teal, 6.18:1) */
+/* "Me" carries the teal-gradient accent — on the FOREGROUND twin so the light
+   end of the gradient cannot swallow the glyphs on a pearl background. */
 .logo .dot,.foot-logo .dot{
-  background:var(--grad-teal);-webkit-background-clip:text;background-clip:text;
+  background:var(--grad-teal-text);-webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;color:var(--ink-teal);
 }
 /* FREE FEEL descender — the technical-Latin voice, matched to the hero eyebrow */

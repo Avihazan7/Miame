@@ -22,7 +22,7 @@ export interface RentalAsset {
   status: RentalAssetStatus;
 }
 
-export const RENTAL_HUB = "Green Extreme · פארק הטרמינל, אילת";
+export const RENTAL_HUB = "Green Extreme · אילת";
 
 /** Fleet size for v1 — 15 assets in Eilat. */
 export const FLEET_SIZE = 15;

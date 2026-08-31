@@ -127,6 +127,7 @@ const JSON_LD = {
       url: SITE_URL,
       logo: SITE_URL + "/mia-four-logo.webp",
       description: "ניידות חשמלית פרימיום במחיר חכם, מבית Leasing.co.il.",
+      areaServed: { "@type": "Country", name: "IL" },
       contactPoint: {
         "@type": "ContactPoint",
         telephone: "+972-54-747-7477",
@@ -136,21 +137,14 @@ const JSON_LD = {
       }
     },
     ...HOME_PRODUCTS,
-    {
-      "@type": "LocalBusiness",
-      "@id": SITE_URL + "/#localbusiness",
-      name: "MiaMe · חנות הדגל",
-      image: SITE_URL + PRODUCT_IMAGE,
-      url: SITE_URL,
-      telephone: "+972-54-747-7477",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "אליעזר קפלן 21",
-        addressLocality: "תל אביב",
-        addressCountry: "IL"
-      },
-      priceRange: "₪₪"
-    },
+    // NOTE — there is deliberately NO LocalBusiness node here.
+    // MiaMe sells and delivers nationwide; it does not publish a storefront.
+    // The previous node published a named physical storefront and its street
+    // address. The sales campaign removed both from every visible surface, and
+    // leaving the schema node behind would have kept that entity alive for
+    // search engines after the page stopped claiming it. The Organization node
+    // above carries the brand, the sales contactPoint and the area served.
+    // Guarded by test/salesCampaign.test.ts.
     buildHomeFaqJsonLd(SITE_URL + "/#faq")
   ]
 };

@@ -42,7 +42,7 @@ const FALLBACK: KnowledgeDoc[] = [
   // ── Patents ─────────────────────────────────────────────────────────────────
   { id: "patents", source: "MiaMe/Patents", text: 'פלטפורמת המזעור של MIA Dynamics מוגנת פטנטים רשומים בארה"ב ובישראל: US 11,878,763 B2, US 12,097,926 B2, IL 280339, IL 285336.' },
   // ── Service & warranty ──────────────────────────────────────────────────────
-  { id: "service", source: "MiaMe/Service", text: 'אחריות יבואן רשמי 12 חודשים · MEU · Mayer Electric Utilities. שירות ארצי ורשת מורשים.' },
+  { id: "service", source: "MiaMe/Service", text: 'אחריות יבואן רשמי 12 חודשים · MEU · Mayer Electric Utilities. שירות וחלפים מקוריים, ומסירה מתואמת בכל אזורי הארץ.' },
   // ── Methodology (the unique architecture) ───────────────────────────────────
   { id: "method-arch", source: "MiaMe/Brain", text: 'ארכיטקטורת המוח: Ultra (אורקסטרציה) → Masters (החלטות איכות, Sonnet) → Max (פעולות מהירות, Haiku) → Guardian (ציות ובטיחות דטרמיניסטיים). דוקטרינה: RAG על פני fine-tuning, מקור-אמת יחיד.' },
   { id: "method-bigfive", source: "MiaMe/Brain", text: 'התאמת Big Five Deal: מודל OCEAN ממפה את פרופיל הלקוח לדגם ולמסלול (2×4 City · 2×4 City LR · 4×4 Pro Max · השכרה Hub). ההתאמה מוסברת, לא קופסה שחורה.' },

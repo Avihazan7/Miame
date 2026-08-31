@@ -4,7 +4,7 @@ import { useState } from "react";
 import LexIcon from "@/components/LexIcon";
 import { saveRentalLead, RentalLeadRecord } from "@/lib/supabase";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
-import { buildRentalMessage, wazeUrl, RENTAL_HOURLY_FROM } from "@/lib/rental";
+import { buildRentalMessage, RENTAL_HOURLY_FROM } from "@/lib/rental";
 import { FLEET_SIZE, RENTAL_HUB } from "@/lib/rental-fleet";
 import { track } from "@/lib/analytics";
 import { getUtm, utmTag } from "@/lib/utm";
@@ -76,8 +76,8 @@ export default function RentalFleet() {
           </h1>
           <p className="rental-copy">
             צי פתיחה מתוכנן של כ-{FLEET_SIZE} כלי MiaMe להשכרה לפי שעה באילת, סביב מתחם
-            Green Extreme בפארק הטרמינל, חוויית Free Feel חשמלית, ירוקה ומשפחתית, החל
-            מ-{RENTAL_HOURLY_FROM} ₪ לשעה. זמינות, מחיר ותנאי שימוש כפופים לאישור הסניף
+            Green Extreme באילת, חוויית Free Feel חשמלית, ירוקה ומשפחתית, החל
+            מ-{RENTAL_HOURLY_FROM} ₪ לשעה. זמינות, מחיר ותנאי שימוש כפופים לאישור המפעיל
             ולמצב הכלים.
           </p>
 
@@ -150,9 +150,6 @@ export default function RentalFleet() {
                 <WaIcon size={20} />
                 שריון שעה ב-Green Extreme
               </button>
-              <a href={wazeUrl()} target="_blank" rel="noopener" className="btn btn-ghost">
-                נווט ל-Green Extreme
-              </a>
             </div>
             {sent && <div className="lead-ok">נפתחה שיחת וואטסאפ ✓ נחזור אליכם לתיאום</div>}
             <p className="rental-disc">

@@ -1,8 +1,12 @@
 /**
  * lib/content.ts — Single commercial source of truth for MiaMe.co.il.
  *
- * Every price, label and contact detail that appears on the public site is
- * defined (or referenced) here so it can be reviewed and changed in ONE place.
+ * Every price and label that appears on the public site is defined (or
+ * referenced) here so it can be reviewed and changed in ONE place.
+ *
+ * Contact policy: the ONLY contact route on the public site is MiaMe's own
+ * WhatsApp line (SALES_WHATSAPP). No street address, no branch, no dealer list
+ * and no importer phone number may be added to this file.
  *
  * ── Pricing policy ───────────────────────────────────────────────────────────
  * Official MIA FOUR list prices (importer): 19,990 / 21,990 / 27,990 ₪.
@@ -34,33 +38,19 @@ export const RENTAL_PRICES: { k: string; v: string }[] = [
 /** Warranty & service. */
 export const WARRANTY = "אחריות יבואן רשמי · MEU · Mayer Electric Utilities";
 
-export const SERVICE = {
-  importer: "MEU · Mayer Electric Utilities",
-  flagshipName: "MEU · אליעזר קפלן 21, תל אביב",
-  flagshipHours: "א׳–ה׳ 10:00–19:00 · ו׳ וערב חג 10:00–14:00",
-  // ⚠ PHONE PENDING OWNER CONFIRMATION:
-  //   current site uses 077-8038321; the official MIA site lists 077-7296656.
-  //   Confirm which is the MiaMe contact line, then update here AND Service.tsx.
-  flagshipTel: "0778038321"
-};
+/**
+ * The official importer — NAME ONLY.
+ *
+ * The sales campaign removes every address, branch, opening hour and importer
+ * phone number from the public site (they used to live here as `SERVICE` and
+ * `DEALERS`). What a buyer needs from the importer is the name behind the
+ * warranty; every contact route runs through MiaMe's own WhatsApp line below.
+ * Do not reintroduce an address or a phone here — this module is bundle-reachable.
+ */
+export const IMPORTER_NAME = "MEU · Mayer Electric Utilities";
 
-/** Authorized dealers — [name, city, phone]. */
-export const DEALERS: [string, string, string][] = [
-  ["אקו פאן", "הוד-השרון", "09-3730188"],
-  ["אורבניקו", "תל-אביב", "03-7207220"],
-  ["אורבן רייד", "תל-אביב", "051-2872267"],
-  ["אורסל", "ראשון לציון", "052-6387509"],
-  ["פול גזז", "אשקלון", "050-4525183"],
-  ["אופני הבירה", "ירושלים", "02-5326699"],
-  ["הר ריידר", "בית שמש", "054-8424101"],
-  ["MIA בני ברק", "בני ברק", "050-4171552"],
-  ["גלגל יציב", "כנות", "1-700-557-744"],
-  ["MOTOATV", "כרמיאל", "053-4000100"],
-  ["ElectricMove", "חצור הגלילית", "050-5949416"],
-  ["מחסני חשמל", "אילת", "073-2540171"],
-  ["All Mobile", "אילת", "054-9188871"],
-  ["מייק בייק", "אילת", "053-6500174"]
-];
+/** The manufacturer brand behind MIA FOUR. */
+export const MANUFACTURER_NAME = "MIA Dynamics";
 
 /** Brand WhatsApp / sales line (also configurable via NEXT_PUBLIC_WHATSAPP_NUMBER). */
 export const SALES_WHATSAPP = "972547477477";

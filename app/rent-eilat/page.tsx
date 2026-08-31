@@ -10,7 +10,7 @@ import EilatBranch from "@/components/EilatBranch";
 export const metadata: Metadata = {
   title: "השכרת MIA FOUR באילת · Green Extreme",
   description:
-    "השכרת ניידות חשמלית MiaMe באילת לפי שעה, סביב מתחם Green Extreme בפארק הטרמינל. זמינות, מחיר ותנאים כפופים לאישור הסניף.",
+    "השכרת ניידות חשמלית MiaMe באילת לפי שעה, סביב מתחם Green Extreme. זמינות, מחיר ותנאים בתיאום מול נציג ובכפוף לאישור.",
   alternates: { canonical: "/rent-eilat" },
   openGraph: {
     title: "MiaMe באילת · השכרה לפי שעה · Green Extreme",

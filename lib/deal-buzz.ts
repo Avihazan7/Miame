@@ -40,7 +40,7 @@ export interface TrustSignal {
 export const LAUNCH_OFFER = {
   kicker: "מבצע השקה",
   title: "מבצע השקה, מיה פור",
-  text: "בדיקת התאמה מהירה והצעה מותאמת לפי דגם, ישירות בוואטסאפ. מלאי מוגבל לפי זמינות.",
+  text: "מסלול אחד ברור: מקדמה גמישה ועד 18 תשלומים ללא ריבית והצמדה. בדיקת התאמה בוואטסאפ, מלאי מוגבל לפי זמינות.",
   cta: "לבדיקת התאמה מהירה",
 } as const;
 
@@ -50,8 +50,9 @@ export const LAUNCH_OFFER = {
 export const TRUST_SIGNALS: TrustSignal[] = [
   { icon: "shield", label: "יבואן רשמי · MEU" },
   { icon: "wrench", label: "אחריות ושירות 12 חודשים" },
-  { icon: "percent", label: "מימון 0% ריבית*" },
+  { icon: "percent", label: "עד 18 תשלומים · 0% ריבית*" },
   { icon: "check", label: "תקן קלנועית EN17128" },
+  { icon: "trophy", label: "פלטפורמה מוגנת פטנט" },
   { icon: "chat", label: "שירות אישי בעברית" },
 ];
 
@@ -62,7 +63,7 @@ export const DEAL_BUZZ_CARDS: BuzzItem[] = [
     id: "match",
     icon: "search",
     title: "בדיקת התאמה מהירה",
-    text: "נאתר איתך את הדגם והמסלול שמתאימים לך, לפי שימוש, טווח ותקציב.",
+    text: "נאתר איתך את הדגם שמתאים לך, לפי שימוש, טווח ותקציב, ונבנה עליו את פריסת התשלומים.",
     cta: "התחלת בדיקה",
     action: "sim",
   },
@@ -77,11 +78,11 @@ export const DEAL_BUZZ_CARDS: BuzzItem[] = [
   {
     id: "eligibility",
     icon: "clipboard",
-    title: "בדיקת זכאות למסלול",
-    text: "נבדוק יחד איזה מסלול תשלומים פתוח עבורך, פרטי, עסקי או שותף. בכפוף לאישור עסקה.",
+    title: "בדיקת זכאות לתשלומים",
+    text: "נבדוק יחד את גובה המקדמה ומספר התשלומים שמתאימים לך, עד 18 ללא ריבית והצמדה. בכפוף לאישור עסקה.",
     cta: "בדיקת זכאות",
     action: "wa",
-    waMessage: "היי MiaMe, אשמח לבדיקת זכאות למסלול תשלומים על מיה פור 🦋",
+    waMessage: "היי MiaMe, אשמח לבדיקת זכאות למקדמה ולפריסת תשלומים על מיה פור 🦋",
   },
   {
     id: "consult",

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import LexIcon from "@/components/LexIcon";
 import { useRouter } from "next/navigation";
 import { MODELS, getModel } from "@/lib/models";
 import {
@@ -10,7 +9,6 @@ import {
   computeQuote,
   ils
 } from "@/lib/finance";
-import { getZonePrice, type PricingZone } from "@/lib/pricing-zones";
 import {
   buildWhatsAppUrl,
   buildLeadMessage
@@ -49,7 +47,25 @@ function useCountUp(target: number, duration = 520): number {
   return display;
 }
 
-const TYPES: CustomerType[] = ["private", "business", "partner"];
+// ONE TRACK. The sales campaign runs a single, unambiguous offer: a flexible
+// down-payment plus up to 18 payments, 0% interest, no indexation. The customer-type
+// tabs (פרטי/עסקי/שותף) and the Eilat price zone are gone from the UI.
+//
+// The id stays a real `CustomerType` member so every downstream contract is
+// untouched: computeQuote (lib/finance.ts), LeadRecord.customer_type
+// (lib/supabase.ts → Supabase `leads`), the WhatsApp lead message, and the
+// /api/deal payload all keep the exact shape they had before.
+const TRACK_ID: CustomerType = "private";
+
+/** What every MIA FOUR deal includes, whatever the buyer drags the sliders to.
+    Each line is a fact stated elsewhere on the page (Specs, LegalStatus, Patents,
+    the importer band) — not a superlative. */
+const SIM_ASSURANCES: { k: string; v: string }[] = [
+  { k: "אחריות יבואן רשמי", v: "MEU · שירות וחלפים מקוריים, 12 חודשים" },
+  { k: "פלטפורמה מוגנת פטנט", v: "ארבעה גלגלים, מתלים עצמאיים, בלימה הידראולית כפולה" },
+  { k: "תקן EN17128", v: "מותאמת לתקנות הקלנועית בישראל, בלי רישוי ובלי אגרות" },
+  { k: "מסירה בכל הארץ", v: "מתואמת אתכם מראש מול נציג" },
+];
 
 /** Stable, anonymous per-visitor id (charset matches the brain's ref validation). */
 function visitorRef(): string {
@@ -89,8 +105,6 @@ interface SealedScore {
 
 export default function Configurator() {
   const [modelId, setModelId] = useState<string>(MODELS[0].id);
-  const [type, setType] = useState<CustomerType>("private");
-  const [pricingZone, setPricingZone] = useState<PricingZone>("nationwide");
   const [downPct, setDownPct] = useState<number>(TRACKS.private.down.default);
   const balloonPct = 0; // תשלום בתום התקופה (בלון) בוטל, נשאר 0 לתאימות ה-API/ליד.
   const [months, setMonths] = useState<number>(TRACKS.private.months.default);
@@ -103,14 +117,10 @@ export default function Configurator() {
   const [score, setScore] = useState<SealedScore | null>(null);
 
   const model = getModel(modelId);
-  const track_ = TRACKS[type];
-  // Price zone is a pricing CONTEXT over the same model — Eilat swaps in the
-  // ex-VAT base price; everything downstream (down/months/monthly) is identical.
-  const zonePrice = getZonePrice(model.price, pricingZone);
-  const isEilat = pricingZone === "eilat";
+  const track_ = TRACKS[TRACK_ID];
   const quote = computeQuote({
-    basePrice: zonePrice.price,
-    type,
+    basePrice: model.price,
+    type: TRACK_ID,
     downPct,
     balloonPct,
     months
@@ -120,22 +130,6 @@ export default function Configurator() {
   useEffect(() => {
     track("PageViewed", { page: "home" });
   }, []);
-
-  function selectType(t: CustomerType) {
-    const r = TRACKS[t];
-    setType(t);
-    setDownPct(r.down.default);
-    setMonths(r.months.default);
-    setSent(false);
-    track("SimulatorChanged", { field: "type", type: t });
-  }
-
-  function selectZone(z: PricingZone) {
-    setPricingZone(z);
-    setSent(false);
-    track("SimulatorChanged", { field: "pricingZone", pricingZone: z });
-    emitSignal("compare_many"); // exploring the Eilat price → active-intent nudge
-  }
 
   function selectModel(id: string, scroll = false) {
     setModelId(id);
@@ -150,7 +144,7 @@ export default function Configurator() {
   function emitChange(field: string) {
     track("SimulatorChanged", {
       field,
-      type,
+      type: TRACK_ID,
       modelId,
       downPct,
       balloonPct,
@@ -189,10 +183,8 @@ export default function Configurator() {
         balloon: quote.balloonAmount,
         months: quote.months,
         monthly_payment: quote.monthlyPayment,
-        // Zone attribution rides in `source` — no new Supabase column (schema unchanged).
-        source: `miame-web · ${intent} · ${pricingZone} · ${
-          isEilat ? "green_extreme_terminal_park_eilat" : "nationwide"
-        } · ${utmTag(utm)}`,
+        // Attribution rides in `source` — no new Supabase column (schema unchanged).
+        source: `miame-web · ${intent} · nationwide · ${utmTag(utm)}`,
         ...utm
       };
       void saveLead(lead);
@@ -206,7 +198,7 @@ export default function Configurator() {
           body: JSON.stringify({
             ref: visitorRef(),
             model: model.name,
-            customerType: type,
+            customerType: TRACK_ID,
             quote: {
               basePrice: quote.basePrice,
               effectivePrice: quote.effectivePrice,
@@ -227,7 +219,7 @@ export default function Configurator() {
         /* never block the funnel */
       }
     }
-    void track(evt, { modelId, type, monthly: quote.monthlyPayment, intent });
+    void track(evt, { modelId, type: TRACK_ID, monthly: quote.monthlyPayment, intent });
 
     const url = buildWhatsAppUrl(
       buildLeadMessage({
@@ -236,8 +228,7 @@ export default function Configurator() {
         customerLabel: track_.label,
         modelName: model.name,
         quote,
-        source:
-          "אתר MiaMe · " + intent + (isEilat ? " · מחיר אילת (ללא מע״מ) · Green Extreme" : "")
+        source: "אתר MiaMe · " + intent
       })
     );
     if (typeof window !== "undefined") window.open(url, "_blank");
@@ -253,9 +244,10 @@ export default function Configurator() {
       <section className="block models-sec" id="models">
         <div className="wrap">
           <div className="sec-head">
-            <div className="sec-kicker">שלושה דגמים</div>
+            <div className="sec-kicker">שלושה דגמים · פלטפורמה אחת</div>
             <h2 className="sec-title">בחרו את הדגם שלכם</h2>
             <p className="sec-desc">
+              כל דגם על אותה פלטפורמת ארבעה גלגלים מוגנת פטנט, עם אותה אחריות יבואן רשמי.
               לחצו על דגם כדי לטעון אותו בסימולטור ולקבל תשלום חודשי משוער מיידית.
             </p>
           </div>
@@ -296,11 +288,6 @@ export default function Configurator() {
                         <span className="cur">₪</span>
                         {m.price.toLocaleString("he-IL")}
                       </div>
-                      <div className="card-eilat">
-                        <LexIcon name="recycle" /> באילת{" "}
-                        <b>{ils(getZonePrice(m.price, "eilat").price)}</b>
-                        <span className="ce-tag">ללא מע״מ</span>
-                      </div>
                     </div>
                     <div className="card-cta">
                       <button
@@ -325,55 +312,13 @@ export default function Configurator() {
             <div className="sec-kicker">סימולטור תשלומים</div>
             <h2 className="sec-title">בנו את העסקה שלכם</h2>
             <p className="sec-desc">
-              בחרו דגם, מקדמה ומספר תשלומים, עד 18 תשלומים ללא ריבית והצמדה.
+              מסלול אחד, ברור: בוחרים דגם, קובעים מקדמה, ופורסים עד 18 תשלומים ללא ריבית והצמדה.
             </p>
           </div>
 
           <div className="sim">
             {/* controls */}
             <div className="sim-controls">
-              {/* price zone — nationwide vs Eilat (Green Extreme) */}
-              <div className="zone-toggle" role="radiogroup" aria-label="בחירת אזור מחיר">
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={!isEilat}
-                  className={!isEilat ? "zone on" : "zone"}
-                  onClick={() => selectZone("nationwide")}
-                >
-                  מחיר ארצי
-                </button>
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={isEilat}
-                  className={isEilat ? "zone eilat on" : "zone eilat"}
-                  onClick={() => selectZone("eilat")}
-                >
-                  מחיר אילת · Green Extreme
-                </button>
-              </div>
-              {isEilat && <p className="eilat-note">{zonePrice.legalNote}</p>}
-
-              <div className="tabs" role="tablist">
-                {TYPES.map((t) => (
-                  <button
-                    key={t}
-                    role="tab"
-                    aria-selected={type === t}
-                    data-track={t}
-                    className={type === t ? "tab on" : "tab"}
-                    onClick={() => selectType(t)}
-                  >
-                    {TRACKS[t].label}
-                  </button>
-                ))}
-              </div>
-
-              <div className="field-note" style={{ marginTop: "-12px", marginBottom: "20px" }}>
-                {track_.note}
-              </div>
-
               <div className="zero-interest-pill">
                 עד 18 תשלומים ללא ריבית והצמדה
               </div>
@@ -383,80 +328,77 @@ export default function Configurator() {
                   <button
                     key={m.id}
                     className={m.id === modelId ? "mp on" : "mp"}
+                    aria-pressed={m.id === modelId}
                     onClick={() => selectModel(m.id)}
                   >
                     <div className="mp-n" dir="ltr">{m.name}</div>
-                    <div className="mp-p">
-                      {isEilat && <span className="mp-eilat">אילת · </span>}
-                      {ils(getZonePrice(m.price, pricingZone).price)}
-                    </div>
+                    <div className="mp-p">{ils(m.price)}</div>
                   </button>
                 ))}
               </div>
 
-              {/* down payment — private: 0%–50% slider · business/partner: fixed VAT, no slider */}
-              {track_.down.hidden ? (
-                <div className="field field-vatdown">
-                  <div className="field-top">
-                    <span className="field-label">מקדמה (מע״מ)</span>
-                    <span className="field-val">{ils(quote.downAmount)}</span>
-                  </div>
-                  <div className="field-note">
-                    במסלול עסקי/שותף המקדמה היא רכיב המע״מ (קבועה), היתרה נפרסת לתשלומים.
-                  </div>
-                </div>
-              ) : (
-                <div className="field">
-                  <div className="field-top">
-                    <span className="field-label">מקדמה</span>
-                    <span className={track_.down.locked ? "field-val locked" : "field-val"}>
-                      {downPct}% · {ils(quote.downAmount)}
-                    </span>
-                  </div>
-                  <input
-                    className="rng"
-                    type="range"
-                    aria-label="מקדמה"
-                    min={track_.down.min}
-                    max={track_.down.max}
-                    step={track_.down.step}
-                    value={downPct}
-                    disabled={track_.down.locked}
-                    onChange={(e) => setDownPct(Number(e.target.value))}
-                    onMouseUp={() => emitChange("down")}
-                    onTouchEnd={() => emitChange("down")}
-                  />
-                  <div className="field-note">
-                    מקדמה גמישה מ-{track_.down.min}% עד {track_.down.max}%
-                  </div>
-                </div>
-              )}
-
-              {/* months */}
+              {/* down payment — one track: a flexible 0%–50% slider */}
               <div className="field">
                 <div className="field-top">
-                  <span className="field-label">מספר התשלומים</span>
-                  <span className={track_.months.locked ? "field-val locked" : "field-val"}>
-                    {months} תשלומים
+                  <span className="field-label" id="down-label">מקדמה</span>
+                  <span className="field-val">
+                    {downPct}% · {ils(quote.downAmount)}
                   </span>
                 </div>
                 <input
                   className="rng"
                   type="range"
-                  aria-label="תקופת תשלומים"
+                  aria-labelledby="down-label"
+                  aria-describedby="down-note"
+                  aria-valuetext={`${downPct}% · ${ils(quote.downAmount)}`}
+                  min={track_.down.min}
+                  max={track_.down.max}
+                  step={track_.down.step}
+                  value={downPct}
+                  onChange={(e) => setDownPct(Number(e.target.value))}
+                  onMouseUp={() => emitChange("down")}
+                  onTouchEnd={() => emitChange("down")}
+                  onKeyUp={() => emitChange("down")}
+                />
+                <div className="field-note" id="down-note">
+                  מקדמה גמישה מ-{track_.down.min}% עד {track_.down.max}%
+                </div>
+              </div>
+
+              {/* months */}
+              <div className="field">
+                <div className="field-top">
+                  <span className="field-label" id="months-label">מספר התשלומים</span>
+                  <span className="field-val">{months} תשלומים</span>
+                </div>
+                <input
+                  className="rng"
+                  type="range"
+                  aria-labelledby="months-label"
+                  aria-describedby="months-note"
+                  aria-valuetext={`${months} תשלומים`}
                   min={track_.months.min}
                   max={track_.months.max}
                   step={track_.months.step}
                   value={months}
-                  disabled={track_.months.locked}
                   onChange={(e) => setMonths(Number(e.target.value))}
                   onMouseUp={() => emitChange("months")}
                   onTouchEnd={() => emitChange("months")}
+                  onKeyUp={() => emitChange("months")}
                 />
-                <div className="field-note">
+                <div className="field-note" id="months-note">
                   {track_.months.min} עד {track_.months.max} תשלומים · ללא ריבית והצמדה
                 </div>
               </div>
+
+              <ul className="sim-assure" aria-label="מה נכלל בכל עסקה">
+                {SIM_ASSURANCES.map((a) => (
+                  <li key={a.k}>
+                    <b>{a.k}</b>
+                    <span>{a.v}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             {/* result */}
@@ -469,13 +411,11 @@ export default function Configurator() {
                 className="res-product"
               />
               <img src="/mia-four-logo.webp" alt="MIA FOUR" className="res-logo" loading="lazy" />
-              <div className="res-eyebrow">
-                {isEilat ? "מחיר אילת · Green Extreme" : "עד 18 תשלומים ללא ריבית והצמדה"}
-              </div>
+              <div className="res-eyebrow">עד 18 תשלומים ללא ריבית והצמדה</div>
               <div className="res-model">
-                <bdi dir="ltr">{model.name}</bdi> · מסלול {track_.label}
+                <bdi dir="ltr">{model.name}</bdi>
               </div>
-              <div className="res-monthly">
+              <div className="res-monthly" aria-live="polite" aria-atomic="true">
                 <span className="cur">₪</span>
                 <span className="num">{animatedMonthly.toLocaleString("he-IL")}</span>
                 <span className="per">לחודש · {months} תשלומים</span>
@@ -485,14 +425,14 @@ export default function Configurator() {
                 <span className="res-badge accent">0% ריבית</span>
                 <span className="res-badge">ללא הצמדה</span>
                 <span className="res-badge">עד 18 תשלומים</span>
-                <span className="res-badge">{isEilat ? "ללא מע״מ בכפוף לדין" : "Free Feel"}</span>
+                <span className="res-badge">Free Feel</span>
               </div>
 
               <div className="res-line" />
 
               <div className="res-grid">
                 <div className="res-cell">
-                  <div className="k">{isEilat ? "מחיר אילת" : "מחיר מלא"}</div>
+                  <div className="k">מחיר מלא</div>
                   <div className="v">{ils(quote.basePrice)}</div>
                 </div>
                 <div className="res-cell">
@@ -509,12 +449,6 @@ export default function Configurator() {
                 </div>
               </div>
 
-              {quote.discountPct > 0 && (
-                <div className="res-save">
-                  <span>חיסכון שותף {quote.discountPct}%</span>
-                  <strong>{ils(quote.basePrice - quote.effectivePrice)}</strong>
-                </div>
-              )}
               {/* lead */}
               <div className="lead">
                 {/* Honeypot: hidden from humans and AT; bots that fill every field trip it */}
@@ -534,6 +468,7 @@ export default function Configurator() {
                     className="inp"
                     placeholder="שם מלא"
                     aria-label="שם מלא"
+                    autoComplete="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
@@ -542,6 +477,7 @@ export default function Configurator() {
                     placeholder="טלפון"
                     aria-label="מספר טלפון"
                     aria-invalid={phoneError}
+                    autoComplete="tel"
                     inputMode="tel"
                     value={phone}
                     onChange={(e) => {
@@ -579,10 +515,12 @@ export default function Configurator() {
                 </p>
                 {sent && <div className="lead-ok">נפתחה שיחת וואטסאפ ✓ נחזור אליכם מיד</div>}
                 {score && (
+                  // Sealed headline ONLY — score + grade. The brain's `reasons` are
+                  // deliberately NOT rendered: components, weights and thresholds of
+                  // the Deal Score never reach a public surface.
                   <div
                     className="res-badge accent"
                     style={{ marginTop: 12, alignSelf: "flex-start" }}
-                    title={score.reasons.join(" · ")}
                   >
                     ציון עסקה {score.grade} · {score.score}/100
                   </div>

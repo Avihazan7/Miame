@@ -26,7 +26,8 @@ export default function EligibilityPage() {
       <Header />
       <main id="main">
         <h1 className="sr-only">זכאות כוחות הביטחון · MiaMe</h1>
-        <Tribute />
+        {/* LCP element on this route — the Mia image loads eagerly here only. */}
+        <Tribute priority />
         <LegalStatus />
       </main>
       <Footer />

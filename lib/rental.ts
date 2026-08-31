@@ -7,18 +7,10 @@ import { RENTAL_HUB } from "./rental-fleet";
 /** Public "from" hourly price for rentals (₪), consistent with the site FAQ. */
 export const RENTAL_HOURLY_FROM = 50;
 
-/** Green Extreme / Terminal Park — the navigable rental hub. */
-export const GREEN_EXTREME_PLACE = "גרין אקסטרים פארק הטרמינל אילת דרך הערבה 3";
-
-/** Waze deep link to the Green Extreme hub (same pattern as Service.tsx). */
-export function wazeUrl(place: string = GREEN_EXTREME_PLACE): string {
-  return "https://waze.com/ul?q=" + encodeURIComponent(place);
-}
-
-/** Google Maps fallback for desktops without Waze. */
-export function mapsUrl(place: string = GREEN_EXTREME_PLACE): string {
-  return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(place);
-}
+// NOTE — the street address and the Waze/Maps deep links that used to live here
+// were removed with the rest of the site's addresses: MiaMe publishes no branch
+// and no navigable location. Rental interest runs through WhatsApp like every
+// other route. Do not reintroduce a place string or a map deep link here.
 
 export interface RentalInquiry {
   fullName: string;

@@ -81,7 +81,7 @@ export default function Hero() {
               height={1498}
               priority
               fetchPriority="high"
-              sizes="(max-width: 760px) 92vw, 52vw"
+              sizes="(max-width: 900px) 92vw, (max-width: 1280px) 46vw, 510px"
               className="hero-v2-product"
             />
 
