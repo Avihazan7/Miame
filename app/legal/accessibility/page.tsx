@@ -48,9 +48,17 @@ export default function AccessibilityPage() {
       <p>
         לפניות בנושא נגישות ניתן לפנות לרכז הנגישות שלנו:
       </p>
+      {/* The street address was removed on 2026-08-31: the store it named has
+          closed, and a legal page that identifies the operator by an address
+          that no longer exists is worse than one that gives a live channel.
+          The accessibility regulations require the coordinator to be REACHABLE;
+          the phone and WhatsApp below are answered. If a new registered address
+          exists, it belongs here — an omission is honest, a stale address is not. */}
       <ul>
         <li>טלפון: <a href="tel:+972547477477">054-747-7477</a></li>
-        <li>כתובת: אליעזר קפלן 21, תל אביב</li>
+        <li>
+          וואטסאפ: <a href="https://wa.me/972547477477">054-747-7477</a>
+        </li>
       </ul>
 
       <div className="legal-note">

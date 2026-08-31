@@ -110,7 +110,9 @@ export default function TermsPage() {
 
       <h2>יצירת קשר</h2>
       <p>
-        MiaMe (מבית Leasing.co.il) · אליעזר קפלן 21, תל אביב · טלפון:{" "}
+        {/* Address removed 2026-08-31 — the store has closed. Seller identification
+            is kept through the trading name and a channel that actually answers. */}
+        MiaMe (מבית Leasing.co.il) · טלפון:{" "}
         <a href="tel:+972547477477">054-747-7477</a>
       </p>
     </main>

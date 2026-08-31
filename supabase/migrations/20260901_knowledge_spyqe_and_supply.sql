@@ -51,6 +51,13 @@ begin
      'הרשמה להזמנה מוקדמת של SPYQE נעשית בוואטסאפ דרך האתר. ההרשמה שומרת מקום במשלוח הראשון ואינה מחייבת ברכישה.')
   on conflict (id) do nothing;
 
+  -- `lead` still describes a balloon payment. The simulator HAS no balloon — it
+  -- was removed, and components/Configurator.tsx pins balloonPct to 0. The
+  -- assistant has been free to quote a term of the deal that does not exist.
+  update public.knowledge set body =
+    'פנייה ועסקה דרך WhatsApp: הסימולטור שולח הצעה מלאה - דגם, מקדמה, מספר תשלומים ותשלום חודשי - ישירות לוואטסאפ.'
+    where id = 'lead';
+
   -- MIA FOUR's supply. The old body said only "אספקה מיידית", which is both
   -- vaguer and less useful than the commitment the business actually makes.
   update public.knowledge set body =
@@ -61,6 +68,6 @@ begin
     select 1 from information_schema.columns
     where table_schema = 'public' and table_name = 'knowledge' and column_name = 'embedding'
   ) then
-    execute $sql$ update public.knowledge set embedding = null where id = 'delivery' $sql$;
+    execute $sql$ update public.knowledge set embedding = null where id in ('delivery','lead') $sql$;
   end if;
 end $spyqe$;
