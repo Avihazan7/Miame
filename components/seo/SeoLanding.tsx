@@ -111,6 +111,11 @@ export default function SeoLanding({ page }: { page: SeoPage }) {
           </section>
         )}
 
+        {/* vehicleId is the ANALYTICS identity of this page. No mediaKey is passed on
+            purpose: an SEO slug is not a row id in vehicle_media_assets, and passing one
+            made every page fetch a 404 (see Product360Stage). The 3D model comes from
+            page.glb — a committed asset chosen per page to be this page's own machine.
+            When a page does get a media row, pass its real key here, not the slug. */}
         <Product360Stage vehicleId={page.slug} poster={page.hero.image} alt={page.hero.alt} glb={page.glb} />
 
         {page.howToVideoId && <HowToVideo videoId={page.howToVideoId} />}

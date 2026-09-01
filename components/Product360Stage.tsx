@@ -51,11 +51,18 @@ function resolveFrame(path: string): string {
 
 export default function Product360Stage({
   vehicleId,
+  mediaKey,
   poster,
   alt = "MIA FOUR",
   glb,
 }: {
+  /** Identity of the SURFACE this stage sits on, used for analytics only
+   *  (vehicle_media_events.vehicle_id). A page slug is a fine value here. */
   vehicleId: string;
+  /** Primary key of THIS machine's row in `vehicle_media_assets`. A media key, never
+   *  a page slug — see the guard on the fetch below. Omitted ⇒ no media lookup at
+   *  all, which is the correct state for a page that has no row of its own. */
+  mediaKey?: string;
   poster: string;
   alt?: string;
   glb?: string;
@@ -91,11 +98,20 @@ export default function Product360Stage({
   }, [visible]);
 
   useEffect(() => {
-    if (!visible) return;
+    // ONE KEY, ONE MEANING. The analytics id and the media-row id used to be the same
+    // prop, and SeoLanding passed a page slug (mia-four, klnoit-*) while the only
+    // published row in vehicle_media_assets is keyed `mia-four-x4` — so this request
+    // 404'd on every SEO page, on every visit, forever. Nobody saw it: the component
+    // fails soft by design, so a permanent miss is indistinguishable from "this page
+    // has no media". The waste was the smaller half. Had a row ever been published
+    // under one of those slugs, its glb_path would have won on a page whose own
+    // machine is a different model — the "one photo, three alts" defect in three
+    // dimensions. A page with no media row of its own now asks for nothing.
+    if (!visible || !mediaKey) return;
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`/api/vehicles/${encodeURIComponent(vehicleId)}/media`);
+        const res = await fetch(`/api/vehicles/${encodeURIComponent(mediaKey)}/media`);
         if (!res.ok) return; // 404/503 → keep the poster, no error surfaced
         const json = await res.json();
         const paths: string[] = json?.media?.spin360Paths ?? [];
@@ -110,7 +126,7 @@ export default function Product360Stage({
     return () => {
       cancelled = true;
     };
-  }, [visible, vehicleId]);
+  }, [visible, mediaKey]);
 
   const hasSpin = frames.length > 1;
 
