@@ -284,6 +284,62 @@
         "so when the 248 allocation closes or the price moves, BOTH must be updated."
       ],
       "evidence": "applied 2026-08-31 · ledger 20260831210536 · verified live: 36 rows (was 30) · 6 spyqe ids · 0 balloon (was 1) · 0 address · delivery and lead rewritten, their embeddings cleared"
+    },
+    {
+      "id": "12-knowledge-exact-vector-search",
+      "title": "Drop the ivfflat index that caps retrieval at one document",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260901_knowledge_exact_vector_search.sql",
+          "ledger": "20260831212929"
+        }
+      ],
+      "why": [
+        "MEASURED on this database 2026-08-31, in a rolled-back transaction: an ivfflat",
+        "index built on an EMPTY table with lists=100, then filled with 36 rows, returns",
+        "ONE row — for LIMIT 10 and for LIMIT 36 alike. That is the exact shape of",
+        "knowledge_embedding_idx, which the schema created before any row existed.",
+        "The damage is not the index, it is the interaction. brain/knowledge.ts falls",
+        "back to keyword retrieval on ZERO hits (`if (hits.length) return hits`). One is",
+        "truthy. So the moment the embedding backfill lands, the brain stops falling back",
+        "and starts answering from a SINGLE document instead of four — no error, no log,",
+        "no failing check. The awaited backfill would have made retrieval WORSE than the",
+        "keyword path it replaced, invisibly. This phase must land BEFORE the backfill.",
+        "The fix is no index rather than better parameters: without one, pgvector does an",
+        "EXACT cosine scan. Measured, same session, 5,000 rows of 1024-d vectors (139x the",
+        "live corpus): Seq Scan + top-N heapsort, 8 of 8 rows, 53.7 ms. At 36 rows it is",
+        "sub-millisecond. An ANN index trades accuracy for speed; here there is no speed",
+        "to buy and the accuracy is the whole product.",
+        "Reversible in full — the rollback recreates the index byte-for-byte, and says in",
+        "its own header that doing so reinstates a measured defect."
+      ],
+      "evidence": "applied 2026-08-31 · ledger 20260831212929 · verified live: 0 ivfflat indexes remain (knowledge_body_fts + knowledge_pkey only) · column comment present · 36 rows untouched · security advisor 0 lints · ACCEPTANCE, measured on a faithful 36-row replica running the exact match_knowledge query shape: asked 4 got 4, asked 8 got 8, asked 36 got 36 (before the drop the same test returned 1 for every k)"
+    },
+    {
+      "id": "13-knowledge-spyqe-hebrew-name",
+      "title": "SPYQE answers to its Hebrew name",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260901_knowledge_zz_spyqe_hebrew_name.sql",
+          "ledger": "20260901033727"
+        }
+      ],
+      "why": [
+        "MEASURED 2026-09-01 on the live corpus: 0 rows contain \"ספייק\", 7 contain",
+        "\"SPYQE\". Retrieval is the Hebrew keyword path (every embedding is NULL) and it",
+        "matches on body text — so a buyer typing the natural Hebrew form matched no",
+        "SPYQE row and was answered from MIA FOUR rows: the exact cross-model hazard the",
+        "SPYQE rows were written to prevent. Raised by the triangle audit (critical),",
+        "re-verified independently by SQL before this phase was written.",
+        "The fix writes \"SPYQE (ספייק)\" into the first mention of each of the seven",
+        "bodies — full-body rewrites, deterministic and idempotent, with an absolute",
+        "postcondition: no row may name SPYQE in Latin only.",
+        "The offline fallback in brain/knowledge.ts gets the same treatment in the same",
+        "commit, derived from SPYQE.nameHe rather than typed."
+      ],
+      "evidence": "applied 2026-09-01 · ledger 20260901033727 · verified live: 7 rows carry ספייק · 0 rows name SPYQE in Latin only · 36 rows total, untouched count · postcondition enforced in-transaction (raise on any Latin-only row)"
     }
   ]
 }

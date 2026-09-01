@@ -33,7 +33,7 @@ export const FALLBACK: KnowledgeDoc[] = [
   // ── Product spec (MIA FOUR 4×4 Pro Max) ─────────────────────────────────────
   { id: "spec-range", source: "MiaMe/Specs", text: 'טווח ריאלי עד 100 ק"מ; יצרן עד 120 ק"מ. ניתן להאריך טווח בעזרת סוללות נוספות.' },
   { id: "spec-motors", source: "MiaMe/Specs", text: 'מיה פור מונעת ב-2 או 4 מנועים חשמליים, בהספק 1,800W כל אחד (x2/x4). הנעה חשמלית שקטה וירוקה.' },
-  { id: "spec-battery", source: "MiaMe/Specs", text: 'סוללת ליתיום נשלפת 60V בקיבולת 25/35Ah, עם שכבת הגנה מאלומיניום במשקל 10 ק"ג. תאי LG 21700. זמן טעינה עד 8 שעות במטען סטנדרטי.' },
+  { id: "spec-battery", source: "MiaMe/Specs", text: 'סוללת ליתיום נשלפת 60V, קיבולת 25/35Ah, תאי LG 21700, משקל כ-6.3 ק"ג. זמן טעינה עד 8 שעות במטען סטנדרטי.' },
   { id: "spec-speed", source: "MiaMe/Specs", text: 'מהירות מרבית 12 קמ"ש, בהתאם לתקנות הקלנועית בישראל. בלימה: דיסק הידראולי כפול 140 מ"מ.' },
   { id: "spec-fold", source: "MiaMe/Specs", text: 'כידון מתקפל וכיסא בשחרור מהיר ביד אחת — קל לאחסון ושינוע, נכנסת גם לרכב קטן. משקל הקלנועית כ-42 ק"ג (דגם 2×4 City).' },
   { id: "spec-suspension", source: "MiaMe/Engineering", text: 'מערכת מתלים מכנית פורצת דרך על פלטפורמה מוגנת פטנט: שיכוך מלא קדמי ואחורי, מתלה עצמאי לכל גלגל — יציבות ובטיחות בתוואי רכיבה משתנה.' },
@@ -74,17 +74,17 @@ export const FALLBACK: KnowledgeDoc[] = [
   {
     id: "delivery-four",
     source: "MiaMe/Service",
-    text: `מיה פור נמצאת במלאי. האספקה אליכם עד ${MIA_FOUR_DELIVERY_DAYS} ימי עסקים, בכפוף לזמינות מלאי, בכל אזור בארץ ובמסירה מתואמת מראש. זמן האספקה של ${SPYQE.name} שונה — הוא דגם בהזמנה מוקדמת.`
+    text: `מיה פור נמצאת במלאי. האספקה אליכם עד ${MIA_FOUR_DELIVERY_DAYS} ימי עסקים, בכפוף לזמינות מלאי, בכל אזור בארץ ובמסירה מתואמת מראש. זמן האספקה של ${SPYQE.name} (${SPYQE.nameHe}) שונה — הוא דגם בהזמנה מוקדמת.`
   },
   {
     id: "spyqe-offer",
     source: "MiaMe/Spyqe",
-    text: `${SPYQE.name} בהזמנה מוקדמת: מקדמה ${SPYQE.deposit.toLocaleString("he-IL")} ש"ח ליבואן בהרשמה, והיתרה ${SPYQE_BALANCE.toLocaleString("he-IL")} ש"ח ב-${SPYQE.months} תשלומים של ${SPYQE.monthlyPayment} ש"ח שמתחילים עם הגעת המשלוח למחסני היבואן. סה"כ ${SPYQE_TOTAL.toLocaleString("he-IL")} ש"ח במקום מחיר יבואן ${SPYQE.listPrice.toLocaleString("he-IL")} ש"ח, ללא ריבית והצמדה. ההטבה ל-${SPYQE.slots} הזוכים הראשונים. זהו מחיר ${SPYQE.name} בלבד ואינו מחיר מיה פור.`
+    text: `${SPYQE.name} (${SPYQE.nameHe}) בהזמנה מוקדמת: מקדמה ${SPYQE.deposit.toLocaleString("he-IL")} ש"ח ליבואן בהרשמה, והיתרה ${SPYQE_BALANCE.toLocaleString("he-IL")} ש"ח ב-${SPYQE.months} תשלומים של ${SPYQE.monthlyPayment} ש"ח שמתחילים עם הגעת המשלוח למחסני היבואן. סה"כ ${SPYQE_TOTAL.toLocaleString("he-IL")} ש"ח במקום מחיר יבואן ${SPYQE.listPrice.toLocaleString("he-IL")} ש"ח, ללא ריבית והצמדה. ההטבה ל-${SPYQE.slots} הזוכים הראשונים. זהו מחיר ${SPYQE.name} בלבד ואינו מחיר מיה פור.`
   },
   {
     id: "spyqe-delivery",
     source: "MiaMe/Spyqe",
-    text: `אספקת ${SPYQE.name} משוערת עד ${SPYQE.deliveryBusinessDays} ימי עסקים, מהמשלוח הראשון לישראל. זו הערכה ולא התחייבות, והיא שונה מזמן האספקה של מיה פור שנמצאת במלאי.`
+    text: `אספקת ${SPYQE.name} (${SPYQE.nameHe}) משוערת עד ${SPYQE.deliveryBusinessDays} ימי עסקים, מהמשלוח הראשון לישראל. זו הערכה ולא התחייבות, והיא שונה מזמן האספקה של מיה פור שנמצאת במלאי.`
   },
   {
     // The refusal is itself a fact worth retrieving. Without it the model has a
@@ -93,7 +93,7 @@ export const FALLBACK: KnowledgeDoc[] = [
     // FOUR's 1,800W motor for a machine at roughly half the price.
     id: "spyqe-unpublished",
     source: "MiaMe/Spyqe",
-    text: `עבור ${SPYQE.name} טרם פורסמו משקל הכלי, עומס מרבי, זמן טעינה, מתח סוללה והספק מנוע בוואט. אין למסור עבורם מספר, ובפרט אין להשתמש בנתוני מיה פור. התשובה הנכונה היא שהנתון יפורסם כשיאומת.`
+    text: `עבור ${SPYQE.name} (${SPYQE.nameHe}) טרם פורסמו משקל הכלי, עומס מרבי, זמן טעינה, מתח סוללה והספק מנוע בוואט. אין למסור עבורם מספר, ובפרט אין להשתמש בנתוני מיה פור. התשובה הנכונה היא שהנתון יפורסם כשיאומת.`
   }
 ];
 
@@ -157,7 +157,30 @@ export async function retrieve(query: string, k = 4): Promise<KnowledgeDoc[]> {
   if (embeddingsReady) {
     try {
       const hits = await vectorRetrieve(query, k);
-      if (hits.length) return hits; // empty ⇒ corpus not backfilled ⇒ fall through
+      if (hits.length >= k) return hits;
+
+      // SHORT, BUT NOT EMPTY — the case this used to get wrong.
+      //
+      // The old condition was `if (hits.length) return hits`, so ONE hit counted as
+      // success and the keyword path never ran. That is not a hypothetical: the
+      // ivfflat index this schema shipped returned exactly one row for any k
+      // (measured 2026-08-31; removed in 20260901_knowledge_exact_vector_search).
+      // Under the old condition the vector path would have answered every question
+      // from a single document, quieter and worse than the keyword path it replaced.
+      //
+      // Dropping the index fixed that instance. This fixes the CLASS: whenever the
+      // vector path returns fewer documents than asked for, top the answer up from
+      // keyword retrieval instead of answering thin. If the corpus genuinely holds
+      // fewer than k rows, both paths are short and the union is simply all of it —
+      // no harm. If the vector path is under-returning for any reason, the gap is
+      // filled with real documents rather than hidden. Never worse than either path
+      // alone, and it cannot fail silently.
+      if (hits.length) {
+        const seen = new Set(hits.map((h) => h.id));
+        const topUp = (await keywordRetrieve(query, k)).filter((d) => !seen.has(d.id));
+        return [...hits, ...topUp].slice(0, k);
+      }
+      // empty ⇒ corpus not backfilled ⇒ fall through
     } catch {
       // provider/RPC hiccup ⇒ degrade gracefully to keyword
     }

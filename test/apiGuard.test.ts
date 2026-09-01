@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { clientIp, guardJsonPost, honeypotTripped, originAllowed, withinRate } from "@/lib/apiGuard";
 
 const req = (headers: Record<string, string> = {}, body?: string) =>
@@ -104,5 +105,41 @@ describe("guardJsonPost", () => {
     } finally {
       delete process.env.RATE_LIMIT_TEST_MAX;
     }
+  });
+});
+
+describe("the vehicle-media route runs on the least privilege that works", () => {
+  // MEASURED 2026-08-31, live: RLS policy `public_read_published_vehicle_media`
+  // grants SELECT on published rows to anon, and `set local role anon` returned
+  // exactly the one published row. The route reads nothing else — so the service
+  // key it used to demand was write-capable privilege a public GET must never
+  // hold, and its absence (production's actual state) kept the media/3D API at
+  // 503 for want of a key the read never needed.
+  // Comments are stripped before matching: the route's own header EXPLAINS the old
+  // service-key design by name, and a raw-source match would fail on the explanation
+  // of the fix rather than on the fix. (The same false-green already happened twice
+  // today in the other direction — see test/skipLinkTarget.test.ts.)
+  const src = readFileSync("app/api/vehicles/[vehicleId]/media/route.ts", "utf8")
+    .replace(/\/\*[\s\S]*?\*\//g, " ")
+    .replace(/^\s*\/\/.*$/gm, " ");
+
+  it("never touches the service-role key", () => {
+    expect(src).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
+  });
+
+  it("reads through the shared anon client", () => {
+    expect(src).toContain('from "@/lib/supabase"');
+  });
+
+  it("keeps vendor error text out of the world-readable response", () => {
+    // `detail: error.message` shipped Supabase/Postgres wording to any caller.
+    // The consumer branches on ok/error codes only, so the message buys nothing
+    // and can carry table names, hosts or SQL fragments.
+    expect(src).not.toMatch(/detail:\s*error\.message/);
+    expect(src).not.toMatch(/error\.message/);
+  });
+
+  it("still filters to published explicitly, so RLS is the second gate, not the only one", () => {
+    expect(src).toContain('.eq("status", "published")');
   });
 });

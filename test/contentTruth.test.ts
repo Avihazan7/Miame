@@ -51,6 +51,11 @@ describe("no layer republishes what the campaign removed", () => {
     { label: "branch cities", re: /הוד-השרון|אשקלון/ },
     // The three customer tracks collapsed into one.
     { label: "three simulator tracks", re: /פרטי\/עסקי\/שותף/ },
+    // The battery weighs ~6.3 kg (manufacturer capture, live DB, Specs.tsx). The
+    // June seed said 10 kg and, being first in replay order, would have resurrected
+    // it on every fresh database while 20260714's correction stood by refusing to
+    // overwrite (audit finding, verified 31.08.26).
+    { label: "10 kg battery weight", re: /במשקל\s*10\s*ק["']?"?ג/ },
   ];
 
   // A rollback undoes a migration, so it legitimately restores the state that
@@ -59,7 +64,7 @@ describe("no layer republishes what the campaign removed", () => {
   // FOR. What it may never restore is something that was untrue when it was
   // written or has since become untrue: the balloon the simulator never offered,
   // the 26-payment term lib/finance.ts never allowed, the store that has closed.
-  const FALSEHOODS = new Set(["balloon payment", "flagship store address", "flagship store"]);
+  const FALSEHOODS = new Set(["balloon payment", "flagship store address", "flagship store", "10 kg battery weight"]);
 
   for (const { label, re } of BANNED) {
     it(`does not republish: ${label}`, () => {
@@ -161,5 +166,47 @@ describe("the offline corpus answers the campaign, not last season's site", () =
     for (const field of ["משקל", "עומס", "זמן טעינה", "מתח סוללה", "הספק מנוע"]) {
       expect(t, `the refusal row does not name "${field}"`).toContain(field);
     }
+  });
+});
+
+describe("SPYQE answers to its Hebrew name", () => {
+  // MEASURED 2026-09-01 on the live corpus: 0 rows contained "ספייק" while 7
+  // contained "SPYQE". Retrieval is the Hebrew keyword path and matches on body
+  // text, so a buyer typing the natural Hebrew form was answered from MIA FOUR
+  // rows — the exact cross-model hazard the SPYQE rows exist to prevent. Fixed by
+  // 20260901_knowledge_zz_spyqe_hebrew_name.sql (live + replay) and by deriving
+  // nameHe into the offline fallback. This test keeps every replay-path and
+  // fallback surface bilingual.
+  const ZZ = "20260901_knowledge_zz_spyqe_hebrew_name.sql";
+
+  it("no end-state surface names SPYQE in Latin without ספייק beside it", () => {
+    // The mechanism is a LATER migration correcting EARLIER inserts, so files that
+    // sort before the zz rewrite are allowed to be Latin-only — the replay fixes
+    // them. What must be bilingual is everything that decides the END-STATE: the
+    // zz file itself, any seed that sorts after it, and the offline fallback.
+    // Only Hebrew-bearing lines are in scope: an id tuple or a $spyqe$ dollar-tag
+    // is code, not something a buyer's query is matched against.
+    const endState = [
+      ...migrations.filter((m) => !m.file.endsWith(".rollback.sql") && m.file >= ZZ),
+      { file: "brain/knowledge.ts (FALLBACK, resolved)", body: FALLBACK.map((d) => d.text).join("\n") },
+    ];
+    expect(endState.length, "the zz rewrite itself has left the scan").toBeGreaterThanOrEqual(2);
+    const latinOnly: string[] = [];
+    for (const s of endState) {
+      for (const line of s.body.split("\n")) {
+        if (/spyqe/i.test(line) && /[\u0590-\u05FF]/.test(line) && !line.includes("ספייק")) {
+          latinOnly.push(`${s.file}: ${line.trim().slice(0, 80)}`);
+        }
+      }
+    }
+    expect(latinOnly, `SPYQE named in Latin only on:\n${latinOnly.join("\n")}`).toEqual([]);
+  });
+
+  it("the Hebrew-name migration sorts after the row-inserting seed", () => {
+    // On a fresh database the spyqe rows are INSERTED by 20260901_knowledge_spyqe_
+    // and_supply.sql and renamed by the zz file — order is the whole mechanism.
+    const seed = "20260901_knowledge_spyqe_and_supply.sql";
+    expect(migrations.some((m) => m.file === ZZ)).toBe(true);
+    expect(ZZ > seed).toBe(true);
   });
 });
