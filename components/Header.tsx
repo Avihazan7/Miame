@@ -1,12 +1,27 @@
 "use client";
 
-import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { track } from "@/lib/analytics";
+import { buildCampaignWhatsAppUrl } from "@/lib/whatsapp";
+import { WA_CTA, waHref } from "@/lib/wa-cta";
 import LexIcon from "@/components/LexIcon";
 import WaIcon from "./WaIcon";
 import MiaMark from "./MiaMark";
 
 export default function Header() {
-  const waUrl = buildWhatsAppUrl("היי MiaMe, אשמח לפרטים על הדגמים 🦋");
+  // The header used to hand-roll its own "פרטים על הדגמים" message while
+  // WA_CTA.models — the registry entry that says the same thing — sat unused.
+  // Two vocabularies for one funnel is precisely what the registry exists to
+  // prevent, so the header reads from it and the entry is no longer dead.
+  const waUrl = waHref("models");
+
+  function onWaClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    void track("WhatsAppClicked", { placement: "header", intent: WA_CTA.models.intent });
+    // waUrl is built while rendering — on the server too — so the campaign this
+    // visitor arrived on, which lives only in this browser, cannot be inside it.
+    // Rebuild the href here, before the browser follows the link, so a paid lead
+    // is identifiable by the human reading WhatsApp.
+    e.currentTarget.href = buildCampaignWhatsAppUrl(WA_CTA.models.message);
+  }
 
   function toTop(e: React.MouseEvent<HTMLAnchorElement>) {
     // Logo always goes home. If we're already on the home page, scroll to the
@@ -42,7 +57,14 @@ export default function Header() {
           <a href="/#models" className="nav-link hide-m">דגמים</a>
           <a href="/#sim" className="nav-link hide-m">סימולטור</a>
           <a href="/partners" className="nav-link hide-m">שותף עסקי</a>
-          <a href={waUrl} target="_blank" rel="noopener" className="btn btn-wa btn-sm">
+          <a
+            href={waUrl}
+            target="_blank"
+            rel="noopener"
+            className="btn btn-wa btn-sm"
+            data-wa="models"
+            onClick={onWaClick}
+          >
             <WaIcon size={18} />
             דברו איתי
           </a>

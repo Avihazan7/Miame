@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { track } from "@/lib/analytics";
 import MiaMark from "./MiaMark";
 import WaIcon from "./WaIcon";
 
@@ -165,7 +166,16 @@ export default function AskBrain() {
             </button>
           </form>
 
-          <a className="chat3d-wa" href={waUrl} target="_blank" rel="noopener noreferrer">
+          {/* The assistant's human handoff — a real sales CTA that fired no event,
+              so every lead that gave up on the chat and asked for a person was
+              invisible in the funnel. */}
+          <a
+            className="chat3d-wa"
+            href={waUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => void track("WhatsAppClicked", { placement: "ask-brain", intent: "inquiry" })}
+          >
             <WaIcon size={16} /> מעדיפים אדם? דברו איתנו בוואטסאפ
           </a>
         </div>

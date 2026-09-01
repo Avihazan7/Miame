@@ -1,4 +1,8 @@
 import type { Metadata } from "next";
+// The coordinator's number and the chat behind it both derive from the one
+// sales-line constant. This page is legally required to publish a REACHABLE
+// contact, which is exactly the promise a stale second copy of the number breaks.
+import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL, buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const UPDATED = "4 ביולי 2026";
 
@@ -55,9 +59,23 @@ export default function AccessibilityPage() {
           the phone and WhatsApp below are answered. If a new registered address
           exists, it belongs here — an omission is honest, a stale address is not. */}
       <ul>
-        <li>טלפון: <a href="tel:+972547477477">054-747-7477</a></li>
+        <li>טלפון: <a href={SALES_PHONE_TEL}>{SALES_PHONE_DISPLAY}</a></li>
         <li>
-          וואטסאפ: <a href="https://wa.me/972547477477">054-747-7477</a>
+          {/* This was the only raw wa.me link in the codebase, and the only one
+              that opened an empty chat: the coordinator saw "MiaMe" and had to
+              ask what it was about. It now carries a prefilled subject like every
+              other entry point, and the number itself comes from the one sales-line
+              constant so it can never drift from the line the funnel dials. It is
+              deliberately NOT a WA_CTA entry — that registry is the sales CTA
+              vocabulary (every entry declares a buying or inquiry intent), and a
+              statutory accessibility channel is neither, which is also why this
+              link fires no conversion event. */}
+          וואטסאפ:{" "}
+          <a
+            href={buildWhatsAppUrl("היי MiaMe, אני פונה בנושא נגישות האתר ואשמח לעזרת רכז הנגישות")}
+          >
+            {SALES_PHONE_DISPLAY}
+          </a>
         </li>
       </ul>
 

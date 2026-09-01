@@ -64,7 +64,14 @@ export const MIA_FOUR_DELIVERY_DAYS = 3;
 export const MANUFACTURER_NAME = "MIA Dynamics";
 
 /** Brand WhatsApp / sales line (also configurable via NEXT_PUBLIC_WHATSAPP_NUMBER). */
-export const SALES_WHATSAPP = "972547477477";
+/**
+ * The sales line, re-exported rather than repeated. It used to be its own literal
+ * here, which meant a number change had to be made twice and could half-land: the
+ * wa.me links honoured the env var, this constant did not, and nothing compared
+ * them. test/salesCampaign.test.ts still pins the value — and now pins the same
+ * value the funnel actually dials.
+ */
+export { WHATSAPP_NUMBER as SALES_WHATSAPP } from "./whatsapp";
 
 /**
  * Real, launch-grade GLB for the Ultra Vehicle Vision "3D Pro" tab.

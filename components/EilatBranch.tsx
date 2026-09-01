@@ -1,4 +1,7 @@
-import { buildWhatsAppUrl } from "@/lib/whatsapp";
+"use client";
+
+import { buildCampaignWhatsAppUrl, buildWhatsAppUrl } from "@/lib/whatsapp";
+import { track } from "@/lib/analytics";
 import LexIcon from "@/components/LexIcon";
 import WaIcon from "./WaIcon";
 
@@ -20,9 +23,19 @@ const FACTS = [
 ];
 
 export default function EilatBranch() {
-  const wa = buildWhatsAppUrl(
-    "היי MiaMe, אשמח לפרטים על MIA FOUR וזמינות סביב Green Extreme באילת 🦋"
-  );
+  const MESSAGE =
+    "היי MiaMe, אשמח לפרטים על MIA FOUR וזמינות סביב Green Extreme באילת 🦋";
+  const wa = buildWhatsAppUrl(MESSAGE);
+
+  // This is a real sales CTA and it was the one entry point on the site that
+  // opened WhatsApp and reported nothing — so an Eilat lead arrived at the rep
+  // with no record that the Eilat section produced it, and the section looked
+  // like it converted nobody. The href is built during render, on the server too,
+  // so the campaign (browser-only) is rebuilt here at the moment of the click.
+  function onWaClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    void track("WhatsAppClicked", { placement: "eilat", intent: "inquiry" });
+    e.currentTarget.href = buildCampaignWhatsAppUrl(MESSAGE);
+  }
 
   return (
     <section className="block eilat-branch" id="eilat" aria-labelledby="eilat-title">
@@ -49,7 +62,14 @@ export default function EilatBranch() {
           </div>
 
           <div className="eilat-actions">
-            <a href={wa} target="_blank" rel="noopener" className="btn btn-primary">
+            <a
+              href={wa}
+              target="_blank"
+              rel="noopener"
+              className="btn btn-primary"
+              data-wa="eilat"
+              onClick={onWaClick}
+            >
               <WaIcon size={20} />
               דברו איתי על אילת
             </a>

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { SALES_PHONE_E164 } from "@/lib/whatsapp";
 import { Heebo, Suez_One, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import "./miame-ultra.css";
@@ -131,7 +132,11 @@ const JSON_LD = {
       areaServed: { "@type": "Country", name: "IL" },
       contactPoint: {
         "@type": "ContactPoint",
-        telephone: "+972-54-747-7477",
+        // A SEVENTH spelling of the number lived here, and it is the one that
+        // matters most: contactPoint.telephone is what search and answer engines
+        // read and repeat. It is now derived, in E.164 — the machine form the
+        // schema expects — so it cannot drift from the line the funnel dials.
+        telephone: SALES_PHONE_E164,
         contactType: "sales",
         areaServed: "IL",
         availableLanguage: ["he"]

@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+// Privacy enquiries have to reach a line that answers, so the number is read
+// from the one sales-line constant rather than typed here a second time.
+import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from "@/lib/whatsapp";
 
 const UPDATED = "4 ביולי 2026";
 
@@ -82,7 +85,7 @@ export default function PrivacyPage() {
       <p>
         זכותך לעיין במידע האישי אודותיך, לבקש את תיקונו או מחיקתו, ולהסיר את הסכמתך
         לדיוור ולמדידה שיווקית. לפניות בנושא פרטיות: {" "}
-        <a href="tel:+972547477477">054-747-7477</a>.
+        <a href={SALES_PHONE_TEL}>{SALES_PHONE_DISPLAY}</a>.
       </p>
 
       <div className="legal-note">
