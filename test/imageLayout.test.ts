@@ -16,17 +16,46 @@
 import { describe, expect, it } from "vitest";
 import { intrinsicSize } from "./helpers/intrinsicSize";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { join } from "node:path";
 
 
-const files = readdirSync("components").filter((f) => f.endsWith(".tsx"));
+/**
+ * Every .tsx under components/, AT ANY DEPTH.
+ *
+ * The flat readdirSync this replaced never opened components/seo/,
+ * components/vehicle-media/ or components/marketplace/ at all — which is exactly
+ * how the SEO hero shipped a 4:3 box for a 0.94:1 file while this suite stayed
+ * green (test/seoHeroIntrinsic.test.ts documents that finding). A gate with a
+ * blind spot is worse than no gate: it reports a confidence it does not have.
+ */
+function componentFiles(dir = "components"): string[] {
+  const out: string[] = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...componentFiles(path));
+    else if (entry.name.endsWith(".tsx")) out.push(path);
+  }
+  return out;
+}
+
+const files = componentFiles();
 
 
-/** Every <img …> tag in a component, with its source file for the message. */
+/**
+ * Every image tag in a component — plain <img> AND next/image <Image> — with its
+ * source file for the message.
+ *
+ * <Image> sat outside the old scan entirely, and that was never defensible: it
+ * reserves its box from width/height exactly as <img> does, so a next/image whose
+ * attributes disagree with the file on disk shifts the page in the same way.
+ */
 function imgTags() {
-  const out: { file: string; tag: string }[] = [];
+  const out: { file: string; kind: string; tag: string }[] = [];
   for (const f of files) {
-    const src = readFileSync(`components/${f}`, "utf8");
-    for (const m of src.matchAll(/<img\b[\s\S]*?\/?>/g)) out.push({ file: f, tag: m[0] });
+    const src = readFileSync(f, "utf8");
+    for (const m of src.matchAll(/<(img|Image)\b[\s\S]*?\/?>/g)) {
+      out.push({ file: f, kind: m[1], tag: m[0] });
+    }
   }
   return out;
 }
@@ -36,8 +65,26 @@ const LOCAL_SRC = /src=["']([^"']+\.(?:webp|png|jpe?g|avif))["']/;
 describe("images reserve their space", () => {
   const tags = imgTags();
 
-  it("finds the plain <img> tags it is meant to police", () => {
-    expect(tags.length).toBeGreaterThan(8);
+  it("reaches the nested folders and both tag kinds it is meant to police", () => {
+    // These assertions ARE the old blind spot, written down. The scan has to
+    // descend into the nested component folders, and it has to count <Image> as
+    // well as <img>. Let either go back to zero and this file is once again
+    // asserting about a subset of the page while reading as if it covered all
+    // of it — which is how the hero defect got through.
+    expect(files.some((f) => f.includes("seo")), "components/seo/ not scanned").toBe(true);
+    expect(
+      files.some((f) => f.includes("vehicle-media")),
+      "components/vehicle-media/ not scanned",
+    ).toBe(true);
+    expect(
+      tags.filter((t) => t.kind === "Image").length,
+      "no next/image tag scanned",
+    ).toBeGreaterThan(8);
+    expect(
+      tags.filter((t) => t.kind === "img").length,
+      "no plain <img> scanned",
+    ).toBeGreaterThanOrEqual(4);
+    expect(tags.length).toBeGreaterThan(24);
   });
 
   it("declares width and height on every <img> with a local file", () => {

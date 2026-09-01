@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+// Seller identification has to name a channel that answers, so the number is
+// read from the one sales-line constant rather than typed here a second time.
+import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from "@/lib/whatsapp";
 
 const UPDATED = "4 ביולי 2026";
 
@@ -113,7 +116,7 @@ export default function TermsPage() {
         {/* Address removed 2026-08-31 — the store has closed. Seller identification
             is kept through the trading name and a channel that actually answers. */}
         MiaMe (מבית Leasing.co.il) · טלפון:{" "}
-        <a href="tel:+972547477477">054-747-7477</a>
+        <a href={SALES_PHONE_TEL}>{SALES_PHONE_DISPLAY}</a>
       </p>
     </main>
   );

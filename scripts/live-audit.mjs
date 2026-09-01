@@ -54,6 +54,30 @@ const problems = [];
 const external = [];
 let links = 0, buttons = 0, images = 0;
 
+// Every route this run saw as a link a phone could actually click. Static analysis
+// can prove a class is `display:none`; only a real layout can prove the anchor ended
+// up with a box. /partners spent its whole life failing this: its single anchor
+// carried `hide-m`, which globals.css hides under 720px, so on the viewport below it
+// was served, indexed, and unclickable.
+const reachable = new Set();
+// A route may be link-free only if it is not PROMOTED — that is the criterion, and
+// "noindex" was too narrow a version of it. This site deliberately uses a third state
+// besides indexed-and-linked and noindex: a page that answers 200 on a direct URL,
+// carries no in-site link, and is absent from public/sitemap.xml, so nothing is ever
+// asked to rank it. /rent-eilat is exactly that, by owner decision (84e6ec5, which
+// pulled the rental fork out of the Free Feel block because it competed with the buy
+// decision). Judging it by indexability alone would have forced it either back onto
+// the homepage or into noindex, and both reverse that decision.
+//
+// What stays a failure is the combination /partners had: submitted in the sitemap AND
+// unclickable. Adding an entry here is a decision that a page is not promoted — take
+// it out of the sitemap too, or link it.
+const LINK_FREE = {
+  "/thank-you": "noindex · the post-submit destination, reached by router.push",
+  "/marketplace-preview": "noindex · internal demo surface, no live action",
+  "/rent-eilat": "unpromoted by owner instruction, 84e6ec5 · answers 200 on a direct URL, absent from public/sitemap.xml",
+};
+
 for (const route of ROUTES) {
   const page = await ctx.newPage();
   const fail = (msg) => problems.push(`${route} :: ${msg}`);
@@ -105,10 +129,21 @@ for (const route of ROUTES) {
       links: document.querySelectorAll("a[href]").length,
       buttons: document.querySelectorAll("button,[role=button]").length,
       images: document.querySelectorAll("img").length,
+      // Rendered, not merely present: a box with area, not hidden, not transparent.
+      // `getClientRects()` alone would still count a `visibility:hidden` anchor.
+      visibleLinks: [...document.querySelectorAll("a[href]")]
+        .filter((a) => {
+          if (!a.getClientRects().length) return false;
+          const cs = getComputedStyle(a);
+          return cs.visibility !== "hidden" && cs.opacity !== "0";
+        })
+        .map((a) => (a.getAttribute("href") || "").split(/[?#]/)[0])
+        .filter((h) => h.startsWith("/")),
     };
   });
 
   links += r.links; buttons += r.buttons; images += r.images;
+  for (const href of r.visibleLinks) reachable.add(href === "" ? "/" : href.replace(/(.)\/$/, "$1"));
   for (const h of r.dead) fail(`dead anchor ${h} — nothing on this page has that id`);
   if (r.unnamed) fail(`${r.unnamed} control(s) with no accessible name`);
   if (r.noAlt) fail(`${r.noAlt} image(s) with no alt attribute`);
@@ -123,6 +158,20 @@ if (external.length) {
   console.log(`\n${external.length} third-party asset(s) did not load — informational, not a failure:`);
   for (const e of external) console.log(`  ${e}`);
 }
+// Reachability is a property of the SITE, not of any one page, so it can only be
+// judged once every route has been walked. A page nothing links to is invisible to
+// every per-page check above: it loads perfectly, scores perfectly, and no visitor
+// ever arrives.
+for (const route of ROUTES) {
+  if (reachable.has(route) || LINK_FREE[route]) continue;
+  problems.push(
+    `${route} :: no visible in-site link to it on any audited route at ${VIEWPORT.width}px — ` +
+      `it is served and promoted but a phone visitor cannot click their way there. Link it ` +
+      `(components/Footer.tsx renders on every content page and hides nothing), or stop ` +
+      `promoting it — out of public/sitemap.xml — and add it to LINK_FREE with the reason.`,
+  );
+}
+
 if (problems.length) {
   console.error(`\n✗ ${problems.length} problem(s):`);
   for (const p of problems) console.error(`  ${p}`);

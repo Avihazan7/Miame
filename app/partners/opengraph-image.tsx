@@ -7,7 +7,10 @@ export const contentType = OG_CONTENT_TYPE;
 export default function Image() {
   return renderOgCard({
     wordmark: "MiaMe Hub",
-    tagline: "PARTNER NETWORK",
+    // "PARTNER NETWORK" asserted a network on the card every partner link
+    // previews with. MEASURED 2026-09-01: public.partners holds 0 rows. The card
+    // now makes the ask it was always for.
+    tagline: "BECOME A PARTNER",
     sub: "Open a rental / sales station",
   });
 }

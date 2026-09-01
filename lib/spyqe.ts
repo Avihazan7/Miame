@@ -158,8 +158,15 @@ export function spyqeProductJsonLd(siteUrl: string) {
       price: SPYQE_TOTAL,
       availability: "https://schema.org/PreOrder",
       url: `${siteUrl}/#spyqe`,
+      // UnitPriceSpecification, not the abstract PriceSpecification, because
+      // `priceType` only exists on the subtype — and `priceType` is the whole
+      // point. Without it the Offer carries two bare numbers, 10,990 and 11,990,
+      // with nothing to say which one a buyer pays; a consumer that resolves the
+      // wrong one publishes a price this page does not sell at. ListPrice is the
+      // value Google reads as the struck-through "was" figure.
       priceSpecification: {
-        "@type": "PriceSpecification",
+        "@type": "UnitPriceSpecification",
+        priceType: "https://schema.org/ListPrice",
         priceCurrency: "ILS",
         price: SPYQE.listPrice,
         valueAddedTaxIncluded: true,

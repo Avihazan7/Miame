@@ -3,9 +3,20 @@
 // the existing funnel primitives so the product lead flow is untouched.
 
 import { RENTAL_HUB } from "./rental-fleet";
+import { RENTAL_FROM } from "./content";
 
-/** Public "from" hourly price for rentals (₪), consistent with the site FAQ. */
-export const RENTAL_HOURLY_FROM = 50;
+/**
+ * Public "from" hourly price for rentals (₪).
+ *
+ * An ALIAS, not a second definition. MEASURED across the tree, and narrower than it
+ * first looked: RENTAL_FROM was the DECLARED entry price with no reader at all, and
+ * RENTAL_HOURLY_FROM was a second 50 living in a second module — read only by
+ * components/RentalFleet.tsx, which is also the component that opens the WhatsApp
+ * message, so those two surfaces were never actually able to disagree. What this
+ * collapses is the duplicate constant, not a live contradiction. lib/content.ts is
+ * the one owner; the price LIST there now derives its first row from the same number.
+ */
+export const RENTAL_HOURLY_FROM = RENTAL_FROM;
 
 // NOTE — the street address and the Waze/Maps deep links that used to live here
 // were removed with the rest of the site's addresses: MiaMe publishes no branch

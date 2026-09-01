@@ -14,6 +14,17 @@ export const metadata: Metadata = {
   description: "הפנייה שלך התקבלה. נחזור אליך בהקדם עם ההצעה המותאמת.",
   robots: { index: false, follow: false },
   alternates: { canonical: "/thank-you" },
+  // noindex keeps this page out of the SERP; it does NOT keep it out of a share
+  // preview, and a pasted link is exactly how this URL travels. Without its own
+  // openGraph the page inherited the root layout's — announcing the homepage's
+  // title and, worse, the homepage's og:url — so the card described a different
+  // page than the one being shared. Next also fills the X card from here.
+  openGraph: {
+    title: "תודה! הפרטים התקבלו · MiaMe",
+    description: "הפנייה שלך התקבלה. נציג MiaMe יחזור אליך בהקדם עם ההצעה המותאמת.",
+    url: "/thank-you",
+    type: "website",
+  },
 };
 
 const NEXT_STEPS = [

@@ -11,6 +11,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { supabasePublicImageUrl, supabasePublicFileUrl } from "@/lib/vehicle-media";
 import { trackVehicleMediaEvent } from "@/lib/trackVehicleMediaEvent";
 
@@ -51,12 +52,31 @@ function resolveFrame(path: string): string {
 
 export default function Product360Stage({
   vehicleId,
+  mediaKey,
   poster,
+  posterW,
+  posterH,
+  posterSizes,
   alt = "MIA FOUR",
   glb,
 }: {
+  /** Identity of the SURFACE this stage sits on, used for analytics only
+   *  (vehicle_media_events.vehicle_id). A page slug is a fine value here. */
   vehicleId: string;
+  /** Primary key of THIS machine's row in `vehicle_media_assets`. A media key, never
+   *  a page slug — see the guard on the fetch below. Omitted ⇒ no media lookup at
+   *  all, which is the correct state for a page that has no row of its own. */
+  mediaKey?: string;
   poster: string;
+  /** The poster file's TRUE intrinsic size. It comes from the caller because only
+   *  the caller knows it at build time; without it the poster stays a raw <img>,
+   *  which is what this component did for every consumer until now. */
+  posterW?: number;
+  posterH?: number;
+  /** The caller's own `sizes` string. Passing the SAME string the page already uses
+   *  for this file is what makes the two <Image> tags resolve to one srcset
+   *  candidate — one download for one picture instead of two. */
+  posterSizes?: string;
   alt?: string;
   glb?: string;
 }) {
@@ -91,11 +111,20 @@ export default function Product360Stage({
   }, [visible]);
 
   useEffect(() => {
-    if (!visible) return;
+    // ONE KEY, ONE MEANING. The analytics id and the media-row id used to be the same
+    // prop, and SeoLanding passed a page slug (mia-four, klnoit-*) while the only
+    // published row in vehicle_media_assets is keyed `mia-four-x4` — so this request
+    // 404'd on every SEO page, on every visit, forever. Nobody saw it: the component
+    // fails soft by design, so a permanent miss is indistinguishable from "this page
+    // has no media". The waste was the smaller half. Had a row ever been published
+    // under one of those slugs, its glb_path would have won on a page whose own
+    // machine is a different model — the "one photo, three alts" defect in three
+    // dimensions. A page with no media row of its own now asks for nothing.
+    if (!visible || !mediaKey) return;
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`/api/vehicles/${encodeURIComponent(vehicleId)}/media`);
+        const res = await fetch(`/api/vehicles/${encodeURIComponent(mediaKey)}/media`);
         if (!res.ok) return; // 404/503 → keep the poster, no error surfaced
         const json = await res.json();
         const paths: string[] = json?.media?.spin360Paths ?? [];
@@ -110,7 +139,7 @@ export default function Product360Stage({
     return () => {
       cancelled = true;
     };
-  }, [visible, vehicleId]);
+  }, [visible, mediaKey]);
 
   const hasSpin = frames.length > 1;
 
@@ -179,8 +208,30 @@ export default function Product360Stage({
           </div>
         ) : (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="p360-img" src={src} alt={alt} draggable={false} loading="lazy" />
+            {!hasSpin && posterW && posterH && poster.startsWith("/") ? (
+              // The page above this stage renders the SAME file through next/image.
+              // Serving the raw original here made every SEO landing page download
+              // one photograph twice — optimised for the header, full-size for the
+              // stage. Given the caller's intrinsic size and the caller's own
+              // `sizes` string, both tags resolve to the same srcset candidate and
+              // the second one is a cache hit.
+              //
+              // A spin frame or a remote poster deliberately keeps the plain <img>
+              // below: its intrinsic size is unknowable at build time, and its host
+              // is not in next.config.js remotePatterns, so next/image would throw.
+              <Image
+                className="p360-img"
+                src={poster}
+                alt={alt}
+                width={posterW}
+                height={posterH}
+                sizes={posterSizes}
+                draggable={false}
+              />
+            ) : (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img className="p360-img" src={src} alt={alt} draggable={false} loading="lazy" />
+            )}
             {hasSpin && (
               <div className="p360-hint" aria-hidden="true">
                 גרור לסיבוב 360° · {index + 1}/{frames.length}

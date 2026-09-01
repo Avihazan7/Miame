@@ -9,6 +9,7 @@
 import Image from "next/image";
 import LexIcon from "@/components/LexIcon";
 import { track } from "@/lib/analytics";
+import { WARRANTY_TERM } from "@/lib/content";
 
 export default function Hero() {
   return (
@@ -60,7 +61,7 @@ export default function Hero() {
           <div className="hero-v2-trust">
             <span><LexIcon name="p-roundel" /> יבואן רשמי</span>
             <span>מחקר ופיתוח ישראלי 🇮🇱</span>
-            <span>אחריות ושירות 12 חודשים</span>
+            <span>{WARRANTY_TERM}</span>
             <span dir="ltr">EN17128</span>
           </div>
 

@@ -32,14 +32,30 @@ const ALIGN = "20260901_knowledge_zzz_catalog_alignment.sql";
 describe("the corpus catalogue answers to the storefront's names", () => {
   const align = readFileSync(`${MIG}/${ALIGN}`, "utf8");
 
-  it("the alignment migration is present and sorts last among the corpus seeds", () => {
-    // Order is the whole mechanism: the seeds insert, "zz" adds the Hebrew SPYQE
-    // name, "zzz" aligns the catalogue. If this file stops sorting last, a replay
-    // ends on someone else's wording.
+  it("is the last word on every catalogue row, whatever sorts after it", () => {
+    // Order is the whole mechanism: the seeds insert, "zz" adds the Hebrew SPYQE name,
+    // "zzz" aligns the catalogue. What must hold is not that this file sorts LAST —
+    // corpus migrations that touch other rows may and do land after it — but that
+    // nothing landing after it writes a CATALOGUE row. That is the property "sorts
+    // last" was standing in for, and it is the one worth asserting: a later file
+    // rewriting price-4x2 would end the replay on someone else's wording, and a later
+    // file rewriting `finance` would not.
     const corpusSeeds = readdirSync(MIG)
-      .filter((f) => f.endsWith(".sql") && !f.endsWith(".rollback.sql") && f.includes("knowledge"));
+      .filter((f) => f.endsWith(".sql") && !f.endsWith(".rollback.sql") && f.includes("knowledge"))
+      .sort();
     expect(corpusSeeds).toContain(ALIGN);
-    expect([...corpusSeeds].sort().at(-1)).toBe(ALIGN);
+
+    const CATALOGUE_ROWS = ["price-4x2", "price-2x4lr", "price-4x4", "price-spyqe"];
+    const after = corpusSeeds.slice(corpusSeeds.indexOf(ALIGN) + 1);
+    for (const f of after) {
+      const sql = readFileSync(`${MIG}/${f}`, "utf8").replace(/^\s*--.*$/gm, "");
+      for (const row of CATALOGUE_ROWS) {
+        expect(
+          sql.includes(`'${row}'`),
+          `${f} sorts after the alignment and writes ${row} — the replay would end on its wording, not the storefront's`,
+        ).toBe(false);
+      }
+    }
   });
 
   for (const m of MODELS) {

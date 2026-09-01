@@ -25,15 +25,32 @@ export interface WaCta {
 
 /** Every WhatsApp entry point on the site, keyed by the section it lives in. */
 export const WA_CTA = {
+  // Same story as `models` below: the floating button and the sticky bar were
+  // hand-rolling "אשמח לפרטים ולהצעת תשלום" while this entry — same intent, other
+  // words — sat unused. The entry now carries the wording that has ACTUALLY been in
+  // production, verbatim, so wiring both CTAs to the registry changes nothing the
+  // rep reads. Unifying the two wordings is a copy decision and belongs to the
+  // owner; removing the duplicate does not.
   hero: {
     intent: "inquiry",
     label: "בירור מהיר בוואטסאפ",
-    message: "היי MiaMe, אשמח לפרטים על מיה פור ועל מסלול התשלומים 🦋",
+    message: "היי MiaMe, אשמח לפרטים ולהצעת תשלום 🦋",
   },
+  // The header's WhatsApp button IS this section's entry point, and it was
+  // hand-rolling its own wording while this entry sat unused — two vocabularies
+  // for one funnel. The entry now carries the message that has ACTUALLY been in
+  // production, verbatim, so wiring the header to the registry changes nothing the
+  // rep reads. Two reasons the previous wording did not survive the merge, both
+  // measured rather than preferred: the header is GLOBAL — it renders on /partners,
+  // /eligibility and /rent-eilat, where "choosing between the models" is not why the
+  // visitor is there — and "שלושת הדגמים" wrote the model count into prose while
+  // lib/models.ts derives it, so a fourth model would have made the message false.
+  // Changing the wording is a product decision and belongs to the owner, not to a
+  // refactor that was only meant to remove a duplicate.
   models: {
     intent: "inquiry",
     label: "בירור על הדגמים",
-    message: "היי MiaMe, אשמח לעזרה בבחירת הדגם המתאים לי מבין שלושת הדגמים 🦋",
+    message: "היי MiaMe, אשמח לפרטים על הדגמים 🦋",
   },
   specs: {
     intent: "inquiry",

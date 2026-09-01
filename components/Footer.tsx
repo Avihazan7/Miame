@@ -30,6 +30,18 @@ export default function Footer() {
           <a href="/klnoit-4-galgalim">קלנועית 4 גלגלים</a>
           <a href="/klnoit-mitkapelet">קלנועית מתקפלת</a>
           <a href="/klnoit-shetach">קלנועית שטח</a>
+          {/* The footer is this site's reachability floor: it renders on every content
+              page and nothing in it is hidden at any width — unlike the header's nav
+              links, which carry `hide-m` and vanish under 720px. Both routes below are
+              an indexable page in the sitemap that no visitor could click on a phone:
+              its only anchor was that hidden header link. Served, submitted, unreachable.
+
+              /rent-eilat is NOT here on purpose. It is unpromoted by owner decision
+              (84e6ec5, which pulled the rental fork out of the Free Feel block because
+              it competed with the buy decision), and it is absent from the sitemap —
+              so "served on a direct URL, not promoted" is the chosen third state, not
+              a defect. Guarded by test/routeReachability.test.ts. */}
+          <a href="/partners">שותף עסקי</a>
         </nav>
         <nav className="foot-links" aria-label="מידע משפטי">
           <a href="/legal/terms">תקנון ותנאי שימוש</a>

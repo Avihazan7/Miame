@@ -12,6 +12,11 @@ import {
   supabasePublicFileUrl,
   supabasePublicImageUrl,
 } from "@/lib/vehicle-media";
+// Every still below is folded back to a local path before it reaches <Image>. The
+// live row stores absolute URLs on OUR OWN origin, and next/image throws on a host
+// that is not in remotePatterns — the module carries the measurement and the
+// reason the fix belongs here rather than in next.config.js.
+import { toSelfHostedPath } from "./selfHostedUrl";
 
 type ApiMedia = {
   id: string;
@@ -37,21 +42,23 @@ function toUltraMedia(row: ApiMedia): UltraVehicleMedia {
     trim: row.trim,
     year: row.year,
     cover: {
-      url: supabasePublicImageUrl(row.coverPath, { width: 1800, quality: 86 }),
+      url: toSelfHostedPath(supabasePublicImageUrl(row.coverPath, { width: 1800, quality: 86 })),
       alt,
     },
     gallery: row.galleryPaths.map((path, index) => ({
-      url: supabasePublicImageUrl(path, { width: 1400, quality: 82 }),
+      url: toSelfHostedPath(supabasePublicImageUrl(path, { width: 1400, quality: 82 })),
       alt: `${alt} gallery image ${index + 1}`,
     })),
     spin360: row.spin360Paths.map((path, index) => ({
-      url: supabasePublicImageUrl(path, { width: 1500, quality: 78 }),
+      url: toSelfHostedPath(supabasePublicImageUrl(path, { width: 1500, quality: 78 })),
       alt: `${alt} 360 frame ${index + 1}`,
     })),
     model3d: {
       glbUrl: row.glbPath ? supabasePublicFileUrl(row.glbPath) : undefined,
       usdzUrl: row.usdzPath ? supabasePublicFileUrl(row.usdzPath) : undefined,
-      posterUrl: supabasePublicImageUrl(row.coverPath, { width: 1200, quality: 82 }),
+      posterUrl: toSelfHostedPath(
+        supabasePublicImageUrl(row.coverPath, { width: 1200, quality: 82 }),
+      ),
     },
     badges: ["4K", "360° VR", "3D", "Deal Score Ready"],
   };

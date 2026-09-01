@@ -1,18 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { SeoPage } from "@/lib/seo-pages";
-import { SEO_CTA_NOTE } from "@/lib/seo-pages";
-import { MODELS } from "@/lib/models";
+import { SEO_CTA_NOTE, seoPageFromPrice } from "@/lib/seo-pages";
 import { buildProductJsonLd } from "@/lib/seo/product-jsonld";
 import Product360Stage from "@/components/Product360Stage";
 import HowToVideo from "@/components/HowToVideo";
 import SeoCta from "./SeoCta";
 
 const SITE_URL = "https://www.miame.co.il";
-
-// The "from" price is the cheapest live model — single source of truth (lib/models.ts),
-// so the Offer price can never drift from the catalogue.
-const FROM_PRICE = Math.min(...MODELS.map((m) => m.price));
 
 // Product + FAQPage + BreadcrumbList structured data, derived from the same content
 // model that renders the page (single source of truth — the schema can never drift
@@ -23,17 +18,27 @@ function jsonLd(page: SeoPage) {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      buildProductJsonLd({
-        id: url,
-        name: page.h1,
-        description: page.description,
-        image: [image],
-        price: FROM_PRICE,
-        currency: "ILS",
-        availability: "https://schema.org/InStock",
-        url,
-        brand: "MiaMe",
-      }),
+      // The Offer is PER PAGE, and it fails closed. It used to publish the cheapest
+      // model in the catalogue on every landing page, so /klnoit-shetach — a page
+      // whose own copy quotes the 4×4 at 27,900 ₪ — advertised 19,900 ₪ in its
+      // structured data: a price mismatch between the page and its own rich result,
+      // which is a merchant-data violation and not a cosmetic one. A page with no
+      // declared model now publishes NO Offer rather than someone else's price.
+      ...(seoPageFromPrice(page) === null
+        ? []
+        : [
+            buildProductJsonLd({
+              id: url,
+              name: page.h1,
+              description: page.description,
+              image: [image],
+              price: seoPageFromPrice(page)!,
+              currency: "ILS",
+              availability: "https://schema.org/InStock",
+              url,
+              brand: "MiaMe",
+            }),
+          ]),
       {
         "@type": "FAQPage",
         "@id": `${url}#faq`,
@@ -106,7 +111,27 @@ export default function SeoLanding({ page }: { page: SeoPage }) {
           </section>
         )}
 
-        <Product360Stage vehicleId={page.slug} poster={page.hero.image} alt={page.hero.alt} glb={page.glb} />
+        {/* vehicleId is the ANALYTICS identity of this page. No mediaKey is passed on
+            purpose: an SEO slug is not a row id in vehicle_media_assets, and passing one
+            made every page fetch a 404 (see Product360Stage). The 3D model comes from
+            page.glb — a committed asset chosen per page to be this page's own machine.
+            When a page does get a media row, pass its real key here, not the slug. */}
+        {/* The stage shows the SAME photograph as the hero above it. Handing it the
+            hero's intrinsic size and the hero's own `sizes` string is what keeps that
+            to one download: both tags resolve to the same srcset candidate, so the
+            stage is served from cache instead of pulling the raw original a second
+            time. The two `sizes` strings are asserted identical in
+            test/mediaPipeline.test.ts — let them drift and the page quietly pays
+            twice for one picture. */}
+        <Product360Stage
+          vehicleId={page.slug}
+          poster={page.hero.image}
+          posterW={page.hero.w}
+          posterH={page.hero.h}
+          posterSizes="(max-width: 820px) 100vw, 50vw"
+          alt={page.hero.alt}
+          glb={page.glb}
+        />
 
         {page.howToVideoId && <HowToVideo videoId={page.howToVideoId} />}
 

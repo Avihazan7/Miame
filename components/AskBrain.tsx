@@ -2,6 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { MODELS } from "@/lib/models";
+import { SPYQE, SPYQE_SPEC, SPYQE_BALANCE, SPYQE_TOTAL } from "@/lib/spyqe";
+import { RENTAL_FROM, SUCCESS_FEE_PCT } from "@/lib/content";
+import { FLEET_SIZE } from "@/lib/rental-fleet";
+import { TRACKS } from "@/lib/finance";
+import { track } from "@/lib/analytics";
 import MiaMark from "./MiaMark";
 import WaIcon from "./WaIcon";
 
@@ -16,18 +22,52 @@ const SUGGESTIONS = ["מה הטווח?", "כמה עולה?", "איך עובדת 
 // Client-side fallback so the chat is useful instantly — before ANTHROPIC_API_KEY is
 // set, or if the brain is briefly unreachable. Same facts as the Supabase corpus.
 const FAQ: { keys: string[]; a: string }[] = [
+  // FIRST on purpose. faqAnswer() scores by how many keys match and keeps the
+  // EARLIEST row on a tie, so "מה הטווח של ספייק" — one hit on "טווח", one on
+  // "ספייק" — used to be answered from MIA FOUR's range row. Every row below is a
+  // MIA FOUR fact; putting the SPYQE row first is what makes a tie resolve to the
+  // model the visitor actually named. Terms from lib/spyqe.ts, spec from the
+  // manufacturer capture in SPYQE_SPEC — no MIA FOUR number can reach it.
+  {
+    keys: ["ספייק", "spyqe", "הזמנה מוקדמת"],
+    a:
+      `${SPYQE.nameHe} (${SPYQE.full}) נמכר בהזמנה מוקדמת ל-${SPYQE.slots} הנרשמים הראשונים: ` +
+      `מקדמה ${SPYQE.deposit.toLocaleString("he-IL")} ₪ ליבואן בהרשמה, והיתרה ${SPYQE_BALANCE.toLocaleString("he-IL")} ₪ ` +
+      `ב-${SPYQE.months} תשלומים של ${SPYQE.monthlyPayment} ₪ שמתחילים עם הגעת המשלוח למחסני היבואן — ` +
+      `סה״כ ${SPYQE_TOTAL.toLocaleString("he-IL")} ₪ במקום מחיר יבואן ${SPYQE.listPrice.toLocaleString("he-IL")} ₪. ` +
+      `אספקה משוערת עד ${SPYQE.deliveryBusinessDays} ימי עסקים מהמשלוח הראשון, הערכה ולא התחייבות. ` +
+      `מפרט היצרן: ${SPYQE_SPEC.map((r) => `${r.label} ${r.value}`).join(" · ")}.`,
+  },
   { keys: ["טווח", "קילומטר", 'ק"מ', "range"], a: 'הטווח: שימוש ריאלי עד 100 ק"מ, נתון יצרן עד 120 ק"מ. הסוללה נשלפת וניתנת להחלפה להגדלת הטווח.' },
-  { keys: ["מחיר", "עולה", "כמה", "price"], a: "המחירים: ⁦MIA FOUR 2×4 City⁩ החל מ-19,900 ₪ · ⁦2×4 City Long Range⁩ מ-21,900 ₪ · ⁦4×4 Pro Max⁩ מ-27,900 ₪. אפשר לבנות הצעת תשלום בסימולטור." },
+  // "כמה עולה?" answered with MIA FOUR's three prices and nothing else, so a
+  // visitor asking about ספייק — a different vehicle at roughly half the price,
+  // sold as a pre-order on its own terms — was quoted the wrong model with full
+  // confidence. That is precisely the cross-model hazard the SPYQE corpus rows
+  // exist to prevent, and the offline path is where it survived. Each price now
+  // names the model it belongs to and is read from that model's own source.
+  {
+    keys: ["מחיר", "עולה", "כמה", "price"],
+    a:
+      `מחירי MIA FOUR: ${MODELS.map((m) => `\u2066${m.name}\u2069 החל מ-${m.price.toLocaleString("he-IL")} ₪`).join(" · ")}. ` +
+      `${SPYQE.nameHe} (${SPYQE.full}) הוא דגם נפרד בהזמנה מוקדמת: מקדמה ${SPYQE.deposit.toLocaleString("he-IL")} ₪ ליבואן, ` +
+      `היתרה ${SPYQE_BALANCE.toLocaleString("he-IL")} ₪ ב-${SPYQE.months} תשלומים של ${SPYQE.monthlyPayment} ₪, ` +
+      `סה״כ ${SPYQE_TOTAL.toLocaleString("he-IL")} ₪ במקום מחיר יבואן ${SPYQE.listPrice.toLocaleString("he-IL")} ₪. ` +
+      `אפשר לבנות הצעת תשלום בסימולטור.`,
+  },
   { keys: ["מנוע", "הספק", "וואט", "motor"], a: "2 או 4 מנועי BLDC, 1,800W כל אחד, עוצמה לכל תוואי." },
   { keys: ["סוללה", "battery", "ליתיום"], a: 'סוללת ליתיום נשלפת 60V, קיבולת 25/35Ah (תאי LG 21700), משקל כ-6.3 ק"ג.' },
   { keys: ["מהירות", "speed", 'קמ"ש'], a: 'מהירות מרבית 12 קמ"ש, מותאם לתקנות הקלנועית בישראל (תקן EN17128).' },
   { keys: ["משקל", "weight"], a: 'משקל הקלנועית 42 ק"ג (דגם ⁦2×4 City⁩), עומס עד 136 ק"ג.' },
-  { keys: ["השכר", "שעה", "rental", "hub"], a: "השכרה החל מ-50 ₪ לשעה דרך רשת MiaMe Hub. רוצים להיות שותף? 13% Success Fee מהפניות בלבד." },
-  { keys: ["אילת", "eilat", "green extreme", "גרין אקסטרים", "טרמינל", "השכרה אילת"], a: "באילת: צי השכרה של 15 כלי MIA FOUR ב-Green Extreme, החל מ-50 ₪ לשעה. משריינים מראש בוואטסאפ. זמינות בזמן אמת תיפתח עם השלמת חיבור המעקב." },
-  { keys: ["שותף", "partner"], a: "מודל MiaMe Hub: אתם מחזיקים את הצי, אנחנו מביאים את הביקוש, 13% Success Fee מהפניות בלבד, ללא עלות קבועה." },
+  // "רשת MiaMe Hub" asserted a network. MEASURED 2026-09-01 against the live
+  // database: public.partners holds 0 rows, so the network was a claim with
+  // nothing behind it. MiaMe Hub is the model we are opening to operators — the
+  // invitation is both true today and the stronger ask.
+  { keys: ["השכר", "שעה", "rental", "hub"], a: `השכרה החל מ-${RENTAL_FROM} ₪ לשעה. MiaMe Hub הוא מודל השותפות שאנחנו פותחים למפעילים: אתם מחזיקים את הצי, MiaMe מביאה את הביקוש, ${SUCCESS_FEE_PCT}% Success Fee מהפניות בלבד.` },
+  { keys: ["אילת", "eilat", "green extreme", "גרין אקסטרים", "טרמינל", "השכרה אילת"], a: `באילת: צי השכרה של ${FLEET_SIZE} כלי MIA FOUR ב-Green Extreme, החל מ-${RENTAL_FROM} ₪ לשעה. משריינים מראש בוואטסאפ. זמינות בזמן אמת תיפתח עם השלמת חיבור המעקב.` },
+  { keys: ["שותף", "partner"], a: `מודל MiaMe Hub: אתם מחזיקים את הצי, אנחנו מביאים את הביקוש, ${SUCCESS_FEE_PCT}% Success Fee מהפניות בלבד, ללא עלות קבועה. אנחנו פותחים עכשיו את המקומות הראשונים למפעילים.` },
   { keys: ["שירות", "תחזוק", "אחריות", "חלפים"], a: "יבואן רשמי MEU · Mayer Electric Utilities. אחריות יבואן רשמי, שירות וחלפים מקוריים, ומסירה מתואמת בכל אזורי הארץ." },
   { keys: ["סבסוד", "נכה", 'צה"ל', "ביטחון", "שכול"], a: 'כוחות הביטחון: נכי צה"ל עד 100% מוכר לסבסוד; משפחות שכולות עד 17,988 ₪ + מענק הוקרה MEU 10%, בכפוף לאישור משרד הביטחון.' },
-  { keys: ["מימון", "תשלום", "ריבית", "מקדמה", "תשלומים"], a: "מסלולי תשלום ב-0% ריבית (בכפוף לאישור): עד 18 תשלומים ללא ריבית והצמדה. בנו הצעה בסימולטור תוך דקה." }
+  { keys: ["מימון", "תשלום", "ריבית", "מקדמה", "תשלומים"], a: `מסלולי תשלום ב-0% ריבית (בכפוף לאישור): עד ${TRACKS.private.months.max} תשלומים ללא ריבית והצמדה. בנו הצעה בסימולטור תוך דקה.` }
 ];
 
 function faqAnswer(q: string): string | null {
@@ -165,7 +205,16 @@ export default function AskBrain() {
             </button>
           </form>
 
-          <a className="chat3d-wa" href={waUrl} target="_blank" rel="noopener noreferrer">
+          {/* The assistant's human handoff — a real sales CTA that fired no event,
+              so every lead that gave up on the chat and asked for a person was
+              invisible in the funnel. */}
+          <a
+            className="chat3d-wa"
+            href={waUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => void track("WhatsAppClicked", { placement: "ask-brain", intent: "inquiry" })}
+          >
             <WaIcon size={16} /> מעדיפים אדם? דברו איתנו בוואטסאפ
           </a>
         </div>

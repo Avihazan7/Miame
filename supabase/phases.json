@@ -367,6 +367,42 @@
         "source of truth, and test/catalogAlignment.test.ts fails if the two disagree."
       ],
       "evidence": "applied 2026-09-01 · ledger 20260901101217 · verified live: rows naming \"2×4 City\" 0→2 · \"Pro Max\" 0→1 · pricing rows 3→4 with 1 SPYQE · corpus 36→37 · three in-transaction postconditions enforced (entry model named, flagship named, pricing covers SPYQE)"
+    },
+    {
+      "id": "15-knowledge-vocabulary-gaps",
+      "title": "Financing and ordering answer to the words buyers use",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260901_knowledge_zzzz_vocabulary_gaps.sql",
+          "ledger": "20260901121050"
+        }
+      ],
+      "why": [
+        "MEASURED on the live corpus 2026-09-01: the word \"מימון\" appeared in EXACTLY ONE",
+        "row of 37 — subsidy-disabled, the rehabilitation-branch entitlement for disabled",
+        "veterans — and NOT in `finance`, the row that actually describes the payment",
+        "terms. Retrieval is the Hebrew keyword path and matches on body text, so",
+        "\"יש מימון\" returned a SINGLE document: a routine commercial question answered out",
+        "of a Ministry of Defence benefit, with nothing else in context to correct it.",
+        "And no row said how to BUY a MIA FOUR. `lead` described what the simulator sends",
+        "without naming the act — no הזמנה, no רכישה, no מזמינים — so \"איך אני מזמין\" was",
+        "answered from the row about paint colour, and once the ranker was fixed, from",
+        "SPYQE's pre-order sign-up: the other product, and not a purchase at all.",
+        "Both rewrites are minimal and both stay SHORT deliberately. Retrieval normalises",
+        "by length, so padding a row with disclosure text pushes it DOWN for the question",
+        "it exists to answer — measured: a 290-character `finance` lost \"כמה תשלומים אפשר\".",
+        "The financing disclosure stays where a number is actually quoted (lib/finance.ts",
+        "and the simulator); it is not duplicated into a retrieval row.",
+        "Ships with the ranker fixes in brain/knowledge.ts in the same commit, because",
+        "neither closes the ordering gap alone: the corpus had to name the act, and the",
+        "matcher had to stop missing it across Hebrew's final letter forms.",
+        "KNOWN LIMIT, recorded rather than papered over: \"יש מימון\" now ranks `finance`",
+        "SECOND, not first. Both rows carry the term once, so length decides, and",
+        "subsidy-disabled is shorter. A single-content-word query is settled by length in",
+        "this ranker. The embedding backfill is what removes that, not a shorter row."
+      ],
+      "evidence": "applied 2026-09-01 · ledger 20260901121050 · verified live on thhyfwoeybkptxvbpcmg: rows containing מימון 1→2 (finance joins subsidy-disabled) · finance and lead bodies md5-identical to the forward SQL (a1f97f96… / d9e41fe4…) · corpus still 37 rows · both rewritten rows had their embedding cleared (0 embedded, unchanged) · three in-transaction postconditions passed · PRE-FLIGHT: the rollback bodies were md5-checked against the LIVE rows before applying and matched byte-for-byte (b09b3a02… / 1f5538ca…), so the undo is verified rather than asserted · ACCEPTANCE, measured after the fact against the post-apply corpus (md5 98f905ba…, byte-identical to the corpus the before/after was measured on): 25 buyer questions, 4 rank-1 answers corrected and 0 regressions — איך אני מזמין colors→lead · מה הסוללה price-4x2→spec-battery · כמה תשלומים אפשר testride→finance · כמה עולה להשכיר price-4x2→rental; and יש מימון returns 2 documents instead of 1, with finance at rank 2 (subsidy-disabled still ranks first — the known single-content-word limit recorded in `why`, which the embedding backfill removes)"
     }
   ]
 }

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import WaCta from "@/components/WaCta";
 import LexIcon from "@/components/LexIcon";
+import { getModel } from "@/lib/models";
 
 /**
  * Ministry of Defence eligibility — the second conversion path on the site, and
@@ -24,6 +25,13 @@ export default function Tribute({
       invisible to anyone who does not open the WhatsApp chat. */
   deepLink?: boolean;
 }) {
+  // The worksheet below starts from the entry model's price. It was typed here,
+  // so a price change in lib/models.ts would have left the Ministry of Defence
+  // calculator quoting a stale number on the one page where the arithmetic under
+  // it IS the argument. The frozen figures above (90% / 10% / 17,988 ₪) are legal
+  // text and stay literal; this one is a catalogue price and is now read.
+  const entry = getModel("4x2");
+
   return (
     <section className="block tribute-sec" id="tribute">
       <div className="wrap">
@@ -98,13 +106,13 @@ export default function Tribute({
             <div className="tribute-calc">
               <div className="tc-head">
                 <LexIcon name="gift" /> לזכאי כוחות הביטחון · מיה פור{" "}
-                <bdi dir="ltr">2×4 City</bdi>
+                <bdi dir="ltr">{entry.name}</bdi>
               </div>
               <div className="tc-row">
                 <b>
-                  מחיר מיה פור <bdi dir="ltr">2×4 City</bdi>
+                  מחיר מיה פור <bdi dir="ltr">{entry.name}</bdi>
                 </b>
-                <span>19,900 ₪</span>
+                <span>{entry.price.toLocaleString("he-IL")} ₪</span>
               </div>
               <div className="tc-row tc-sub">
                 <b>סבסוד מוכר · משרד הביטחון*</b>

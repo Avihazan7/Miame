@@ -29,14 +29,40 @@ export const SUCCESS_FEE_PCT = 13; // % of referrals only, no fixed cost
 /** Example hourly rental pricing (MiaMe Hub). */
 export const RENTAL_FROM = 50; // ₪ per hour — entry price
 export const RENTAL_PRICES: { k: string; v: string }[] = [
-  { k: "שעה אחת", v: "50" },
+  // The entry row IS RENTAL_FROM — it was typed again three lines under its own
+  // definition, which is the shortest possible distance for two numbers to drift.
+  // The longer tiers are their own quoted prices and stay literal.
+  { k: "שעה אחת", v: String(RENTAL_FROM) },
   { k: "3 שעות", v: "100" },
   { k: "6 שעות", v: "180" },
   { k: "9 שעות", v: "245" }
 ];
 
-/** Warranty & service. */
+/**
+ * Warranty & service — the IMPORTER IDENTITY, not a period. Read it next to
+ * WARRANTY_MONTHS / WARRANTY_TERM below, which are the TERM: two near-identical
+ * names in the module the whole repo is told to read for commercial truth, and
+ * this is the sentence that keeps them apart. WHO backs the vehicle lives here;
+ * FOR HOW LONG lives there.
+ */
 export const WARRANTY = "אחריות יבואן רשמי · MEU · Mayer Electric Utilities";
+
+/**
+ * The importer's warranty TERM for MIA FOUR, in months.
+ *
+ * It was promised on five public surfaces — the hero trust row, the importer
+ * band, the simulator's assurance list, the trust-signal bar and the offline
+ * corpus — and defined in none of them, while app/legal/terms/page.tsx said the
+ * term would only be disclosed at the point of sale. A marketing promise the
+ * seller's own terms page declines to confirm is the shape a consumer complaint
+ * takes, so the term lives here once and every surface, the terms page included,
+ * reads it from here. It is stated, never invented: 12 is the figure all five
+ * surfaces already carried.
+ */
+export const WARRANTY_MONTHS = 12;
+
+/** The warranty as the marketing surfaces phrase it. Derived, never retyped. */
+export const WARRANTY_TERM = `אחריות ושירות ${WARRANTY_MONTHS} חודשים`;
 
 /**
  * The official importer — NAME ONLY.
@@ -64,7 +90,14 @@ export const MIA_FOUR_DELIVERY_DAYS = 3;
 export const MANUFACTURER_NAME = "MIA Dynamics";
 
 /** Brand WhatsApp / sales line (also configurable via NEXT_PUBLIC_WHATSAPP_NUMBER). */
-export const SALES_WHATSAPP = "972547477477";
+/**
+ * The sales line, re-exported rather than repeated. It used to be its own literal
+ * here, which meant a number change had to be made twice and could half-land: the
+ * wa.me links honoured the env var, this constant did not, and nothing compared
+ * them. test/salesCampaign.test.ts still pins the value — and now pins the same
+ * value the funnel actually dials.
+ */
+export { WHATSAPP_NUMBER as SALES_WHATSAPP } from "./whatsapp";
 
 /**
  * Real, launch-grade GLB for the Ultra Vehicle Vision "3D Pro" tab.

@@ -83,6 +83,14 @@ export default function CinematicVideo() {
           </div>
 
           <div className="cinema-actions">
+            {/* This CTA scrolls to the payment simulator on this same page. It used to
+                read "בדיקת התאמה בוואטסאפ" — and across this tree "בוואטסאפ" in a label
+                is what a control says when it really does open WhatsApp (the
+                Configurator's submit, the sticky bar's WA button, the floating button).
+                Its three sibling #sim anchors — StickyCta, Hero, FreedomMomentVideo —
+                all read "בדיקת התאמה", and so does this one now: a label promises the
+                destination it has, not its neighbour's. Guarded by
+                test/ctaLabelHonesty.test.ts. */}
             <a
               className="btn btn-primary"
               href="#sim"
@@ -94,7 +102,7 @@ export default function CinematicVideo() {
                 })
               }
             >
-              בדיקת התאמה בוואטסאפ
+              בדיקת התאמה
             </a>
             <a
               className="btn btn-ghost"

@@ -7,7 +7,9 @@
  */
 import { describe, expect, it } from "vitest";
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { selectPhase } from "../scripts/migrations-apply.mjs";
 
 const DIR = "supabase/migrations";
@@ -45,6 +47,55 @@ describe("migrations gate", () => {
     for (const p of manifest.phases) {
       if (p.status !== "applied") expect(p.why?.length ?? 0).toBeGreaterThan(0);
     }
+  });
+});
+
+describe("M-06 can be made to fire, and can be made not to", () => {
+  // A gate rule nobody has ever seen fire is a rule nobody has checked. Both halves
+  // matter here, because the second one bit: `set body = $b$… עסקה; עד 18 …$b$ where
+  // id = 'finance'` read to the scanner as a statement ENDING at the Hebrew semicolon,
+  // so a WHERE-qualified UPDATE was reported unqualified. The tempting "fix" is to
+  // rewrite correct SQL until the gate goes quiet. The real one is to blank
+  // dollar-quoted VALUES before parsing — and then prove the rule still catches the
+  // thing it exists for.
+  const runOn = (files: Record<string, string>) => {
+    const dir = mkdtempSync(join(tmpdir(), "mgate-"));
+    for (const [name, body] of Object.entries(files)) writeFileSync(join(dir, name), body);
+    try {
+      return execFileSync("node", ["scripts/migrations-check.mjs"], {
+        encoding: "utf8",
+        env: { ...process.env, MIGRATIONS_DIR: dir },
+      });
+    } catch (e) {
+      return String((e as { stdout?: string }).stdout ?? "");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  };
+
+  it("catches an UPDATE with no WHERE", () => {
+    const out = runOn({
+      "20260101_probe.sql": "do $p$ begin update public.knowledge set body = $b$x$b$; end $p$;",
+    });
+    expect(out).toContain("unqualified UPDATE");
+  });
+
+  it("does not fire on a WHERE-qualified UPDATE whose Hebrew body carries a semicolon", () => {
+    const out = runOn({
+      "20260101_probe.sql":
+        "do $p$ begin update public.knowledge\n set body = $b$מסלולי תשלום; עד 18 תשלומים$b$\n where id = 'finance'; end $p$;",
+    });
+    expect(out).not.toContain("unqualified UPDATE");
+  });
+
+  it("still sees a destructive statement inside a function body", () => {
+    // The value-position rule must not blank `as $fn$ … $fn$`: real statements live
+    // there and the rules have to keep seeing them.
+    const out = runOn({
+      "20260101_probe.sql":
+        "create or replace function f() returns void language sql as $fn$ drop table public.knowledge; $fn$;",
+    });
+    expect(out).toContain("drop table");
   });
 });
 

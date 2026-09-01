@@ -8,6 +8,7 @@
 // drifts the moment someone hand-rolls another <a href={wa}>.
 
 import { track } from "@/lib/analytics";
+import { buildCampaignWhatsAppUrl } from "@/lib/whatsapp";
 import { WA_CTA, waHref, type WaCtaKey } from "@/lib/wa-cta";
 import WaIcon from "./WaIcon";
 
@@ -45,7 +46,17 @@ export default function WaCta({
       rel="noopener noreferrer"
       data-wa={cta}
       data-intent={item.intent}
-      onClick={() => void track("WhatsAppClicked", { placement: cta, intent: item.intent })}
+      onClick={(e) => {
+        void track("WhatsAppClicked", { placement: cta, intent: item.intent });
+        // The href above is rendered on the server, so the campaign the visitor
+        // arrived on — which exists only in this browser's storage — cannot be
+        // in it. Rebuild it here, while we still control the navigation, so the
+        // campaign is in the message TEXT the rep opens: that is the only place
+        // a human sorting WhatsApp can see that a lead was paid for. Nothing
+        // leaves the device, and doing this during render instead would make the
+        // server HTML and the first client render disagree.
+        e.currentTarget.href = buildCampaignWhatsAppUrl(item.message);
+      }}
     >
       <WaIcon size={19} />
       {label ?? item.label}

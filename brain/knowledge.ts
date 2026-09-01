@@ -9,7 +9,7 @@
 import { SUPABASE_URL, SUPABASE_ANON_KEY, embeddingsReady } from "./config";
 import { embedQueryVia } from "./router";
 import { SPYQE, SPYQE_TOTAL, SPYQE_BALANCE } from "@/lib/spyqe";
-import { MIA_FOUR_DELIVERY_DAYS } from "@/lib/content";
+import { MIA_FOUR_DELIVERY_DAYS, WARRANTY_MONTHS } from "@/lib/content";
 import { TRACKS } from "@/lib/finance";
 
 export interface KnowledgeDoc {
@@ -48,7 +48,7 @@ export const FALLBACK: KnowledgeDoc[] = [
   // ── Patents ─────────────────────────────────────────────────────────────────
   { id: "patents", source: "MiaMe/Patents", text: 'פלטפורמת המזעור של MIA Dynamics מוגנת פטנטים רשומים בארה"ב ובישראל: US 11,878,763 B2, US 12,097,926 B2, IL 280339, IL 285336.' },
   // ── Service & warranty ──────────────────────────────────────────────────────
-  { id: "service", source: "MiaMe/Service", text: 'אחריות יבואן רשמי 12 חודשים · MEU · Mayer Electric Utilities. שירות וחלפים מקוריים, ומסירה מתואמת בכל אזורי הארץ.' },
+  { id: "service", source: "MiaMe/Service", text: `אחריות יבואן רשמי ${WARRANTY_MONTHS} חודשים · MEU · Mayer Electric Utilities. שירות וחלפים מקוריים, ומסירה מתואמת בכל אזורי הארץ.` },
   // ── Methodology (the unique architecture) ───────────────────────────────────
   { id: "method-arch", source: "MiaMe/Brain", text: 'ארכיטקטורת המוח: Ultra (אורקסטרציה) → Masters (החלטות איכות, Sonnet) → Max (פעולות מהירות, Haiku) → Guardian (ציות ובטיחות דטרמיניסטיים). דוקטרינה: RAG על פני fine-tuning, מקור-אמת יחיד.' },
   { id: "method-bigfive", source: "MiaMe/Brain", text: 'התאמת Big Five Deal: מודל OCEAN ממפה את פרופיל הלקוח לדגם ולמסלול (2×4 City · 2×4 City LR · 4×4 Pro Max · השכרה Hub). ההתאמה מוסברת, לא קופסה שחורה.' },
@@ -69,7 +69,10 @@ export const FALLBACK: KnowledgeDoc[] = [
   {
     id: "finance-terms",
     source: "MiaMe/Finance",
-    text: `מסלולי תשלום ב-0% ריבית בכפוף לאישור עסקה; עד ${TRACKS.private.months.max} תשלומים ללא ריבית והצמדה. הסימולטור באתר בונה הצעה תוך דקה.`
+    // "מימון" leads, for the same measured reason as the database row this mirrors:
+    // it was the ONLY word a buyer uses for this that appeared nowhere in the corpus,
+    // so the financing question was answered out of a disabled-veterans subsidy row.
+    text: `מימון ומסלולי תשלום ב-0% ריבית בכפוף לאישור עסקה; עד ${TRACKS.private.months.max} תשלומים ללא ריבית והצמדה. הסימולטור באתר בונה הצעה תוך דקה.`
   },
   {
     id: "delivery-four",
@@ -138,13 +141,174 @@ async function vectorRetrieve(query: string, k: number): Promise<KnowledgeDoc[]>
   return rows.map((r) => ({ id: r.id, source: r.source, text: r.body, score: r.similarity }));
 }
 
-/** Keyword retrieval (Hebrew-safe). The always-available fallback — no key needed. */
+/**
+ * What a buyer types, mapped onto what the corpus writes.
+ *
+ * MEASURED against the live 37-row corpus, 2026-09-01, by running the retriever's own
+ * scoring over it. "כמה עולה ספייק" returned the MIA FOUR DELIVERY row first and the
+ * SPYQE price row second — because the word "עולה" appears in NO row: the corpus says
+ * "מחיר". Only "ספייק" matched anything, it matches eight rows, they all scored 1, and
+ * the tie fell to whichever id sorted first.
+ *
+ * This is vocabulary mismatch, not a corpus-size problem, and it is exactly what an
+ * embedding resolves. Until the vectors exist, this table closes the gap for the
+ * handful of commercial questions that actually get asked. It is deliberately TINY:
+ * every entry is a word a buyer used that the corpus does not contain. A synonym list
+ * that grows past that becomes a second vocabulary to keep true.
+ */
+/**
+ * What a substituted word is worth against the buyer's own. Not zero — the substitution
+ * is the only thing that answers "כמה עולה ספייק" at all, since no row contains "עולה" —
+ * and not one, because a row that literally says what the buyer said is better evidence
+ * than a row that says what we decided the buyer meant. MEASURED on the live corpus:
+ * at 1.0 the SPYQE sign-up row (which matches only the substituted "הרשמה", and is the
+ * shorter body) outranked the ordering row that opens with the buyer's own word.
+ */
+const SYNONYM = 0.8;
+
+const ASK_TO_CORPUS: Record<string, string[]> = {
+  עולה: ["מחיר"],
+  עולות: ["מחיר"],
+  יקר: ["מחיר"],
+  זול: ["מחיר"],
+  מגיע: ["אספקה", "משלוח"],
+  מגיעה: ["אספקה", "משלוח"],
+  מתי: ["אספקה", "ימי עסקים"],
+  לקנות: ["מחיר", "הזמנה"],
+  להזמין: ["הזמנה", "הרשמה"],
+  קילומטר: ["ק\"מ", "טווח"],
+  מהירות: ["קמ\"ש"],
+  // MEASURED on the live corpus, 2026-09-01. "להשכיר" maps to the four-letter root
+  // "השכר" rather than to a full word: matching is a substring test, so the shorter
+  // form covers both "השכרה" and the corpus's actual "השכרת" without a second entry
+  // to keep true. Without it "כמה עולה להשכיר" answered with the 2x4 City purchase
+  // price — the wrong product line, quoted with confidence.
+  להשכיר: ["השכר"],
+  לשכור: ["השכר"],
+  // The present tense of an entry that already exists. "מזמין" strips to the stem
+  // "זמין", which is a FALSE FRIEND: it matches "זמינה" (in stock) and "לזמינות",
+  // not "הזמנה" (an order). MEASURED: "איך אני מזמין" was answered from the row that
+  // says the vehicle comes in premium black.
+  מזמין: ["הזמנה", "הרשמה"],
+};
+
+/**
+ * Hebrew glues its articles and prepositions onto the front of the word, and matching
+ * is a substring test — so the buyer's inflected form silently misses the corpus's
+ * base form. MEASURED on the live corpus: "מה הטווח של ספייק" ranked the 2×4 Long
+ * Range first, because that row happens to write "הטווח המורחב" while the SPYQE spec
+ * row — the one that actually carries the range — writes "טווח" and was therefore
+ * never matched at all. One letter decided which vehicle the buyer was told about.
+ *
+ * Stripping is additive and conservative: the original word is always kept, only the
+ * seven single-letter prefixes are tried, and only when at least three letters remain,
+ * so "של"→"ל" or "מה"→"ה" cannot happen.
+ */
+/**
+ * Hebrew writes five letters differently when they end a word — ך ם ן ף ץ for כ מ נ פ צ —
+ * and inflection moves them into the middle, where they change back. So "מזמין" is NOT
+ * a substring of "מזמינים": the nun is final in one and medial in the other. Matching
+ * here is a substring test, so that single glyph difference makes the inflected form
+ * invisible. MEASURED on the live corpus: it is why the row that literally opens with
+ * "איך מזמינים מיה פור" did not match a buyer asking "איך אני מזמין".
+ *
+ * Folding is applied to BOTH sides, query and body alike, and it never changes a
+ * string's length, so length normalisation is unaffected.
+ */
+const FINAL_FORMS: Record<string, string> = { "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" };
+const foldFinals = (t: string): string => t.replace(/[ךםןףץ]/g, (c) => FINAL_FORMS[c]);
+
+const HE_PREFIX = /^[הבלמושכ]/;
+const stems = (w: string): string[] => {
+  const out: string[] = [];
+  if (HE_PREFIX.test(w) && w.length >= 4) out.push(w.slice(1));
+  // The same miss at the other end of the word. Hebrew's construct state turns a final
+  // he into a tav — "סוללה" becomes "סוללת ליתיום" — and MEASURED on the live corpus
+  // that is why "מה הסוללה" was answered from a PRICE row: the one row that describes
+  // the battery is the only row in the corpus that never spells the word "סוללה".
+  for (const form of [w, ...out]) {
+    if (form.endsWith("ה") && form.length >= 4) out.push(form.slice(0, -1) + "ת");
+  }
+  return out;
+};
+
+/** Hebrew and English function words carry no signal and drown the words that do. */
+const STOP = new Set([
+  "מה", "של", "כמה", "איך", "את", "עם", "על", "הוא", "היא", "לי", "יש", "אני", "זה",
+  "אם", "או", "גם", "כל", "לא", "אבל", "כדי", "עוד", "אפשר", "the", "is", "of", "for", "and", "to", "how",
+]);
+
+/**
+ * Keyword retrieval (Hebrew-safe). The always-available fallback — no key needed.
+ *
+ * Scoring is INVERSE DOCUMENT FREQUENCY, not a match count. The count treated every
+ * word alike, so "ספייק" — which eight of thirty-seven rows carry — weighed the same
+ * as a word that appears once, and every SPYQE question ended in an eight-way tie
+ * broken by id. Weighting each match by log(N / rows-containing-it) makes the rare,
+ * distinguishing word decide, which is the whole job.
+ */
 async function keywordRetrieve(query: string, k: number): Promise<KnowledgeDoc[]> {
   const corpus = await fetchCorpus();
-  const words = query.toLowerCase().split(/\s+/).filter((w) => w.length > 1);
-  const scored = corpus.map((d) => {
-    const hay = d.text.toLowerCase();
-    return { ...d, score: words.filter((w) => hay.includes(w)).length };
+  const asked = query
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((w) => w.length > 1 && !STOP.has(w));
+
+  // ONE TERM, SEVERAL SURFACE FORMS — and it must score ONCE.
+  //
+  // Expansion is additive, never a replacement: the buyer's own word still counts
+  // wherever the corpus has it. But the forms of a term overlap by construction —
+  // "הטווח" contains "טווח" — so summing them double-counts a single occurrence.
+  // MEASURED: that is exactly how "מה הטווח של ספייק" scored the 2×4 Long Range row
+  // (which writes "הטווח המורחב") at 7.26 against the SPYQE spec row's 3.99, when the
+  // spec row is the one that actually carries SPYQE's range. A term is a set of forms;
+  // a document either has the term or it does not, and it earns the weight once.
+  //
+  // The forms come in TWO GRADES. `own` is the buyer's word and its Hebrew inflections
+  // — the same word, spelled as the corpus happens to spell it. `syn` is a word WE
+  // chose to stand in for it. A row that literally contains what the buyer typed is
+  // better evidence than a row that only contains our substitute, so they do not earn
+  // the same credit.
+  const terms = asked.map((w) => {
+    // Where the lexicon has WRITTEN DOWN what a word means, we do not also GUESS at it.
+    // Prefix stripping is a machine rule, and it is wrong as often as a Hebrew verb
+    // pattern happens to begin with one of its seven letters: "מזמין" (orders) strips
+    // to "זמין", which is "available" — a different word about a different thing.
+    // MEASURED on the live corpus: that stem answered "איך אני מזמין" out of the row
+    // that says the vehicle comes in premium black. An entry is a decision, a stem is
+    // a guess, and where both exist the decision wins.
+    const listed = ASK_TO_CORPUS[w];
+    const own = [...new Set((listed ? [w] : [w, ...stems(w)]).map(foldFinals))];
+    const syn = (listed ?? []).map(foldFinals).filter((f) => !own.includes(f));
+    return { own, syn, all: [...own, ...syn] };
+  });
+
+  // Fold once per row, not once per row per term: matching is case- and final-form
+  // insensitive on both sides, and `d.text.length` stays the UNfolded length because
+  // folding never changes it.
+  const docs = corpus.map((d) => ({ doc: d, hay: foldFinals(d.text.toLowerCase()) }));
+  const n = corpus.length || 1;
+  const has = (hay: string, forms: string[]) => forms.some((f) => hay.includes(f));
+
+  // A term's weight comes from how many documents contain ANY of its forms — the
+  // document frequency of the concept, not of one spelling of it.
+  const weights = terms.map(({ all }) => {
+    const df = docs.filter(({ hay }) => has(hay, all)).length;
+    return df === 0 ? 0 : Math.log(n / df) + 1; // +1 so a term in every row still counts a little
+  });
+
+  // Length normalisation, the BM25 idea in its simplest form. Without it "כמה עולה
+  // 2×4 City" tied exactly between the City row and the City LONG RANGE row, because
+  // "2×4 City" is a literal substring of "2×4 City Long Range" — every query word is
+  // in both — and the tie fell to whichever id sorted first, which was the dearer
+  // model. When two rows carry the same terms, the shorter one is the tighter match.
+  const avgLen = corpus.reduce((s, d) => s + d.text.length, 0) / (corpus.length || 1);
+  const scored = docs.map(({ doc, hay }) => {
+    const raw = terms.reduce(
+      (s, t, i) => s + (has(hay, t.own) ? weights[i] : has(hay, t.syn) ? weights[i] * SYNONYM : 0),
+      0,
+    );
+    return { ...doc, score: raw === 0 ? 0 : raw / (0.75 + 0.25 * (doc.text.length / (avgLen || 1))) };
   });
   const hits = scored
     .filter((d) => (d.score || 0) > 0)
