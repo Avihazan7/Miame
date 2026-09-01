@@ -315,6 +315,31 @@
         "its own header that doing so reinstates a measured defect."
       ],
       "evidence": "applied 2026-08-31 · ledger 20260831212929 · verified live: 0 ivfflat indexes remain (knowledge_body_fts + knowledge_pkey only) · column comment present · 36 rows untouched · security advisor 0 lints · ACCEPTANCE, measured on a faithful 36-row replica running the exact match_knowledge query shape: asked 4 got 4, asked 8 got 8, asked 36 got 36 (before the drop the same test returned 1 for every k)"
+    },
+    {
+      "id": "13-knowledge-spyqe-hebrew-name",
+      "title": "SPYQE answers to its Hebrew name",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260901_knowledge_zz_spyqe_hebrew_name.sql",
+          "ledger": "20260901033727"
+        }
+      ],
+      "why": [
+        "MEASURED 2026-09-01 on the live corpus: 0 rows contain \"ספייק\", 7 contain",
+        "\"SPYQE\". Retrieval is the Hebrew keyword path (every embedding is NULL) and it",
+        "matches on body text — so a buyer typing the natural Hebrew form matched no",
+        "SPYQE row and was answered from MIA FOUR rows: the exact cross-model hazard the",
+        "SPYQE rows were written to prevent. Raised by the triangle audit (critical),",
+        "re-verified independently by SQL before this phase was written.",
+        "The fix writes \"SPYQE (ספייק)\" into the first mention of each of the seven",
+        "bodies — full-body rewrites, deterministic and idempotent, with an absolute",
+        "postcondition: no row may name SPYQE in Latin only.",
+        "The offline fallback in brain/knowledge.ts gets the same treatment in the same",
+        "commit, derived from SPYQE.nameHe rather than typed."
+      ],
+      "evidence": "applied 2026-09-01 · ledger 20260901033727 · verified live: 7 rows carry ספייק · 0 rows name SPYQE in Latin only · 36 rows total, untouched count · postcondition enforced in-transaction (raise on any Latin-only row)"
     }
   ]
 }

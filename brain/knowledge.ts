@@ -74,17 +74,17 @@ export const FALLBACK: KnowledgeDoc[] = [
   {
     id: "delivery-four",
     source: "MiaMe/Service",
-    text: `מיה פור נמצאת במלאי. האספקה אליכם עד ${MIA_FOUR_DELIVERY_DAYS} ימי עסקים, בכפוף לזמינות מלאי, בכל אזור בארץ ובמסירה מתואמת מראש. זמן האספקה של ${SPYQE.name} שונה — הוא דגם בהזמנה מוקדמת.`
+    text: `מיה פור נמצאת במלאי. האספקה אליכם עד ${MIA_FOUR_DELIVERY_DAYS} ימי עסקים, בכפוף לזמינות מלאי, בכל אזור בארץ ובמסירה מתואמת מראש. זמן האספקה של ${SPYQE.name} (${SPYQE.nameHe}) שונה — הוא דגם בהזמנה מוקדמת.`
   },
   {
     id: "spyqe-offer",
     source: "MiaMe/Spyqe",
-    text: `${SPYQE.name} בהזמנה מוקדמת: מקדמה ${SPYQE.deposit.toLocaleString("he-IL")} ש"ח ליבואן בהרשמה, והיתרה ${SPYQE_BALANCE.toLocaleString("he-IL")} ש"ח ב-${SPYQE.months} תשלומים של ${SPYQE.monthlyPayment} ש"ח שמתחילים עם הגעת המשלוח למחסני היבואן. סה"כ ${SPYQE_TOTAL.toLocaleString("he-IL")} ש"ח במקום מחיר יבואן ${SPYQE.listPrice.toLocaleString("he-IL")} ש"ח, ללא ריבית והצמדה. ההטבה ל-${SPYQE.slots} הזוכים הראשונים. זהו מחיר ${SPYQE.name} בלבד ואינו מחיר מיה פור.`
+    text: `${SPYQE.name} (${SPYQE.nameHe}) בהזמנה מוקדמת: מקדמה ${SPYQE.deposit.toLocaleString("he-IL")} ש"ח ליבואן בהרשמה, והיתרה ${SPYQE_BALANCE.toLocaleString("he-IL")} ש"ח ב-${SPYQE.months} תשלומים של ${SPYQE.monthlyPayment} ש"ח שמתחילים עם הגעת המשלוח למחסני היבואן. סה"כ ${SPYQE_TOTAL.toLocaleString("he-IL")} ש"ח במקום מחיר יבואן ${SPYQE.listPrice.toLocaleString("he-IL")} ש"ח, ללא ריבית והצמדה. ההטבה ל-${SPYQE.slots} הזוכים הראשונים. זהו מחיר ${SPYQE.name} בלבד ואינו מחיר מיה פור.`
   },
   {
     id: "spyqe-delivery",
     source: "MiaMe/Spyqe",
-    text: `אספקת ${SPYQE.name} משוערת עד ${SPYQE.deliveryBusinessDays} ימי עסקים, מהמשלוח הראשון לישראל. זו הערכה ולא התחייבות, והיא שונה מזמן האספקה של מיה פור שנמצאת במלאי.`
+    text: `אספקת ${SPYQE.name} (${SPYQE.nameHe}) משוערת עד ${SPYQE.deliveryBusinessDays} ימי עסקים, מהמשלוח הראשון לישראל. זו הערכה ולא התחייבות, והיא שונה מזמן האספקה של מיה פור שנמצאת במלאי.`
   },
   {
     // The refusal is itself a fact worth retrieving. Without it the model has a
@@ -93,7 +93,7 @@ export const FALLBACK: KnowledgeDoc[] = [
     // FOUR's 1,800W motor for a machine at roughly half the price.
     id: "spyqe-unpublished",
     source: "MiaMe/Spyqe",
-    text: `עבור ${SPYQE.name} טרם פורסמו משקל הכלי, עומס מרבי, זמן טעינה, מתח סוללה והספק מנוע בוואט. אין למסור עבורם מספר, ובפרט אין להשתמש בנתוני מיה פור. התשובה הנכונה היא שהנתון יפורסם כשיאומת.`
+    text: `עבור ${SPYQE.name} (${SPYQE.nameHe}) טרם פורסמו משקל הכלי, עומס מרבי, זמן טעינה, מתח סוללה והספק מנוע בוואט. אין למסור עבורם מספר, ובפרט אין להשתמש בנתוני מיה פור. התשובה הנכונה היא שהנתון יפורסם כשיאומת.`
   }
 ];
 
