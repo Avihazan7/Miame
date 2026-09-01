@@ -33,7 +33,16 @@ export default function Product3DViewer({ glbUrl, title = "MIA FOUR · 3D" }: { 
   return (
     <Canvas
       frameloop="demand"
-      dpr={[1, 1.75]}
+      // MEASURED 2026-09-01 in headless Chromium on this scene: at deviceScaleFactor 2
+      // the 1.75 cap rendered a 1802px buffer into a 1030px canvas the display wanted
+      // at 2060px, and at 3 it rendered the same 1802px against a wanted 3090px — 58%
+      // of the panel's linear resolution, which is exactly the softness a dense screen
+      // shows. The cap exists to bound fill rate, but this scene does not need bounding:
+      // the GLB is 2,508 drawn triangles across 7 untextured PBR materials (12.3 KB), so
+      // fragment cost, not geometry, dominates, and a mostly-transparent canvas is cheap.
+      // 2 buys native rendering on every Retina-class display; beyond that the limit is
+      // the ASSET, not the canvas — see public/models/README.md.
+      dpr={[1, 2]}
       camera={{ position: [4.5, 2.2, 5.5], fov: 38 }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       aria-label={title}
