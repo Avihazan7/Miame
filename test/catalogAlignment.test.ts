@@ -93,6 +93,88 @@ describe("the corpus catalogue answers to the storefront's names", () => {
     }
   });
 
+  // ── The corpus END STATE, not one file's four named rows ────────────────────
+  //
+  // WHY THIS EXISTS. Everything above checks the ALIGNMENT FILE, against a hardcoded
+  // list of four catalogue rows. That list was right about the catalogue and wrong
+  // about the invariant: naming a model is not the catalogue's privilege. TWO rows
+  // outside the list — `model-choose` (the row that answers "איך לבחור דגם") and
+  // `spec-weight` — kept the internal ids through the entire alignment phase, because
+  // nothing looked at rows nobody had thought to list. Measured live 2026-09-01.
+  //
+  // So this replays the corpus instead of trusting a list: every forward migration
+  // that writes a knowledge body, in filename order, later writer wins. The checks
+  // then run on what the replay ENDS on — which is what a buyer is actually answered
+  // with — and they are shape checks, so a row added tomorrow is covered without
+  // anyone remembering to register it.
+
+  /** id → body, as the replay leaves it. Writers here always write whole bodies. */
+  function corpusEndState(): Map<string, string> {
+    const files = readdirSync(MIG)
+      .filter((f) => f.endsWith(".sql") && !f.endsWith(".rollback.sql") && f.includes("knowledge"))
+      .sort();
+    const out = new Map<string, string>();
+    for (const f of files) {
+      const sql = readFileSync(`${MIG}/${f}`, "utf8");
+      // `update … set body = $b$…$b$ … where id = 'x'`
+      for (const m of sql.matchAll(
+        /update\s+public\.knowledge\s+set\s+body\s*=\s*\$b\$([\s\S]*?)\$b\$[\s\S]*?where\s+id\s*=\s*'([^']+)'/g,
+      )) out.set(m[2], m[1]);
+      // `insert … values ('id', 'source', 'category', $b$…$b$)`
+      for (const m of sql.matchAll(
+        /\(\s*'([^']+)'\s*,\s*'[^']*'\s*,\s*'[^']*'\s*,\s*\$b\$([\s\S]*?)\$b\$\s*\)/g,
+      )) out.set(m[1], m[2]);
+      // seed tuples — four columns (id, source, category, body) and three (id, source, body)
+      for (const m of sql.matchAll(/\(\s*'([a-z0-9-]+)'\s*,\s*'[^']*'\s*,\s*'[^']*'\s*,\s*'((?:[^']|'')*)'\s*\)/g))
+        out.set(m[1], m[2]);
+      for (const m of sql.matchAll(/\(\s*'([a-z0-9-]+)'\s*,\s*'[^']*'\s*,\s*'((?:[^']|'')*)'\s*\)/g))
+        out.set(m[1], m[2]);
+    }
+    return out;
+  }
+
+  const END = corpusEndState();
+
+  it("the replay actually reconstructs a corpus", () => {
+    // A guard over an empty map passes forever. Every check below depends on this.
+    expect(END.size, "the migration replay extracted no bodies — the checks below are vacuous").toBeGreaterThan(25);
+    for (const id of ["model-choose", "spec-weight", "price-4x2", "price-4x4"])
+      expect(END.has(id), `the replay never saw ${id}`).toBe(true);
+  });
+
+  it('no row ends the replay carrying "4×2" — a designation from no source', () => {
+    // Not the name ("2×4 City") and not even the internal id (`4x2`): the digits are
+    // reversed. It appeared on no surface a visitor ever saw, and in no source file.
+    const bad = [...END].filter(([, b]) => b.includes("4×2")).map(([id]) => id);
+    expect(bad, `rows still carrying "4×2": ${bad.join(", ")}`).toEqual([]);
+  });
+
+  it("no row DESIGNATES a model by its internal id", () => {
+    // ASCII `x` is the whole tell: the real names use the multiplication sign
+    // ("2×4 City"), the internal ids use a letter ("4x2"). So "דגם" followed by a
+    // letter-x form is always an id standing where the product's name belongs, while
+    // "דגם 2×4 City" — the corrected text — is never matched. The ids stay legitimate
+    // as ALIASES ("הידוע גם כ-4x2"), which is why the pattern is anchored on "דגם".
+    const bad = [...END].filter(([, b]) => /דגם\s+[0-9]x[0-9]/.test(b)).map(([id]) => id);
+    expect(bad, `rows designating a model by internal id: ${bad.join(", ")}`).toEqual([]);
+  });
+
+  it("names every model from lib/models.ts somewhere in the corpus", () => {
+    // The mirror of the two checks above: they forbid the wrong name, this requires
+    // the right one. Without it, deleting the names entirely would pass.
+    const all = [...END.values()].join("\n");
+    for (const m of MODELS)
+      expect(all.includes(m.name), `no row names "${m.name}" — the name on every surface`).toBe(true);
+  });
+
+  it("the comparison row names all three, as the buyer is shown them", () => {
+    // `model-choose` answers "איך לבחור דגם" — asked BEFORE picking a model, which is
+    // exactly when the names have to match the storefront.
+    const body = END.get("model-choose") ?? "";
+    for (const m of MODELS)
+      expect(body.includes(m.name), `model-choose does not name "${m.name}": ${body}`).toBe(true);
+  });
+
   it("the rollback restores the pre-alignment bodies and says what that costs", () => {
     // A rollback that quietly reinstates a measured defect is a trap.
     const rb = readFileSync(`${MIG}/${ALIGN.replace(".sql", ".rollback.sql")}`, "utf8");

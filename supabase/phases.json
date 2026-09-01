@@ -403,6 +403,47 @@
         "this ranker. The embedding backfill is what removes that, not a shorter row."
       ],
       "evidence": "applied 2026-09-01 · ledger 20260901121050 · verified live on thhyfwoeybkptxvbpcmg: rows containing מימון 1→2 (finance joins subsidy-disabled) · finance and lead bodies md5-identical to the forward SQL (a1f97f96… / d9e41fe4…) · corpus still 37 rows · both rewritten rows had their embedding cleared (0 embedded, unchanged) · three in-transaction postconditions passed · PRE-FLIGHT: the rollback bodies were md5-checked against the LIVE rows before applying and matched byte-for-byte (b09b3a02… / 1f5538ca…), so the undo is verified rather than asserted · ACCEPTANCE, measured after the fact against the post-apply corpus (md5 98f905ba…, byte-identical to the corpus the before/after was measured on): 25 buyer questions, 4 rank-1 answers corrected and 0 regressions — איך אני מזמין colors→lead · מה הסוללה price-4x2→spec-battery · כמה תשלומים אפשר testride→finance · כמה עולה להשכיר price-4x2→rental; and יש מימון returns 2 documents instead of 1, with finance at rank 2 (subsidy-disabled still ranks first — the known single-content-word limit recorded in `why`, which the embedding backfill removes)"
+    },
+    {
+      "id": "16-knowledge-model-names-everywhere",
+      "title": "Every row names the models as the buyer is shown them",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260901_knowledge_zzzzz_model_names_everywhere.sql",
+          "ledger": "20260901151203"
+        }
+      ],
+      "why": [
+        "MEASURED on the live corpus 2026-09-01, AFTER phase 14 landed: TWO rows still",
+        "designate a model by its internal id — `model-choose` and `spec-weight`.",
+        "Phase 14 fixed the catalogue and fixed it completely: price-4x2 · price-2x4lr ·",
+        "price-4x4 · price-spyqe. Four rows, because four rows were the catalogue. But",
+        "naming a model is not the catalogue's privilege — ANY row may do it, and two did.",
+        "They sat outside the list the guard checked, so nothing looked at them, and they",
+        "kept the exact defect the phase existed to remove.",
+        "`model-choose` is the worst place for it to survive: it answers \"איך לבחור דגם\",",
+        "the comparison question a buyer asks BEFORE picking a model — precisely when the",
+        "name has to match the storefront. It named all three by internal id, and its",
+        "entry-model token was \"4×2\", which is not even the id (`4x2`): the digits are",
+        "reversed relative to the real name, \"2×4 City\". A designation that exists on no",
+        "surface and in no source.",
+        "THE ASYMMETRY THAT KEPT IT INVISIBLE: the offline fallback in brain/knowledge.ts",
+        "already carried the correct names, and so did lib/seo-pages.ts. Every RENDERED",
+        "surface was right; only the live corpus was wrong. So no page ever showed the",
+        "defect — it surfaced only when the brain answered a buyer, the one output nobody",
+        "reads while developing.",
+        "The rewrites add no id-style alias. The aliases belong where someone would type",
+        "them — the price rows already carry \"הידוע גם כ-4x2\" / \"…4x4\" — and repeating",
+        "them would lengthen two short rows for nothing. Retrieval normalises by length,",
+        "so padding pushes a row DOWN for the question it exists to answer; measured in",
+        "phase 15, not re-learned here.",
+        "Ships with the guard that would have caught it: test/catalogAlignment.test.ts",
+        "checked four named rows, which is why two unnamed ones sailed through. It now",
+        "checks the corpus END STATE for the defect SHAPE, so the next row that names a",
+        "model is covered whether or not anyone remembers to list it."
+      ],
+      "evidence": "applied 2026-09-01 15:12:03Z · ledger 20260901151203 · verified live on thhyfwoeybkptxvbpcmg: rows carrying \"4×2\" 3→0 · rows designating a model by internal id 1→0 · corpus still 37 rows · model-choose and spec-weight bodies md5-IDENTICAL to the forward SQL (718fd8d3… / 5baebff9…) · the two replay-only rows (spec-fold, method-bigfive) matched 0 rows here, exactly as designed — they exist only on a freshly replayed database, which is the environment the correction was written for · three in-transaction postconditions passed · PRE-FLIGHT: the rollback bodies were md5-checked against the LIVE rows BEFORE applying and matched byte-for-byte (4c78bd6a… / 83279c0b…), so the undo is verified rather than asserted · EMBEDDINGS CLOSED IN THE SAME OPERATION: both rewritten rows had their vector cleared (a vector of the old text must not outlive the text), which under the vector-first retriever makes a row reachable only via the keyword top-up — so the backfill was run immediately (knowledge-embed.yml run #2, 15:12:37Z, success) and the result read back from the DB rather than from the workflow's own report: 0 rows awaiting an embedding, 37 distinct vectors. Total window between the rewrite and full re-embedding: ~45 seconds."
     }
   ]
 }
