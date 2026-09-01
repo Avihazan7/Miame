@@ -1,14 +1,9 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { SUPABASE_PUBLIC_CONFIG } from "@/lib/supabase-config";
 
-// The Supabase URL + anon (publishable) key are PUBLIC by design — they ship in
-// every client bundle. Hardcoding them as defaults makes the CRM work out-of-the-box
-// with no Vercel env setup; data is protected by RLS (anon may INSERT only, never read).
-// Override per-environment via NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY.
-const url =
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://thhyfwoeybkptxvbpcmg.supabase.co";
-const anon =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoaHlmd29leWJrcHR4dmJwY21nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MDc5OTIsImV4cCI6MjA5NzI4Mzk5Mn0.Yb_FnyXGPEfTlnj6FhoxAZRw0T2pGyT_N4cUM37VsaA";
+// Resolve URL + publishable key as one governed pair. A partial Vercel override
+// must never cross-wire MiaMe with the central U.Lease Supabase project.
+const { url, anonKey: anon } = SUPABASE_PUBLIC_CONFIG;
 
 export const supabaseReady = Boolean(url && anon);
 
