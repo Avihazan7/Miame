@@ -340,6 +340,33 @@
         "commit, derived from SPYQE.nameHe rather than typed."
       ],
       "evidence": "applied 2026-09-01 · ledger 20260901033727 · verified live: 7 rows carry ספייק · 0 rows name SPYQE in Latin only · 36 rows total, untouched count · postcondition enforced in-transaction (raise on any Latin-only row)"
+    },
+    {
+      "id": "14-knowledge-catalog-alignment",
+      "title": "The catalogue answers to the names the buyer is shown",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260901_knowledge_zzz_catalog_alignment.sql",
+          "ledger": "20260901101217"
+        }
+      ],
+      "why": [
+        "MEASURED on the live corpus 2026-09-01: 3 rows say \"4x2\", ZERO contain \"2×4 City\",",
+        "ZERO contain \"Pro Max\", and the pricing category covers 0 SPYQE rows.",
+        "lib/models.ts — the source the whole site derives from — names the models",
+        "\"2×4 City\", \"2×4 City Long Range\" and \"4×4 Pro Max\". The corpus was using the",
+        "internal ids instead. No surface a visitor has seen says \"4x2\".",
+        "Retrieval is the Hebrew keyword path and matches on body text, so a buyer typing",
+        "either name the storefront showed them matched NOTHING — and \"2x4\" matched the",
+        "Long Range, answering a question about the entry model with the dearer one.",
+        "The fix leads with the real name, keeps the id-style designation as a searchable",
+        "alias, carries tagline and price from lib/models.ts, and adds price-spyqe so the",
+        "catalogue category covers both products rather than one.",
+        "It does NOT move the catalogue into the database: lib/models.ts stays the single",
+        "source of truth, and test/catalogAlignment.test.ts fails if the two disagree."
+      ],
+      "evidence": "applied 2026-09-01 · ledger 20260901101217 · verified live: rows naming \"2×4 City\" 0→2 · \"Pro Max\" 0→1 · pricing rows 3→4 with 1 SPYQE · corpus 36→37 · three in-transaction postconditions enforced (entry model named, flagship named, pricing covers SPYQE)"
     }
   ]
 }
