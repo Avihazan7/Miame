@@ -70,9 +70,16 @@ for (const route of ROUTES) {
   // shape of quiet failure it exists to catch.
   page.on("requestfailed", (req) => {
     const url = req.url();
-    const msg = `${req.failure()?.errorText ?? "failed"} ${url.replace(BASE, "")}`;
-    if (url.startsWith(BASE)) fail(msg);
-    else external.push(`${route} :: ${msg}`);
+    const err = req.failure()?.errorText ?? "failed";
+    const msg = `${err} ${url.replace(BASE, "")}`;
+    // ERR_ABORTED is the browser CANCELLING a request, not the server refusing one:
+    // a navigation that supersedes an in-flight fetch, a prefetch dropped when the
+    // link scrolls away, a stylesheet raced by `networkidle`. It fired once here on a
+    // stylesheet that was present in the build and did not reproduce on a clean run.
+    // Failing on it would make this gate cry wolf, and a gate that cries wolf is a
+    // gate people learn to ignore — so it is reported, never fatal.
+    const bucket = url.startsWith(BASE) && err !== "net::ERR_ABORTED" ? fail : (m) => external.push(`${route} :: ${m}`);
+    bucket(msg);
   });
   page.on("pageerror", (e) => fail(`uncaught: ${String(e).slice(0, 120)}`));
 
