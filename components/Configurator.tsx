@@ -271,9 +271,29 @@ export default function Configurator() {
                   <div className="card-stage">
                     {best && <span className="card-badge best">הכי מבוקש</span>}
                     {!best && i === 2 && <span className="card-badge">פרימיום</span>}
+                    {/* One photograph, three cards. The file is the 4×4 Pro Max —
+                        the vehicle_media_assets row this cover belongs to is
+                        registered as Mia FOUR "X4", and every other surface that
+                        uses an x4 file names 4×4 Pro Max in its own alt. So an
+                        alt of m.name told a screen-reader user it was looking at
+                        a 2×4 City on two of the three cards: a claim about pixels
+                        that are not that vehicle, which is a factual defect rather
+                        than a nit. The card's own name is rendered as text directly
+                        below the image, so the alt is free to describe what is
+                        actually shown. Photograph the two City models and this goes
+                        back to being m.name — that is a sourcing decision, not a
+                        code one.
+
+                        And it names NO trim, which is the second half of the fix: an
+                        alt reading "4×4 Pro Max" is true about the pixels but then
+                        contradicts the card it sits in, so a screen-reader user on
+                        the 2×4 City card hears one vehicle from the image and another
+                        from the heading directly under it. Describing the platform —
+                        true of all three cards, asserting nothing about which model
+                        this one is — is the only version that is not wrong somewhere. */}
                     <Image
                       src="/mia-four-x4-hero.webp"
-                      alt={m.name}
+                      alt="קלנועית MIA FOUR, צילום סטודיו של פלטפורמת ארבעת הגלגלים"
                       width={774}
                       height={860}
                       className="card-veh"

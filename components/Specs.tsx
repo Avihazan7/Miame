@@ -1,3 +1,4 @@
+import Image from "next/image";
 import WaCta from "@/components/WaCta";
 export default function Specs() {
   return (
@@ -12,7 +13,11 @@ export default function Specs() {
         </div>
         <div className="specs-wrap">
           <div className="specs-media specs-media--product">
-            <img className="floaty" src="/mia-white.webp" alt="מיה פור 4×4 Pro Max · הקלנועית המלאה" loading="lazy"
+            {/* Was a plain <img>, so the 81 KB original shipped whole with no srcset
+                to a box that is .9fr of a two-column grid (~45vw) and one column on
+                a phone. The optimizer needs `sizes` to know that; without it every
+                viewport is quoted 100vw and gets a rendition it cannot use. */}
+            <Image sizes="(max-width: 760px) 100vw, 45vw" className="floaty" src="/mia-white.webp" alt="מיה פור 4×4 Pro Max · הקלנועית המלאה" loading="lazy"
           width={900}
           height={880} />
           </div>

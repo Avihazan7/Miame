@@ -11,6 +11,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { supabasePublicImageUrl, supabasePublicFileUrl } from "@/lib/vehicle-media";
 import { trackVehicleMediaEvent } from "@/lib/trackVehicleMediaEvent";
 
@@ -53,6 +54,9 @@ export default function Product360Stage({
   vehicleId,
   mediaKey,
   poster,
+  posterW,
+  posterH,
+  posterSizes,
   alt = "MIA FOUR",
   glb,
 }: {
@@ -64,6 +68,15 @@ export default function Product360Stage({
    *  all, which is the correct state for a page that has no row of its own. */
   mediaKey?: string;
   poster: string;
+  /** The poster file's TRUE intrinsic size. It comes from the caller because only
+   *  the caller knows it at build time; without it the poster stays a raw <img>,
+   *  which is what this component did for every consumer until now. */
+  posterW?: number;
+  posterH?: number;
+  /** The caller's own `sizes` string. Passing the SAME string the page already uses
+   *  for this file is what makes the two <Image> tags resolve to one srcset
+   *  candidate — one download for one picture instead of two. */
+  posterSizes?: string;
   alt?: string;
   glb?: string;
 }) {
@@ -195,8 +208,30 @@ export default function Product360Stage({
           </div>
         ) : (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="p360-img" src={src} alt={alt} draggable={false} loading="lazy" />
+            {!hasSpin && posterW && posterH && poster.startsWith("/") ? (
+              // The page above this stage renders the SAME file through next/image.
+              // Serving the raw original here made every SEO landing page download
+              // one photograph twice — optimised for the header, full-size for the
+              // stage. Given the caller's intrinsic size and the caller's own
+              // `sizes` string, both tags resolve to the same srcset candidate and
+              // the second one is a cache hit.
+              //
+              // A spin frame or a remote poster deliberately keeps the plain <img>
+              // below: its intrinsic size is unknowable at build time, and its host
+              // is not in next.config.js remotePatterns, so next/image would throw.
+              <Image
+                className="p360-img"
+                src={poster}
+                alt={alt}
+                width={posterW}
+                height={posterH}
+                sizes={posterSizes}
+                draggable={false}
+              />
+            ) : (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img className="p360-img" src={src} alt={alt} draggable={false} loading="lazy" />
+            )}
             {hasSpin && (
               <div className="p360-hint" aria-hidden="true">
                 גרור לסיבוב 360° · {index + 1}/{frames.length}

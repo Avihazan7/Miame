@@ -116,7 +116,22 @@ export default function SeoLanding({ page }: { page: SeoPage }) {
             made every page fetch a 404 (see Product360Stage). The 3D model comes from
             page.glb — a committed asset chosen per page to be this page's own machine.
             When a page does get a media row, pass its real key here, not the slug. */}
-        <Product360Stage vehicleId={page.slug} poster={page.hero.image} alt={page.hero.alt} glb={page.glb} />
+        {/* The stage shows the SAME photograph as the hero above it. Handing it the
+            hero's intrinsic size and the hero's own `sizes` string is what keeps that
+            to one download: both tags resolve to the same srcset candidate, so the
+            stage is served from cache instead of pulling the raw original a second
+            time. The two `sizes` strings are asserted identical in
+            test/mediaPipeline.test.ts — let them drift and the page quietly pays
+            twice for one picture. */}
+        <Product360Stage
+          vehicleId={page.slug}
+          poster={page.hero.image}
+          posterW={page.hero.w}
+          posterH={page.hero.h}
+          posterSizes="(max-width: 820px) 100vw, 50vw"
+          alt={page.hero.alt}
+          glb={page.glb}
+        />
 
         {page.howToVideoId && <HowToVideo videoId={page.howToVideoId} />}
 
