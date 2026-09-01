@@ -47,6 +47,15 @@ export const WA_CTA = {
   // lib/models.ts derives it, so a fourth model would have made the message false.
   // Changing the wording is a product decision and belongs to the owner, not to a
   // refactor that was only meant to remove a duplicate.
+  // The link-in-bio hub. Its own entry rather than a reuse of `hero`, because the
+  // whole reason the hub exists is to tell the networks apart: a WhatsApp click that
+  // reports itself as `hero` merges social traffic back into the homepage's funnel
+  // and undoes the attribution the UTM tagging was built for.
+  "social-hub": {
+    intent: "inquiry",
+    label: "דברו איתי בוואטסאפ",
+    message: "היי MiaMe, הגעתי מהרשתות ואשמח לפרטים על מיה פור 🦋",
+  },
   models: {
     intent: "inquiry",
     label: "בירור על הדגמים",
