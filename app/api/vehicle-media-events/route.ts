@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { guardJsonPost } from "@/lib/apiGuard";
+import { SUPABASE_PUBLIC_CONFIG } from "@/lib/supabase-config";
 
 export const dynamic = "force-dynamic";
 
@@ -27,9 +28,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = SUPABASE_PUBLIC_CONFIG.url;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) {
+  if (!key) {
     return NextResponse.json({ ok: false, error: "missing_supabase_env" }, { status: 500 });
   }
 
