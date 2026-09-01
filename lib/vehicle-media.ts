@@ -1,3 +1,5 @@
+import { SUPABASE_PUBLIC_CONFIG } from "@/lib/supabase-config";
+
 export type SupabaseImageOptions = {
   bucket?: string;
   width?: number;
@@ -21,10 +23,7 @@ export function supabasePublicImageUrl(
     return pathOrUrl;
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!supabaseUrl) {
-    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL for vehicle media rendering.");
-  }
+  const supabaseUrl = SUPABASE_PUBLIC_CONFIG.url;
 
   const url = new URL(
     `/storage/v1/render/image/public/${bucket}/${pathOrUrl.replace(/^\/+/, "")}`,
@@ -45,10 +44,7 @@ export function supabasePublicFileUrl(pathOrUrl: string, bucket = "vehicle-media
     return pathOrUrl;
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!supabaseUrl) {
-    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL for vehicle media rendering.");
-  }
+  const supabaseUrl = SUPABASE_PUBLIC_CONFIG.url;
 
   return `${supabaseUrl}/storage/v1/object/public/${bucket}/${pathOrUrl.replace(/^\/+/, "")}`;
 }

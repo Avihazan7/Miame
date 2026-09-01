@@ -5,6 +5,7 @@
 // are the Sonnet/Haiku tiers. Elevate Ultra to an Opus-class model for complex
 // orchestration via BRAIN_MODEL_ULTRA — kept out of source on purpose.
 import type { ModelTier } from "./types";
+import { SUPABASE_PUBLIC_CONFIG } from "@/lib/supabase-config";
 
 export const MODELS: Record<ModelTier, string> = {
   ultra: process.env.BRAIN_MODEL_ULTRA || "claude-sonnet-4-6",
@@ -42,13 +43,10 @@ export const brainReady: boolean =
 
 export const MAX_OUTPUT_TOKENS = 1024;
 
-// Knowledge layer (RAG). The corpus is public marketing/spec facts (anon-SELECT),
-// so the same public Supabase creds as the site are used. Server-side reads only.
-export const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://thhyfwoeybkptxvbpcmg.supabase.co";
-export const SUPABASE_ANON_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoaHlmd29leWJrcHR4dmJwY21nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MDc5OTIsImV4cCI6MjA5NzI4Mzk5Mn0.Yb_FnyXGPEfTlnj6FhoxAZRw0T2pGyT_N4cUM37VsaA";
+// Knowledge layer (RAG). The corpus is public marketing/spec facts (anon-SELECT).
+// The pair resolver rejects partial/cross-project Vercel overrides atomically.
+export const SUPABASE_URL = SUPABASE_PUBLIC_CONFIG.url;
+export const SUPABASE_ANON_KEY = SUPABASE_PUBLIC_CONFIG.anonKey;
 
 // Embeddings provider — the RAG *vector* path (cosine over pgvector). Voyage AI's
 // voyage-3.x family returns 1024-dim vectors, matching the `embedding vector(1024)`
