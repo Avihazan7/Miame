@@ -40,6 +40,10 @@ export interface SeoPage {
   breadcrumbName: string;
   /** Optional real-time 3D model (GLB), served from /public or a full URL. When
    *  set, the product stage offers a lazy, dynamic-imported 3D view. */
+  /** Root-relative path to a GLB whose SUBJECT IS THIS PAGE'S VEHICLE. Set it only
+   *  where the model and the page are the same machine: a 4×4 model on the folding
+   *  page would be the "one photo, three alts" defect in three dimensions.
+   *  Unset ⇒ Product360Stage renders the poster with no 3D control, by design. */
   glb?: string;
   /** Optional YouTube id for a lazy "how it works / unboxing" section. */
   howToVideoId?: string;
@@ -72,6 +76,9 @@ export const SEO_PAGES: SeoPage[] = [
       h: 1498,
       alt: "מיה פור X6, קלנועית חשמלית פרימיום על 4 גלגלים, צילום סטודיו"
     },
+    // The MIA FOUR hub: the X4 is a legitimate representative of the platform this
+    // page is about, and the viewer's own title names which model it is showing.
+    glb: "/models/mia-four-x4.glb",
     sections: [
       {
         h: "מה זה מיה פור?",
@@ -261,6 +268,9 @@ export const SEO_PAGES: SeoPage[] = [
       h: 554,
       alt: "קלנועית שטח מיה פור 4×4 Pro Max, הנעה כפולה 4×4, עיצוב פרימיום"
     },
+    // The committed GLB IS this machine: build-glb.mjs authors a 4×4 X4 with
+    // off-road tires and teal hubs, and this page's own hero photo is the X4.
+    glb: "/models/mia-four-x4.glb",
     sections: [
       {
         h: "כוח ואחיזה לכל מסלול",
