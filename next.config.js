@@ -1,15 +1,20 @@
 /** @type {import('next').NextConfig} */
 
-// The ONLY approved remote image host: the project's Supabase storage (vehicle
-// media / GLB posters). Everything else on the landing page ships from /public.
-// Derived from the env so a project move needs no code change; the fallback is
-// the current project host (public by design — it is already in lib/supabase.ts).
+// The ONLY approved remote image host: MiaMe's governed Supabase storage.
+ // URL + key are treated as one pair. A partial Vercel override, or a complete
+ // override aimed at the central U.Lease project, falls back to MiaMe atomically.
+const MIAME_SUPABASE_PROJECT_REF = "thhyfwoeybkptxvbpcmg";
+const MIAME_SUPABASE_HOST = `${MIAME_SUPABASE_PROJECT_REF}.supabase.co`;
 const supabaseHost = (() => {
+  const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const envAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  if (!envUrl || !envAnon) return MIAME_SUPABASE_HOST;
+
   try {
-    return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || "https://thhyfwoeybkptxvbpcmg.supabase.co")
-      .hostname;
+    const host = new URL(envUrl).hostname;
+    return host === MIAME_SUPABASE_HOST ? host : MIAME_SUPABASE_HOST;
   } catch {
-    return "thhyfwoeybkptxvbpcmg.supabase.co";
+    return MIAME_SUPABASE_HOST;
   }
 })();
 
