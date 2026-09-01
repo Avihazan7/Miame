@@ -50,4 +50,9 @@ export function resolveSupabasePublicConfig(
   };
 }
 
-export const SUPABASE_PUBLIC_CONFIG = resolveSupabasePublicConfig(process.env);
+// Keep direct property reads so Next.js can inline NEXT_PUBLIC_* values into the
+// browser bundle. Passing the whole process.env object would bypass that transform.
+export const SUPABASE_PUBLIC_CONFIG = resolveSupabasePublicConfig({
+  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+});
