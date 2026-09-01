@@ -46,7 +46,21 @@ export interface BrandProfile {
  * Adding one is a single object:
  *   { key: "instagram", label: "Instagram", url: "https://www.instagram.com/<handle>" }
  */
-export const BRAND_PROFILES: BrandProfile[] = [];
+export const BRAND_PROFILES: BrandProfile[] = [
+  // The brand's Instagram page, opened 2026-09-01. Registered here on the owner's
+  // word that it is the BRAND account — that call is his and no check substitutes
+  // for it; what this file guarantees is that the call was made deliberately and
+  // that the address is canonical.
+  //
+  // The URL arrived as `?igsi=YXVqNno0amw2YWN5`. Stripped, once, here: that is a
+  // per-share, per-device token, and a `sameAs` carrying one claims an identity
+  // that does not exist. It would render fine, validate fine, and do nothing.
+  {
+    key: "instagram",
+    label: "Instagram",
+    url: "https://www.instagram.com/jointezme",
+  },
+];
 
 /** The `sameAs` array for the Organization node. Omitted entirely when empty. */
 export const SAME_AS: string[] = BRAND_PROFILES.map((p) => p.url);
