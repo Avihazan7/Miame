@@ -6,6 +6,8 @@
 // rules (no absolute promises; specs are importer data, subject to final spec,
 // stock and deal terms).
 
+import { MODELS } from "./models";
+
 export interface SeoFaq {
   q: string;
   a: string;
@@ -60,6 +62,51 @@ const COMMON_SPECS: { k: string; v: string }[] = [
   { k: "יבואן ואחריות", v: "MEU · Mayer Electric Utilities" },
   { k: "מחיר", v: "החל מ-19,900 ₪" }
 ];
+
+/**
+ * The model whose price each landing page quotes as its "from" price.
+ *
+ * WHY THIS EXISTS. The Product/Offer node for these pages used to take the
+ * cheapest model in the whole catalogue, so every page advertised 19,900 ₪ —
+ * including the off-road page, whose spec row, body copy, FAQ and meta
+ * description all say 27,900 ₪ and which does not sell the city model at all.
+ * A rich result quoting a price the page never offers is worse than no rich
+ * result: the click lands on a number that disagrees with the SERP.
+ *
+ * It is keyed by slug rather than written into each entry so the whole set reads
+ * at once, and test/seoSurfaceTruth.test.ts fails if any line here disagrees
+ * with the cheapest price the page's own copy puts in front of a buyer — so it
+ * cannot drift away from the pages it describes.
+ */
+/**
+ * Which catalogue model each landing page quotes. Exported so a test can assert that
+ * every id here names a real model: the map is the only place this pairing exists,
+ * and a typo in it is invisible at runtime — see seoPageFromPrice below.
+ */
+export const FROM_MODEL_BY_SLUG: Record<string, string> = {
+  "mia-four": "4x2",
+  "klnoit-4-galgalim": "4x2",
+  "klnoit-mitkapelet": "4x2",
+  "klnoit-shetach": "4x4"
+};
+
+/**
+ * The "from" price a landing page quotes, in ₪ — the only number its Offer node
+ * may carry. Derived from lib/models.ts, the same single source the copy is
+ * written against. An unmapped slug returns null on purpose: a page with no
+ * declared model must publish NO price rather than fall back to one it does not
+ * offer, which is precisely how the defect above arose.
+ */
+export function seoPageFromPrice(page: SeoPage): number | null {
+  const modelId = FROM_MODEL_BY_SLUG[page.slug];
+  if (!modelId) return null;
+  // getModel() FAILS OPEN — `MODELS.find(...) ?? MODELS[0]` — so a typo in the map
+  // above would hand back the 19,900 city model and publish it as this page's price:
+  // the exact defect this function exists to end, re-entering through the back door.
+  // Resolve against MODELS directly and return null when the id is not there.
+  const model = MODELS.find((m) => m.id === modelId);
+  return model ? model.price : null;
+}
 
 export const SEO_PAGES: SeoPage[] = [
   {

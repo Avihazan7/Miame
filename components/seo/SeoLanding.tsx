@@ -1,18 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { SeoPage } from "@/lib/seo-pages";
-import { SEO_CTA_NOTE } from "@/lib/seo-pages";
-import { MODELS } from "@/lib/models";
+import { SEO_CTA_NOTE, seoPageFromPrice } from "@/lib/seo-pages";
 import { buildProductJsonLd } from "@/lib/seo/product-jsonld";
 import Product360Stage from "@/components/Product360Stage";
 import HowToVideo from "@/components/HowToVideo";
 import SeoCta from "./SeoCta";
 
 const SITE_URL = "https://www.miame.co.il";
-
-// The "from" price is the cheapest live model — single source of truth (lib/models.ts),
-// so the Offer price can never drift from the catalogue.
-const FROM_PRICE = Math.min(...MODELS.map((m) => m.price));
 
 // Product + FAQPage + BreadcrumbList structured data, derived from the same content
 // model that renders the page (single source of truth — the schema can never drift
@@ -23,17 +18,27 @@ function jsonLd(page: SeoPage) {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      buildProductJsonLd({
-        id: url,
-        name: page.h1,
-        description: page.description,
-        image: [image],
-        price: FROM_PRICE,
-        currency: "ILS",
-        availability: "https://schema.org/InStock",
-        url,
-        brand: "MiaMe",
-      }),
+      // The Offer is PER PAGE, and it fails closed. It used to publish the cheapest
+      // model in the catalogue on every landing page, so /klnoit-shetach — a page
+      // whose own copy quotes the 4×4 at 27,900 ₪ — advertised 19,900 ₪ in its
+      // structured data: a price mismatch between the page and its own rich result,
+      // which is a merchant-data violation and not a cosmetic one. A page with no
+      // declared model now publishes NO Offer rather than someone else's price.
+      ...(seoPageFromPrice(page) === null
+        ? []
+        : [
+            buildProductJsonLd({
+              id: url,
+              name: page.h1,
+              description: page.description,
+              image: [image],
+              price: seoPageFromPrice(page)!,
+              currency: "ILS",
+              availability: "https://schema.org/InStock",
+              url,
+              brand: "MiaMe",
+            }),
+          ]),
       {
         "@type": "FAQPage",
         "@id": `${url}#faq`,

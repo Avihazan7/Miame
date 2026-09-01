@@ -14,6 +14,17 @@ export const metadata: Metadata = {
   description: "תצוגה מקדימה שקטה של זרימת ההתאמה, דמו בלבד, ללא שליחת פנייה.",
   robots: { index: false, follow: false },
   alternates: { canonical: "/marketplace-preview" },
+  // A demo surface is shared by link more often than an indexed one, not less.
+  // Without its own openGraph this page inherited the root layout's and showed
+  // the homepage's title and og:url — a share card that promises the product
+  // page and opens a demo. The "דמו" label belongs in the card too, so nobody
+  // forwards this as the live marketplace. Next fills the X card from here.
+  openGraph: {
+    title: "תצוגת מרקטפלייס (דמו) · MiaMe",
+    description: "תצוגה מקדימה שקטה של זרימת ההתאמה. דמו בלבד — לא נשלחת פנייה.",
+    url: "/marketplace-preview",
+    type: "website",
+  },
 };
 
 export default function MarketplacePreviewPage() {

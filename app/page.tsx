@@ -22,6 +22,7 @@ import DealBuzz from "@/components/DealBuzz";
 import CinematicVideo from "@/components/CinematicVideo";
 import FreedomMomentVideo from "@/components/FreedomMomentVideo";
 import FaqHome from "@/components/FaqHome";
+import { HOME_FAQ_JSONLD } from "@/lib/home-faq";
 import DynamicsGallery from "@/components/DynamicsGallery";
 
 export default function Page() {
@@ -89,6 +90,15 @@ export default function Page() {
         <DynamicsGallery />
 
         {/* 9 · שאלות נפוצות */}
+        {/* The FAQPage node ships from HERE, beside the accordion that renders
+            the same six answers — and no longer from app/layout.tsx, which
+            renders on all thirteen routes and so published a rich-result FAQ on
+            twelve pages that show none of it. Schema and accordion read the one
+            HOME_FAQ array, so they cannot drift apart. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: HOME_FAQ_JSONLD }}
+        />
         <FaqHome />
       </main>
       <Importer />

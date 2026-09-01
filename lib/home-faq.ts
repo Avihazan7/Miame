@@ -43,3 +43,18 @@ export function buildHomeFaqJsonLd(id: string) {
     })),
   };
 }
+
+const SITE_URL = "https://www.miame.co.il";
+
+/**
+ * The homepage FAQPage document, ready to embed as one <script> payload.
+ *
+ * It is a standalone document rather than a node in the root layout's @graph
+ * because FAQPage must be emitted by the page that RENDERS these answers, and
+ * the root layout renders on all thirteen routes. app/page.tsx — the only page
+ * with the <FaqHome /> accordion on it — is the single consumer.
+ */
+export const HOME_FAQ_JSONLD = JSON.stringify({
+  "@context": "https://schema.org",
+  ...buildHomeFaqJsonLd(`${SITE_URL}/#faq`),
+});
