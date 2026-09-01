@@ -21,7 +21,10 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
-const DIR = "supabase/migrations";
+// The tree under test. Overridable so the gate's OWN rules can be exercised against
+// fixtures — a rule nobody can make fire is a rule nobody has checked. Never set in
+// CI: the default is the real directory.
+const DIR = process.env.MIGRATIONS_DIR ?? "supabase/migrations";
 const PHASES = "supabase/phases.json";
 
 /**
@@ -83,6 +86,26 @@ function stripComments(sql) {
  */
 function stripStrings(sql) {
   return sql.replace(/'(?:[^']|'')*'/g, "''");
+}
+
+/**
+ * The same problem for DOLLAR-quoted VALUES, and it bit for the same reason. The
+ * docstring above anticipated a Hebrew body carrying a semicolon; it only ever
+ * handled the single-quoted case. `set body = $b$… עסקה; עד 18 תשלומים …$b$ where
+ * id = 'finance'` reads to the DML rules as a statement that ENDS at that semicolon,
+ * so a WHERE-qualified UPDATE was reported unqualified — a false positive that would
+ * have been "fixed" by rewriting correct SQL.
+ *
+ * Only spans in VALUE position are blanked: a dollar quote directly after `=`, `,`
+ * or `(`. Everything else — `do $tag$ … $tag$`, and a function body written as
+ * `as $fn$ … $fn$` — still carries real statements, and the rules must keep seeing
+ * them. Blanking those wholesale would hide a `drop table` inside a function body.
+ */
+function stripDollarValues(sql) {
+  return sql.replace(
+    /([=,(]\s*)\$([a-z0-9_]*)\$[\s\S]*?\$\2\$/gi,
+    (_m, pre, tag) => `${pre}$${tag}$$${tag}$`,
+  );
 }
 
 const files = readdirSync(DIR).filter((f) => f.endsWith(".sql"));
@@ -198,7 +221,7 @@ if (phases) {
 for (const f of forward) {
   const raw = readFileSync(join(DIR, f), "utf8");
   const commentless = stripComments(raw);
-  const sql = stripStrings(commentless).toLowerCase();
+  const sql = stripStrings(stripDollarValues(commentless)).toLowerCase();
   // What the string-strip removed, kept only to warn about dynamic SQL below.
   const literals = (commentless.match(/'(?:[^']|'')*'/g) ?? []).join("\n").toLowerCase();
 
