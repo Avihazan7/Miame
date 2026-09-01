@@ -65,6 +65,17 @@ describe("campaign truth survives a replay", () => {
     expect(seed).toContain("עד 18 תשלומים");
     expect(seed).not.toContain("עד 26 תשלומים");
   });
+
+  it("the June seed cannot overwrite later corpus corrections", () => {
+    // 20260629 is the OLDEST seed, so it runs first on a replay — and it used to
+    // end in `on conflict do update`, which meant a manual re-run against a live
+    // database would stamp June's wording over every later correction. Every
+    // corpus seed must be `do nothing`: on a fresh database first-write wins by
+    // ORDER, and against a live one a re-run is a no-op.
+    const june = readFileSync(`${DIR}/20260629_knowledge_seed_miame.sql`, "utf8").toLowerCase();
+    expect(june).toContain("on conflict (id) do nothing");
+    expect(june).not.toMatch(/on conflict \(id\) do update/);
+  });
 });
 
 describe("replay safety", () => {

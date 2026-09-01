@@ -86,8 +86,9 @@ export default function SeoLanding({ page }: { page: SeoPage }) {
             <Image
               src={page.hero.image}
               alt={page.hero.alt}
-              width={720}
-              height={540}
+              width={page.hero.w}
+              height={page.hero.h}
+              sizes="(max-width: 820px) 100vw, 50vw"
               className="seo-hero-img"
               priority
             />

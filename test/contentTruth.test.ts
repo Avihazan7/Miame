@@ -51,6 +51,11 @@ describe("no layer republishes what the campaign removed", () => {
     { label: "branch cities", re: /הוד-השרון|אשקלון/ },
     // The three customer tracks collapsed into one.
     { label: "three simulator tracks", re: /פרטי\/עסקי\/שותף/ },
+    // The battery weighs ~6.3 kg (manufacturer capture, live DB, Specs.tsx). The
+    // June seed said 10 kg and, being first in replay order, would have resurrected
+    // it on every fresh database while 20260714's correction stood by refusing to
+    // overwrite (audit finding, verified 31.08.26).
+    { label: "10 kg battery weight", re: /במשקל\s*10\s*ק["']?"?ג/ },
   ];
 
   // A rollback undoes a migration, so it legitimately restores the state that
@@ -59,7 +64,7 @@ describe("no layer republishes what the campaign removed", () => {
   // FOR. What it may never restore is something that was untrue when it was
   // written or has since become untrue: the balloon the simulator never offered,
   // the 26-payment term lib/finance.ts never allowed, the store that has closed.
-  const FALSEHOODS = new Set(["balloon payment", "flagship store address", "flagship store"]);
+  const FALSEHOODS = new Set(["balloon payment", "flagship store address", "flagship store", "10 kg battery weight"]);
 
   for (const { label, re } of BANNED) {
     it(`does not republish: ${label}`, () => {

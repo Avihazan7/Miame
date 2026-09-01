@@ -73,7 +73,11 @@ $$;
 insert into public.knowledge (id, source, body) values
   ('spec-range',          'MiaMe/Specs',       'טווח ריאלי עד 100 ק"מ; יצרן עד 120 ק"מ. ניתן להאריך טווח בעזרת סוללות נוספות.'),
   ('spec-motors',         'MiaMe/Specs',       'מיה פור מונעת ב-2 או 4 מנועים חשמליים, בהספק 1,800W כל אחד (x2/x4). הנעה חשמלית שקטה וירוקה.'),
-  ('spec-battery',        'MiaMe/Specs',       'סוללת ליתיום נשלפת 60V בקיבולת 25/35Ah, עם שכבת הגנה מאלומיניום במשקל 10 ק"ג. תאי LG 21700. זמן טעינה עד 8 שעות במטען סטנדרטי.'),
+  -- Body corrected 2026-09-01: this file used to say the battery weighs 10 kg. The
+  -- verified figure — live DB, components/Specs.tsx and the manufacturer capture —
+  -- is ~6.3 kg. As the FIRST seed in filename order this file wins a fresh replay
+  -- (20260714 refuses to overwrite with `do nothing`), so its content must be true.
+  ('spec-battery',        'MiaMe/Specs',       'סוללת ליתיום נשלפת 60V, קיבולת 25/35Ah, תאי LG 21700, משקל כ-6.3 ק"ג. זמן טעינה עד 8 שעות במטען סטנדרטי.'),
   ('spec-speed',          'MiaMe/Specs',       'מהירות מרבית 12 קמ"ש, בהתאם לתקנות הקלנועית בישראל. בלימה: דיסק הידראולי כפול 140 מ"מ.'),
   ('spec-fold',           'MiaMe/Specs',       'כידון מתקפל וכיסא בשחרור מהיר ביד אחת — קל לאחסון ושינוע, נכנס גם לרכב קטן. משקל הכלי כ-42 ק"ג (דגם 4×2).'),
   ('spec-suspension',     'MiaMe/Engineering', 'מערכת מתלים מכנית פורצת דרך על פלטפורמה מוגנת פטנט: שיכוך מלא קדמי ואחורי, מתלה עצמאי לכל גלגל — יציבות ובטיחות בתוואי רכיבה משתנה.'),
@@ -88,7 +92,7 @@ insert into public.knowledge (id, source, body) values
   ('method-bigfive',      'MiaMe/Brain',       'התאמת Big Five Deal: מודל OCEAN ממפה את פרופיל הלקוח לדגם ולמסלול (4×2 · 2×4 LR · 4×4 · השכרה Hub). ההתאמה מוסברת, לא קופסה שחורה.'),
   ('method-gametheory',   'MiaMe/Brain',       'שער תורת-משחקים: הצעות נבחנות לאופטימליות פארטו — אין ביצוע אוטומטי להצעה שאינה Pareto-efficient, כדי שכל עסקה תהיה win-win ללקוח ולמערכת.'),
   ('method-enrichment',   'MiaMe/Brain',       'העשרה אינסטרומנטלית (Feuerstein): המערכת לומדת ומשתפרת מכל אינטראקציה (Perceive → Reason → Act → Learn → Deliver), ומעשירה את בסיס הידע באופן מתודולוגי ומתמשך.')
-on conflict (id) do update
-set source = excluded.source,
-    body = excluded.body,
-    updated_at = now();
+-- `do nothing`, like every later corpus seed. This file is the OLDEST seed; with
+-- `do update` a manual re-run against a live database would overwrite every later
+-- correction with June's wording — the replay path must never outrank the present.
+on conflict (id) do nothing;

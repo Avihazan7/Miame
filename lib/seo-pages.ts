@@ -28,7 +28,11 @@ export interface SeoPage {
   title: string;
   description: string;
   lede: string;
-  hero: { image: string; alt: string };
+  /** w/h are the file's REAL intrinsic pixels, verified by test/seoHeroIntrinsic.test.ts.
+   *  The hero is the LCP element and renders first on mobile (order:-1), so a declared
+   *  ratio that contradicts the file shifts the entire page when the image decodes —
+   *  all four heroes shipped as 720×540 while none of the files is 4:3 (audit 31.08.26). */
+  hero: { image: string; alt: string; w: number; h: number };
   sections: SeoSection[];
   specs?: { k: string; v: string }[];
   faq: SeoFaq[];
@@ -64,6 +68,8 @@ export const SEO_PAGES: SeoPage[] = [
     lede: "מיה פור היא קלנועית חשמלית פרימיום על פלטפורמת ארבעה גלגלים מוגנת פטנט, יציבה, נשלטת וחכמה. כאן ריכזנו את כל המידע: הדגמים, הסוללה, הטווח, האחריות ומסלולי התשלום, כדי שתוכלו לבחור נכון ולהתקדם לעסקה במיידי.",
     hero: {
       image: "/mia-four-x6-studio.webp",
+      w: 1400,
+      h: 1498,
       alt: "מיה פור X6, קלנועית חשמלית פרימיום על 4 גלגלים, צילום סטודיו"
     },
     sections: [
@@ -133,6 +139,8 @@ export const SEO_PAGES: SeoPage[] = [
     lede: "קלנועית על ארבעה גלגלים נותנת מה שהכי חשוב בניידות יומיומית, תחושת ביטחון. הבסיס הרחב של מיה פור מפזר את המשקל על ארבע נקודות אחיזה ומקטין את הסיכון להטיה בפניות ובתוואי לא אחיד.",
     hero: {
       image: "/mia-four-side.webp",
+      w: 1000,
+      h: 1000,
       alt: "קלנועית מיה פור 4 גלגלים, מבט צד, פלטפורמה יציבה"
     },
     sections: [
@@ -190,6 +198,8 @@ export const SEO_PAGES: SeoPage[] = [
     lede: "החופש האמיתי הוא לקחת את הניידות איתך. מיה פור מתקפלת ומאפשרת שליפה מהירה של הכיסא, כדי שתוכלו להכניס אותה לרכב, לאחסן בבית או להעמיס לטיול, בלי להתפשר על יציבות של ארבעה גלגלים.",
     hero: {
       image: "/mia-fold-trunk.webp",
+      w: 1100,
+      h: 733,
       alt: "קלנועית מיה פור מתקפלת נכנסת לתא המטען של הרכב"
     },
     sections: [
@@ -247,6 +257,8 @@ export const SEO_PAGES: SeoPage[] = [
     lede: "כשהדרך נגמרת, מיה פור 4×4 Pro Max רק מתחילה. הנעה כפולה וארבעה מנועים נותנים אחיזה וכוח בעליות, בחול ובתוואי לא סלול, בלי לוותר על היציבות של פלטפורמת ארבעת הגלגלים.",
     hero: {
       image: "/mia-four-x4-night-front.jpg",
+      w: 554,
+      h: 554,
       alt: "קלנועית שטח מיה פור 4×4 Pro Max, הנעה כפולה 4×4, עיצוב פרימיום"
     },
     sections: [
