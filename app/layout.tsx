@@ -135,6 +135,15 @@ const JSON_LD = {
       url: SITE_URL,
       logo: SITE_URL + "/mia-four-logo.webp",
       description: "ניידות חשמלית פרימיום במחיר חכם, מבית Leasing.co.il.",
+      // NO `sameAs`. Deliberate, and the reason is worth keeping next to the
+      // node it is absent from: `sameAs` is the machine-readable assertion that
+      // this business and the accounts it lists are ONE entity. The only
+      // accounts available are the owner's PERSONAL ones, and the standing
+      // instruction is that business and private stay separate in public — the
+      // accounts work the campaign from behind the scenes, unnamed and unlinked.
+      // Omitting the property states nothing, which is the honest outcome here;
+      // listing a personal profile would publish exactly the link being avoided.
+      // A BRAND account, if one is ever opened, belongs here and nothing else does.
       areaServed: { "@type": "Country", name: "IL" },
       contactPoint: {
         "@type": "ContactPoint",

@@ -11,6 +11,10 @@ import { getUtm } from "./utm";
 export const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID || "";
 export const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || "";
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "";
+// TikTok was the one paid channel with a live profile and no way to measure it:
+// a click from there landed on the site and became indistinguishable from
+// organic. Env-gated like the rest — absent id, zero bytes shipped.
+export const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID || "";
 
 // Google Ads conversion labels (the part after "AW-XXXX/"). Optional — set them
 // to count a lead / WhatsApp click as a conversion action in Google Ads.
@@ -20,8 +24,9 @@ export const ADS_WHATSAPP_LABEL = process.env.NEXT_PUBLIC_GOOGLE_ADS_WHATSAPP_LA
 export const hasGa4 = Boolean(GA4_ID);
 export const hasGoogleAds = Boolean(GOOGLE_ADS_ID);
 export const hasMetaPixel = Boolean(META_PIXEL_ID);
+export const hasTikTokPixel = Boolean(TIKTOK_PIXEL_ID);
 /** Any pixel configured → we should render the consent banner + tag scripts. */
-export const marketingEnabled = hasGa4 || hasGoogleAds || hasMetaPixel;
+export const marketingEnabled = hasGa4 || hasGoogleAds || hasMetaPixel || hasTikTokPixel;
 
 type Params = Record<string, unknown>;
 
@@ -42,6 +47,24 @@ function fbq(): Fbq | null {
   if (typeof window === "undefined") return null;
   const f = (window as unknown as { fbq?: Fbq }).fbq;
   return typeof f === "function" ? f : null;
+}
+
+/**
+ * TikTok's global is an ARRAY that the bootstrap snippet pushes methods onto —
+ * not a function like `gtag`/`fbq` — so it gets its own accessor shape. Probing
+ * for `enableCookie` rather than truthiness is what distinguishes a LOADED tag
+ * from the bare stub, which matters because consent can be granted before the
+ * script finishes arriving.
+ */
+interface Ttq {
+  enableCookie?: () => void;
+  disableCookie?: () => void;
+}
+
+function ttq(): Ttq | null {
+  if (typeof window === "undefined") return null;
+  const t = (window as unknown as { ttq?: Ttq }).ttq;
+  return t && typeof t.enableCookie === "function" ? t : null;
 }
 
 /** Fire a GA4 event (no-op unless GA4 is configured and loaded). */
@@ -106,6 +129,13 @@ export function setConsent(state: "granted" | "denied"): void {
     }
     const f = fbq();
     if (f) f("consent", state === "granted" ? "grant" : "revoke");
+    // TikTok exposes no consent API — the COOKIE is the switch. The tag boots with
+    // disableCookie() so it measures nothing before the visitor agrees, and this is
+    // the other half of that pair. Without it the tag stays cookie-disabled forever:
+    // not "extra privacy", just a pixel that silently never works while the consent
+    // banner reports success. Caught by the review bot on PR #159; it was right.
+    const t = ttq();
+    if (t) (state === "granted" ? t.enableCookie : t.disableCookie)?.();
   } catch {
     /* marketing never throws */
   }
