@@ -133,6 +133,12 @@ async function status(client) {
     console.log("⚠ ledger rows with no migration in this repo (out-of-band):");
     for (const [v, n] of orphans) console.log(`    ${v}  ${n}`);
     console.log("  Recover the SQL into git before it is lost to a restore point.\n");
+    // An orphan is the WORST of the two findings this function reports — DDL that
+    // landed with no reviewable artifact, which a restore point then erases without
+    // anyone noticing — and it was the one that exited 0. Any scheduled check built
+    // on this command therefore reported green on exactly the drift it exists to
+    // catch. It fails now, like manifest/ledger drift does.
+    process.exitCode = 1;
   }
   if (drift.length) {
     console.log("⚠ manifest/ledger drift:");

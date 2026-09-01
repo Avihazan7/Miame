@@ -44,7 +44,18 @@ async function embedBatch(texts: string[], kind: EmbedKind): Promise<number[][]>
     throw new Error(`[brain] embeddings call failed (${res.status}): ${t.slice(0, 200)}`);
   }
   const data = (await res.json()) as VoyageResponse;
-  const out = (data.data || []).map((d) => d.embedding);
+  // Address the batch by `index`, not by position. Nothing in the HTTP contract
+  // promises the array comes back in request order, and a reordered batch is the
+  // one failure that cannot be seen from the outside: every row gets a perfectly
+  // well-formed 1024-d vector belonging to a DIFFERENT document, so the count check
+  // below passes, the writes succeed, and retrieval simply answers other people's
+  // questions. Sorted only when EVERY item carries an index, so a provider that
+  // omits the field is left in the order it sent.
+  const items = [...((data.data || []) as Array<{ embedding: number[]; index?: number }>)];
+  if (items.length && items.every((d) => typeof d.index === "number")) {
+    items.sort((a, b) => (a.index as number) - (b.index as number));
+  }
+  const out = items.map((d) => d.embedding);
   if (out.length !== texts.length) {
     throw new Error(`[brain] embeddings count mismatch: got ${out.length} for ${texts.length}`);
   }

@@ -19,6 +19,7 @@ import {
   SUPABASE_URL,
   SUPABASE_ANON_KEY,
   SUPABASE_SERVICE_KEY,
+  EMBED_DIM,
   embeddingsReady
 } from "@/brain/config";
 import { embedDocuments } from "@/brain/embeddings";
@@ -56,10 +57,20 @@ interface PendingRow {
 }
 
 async function pendingRows(): Promise<PendingRow[]> {
+  // The work list and the write must see the SAME rows. Reading with the anon key
+  // while writing with the service role lets RLS decide what "pending" means: if
+  // the anon SELECT policy is ever narrowed, the rows it hides are never embedded
+  // AND never counted, so the driver reports "fully embedded" forever while the
+  // corpus stays NULL. That is the silent half-finish this route exists to avoid,
+  // so the read prefers the key that does the writing. GET still falls back to
+  // anon, because the health check has to answer before the write key is set.
+  // `order=id` makes a partial run resumable from a stable prefix rather than an
+  // arbitrary one.
+  const readKey = SUPABASE_SERVICE_KEY || SUPABASE_ANON_KEY;
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/knowledge?select=id,body&embedding=is.null`,
+    `${SUPABASE_URL}/rest/v1/knowledge?select=id,body&embedding=is.null&order=id`,
     {
-      headers: { apikey: SUPABASE_ANON_KEY, authorization: `Bearer ${SUPABASE_ANON_KEY}` },
+      headers: { apikey: readKey, authorization: `Bearer ${readKey}` },
       cache: "no-store"
     }
   );
@@ -121,6 +132,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: msg }, { status: 502 });
   }
 
+  // A vector of the wrong WIDTH is the one provider failure that can look like a
+  // success: `embedDocuments` already checks the COUNT, so 36 well-formed 1536-d
+  // vectors pass every check above and then fail 36 separate PATCHes with 36
+  // opaque errors. BRAIN_EMBED_MODEL is env-configurable and a model that ignores
+  // `output_dimension` returns its own native width, so the width is checked once,
+  // here, against the column's declared vector(1024) — before a single row is
+  // written and before a half-embedded corpus exists.
+  const wrong = vectors.findIndex((v) => !Array.isArray(v) || v.length !== EMBED_DIM);
+  if (wrong !== -1) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          `embedding width ${Array.isArray(vectors[wrong]) ? vectors[wrong].length : "unknown"} ` +
+          `does not match knowledge.embedding, which is vector(${EMBED_DIM}) — ` +
+          `check BRAIN_EMBED_MODEL. Nothing was written.`
+      },
+      { status: 502 }
+    );
+  }
+
   let embedded = 0;
   const failed: string[] = [];
   for (let i = 0; i < rows.length; i++) {
@@ -141,7 +173,11 @@ export async function POST(req: Request) {
       }
     );
     if (res.ok) embedded++;
-    else failed.push(rows[i].id);
+    // Which row failed is not enough to act on. 401 means the service key is wrong,
+    // 400 a type or dimension mismatch, 404 the wrong table — three different first
+    // moves. The status is carried; the body is not, because a PostgREST error can
+    // echo the request and the request carries the key.
+    else failed.push(`${rows[i].id} (HTTP ${res.status})`);
   }
 
   return NextResponse.json({ ok: failed.length === 0, embedded, total: rows.length, failed });
