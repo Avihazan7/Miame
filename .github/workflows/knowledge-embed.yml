@@ -1,0 +1,116 @@
+name: Knowledge Embed (backfill)
+
+# כפתור להרצת ה-backfill של ה-RAG — מהדפדפן, כולל מהטלפון.
+#
+# למה workflow ולא רק `npm run knowledge:embed`: הפעולה הזאת היא בקשת HTTP אחת
+# ל-`/api/embed` בפרודקשן, אבל היא דורשת כותרת `x-admin-token` — וזה בדיוק מה
+# שדפדפן אינו יכול לשלוח. עד עכשיו המשמעות הייתה שמי שאין לו מסוף לא יכול
+# להריץ אותה בכלל. כאן ה-runner שולח את הכותרת, והסוד לעולם לא עובר במכשיר
+# של המפעיל.
+#
+# ⚠️ הסוד נקרא מ-`secrets.EMBED_ADMIN_TOKEN` בלבד ואינו מודפס לעולם. GitHub
+#    ממסך אותו בלוגים, אבל השלב שמדפיס את התשובה מדפיס JSON מהראוט — שלא
+#    מכיל אותו ממילא.
+#
+# ידני בלבד. אין `schedule` ואין `push`: זו פעולה שמוציאה כסף אצל ספק
+# ה-embeddings וכותבת עם ה-service role. פעולה כזאת רצה כשאדם מחליט, לא
+# כשטיימר מחליט.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'status = בדיקה בלבד (לא כותב, לא עולה כסף) · embed = הרצה בפועל'
+        type: choice
+        options: [status, embed]
+        default: status
+      site:
+        description: 'ה-origin שמריצים מולו. השאירו ריק לפרודקשן.'
+        default: ''
+
+permissions:
+  contents: read
+
+# שתי הרצות במקביל היו שולחות את אותן שורות פעמיים לספק בתשלום.
+concurrency:
+  group: knowledge-embed
+  cancel-in-progress: false
+
+jobs:
+  embed:
+    runs-on: ubuntu-latest
+    env:
+      BASE: ${{ inputs.site || 'https://www.miame.co.il' }}
+    steps:
+      - name: הסוד קיים?
+        env:
+          TOKEN: ${{ secrets.EMBED_ADMIN_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::EMBED_ADMIN_TOKEN לא מוגדר כ-secret בריפו." >&2
+            echo "  Settings → Secrets and variables → Actions → New repository secret" >&2
+            echo "  הערך חייב להיות זהה לזה שב-Vercel, אחרת הראוט יחזיר 401." >&2
+            exit 1
+          fi
+          echo "secret present"
+
+      # GET הוא קריאה בלבד: הוא מדווח אילו מפתחות הפריסה מחזיקה וכמה שורות
+      # ממתינות. הוא רץ תמיד — גם לפני embed — כי הרצה שמתחילה בלי לדעת
+      # שהמפתחות במקום היא הרצה שנכשלת באמצע.
+      - name: מצב (GET /api/embed)
+        env:
+          TOKEN: ${{ secrets.EMBED_ADMIN_TOKEN }}
+        run: |
+          set -o pipefail
+          code=$(curl -sS -o body.json -w '%{http_code}' \
+            -H "x-admin-token: $TOKEN" "$BASE/api/embed") || {
+              echo "::error::הבקשה ל-$BASE/api/embed נכשלה ברמת הרשת." >&2; exit 1; }
+          echo "HTTP $code"
+          cat body.json
+          echo
+          if [ "$code" != "200" ]; then
+            echo "::error::status החזיר $code — 401 = טוקן לא תואם, 503 = הראוט מושבת (חסר סוד בפריסה)." >&2
+            exit 1
+          fi
+          # גוף שאינו JSON פירושו שהבקשה לא הגיעה לראוט בכלל — חומת התחברות,
+          # שגיאת CDN, או Deployment Protection. לומר מה קרה, לא לנחש.
+          python3 -c "import json,sys; d=json.load(open('body.json')); \
+            print('provider key  :', 'present' if d.get('embeddingsReady') else 'MISSING'); \
+            print('write key     :', 'present' if d.get('hasServiceKey') else 'MISSING'); \
+            print('rows pending  :', d.get('pending')); \
+            sys.exit(0 if d.get('embeddingsReady') and d.get('hasServiceKey') else 3)" \
+            || { echo "::error::חסר מפתח בפריסה — ראו MISSING למעלה. הוסיפו ב-Vercel ואז Redeploy." >&2; exit 1; }
+
+      - name: הרצה (POST /api/embed)
+        if: inputs.mode == 'embed'
+        env:
+          TOKEN: ${{ secrets.EMBED_ADMIN_TOKEN }}
+        run: |
+          set -o pipefail
+          code=$(curl -sS -X POST -o post.json -w '%{http_code}' \
+            -H "x-admin-token: $TOKEN" "$BASE/api/embed") || {
+              echo "::error::בקשת ה-POST נכשלה ברמת הרשת." >&2; exit 1; }
+          echo "HTTP $code"
+          cat post.json
+          echo
+          # הרצה חלקית היא 200 ש-`ok` שלו false: הראוט קובע ok = (failed.length === 0),
+          # ולכן שורה אחת שלא נכתבה הופכת את כל התשובה לשקרית. זה נכשל בכוונה —
+          # "עבר עם 3 שורות שלא נכתבו" הוא בדיוק הכשל השקט שהכל כאן נועד למנוע.
+          python3 -c "import json,sys; d=json.load(open('post.json')); \
+            f=d.get('failed') or []; \
+            print('embedded :', d.get('embedded')); \
+            print('failed   :', len(f), f[:10]); \
+            sys.exit(0 if d.get('ok') else 4)"
+
+      - name: אימות — הקורפוס באמת טעון?
+        if: inputs.mode == 'embed'
+        env:
+          TOKEN: ${{ secrets.EMBED_ADMIN_TOKEN }}
+        run: |
+          # לא סומכים על תשובת ה-POST: שואלים מחדש. `pending: 0` הוא ההוכחה.
+          curl -sS -H "x-admin-token: $TOKEN" "$BASE/api/embed" -o final.json
+          cat final.json
+          echo
+          python3 -c "import json,sys; d=json.load(open('final.json')); p=d.get('pending'); \
+            print('rows still awaiting an embedding:', p); \
+            sys.exit(0 if p == 0 else 5)"
