@@ -13,6 +13,7 @@
 
 /** What a buzz CTA does. "sim" scrolls to the simulator; "wa" opens WhatsApp. */
 import type { LexName } from "@/components/LexIcon";
+import { WARRANTY_TERM } from "@/lib/content";
 
 export type BuzzAction = "sim" | "wa";
 
@@ -49,7 +50,7 @@ export const LAUNCH_OFFER = {
 // (LegalStatus, seo-pages, models) — not a marketing superlative.
 export const TRUST_SIGNALS: TrustSignal[] = [
   { icon: "shield", label: "יבואן רשמי · MEU" },
-  { icon: "wrench", label: "אחריות ושירות 12 חודשים" },
+  { icon: "wrench", label: WARRANTY_TERM },
   { icon: "percent", label: "עד 18 תשלומים · 0% ריבית*" },
   { icon: "check", label: "תקן קלנועית EN17128" },
   { icon: "trophy", label: "פלטפורמה מוגנת פטנט" },

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MODELS, getModel } from "@/lib/models";
+import { WARRANTY_MONTHS } from "@/lib/content";
 import {
   CustomerType,
   TRACKS,
@@ -57,11 +58,17 @@ function useCountUp(target: number, duration = 520): number {
 // /api/deal payload all keep the exact shape they had before.
 const TRACK_ID: CustomerType = "private";
 
+// The instalment ceiling is a term of the offer, not a phrase. Five strings on
+// this screen quote it, so it is read from the rule computeQuote() actually
+// clamps `months` against (lib/finance.ts): a hand-typed "18" keeps promising a
+// term the simulator has already stopped honouring.
+const MAX_MONTHS = TRACKS[TRACK_ID].months.max;
+
 /** What every MIA FOUR deal includes, whatever the buyer drags the sliders to.
     Each line is a fact stated elsewhere on the page (Specs, LegalStatus, Patents,
     the importer band) — not a superlative. */
 const SIM_ASSURANCES: { k: string; v: string }[] = [
-  { k: "אחריות יבואן רשמי", v: "MEU · שירות וחלפים מקוריים, 12 חודשים" },
+  { k: "אחריות יבואן רשמי", v: `MEU · שירות וחלפים מקוריים, ${WARRANTY_MONTHS} חודשים` },
   { k: "פלטפורמה מוגנת פטנט", v: "ארבעה גלגלים, מתלים עצמאיים, בלימה הידראולית כפולה" },
   { k: "תקן EN17128", v: "מותאמת לתקנות הקלנועית בישראל, בלי רישוי ובלי אגרות" },
   { k: "מסירה בכל הארץ", v: "מתואמת אתכם מראש מול נציג" },
@@ -312,7 +319,7 @@ export default function Configurator() {
             <div className="sec-kicker">סימולטור תשלומים</div>
             <h2 className="sec-title">בנו את העסקה שלכם</h2>
             <p className="sec-desc">
-              מסלול אחד, ברור: בוחרים דגם, קובעים מקדמה, ופורסים עד 18 תשלומים ללא ריבית והצמדה.
+              מסלול אחד, ברור: בוחרים דגם, קובעים מקדמה, ופורסים עד {MAX_MONTHS} תשלומים ללא ריבית והצמדה.
             </p>
           </div>
 
@@ -320,7 +327,7 @@ export default function Configurator() {
             {/* controls */}
             <div className="sim-controls">
               <div className="zero-interest-pill">
-                עד 18 תשלומים ללא ריבית והצמדה
+                עד {MAX_MONTHS} תשלומים ללא ריבית והצמדה
               </div>
 
               <div className="model-pick">
@@ -413,7 +420,7 @@ export default function Configurator() {
               <img src="/mia-four-logo.webp" alt="MIA FOUR" className="res-logo" loading="lazy"
           width={1600}
           height={599} />
-              <div className="res-eyebrow">עד 18 תשלומים ללא ריבית והצמדה</div>
+              <div className="res-eyebrow">עד {MAX_MONTHS} תשלומים ללא ריבית והצמדה</div>
               <div className="res-model">
                 <bdi dir="ltr">{model.name}</bdi>
               </div>
@@ -426,7 +433,7 @@ export default function Configurator() {
               <div className="res-badges">
                 <span className="res-badge accent">0% ריבית</span>
                 <span className="res-badge">ללא הצמדה</span>
-                <span className="res-badge">עד 18 תשלומים</span>
+                <span className="res-badge">עד {MAX_MONTHS} תשלומים</span>
                 <span className="res-badge">Free Feel</span>
               </div>
 
@@ -513,7 +520,7 @@ export default function Configurator() {
                   <a href="/legal/privacy">מדיניות הפרטיות</a>.
                 </p>
                 <p className="disclaimer">
-                  הסימולטור להמחשה בלבד. עד 18 תשלומים ללא ריבית והצמדה בכפוף לאישור עסקה, זמינות מלאי ותנאי החברה/היבואן. האתר אינו מהווה התחייבות לאישור מימון.
+                  הסימולטור להמחשה בלבד. עד {MAX_MONTHS} תשלומים ללא ריבית והצמדה בכפוף לאישור עסקה, זמינות מלאי ותנאי החברה/היבואן. האתר אינו מהווה התחייבות לאישור מימון.
                 </p>
                 {sent && <div className="lead-ok">נפתחה שיחת וואטסאפ ✓ נחזור אליכם מיד</div>}
                 {score && (

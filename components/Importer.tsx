@@ -1,4 +1,4 @@
-import { IMPORTER_NAME, MANUFACTURER_NAME } from "@/lib/content";
+import { IMPORTER_NAME, MANUFACTURER_NAME, WARRANTY_TERM } from "@/lib/content";
 
 /**
  * The importer band — NAME AND WARRANTY ONLY.
@@ -21,7 +21,7 @@ export default function Importer() {
           </div>
           <p className="importer-warranty">אחריות יבואן רשמי</p>
           <ul className="importer-points">
-            <li>אחריות ושירות 12 חודשים</li>
+            <li>{WARRANTY_TERM}</li>
             <li>חלפים מקוריים ושירות טכני מוסמך</li>
             <li>תקן קלנועית EN17128</li>
           </ul>
