@@ -11,6 +11,10 @@ import { getUtm } from "./utm";
 export const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID || "";
 export const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || "";
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "";
+// TikTok was the one paid channel with a live profile and no way to measure it:
+// a click from there landed on the site and became indistinguishable from
+// organic. Env-gated like the rest — absent id, zero bytes shipped.
+export const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID || "";
 
 // Google Ads conversion labels (the part after "AW-XXXX/"). Optional — set them
 // to count a lead / WhatsApp click as a conversion action in Google Ads.
@@ -20,8 +24,9 @@ export const ADS_WHATSAPP_LABEL = process.env.NEXT_PUBLIC_GOOGLE_ADS_WHATSAPP_LA
 export const hasGa4 = Boolean(GA4_ID);
 export const hasGoogleAds = Boolean(GOOGLE_ADS_ID);
 export const hasMetaPixel = Boolean(META_PIXEL_ID);
+export const hasTikTokPixel = Boolean(TIKTOK_PIXEL_ID);
 /** Any pixel configured → we should render the consent banner + tag scripts. */
-export const marketingEnabled = hasGa4 || hasGoogleAds || hasMetaPixel;
+export const marketingEnabled = hasGa4 || hasGoogleAds || hasMetaPixel || hasTikTokPixel;
 
 type Params = Record<string, unknown>;
 
