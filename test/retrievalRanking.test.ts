@@ -54,11 +54,14 @@
 // right one. It is not in the code.
 //
 // The fixture below is 19 of the corpus's 37 rows: the rows these questions compete
-// over, with the bodies THIS BRANCH leaves in the database — verbatim live as measured
-// on 2026-09-01, with `finance` and `lead` as the phase-15 migration rewrites them
-// (supabase/migrations/20260901_knowledge_zzzz_vocabulary_gaps.sql). It is not the
-// whole corpus; it is the part where ranking is decided, which is what a ranking test
-// should hold.
+// over, with the bodies PRODUCTION carries — verbatim live, 2026-09-01. That is now a
+// statement about the database rather than about this branch: phase 15
+// (supabase/migrations/20260901_knowledge_zzzz_vocabulary_gaps.sql) was applied at
+// ledger 20260901121050, and the whole corpus was md5-compared afterwards against the
+// text these cases were measured on — 98f905ba79de78b1533b28b19d9a44dc, identical. So
+// the four corrections below are the answers a real buyer now gets, not a prediction
+// of them. It is not the whole corpus; it is the part where ranking is decided, which
+// is what a ranking test should hold.
 //
 // Every mechanism here is pinned by mutation — twelve of them, each removed in turn and
 // each making this file fail: the lexicon, the prefix strip, the construct-state rule,
