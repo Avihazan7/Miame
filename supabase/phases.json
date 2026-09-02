@@ -584,6 +584,31 @@
         "after: to_regclass('public.partners') is null, 0 policies left, 0 grants left,",
         "public tables 6 -> 5, and the corpus untouched at 37 rows / 0 awaiting embedding."
       ]
+    },
+    {
+      "id": "21-knowledge-tyre-size",
+      "title": "The corpus can answer \"what size are the tyres\"",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260902_zknowledge_tyre_size.sql",
+          "ledger": "20260902165104"
+        }
+      ],
+      "risk": "low — one insert and one bounded update, both idempotent",
+      "why": [
+        "Measured on the live corpus 2026-09-02: 0 rows state the tyre size; the one row",
+        "that mentions the wheels at all (spec-brakes) talks about suspension and stops.",
+        "The size is what a buyer types into a parts search two years from now.",
+        "PROVENANCE: the figure is legible on the sidewall in the wheel close-up the site",
+        "now shows, but it is published because the OWNER CONFIRMED it on 2026-09-02.",
+        "Reading a spec off pixels is inference; this repo keeps specs quoted.",
+        "APPLIED 2026-09-02 16:51:04Z, ledger 20260902165104. Verified live: corpus 37 -> 38,",
+        "2 rows name the size, spec-tyres present, 0 phone-shaped strings.",
+        "NOTE: both touched rows carry embedding = null and are awaiting the backfill",
+        "(/api/embed, which needs VOYAGE_API_KEY + EMBED_ADMIN_TOKEN). Until it runs they",
+        "are reachable by the Hebrew keyword top-up but not by vector similarity."
+      ]
     }
   ]
 }

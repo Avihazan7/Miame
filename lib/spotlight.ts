@@ -34,8 +34,17 @@
  * absent because both of their pseudo-elements are already spoken for (the crown
  * line and the wax sweep), and stacking a third layer by wrapping them in a new
  * element would change markup for a decoration.
+ *
+ * `.photo-frame` joined on 2026-09-02, when the manufacturer's second batch put
+ * real photographs on the largest surfaces on the page (the lifestyle band and
+ * both feature frames). It spends only `::after` — the crown and the crystalline
+ * hairline — so `::before` was free, and it is `position:relative;overflow:hidden`
+ * already. Its gradient is overridden in the stylesheet: wider and at half the
+ * alpha, because a photograph is not an empty white card. On a card the light IS
+ * the content; over a photograph the same value reads as a colour cast on the
+ * product, which is the one thing this finish must never do.
  */
-export const SPOTLIT_SURFACES = ["card-stage", "elig-card", "tribute-calc"] as const;
+export const SPOTLIT_SURFACES = ["card-stage", "elig-card", "tribute-calc", "photo-frame"] as const;
 
 /** The delegated listener's target selector. Derived — never typed twice. */
 export const SPOTLIGHT_SELECTOR = SPOTLIT_SURFACES.map((c) => `.${c}`).join(",");

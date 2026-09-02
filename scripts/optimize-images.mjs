@@ -35,12 +35,25 @@ const TARGETS = [
   "mia-four-teal-cockpit.png",
   "mia-four-x4-pure-freedom.png",
   "mia-four-logo.png",
-  { name: "mia-fold-lot.jpg", ...PHOTO },
   { name: "mia-fold-trunk.jpg", ...PHOTO },
   { name: "mia-wheel-detail.webp", ...PHOTO },
   { name: "mia-four-x4-seat.webp", ...PHOTO },
-  { name: "mia-white.webp", ...PHOTO },
 ];
+// REMOVED 2026-09-02, and the reason is a defect this list can create:
+//
+//   mia-white.webp   was a byte-identical ALIAS of mia-four-x4-seat.webp. Both the
+//                    public copy and the ARCHIVED original were duplicates. Deleting
+//                    the public one is not enough — leaving the name here means the
+//                    next run re-encodes the archived alias straight back into
+//                    /public and the alias returns with no diff to notice it.
+//
+//   mia-fold-lot.jpg was the manufacturer's 1500×1000 original, and this list shrank
+//                    it to 1100px on the way into /public. next/image then had 1100px
+//                    to serve every viewport from. The full-resolution frame now
+//                    ships as mia-four-x4-fold-parking.jpg and the optimizer picks
+//                    the rendition per request, which is the job it is better at.
+//                    Pre-shrinking a source the optimizer will resize anyway only
+//                    removes the data it would have used.
 
 const MAX_EDGE = 1600;
 const QUALITY = 82;

@@ -74,6 +74,18 @@ export default function Specs() {
               <span className="spec-k">משקל הקלנועית</span>
               <span className="spec-v">42 ק"ג (דגם <bdi dir="ltr">2×4 City</bdi>) · עד 136 ק"ג עומס</span>
             </div>
+            {/* Tyre size. The figure is legible on the sidewall in the wheel close-up
+                two sections down (components/Lifestyle.tsx) — but it is published here
+                because the OWNER confirmed it on 2026-09-02, not because a photograph
+                showed it. Reading a spec off pixels is inference; the same discipline
+                that keeps `handNumber` quoted rather than deduced applies to a number
+                a buyer will use to order a replacement. Provenance, not decoration. */}
+            <div className="spec-row">
+              <span className="spec-k">צמיגים</span>
+              <span className="spec-v">
+                <bdi dir="ltr">14.5×4.8-7</bdi> · צמיגי שטח, חישוקי סגסוגת
+              </span>
+            </div>
             <div className="spec-row">
               <span className="spec-k">בלמים</span>
               <span className="spec-v">דיסק הידראולי כפול · 140 מ"מ</span>

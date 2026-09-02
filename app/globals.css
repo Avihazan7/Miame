@@ -962,7 +962,7 @@ html{scroll-padding-top:92px}
       a plain gradient at 0 opacity — until something writes to them. That is why
       a touch device, a reduced-motion visitor and a server-rendered page all get
       the card exactly as it was before this block existed. ── */
-.card-stage::before,.elig-card::before,.tribute-calc::before{
+.card-stage::before,.elig-card::before,.tribute-calc::before,.photo-frame::before{
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   opacity:var(--spot,0);transition:opacity .35s ease;
   background:radial-gradient(260px circle at var(--cx,50%) var(--cy,50%),
@@ -972,6 +972,14 @@ html{scroll-padding-top:92px}
 .tribute-calc::before{
   background:radial-gradient(220px circle at var(--cx,50%) var(--cy,50%),
     hsla(var(--amb-hue-a),96%,72%,.22),transparent 70%)}
+/* A PHOTOGRAPH is the opposite problem. A white card has nothing in it, so the
+   light IS the content; a photograph already carries every value from the sky to
+   the tyre, and 30% of a saturated hue over it reads as a colour cast on the
+   product — the one thing the finish must never do. Wider, softer, half the
+   strength: the wax catches the light, the photograph keeps its own. */
+.photo-frame::before{
+  background:radial-gradient(340px circle at var(--cx,50%) var(--cy,50%),
+    hsla(var(--amb-hue-a),96%,80%,.14),transparent 76%)}
 /* The stage's own children sit above the light, so the vehicle is lit, not washed. */
 .card-stage>*{position:relative;z-index:2}
 
@@ -993,7 +1001,7 @@ html{scroll-padding-top:92px}
 /* keep the detailing calm for reduced-motion visitors */
 @media (prefers-reduced-motion: reduce){
   .card::after,.feat-card::after,.life-card::after{display:none}
-  .card-stage::before,.elig-card::before,.tribute-calc::before{display:none}
+  .card-stage::before,.elig-card::before,.tribute-calc::before,.photo-frame::before{display:none}
   .logo,.foot-logo,.soon-title{animation:none}
 }
 
@@ -1341,6 +1349,31 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 .seo-lede{color:#22314f;font-size:17.5px;line-height:1.7;margin:16px 0 22px;text-wrap:pretty}
 .seo-hero-media{position:relative}
 .seo-hero-img{width:100%;height:auto;border-radius:var(--r-lg);border:1px solid var(--line);box-shadow:var(--shadow-md);object-fit:cover}
+
+/* ── WAX NANO CRISTAL · the SEO heroes ──────────────────────────────────
+   The four landing heroes were the last large surface on the site outside the
+   finish: a bordered rectangle with a flat shadow, on the one element that is
+   both the LCP and the OpenGraph card. Two of them now carry the manufacturer's
+   photographs (the sand frame on /klnoit-shetach, the head-on pair on
+   /klnoit-4-galgalim), which is what made the gap visible — a real photograph in
+   a template frame reads as a stock image.
+
+   Same three parts as every other waxed surface, and the same ONE source for the
+   colour: a crown of room-light from above, a crystalline hairline on the rim,
+   and a floor-line beneath. Every value is hsla(var(--amb-hue-a) …), so choosing
+   4×4 Pro Max on the homepage and landing here are lit by the same room.
+
+   NOT applied: the photoDrift pan and the pointer spotlight. This element is the
+   LCP; a transform on it is a composite on first paint, and the near-field light
+   belongs to surfaces a visitor browses, not to the first thing they see. */
+.seo-hero-media::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:var(--r-lg);
+  box-shadow:inset 0 0 0 1px hsla(var(--amb-hue-a),96%,72%,.20);
+  background:radial-gradient(118% 68% at 50% -12%, hsla(var(--amb-hue-a),96%,74%,.13), transparent 60%)}
+.seo-hero-media::before{content:"";position:absolute;inset-inline:6%;bottom:-1px;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,hsla(var(--amb-hue-a),96%,62%,.5),transparent)}
+.seo-hero-media,.seo-hero-img{transition:box-shadow .25s ease, transform .25s ease}
+.seo-hero-media:hover .seo-hero-img{box-shadow:inset 0 1px 0 rgba(255,255,255,.5), var(--glow), var(--shadow-lg)}
+@media (prefers-reduced-motion: reduce){.seo-hero-media,.seo-hero-img{transition:none}}
 .seo-cta{display:flex;flex-wrap:wrap;gap:12px}
 @media(max-width:820px){.seo-hero{grid-template-columns:1fr;gap:22px}.seo-hero-media{order:-1}}
 

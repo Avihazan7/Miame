@@ -191,11 +191,16 @@ export const SEO_PAGES: SeoPage[] = [
     description:
       "למה קלנועית 4 גלגלים בטוחה ויציבה יותר מתלת-גלגלית? מיה פור על פלטפורמה מוגנת פטנט, סוללה נשלפת 60V והחל מ-19,900 ₪. בנו הצעת תשלום תוך דקה.",
     lede: "קלנועית על ארבעה גלגלים נותנת מה שהכי חשוב בניידות יומיומית, תחושת ביטחון. הבסיס הרחב של מיה פור מפזר את המשקל על ארבע נקודות אחיזה ומקטין את הסיכון להטיה בפניות ובתוואי לא אחיד.",
+    // A page about FOUR wheels was fronted by a side profile, which is the one
+    // angle that shows two. This is the manufacturer's head-on frame (2026-09-02):
+    // both wheel pairs of both machines are countable in it, which is the page's
+    // entire claim, and it is 1500px against 1000px for a slot that asks for 50vw
+    // (≈1440px at 2× on a 1440 screen — the old file could not fill it).
     hero: {
-      image: "/mia-four-side.webp",
-      w: 1000,
+      image: "/mia-four-bridge-front.jpg",
+      w: 1500,
       h: 1000,
-      alt: "קלנועית מיה פור 4 גלגלים, מבט צד, פלטפורמה יציבה"
+      alt: "שתי קלנועיות מיה פור במבט חזית על גשר · ארבעה גלגלים לכל אחת, בסיס רחב ויציב"
     },
     sections: [
       {
@@ -309,14 +314,21 @@ export const SEO_PAGES: SeoPage[] = [
     description:
       "קלנועית שטח מיה פור 4×4 Pro Max: ארבעה מנועים 1,800W, הנעה כפולה, סוללה נשלפת 60V וטווח שימוש עד 100 ק\"מ. החל מ-27,900 ₪. בנו הצעת תשלום תוך דקה.",
     lede: "כשהדרך נגמרת, מיה פור 4×4 Pro Max רק מתחילה. הנעה כפולה וארבעה מנועים נותנים אחיזה וכוח בעליות, בחול ובתוואי לא סלול, בלי לוותר על היציבות של פלטפורמת ארבעת הגלגלים.",
+    // 554×554 was the smallest file on the site, and it was the LCP element AND the
+    // OpenGraph card of the page whose whole subject is terrain — a studio render on
+    // black, illustrating "אחיזה וכוח בעליות, בחול ובתוואי לא סלול". This is the
+    // manufacturer's sand frame from the same shoot as the beach photographs
+    // (2026-09-02): the tyres loaded, the coil compressed, sand thrown behind. The
+    // lede above is not being illustrated any more, it is being shown.
     hero: {
-      image: "/mia-four-x4-night-front.jpg",
-      w: 554,
-      h: 554,
-      alt: "קלנועית שטח מיה פור 4×4 Pro Max, הנעה כפולה 4×4, עיצוב פרימיום"
+      image: "/mia-four-x4-sand-traction.jpg",
+      w: 1500,
+      h: 1000,
+      alt: "מיה פור 4×4 Pro Max בחול · צמיגי שטח, מתלה קפיצי ובלם דיסק בתנועה"
     },
     // The committed GLB IS this machine: build-glb.mjs authors a 4×4 X4 with
-    // off-road tires and teal hubs, and this page's own hero photo is the X4.
+    // off-road tires and teal hubs, and this page's own hero photo is the X4 —
+    // the fender decal reading "MIA FOUR X4" is legible in the frame itself.
     glb: "/models/mia-four-x4.glb",
     sections: [
       {
