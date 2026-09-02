@@ -10,7 +10,12 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { selectPhase } from "../scripts/migrations-apply.mjs";
+import {
+  selectPhase,
+  corpusAwaitingEmbedding,
+  touchesCorpus,
+  embedInstructions,
+} from "../scripts/migrations-apply.mjs";
 
 const DIR = "supabase/migrations";
 const files = readdirSync(DIR).filter((f) => f.endsWith(".sql"));
@@ -288,5 +293,108 @@ describe("the manifest enforces the decisions it documents", () => {
     expect(rec.ledger).toBe("20260624053746");
     expect(existsSync(`supabase/migrations/${rec.file}`)).toBe(true);
     expect(p0.evidence).toContain("10a6ee346bdfa5983069f93676bff1e6");
+  });
+});
+
+/**
+ * THE SECOND HALF OF A CORPUS PHASE — applying it is not putting it in effect.
+ *
+ * MEASURED 2026-09-02, twice in one afternoon. Phase 21 (the tyre size) and phase 22
+ * (dimensions, charging, legal status, the patent numbers) both landed, both were
+ * verified live row-by-row, both reported success — and NEITHER was reachable by a
+ * buyer. Every corpus migration sets `embedding = null` on the rows it writes, on
+ * purpose: a vector of the old text must not outlive the text. But the retrieval side
+ * is
+ *
+ *     match_knowledge:      where k.embedding is not null
+ *     brain/knowledge.ts:   if (hits.length >= k) return hits
+ *
+ * so with 34 of 41 rows embedded, four hits come back from the 34 and the seven new
+ * rows cannot be returned at all. The write was right; the operation was unfinished,
+ * and nothing said so. These tests hold the thing that now says so.
+ */
+describe("a corpus phase is not finished until its rows carry vectors", () => {
+  const MIG = "supabase/migrations";
+
+  it("detects the corpus from the SQL, not from a list somebody has to keep", () => {
+    // Both real files. The detector reads what the migration DOES.
+    const corpus = readFileSync(join(MIG, "20260902_zzknowledge_site_truths.sql"), "utf8");
+    const notCorpus = readFileSync(join(MIG, "20260902_partners_drop_orphan_table.sql"), "utf8");
+    expect(touchesCorpus(corpus)).toBe(true);
+    expect(touchesCorpus(notCorpus)).toBe(false);
+  });
+
+  it("misses no corpus migration in the repo", () => {
+    // Every forward migration whose name says knowledge must also be recognised by
+    // reading it. A detector that agrees with the filenames on the files we have is
+    // the weaker half of the claim; the stronger half is that it does not NEED them.
+    const named = readdirSync(MIG).filter(
+      (f) => f.endsWith(".sql") && !f.endsWith(".rollback.sql") && f.includes("knowledge"),
+    );
+    expect(named.length).toBeGreaterThan(5);
+    for (const f of named) {
+      const sql = readFileSync(join(MIG, f), "utf8");
+      // A migration may create the index/RPC rather than write rows; those name the
+      // table too. What must never happen is a row-writer going undetected.
+      if (/insert\s+into\s+public\.knowledge|update\s+public\.knowledge/i.test(sql)) {
+        expect(touchesCorpus(sql), `${f} writes corpus rows and was not detected`).toBe(true);
+      }
+    }
+  });
+
+  it("reports the count when the corpus is readable", async () => {
+    const fake = { query: async () => ({ rows: [{ n: 7 }] }) };
+    expect(await corpusAwaitingEmbedding(fake)).toBe(7);
+  });
+
+  it("reports -1, NOT 0, when the corpus cannot be read", async () => {
+    // The failure mode this exists for: a query that throws returning "0 pending"
+    // would print "fully embedded" and set a green exit code on no evidence at all.
+    // Unknown has to be distinguishable from none.
+    const broken = { query: async () => { throw new Error("permission denied"); } };
+    expect(await corpusAwaitingEmbedding(broken)).toBe(-1);
+  });
+
+  it("the instruction names the mechanism, not just the chore", async () => {
+    const msg = embedInstructions(7);
+    expect(msg).toContain("7");
+    expect(msg, "an operator who is not told WHY will not believe the warning").toContain(
+      "embedding is not null",
+    );
+    expect(msg).toContain("match_knowledge");
+    // The route needs an x-admin-token header, which a browser cannot send. The
+    // workflow is the path that works with no terminal and no secret on the device.
+    expect(msg, "the no-terminal path is the one most likely to be used").toContain(
+      "Knowledge Embed (backfill)",
+    );
+  });
+
+  it("the applier acts on it after the commit, and does not call it a rollback", () => {
+    // Comments stripped: an assertion that passes on the prose explaining the code is
+    // the exact defect this repo has already paid for three times.
+    const src = readFileSync("scripts/migrations-apply.mjs", "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/(^|[^:])\/\/.*$/gm, "$1");
+    const afterCommit = src.slice(src.indexOf('await client.query("commit")'));
+    expect(afterCommit, "the corpus check does not run after a successful apply").toContain(
+      "touchesCorpus",
+    );
+    expect(afterCommit).toContain("corpusAwaitingEmbedding");
+    // Its own exit code: the transaction committed, so this must not be mistaken for
+    // the rollback path (exit 1) — but it must still be non-zero, or an automated
+    // caller reads an unfinished operation as a finished one.
+    expect(afterCommit, "an unfinished corpus phase exits 0").toContain("process.exitCode = 3");
+    expect(afterCommit).not.toContain("process.exit(3)");
+  });
+
+  it("the standing status command reports it too", () => {
+    // The apply-time warning is one minute long. Drift that outlives the terminal
+    // window has to be visible in the command that gets run again tomorrow.
+    const src = readFileSync("scripts/migrations-apply.mjs", "utf8");
+    const status = src.slice(src.indexOf("async function status("), src.indexOf("export function selectPhase"));
+    expect(status, "status() never asks whether the corpus is embedded").toContain(
+      "corpusAwaitingEmbedding",
+    );
+    expect(status).toContain("process.exitCode = 1");
   });
 });
