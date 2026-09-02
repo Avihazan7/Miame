@@ -30,8 +30,15 @@ export default function Hero() {
             </strong>
           </h1>
 
+          {/* The first paragraph after the H1, which is the most heavily read
+              prose on the strongest page — and it named the product in Latin
+              only and called it "ניידות חשמלית", a phrase nobody searches. The
+              H1 above keeps its line; this sentence does the naming: the Hebrew
+              name (מיה פור), the Latin one, and what the thing legally IS
+              (קלנועית — the site's own legal page is explicit that it is not a
+              רכב, and it is also the word buyers type). */}
           <p className="hero-v2-sub">
-            <bdi dir="ltr">MIA FOUR</bdi>, ניידות חשמלית פרימיום על ארבעה גלגלים.
+            <bdi dir="ltr">MIA FOUR</bdi> · מיה פור, קלנועית חשמלית פרימיום על ארבעה גלגלים.
             עוצמה, יציבות וחופש שמתאימים לחיים שלכם.
           </p>
 

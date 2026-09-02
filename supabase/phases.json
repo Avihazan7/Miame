@@ -444,6 +444,43 @@
         "model is covered whether or not anyone remembers to list it."
       ],
       "evidence": "applied 2026-09-01 15:12:03Z · ledger 20260901151203 · verified live on thhyfwoeybkptxvbpcmg: rows carrying \"4×2\" 3→0 · rows designating a model by internal id 1→0 · corpus still 37 rows · model-choose and spec-weight bodies md5-IDENTICAL to the forward SQL (718fd8d3… / 5baebff9…) · the two replay-only rows (spec-fold, method-bigfive) matched 0 rows here, exactly as designed — they exist only on a freshly replayed database, which is the environment the correction was written for · three in-transaction postconditions passed · PRE-FLIGHT: the rollback bodies were md5-checked against the LIVE rows BEFORE applying and matched byte-for-byte (4c78bd6a… / 83279c0b…), so the undo is verified rather than asserted · EMBEDDINGS CLOSED IN THE SAME OPERATION: both rewritten rows had their vector cleared (a vector of the old text must not outlive the text), which under the vector-first retriever makes a row reachable only via the keyword top-up — so the backfill was run immediately (knowledge-embed.yml run #2, 15:12:37Z, success) and the result read back from the DB rather than from the workflow's own report: 0 rows awaiting an embedding, 37 distinct vectors. Total window between the rewrite and full re-embedding: ~45 seconds."
+    },
+    {
+      "id": "17-knowledge-entity-vocabulary",
+      "title": "The corpus can name the entity a buyer is asking about",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260901_knowledge_zzzzzz_entity_vocabulary.sql",
+          "ledger": "20260902112336"
+        }
+      ],
+      "why": [
+        "MEASURED on the live corpus 2026-09-01 (37 rows): 0 rows contain \"מיה דיינמיקס\",",
+        "0 contain \"MIA FOUR\", only 3 contain \"קלנועי*\" — and NO row answers \"what is",
+        "מיה פור\". That last one is the finding, not the keyword counts.",
+        "SPYQE has `spyqe-what`, which states plainly what it is. The MAIN product has no",
+        "equivalent: 13 rows mention מיה פור while discussing price, delivery or specs, and",
+        "not one says what it IS. An answer engine asked to resolve the entity has nothing",
+        "to resolve against, and a buyer asking the same question gets a price quoted at",
+        "them instead of an answer.",
+        "The vocabulary halves are the same defect the repo already paid for twice: SPYQE",
+        "(0 rows contained \"ספייק\" while 7 contained \"SPYQE\") and the model names (\"4×2\",",
+        "a designation from no source). Retrieval is keyword-first over body text, so a",
+        "term absent from every body is a query that matches nothing — silently, with no",
+        "error and no empty state to notice.",
+        "TWO rows, because two questions had no answer, not because two keywords were",
+        "missing: `mia-four-what` (what it is, under every name it answers to) and",
+        "`manufacturer` (who makes it, in both scripts). Both stay SHORT deliberately —",
+        "retrieval normalises by length, so padding pushes a row DOWN for the question it",
+        "exists to answer; measured in phase 15.",
+        "It deliberately does NOT sprinkle the terms through the other rows. A row earns a",
+        "word by being about it. A corpus where every row names every term ranks worse:",
+        "IDF collapses and length normalisation punishes the padding.",
+        "Ships with the on-page half in the same commit — schema alternateName, the",
+        "homepage title, and llms.txt — because neither closes the entity gap alone."
+      ],
+      "evidence": "applied 2026-09-02 · ledger 20260902112336 · verified live on thhyfwoeybkptxvbpcmg: corpus 37→39 rows · rows naming the manufacturer in Hebrew 0→2 · rows naming the product in Latin 0→1 · rows saying what it legally is (קלנועי*) 3→4 · three in-transaction postconditions passed · both new rows inserted with a NULL embedding (they have no prior vector to outlive), and the backfill was run immediately rather than left for the next person, since `retrieve` is vector-first and an unembedded row is reachable only through the keyword top-up."
     }
   ]
 }
