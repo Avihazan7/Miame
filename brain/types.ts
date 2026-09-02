@@ -9,7 +9,6 @@ export type ModelTier = "ultra" | "master" | "max";
 export type BrainEventType =
   | "lead_inbound" // new lead from web form / WhatsApp
   | "simulator_quote" // a deal was configured in the simulator
-  | "partner_inquiry" // MiaMe Hub (fleet) partner interest
   | "deal_closed" // sale or rental closed
   | "support_ticket" // service / maintenance request
   | "question"; // general Q&A about MIA FOUR (the website chat)

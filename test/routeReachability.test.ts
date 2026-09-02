@@ -210,7 +210,12 @@ describe("every indexable route is reachable at every viewport", () => {
     // Each of these has silently zeroed out at least once while being written: a CSS
     // path typo empties `hidden` and every link passes; a JSX regex slip empties
     // `links` and every route fails. Assert both ends are alive before trusting them.
-    expect(all.length, "no routes found under app/").toBeGreaterThanOrEqual(13);
+    // Baseline 13 → 12 on 2026-09-02: /partners and /rent-eilat were REMOVED by
+    // owner decision (MiaMe sells MIA FOUR and nothing else) and now answer 410.
+    // This number is a vacuity guard — it exists to catch a walk that stopped
+    // finding files, not to pin a count — so it tracks reality rather than
+    // holding a number the site no longer has.
+    expect(all.length, "no routes found under app/").toBeGreaterThanOrEqual(12);
     expect(links.length, "no in-site links found — the JSX scan is broken").toBeGreaterThanOrEqual(20);
     expect(
       hidden.length,

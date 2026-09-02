@@ -75,7 +75,12 @@ describe("the skip-link lands somewhere on every page", () => {
 
   it("covers every page in app/", () => {
     // A guard that silently stops finding pages is worse than no guard.
-    expect(files.length).toBeGreaterThanOrEqual(13);
+    // Baseline 13 → 12 on 2026-09-02: /partners and /rent-eilat were REMOVED by
+    // owner decision (MiaMe sells MIA FOUR and nothing else) and now answer 410.
+    // This number is a vacuity guard — it exists to catch a walk that stopped
+    // finding files, not to pin a count — so it tracks reality rather than
+    // holding a number the site no longer has.
+    expect(files.length).toBeGreaterThanOrEqual(12);
   });
 
   for (const f of files) {

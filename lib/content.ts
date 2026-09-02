@@ -23,20 +23,16 @@ import { MODELS } from "./models";
 /** Read-only view of the live MiaMe offer prices (source: lib/models.ts). */
 export const MODEL_PRICING = MODELS.map((m) => ({ id: m.id, name: m.name, price: m.price }));
 
-/** Partner economics. */
-export const SUCCESS_FEE_PCT = 13; // % of referrals only, no fixed cost
-
-/** Example hourly rental pricing (MiaMe Hub). */
-export const RENTAL_FROM = 50; // ₪ per hour — entry price
-export const RENTAL_PRICES: { k: string; v: string }[] = [
-  // The entry row IS RENTAL_FROM — it was typed again three lines under its own
-  // definition, which is the shortest possible distance for two numbers to drift.
-  // The longer tiers are their own quoted prices and stay literal.
-  { k: "שעה אחת", v: String(RENTAL_FROM) },
-  { k: "3 שעות", v: "100" },
-  { k: "6 שעות", v: "180" },
-  { k: "9 שעות", v: "245" }
-];
+// RENTAL AND PARTNER ECONOMICS WERE REMOVED HERE on 2026-09-02, by owner decision:
+// MiaMe markets and sells MIA FOUR, and does nothing else. No rental, no business
+// partners. What went with them — `SUCCESS_FEE_PCT`, `RENTAL_FROM`, `RENTAL_PRICES`,
+// the /partners and /rent-eilat pages, five components, three modules and two
+// knowledge rows — was not stale copy. It was a set of live offers: the homepage FAQ
+// answered "how do I become a MiaMe Hub", the assistant quoted ₪50/hour and a 13%
+// success fee, and the corpus told a buyer about a rental fleet in Eilat. Offering a
+// product that does not exist is worse than saying nothing, because the visitor acts
+// on it. The two URLs now answer 410 Gone, which is the honest status code for
+// "deliberately removed" and the one Google acts on fastest.
 
 /**
  * Warranty & service — the IMPORTER IDENTITY, not a period. Read it next to
@@ -102,6 +98,25 @@ export const MANUFACTURER_NAME = "MIA Dynamics";
  * how an answer engine resolves the Hebrew query to this entity.
  */
 export const MANUFACTURER_NAME_HE = "מיה דיינמיקס";
+
+/**
+ * The manufacturer's own site, and the importer's Israeli brand site.
+ *
+ * These are PROVENANCE, and they live in machine-readable surfaces only — schema's
+ * `manufacturer.url` and llms.txt — not as visible outbound links in the page body.
+ * The distinction is deliberate and commercial: a visible link sends a visitor who
+ * came here to buy somewhere else, which is the site's own funnel paying for the
+ * citation. In schema it costs no traffic and buys the thing it should: an engine
+ * resolving MIA FOUR against the manufacturer that actually makes it, which is what
+ * E-E-A-T and answer-engine attribution are built on.
+ *
+ * Adding either as a visible link is a business decision, not a technical one.
+ */
+export const MANUFACTURER_URL = "https://miadynamics.com";
+
+/** MEU is the official Israeli importer (see IMPORTER_NAME); this is its brand site
+ *  for MIA FOUR in Israel. Two different things — the company and the site. */
+export const IMPORTER_BRAND_URL = "https://www.miafour.co.il";
 
 /**
  * THE PRODUCT'S NAME, in one place, because two machine-readable surfaces were

@@ -41,7 +41,6 @@ export default function Footer() {
               it competed with the buy decision), and it is absent from the sitemap —
               so "served on a direct URL, not promoted" is the chosen third state, not
               a defect. Guarded by test/routeReachability.test.ts. */}
-          <a href="/partners">שותף עסקי</a>
         </nav>
         <nav className="foot-links" aria-label="מידע משפטי">
           <a href="/legal/terms">תקנון ותנאי שימוש</a>

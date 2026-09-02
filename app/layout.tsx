@@ -3,6 +3,7 @@ import { SAME_AS } from "@/lib/brand-social";
 import {
   MANUFACTURER_NAME,
   MANUFACTURER_NAME_HE,
+  MANUFACTURER_URL,
   PRODUCT_ALTERNATE_NAMES,
   PRODUCT_CATEGORY_HE,
   PRODUCT_NAME,
@@ -157,6 +158,10 @@ const HOME_PRODUCTS = MODELS.map((m) => ({
     "@type": "Organization",
     name: MANUFACTURER_NAME,
     alternateName: [MANUFACTURER_NAME_HE],
+    // Provenance, machine-readable only. `url` is what lets an engine resolve this
+    // node against the real global company rather than treating it as a bare string
+    // — the difference between a name and an identified entity.
+    url: MANUFACTURER_URL,
   },
   offers: {
     "@type": "Offer",

@@ -12,7 +12,6 @@ const ROUTES: Record<BrainEventType, MasterName[]> = {
   question: ["concierge"],
   lead_inbound: ["match", "deal"],
   simulator_quote: ["deal"],
-  partner_inquiry: ["match", "deal"],
   deal_closed: ["content"],
   support_ticket: ["support"]
 };
