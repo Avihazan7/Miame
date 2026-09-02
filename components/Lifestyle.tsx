@@ -21,7 +21,7 @@ export default function Lifestyle() {
                 The attributes stay the file's TRUE intrinsic size, exactly as
                 test/imageLayout.test.ts requires, so the reserved box is unchanged
                 and this buys bytes without buying layout shift. */}
-            <Image sizes="(min-width: 780px) 50vw, 100vw" src="/mia-fold-lot.webp" alt="מיה פור מקופלת · נכנסת לכל מקום" loading="lazy"
+            <Image sizes="(min-width: 1120px) 527px, (min-width: 780px) 50vw, 100vw" src="/mia-fold-lot.webp" alt="מיה פור מקופלת · נכנסת לכל מקום" loading="lazy"
           width={1100}
           height={733} />
             <div className="life-cap">
@@ -30,7 +30,7 @@ export default function Lifestyle() {
             </div>
           </div>
           <div className="life-card">
-            <Image sizes="(min-width: 780px) 50vw, 100vw" src="/mia-wheel-detail.webp" alt="מתלים וצמיגי שטח · MIA Dynamics" loading="lazy"
+            <Image sizes="(min-width: 1120px) 527px, (min-width: 780px) 50vw, 100vw" src="/mia-wheel-detail.webp" alt="מתלים וצמיגי שטח · MIA Dynamics" loading="lazy"
           width={1000}
           height={1000} />
             <div className="life-cap">
@@ -39,7 +39,7 @@ export default function Lifestyle() {
             </div>
           </div>
           <div className="life-card">
-            <Image sizes="(min-width: 780px) 50vw, 100vw" src="/mia-four-x4-night-rear.jpg" alt="מיה פור 4×4 Pro Max · גימור סטודיו, מתלה אחורי ומערכת שיכוך חשופה" loading="lazy"
+            <Image sizes="(min-width: 1120px) 527px, (min-width: 780px) 50vw, 100vw" src="/mia-four-x4-night-rear.jpg" alt="מיה פור 4×4 Pro Max · גימור סטודיו, מתלה אחורי ומערכת שיכוך חשופה" loading="lazy"
           width={1080}
           height={1080} />
             <div className="life-cap">
@@ -48,7 +48,7 @@ export default function Lifestyle() {
             </div>
           </div>
           <div className="life-card">
-            <Image sizes="(min-width: 780px) 50vw, 100vw" src="/mia-four-x4-seat.webp" alt="מיה פור 4×4 Pro Max עם כיסא בשחרור מהיר · ישיבה או עמידה" loading="lazy"
+            <Image sizes="(min-width: 1120px) 527px, (min-width: 780px) 50vw, 100vw" src="/mia-four-x4-seat.webp" alt="מיה פור 4×4 Pro Max עם כיסא בשחרור מהיר · ישיבה או עמידה" loading="lazy"
           width={900}
           height={880} />
             <div className="life-cap">
@@ -58,7 +58,7 @@ export default function Lifestyle() {
           </div>
         </div>
         <div className="life-band photo-frame">
-          <Image sizes="100vw" src="/mia-beach.webp" alt="מיה פור על קו החוף · חופש בכל מקום" loading="lazy"
+          <Image sizes="(min-width: 1120px) 1076px, 100vw" src="/mia-beach.webp" alt="מיה פור על קו החוף · חופש בכל מקום" loading="lazy"
           width={960}
           height={640} />
           <div className="photo-cap">

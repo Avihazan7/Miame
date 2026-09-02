@@ -332,11 +332,8 @@ svg{display:block}
 .partner-sec{background:var(--mist)}
 .partner-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:stretch}
 @media(max-width:880px){.partner-grid{grid-template-columns:1fr}}
-.partner-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:34px;box-shadow:var(--shadow-sm)}
-.partner-card.dark{background:linear-gradient(165deg,#0b2450,#0e3a7a);color:#fff;border:none}
 .partner-h{font-size:26px;font-weight:800;letter-spacing:-.6px;margin:0 0 6px}
 .partner-p{color:var(--slate);font-size:16px;margin:0}
-.partner-card.dark .partner-p{color:#cfe0ff}
 .flow{margin:22px 0 0;display:flex;flex-direction:column;gap:14px}
 .flow-item{display:flex;gap:13px;align-items:flex-start}
 .flow-ic{flex:none;width:38px;height:38px;border-radius:11px;background:var(--tint);color:var(--azure);display:flex;align-items:center;justify-content:center}
@@ -522,12 +519,10 @@ svg{display:block}
 @media(min-width:780px){.life-grid{grid-template-columns:1fr 1fr;gap:22px}}
 
 /* test ride */
-.testride-card{background:linear-gradient(135deg,var(--azure),var(--azure-deep));border-radius:26px;padding:30px 26px;color:#fff;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center;box-shadow:0 26px 60px rgba(10,132,255,.3);position:relative;overflow:hidden}
 .testride-kicker{font-size:12.5px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.92)}
 .testride-title{font-size:clamp(21px,4.4vw,29px);font-weight:800;margin:6px 0 8px}
 .testride-sub{font-size:15.5px;line-height:1.6;color:rgba(255,255,255,.94);max-width:520px;margin:0 auto}
 .btn-testride{background:#fff;color:var(--azure-deep);font-weight:800;padding:15px 30px;border-radius:14px;box-shadow:0 12px 26px rgba(11,20,40,.22)}
-@media(min-width:780px){.testride-card{flex-direction:row;justify-content:space-between;text-align:right;padding:34px 42px;gap:28px}.testride-txt{flex:1}.testride-sub{margin:0}}
 
 /* specs */
 .specs-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:26px}
@@ -837,7 +832,7 @@ svg{display:block}
 @keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.09)}}
 
 /* ─── cards: תכלת hairline + lift glow ──────────────────────────────── */
-.card,.feat-card,.partner-card{position:relative}
+.card,.feat-card{position:relative}
 .card::before,.feat-card::before{content:"";position:absolute;top:0;left:14%;right:14%;height:2px;border-radius:2px;
   background:var(--grad-teal);opacity:0;transition:opacity .25s ease;z-index:2}
 .card:hover::before,.feat-card:hover::before{opacity:.9}
@@ -887,9 +882,9 @@ html{scroll-padding-top:92px}
 }
 
 /* ─── WAX · ווקס: שפת-ברק עליונה, צללים עמוקים, ו-sheen בריחוף ──────── */
-.card,.feat-card,.partner-card:not(.dark),.specs-table,.elig-card,.delivery-band{
+.card,.feat-card,.specs-table,.elig-card,.delivery-band{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.8), var(--shadow-sm)}
-.partner-card.dark,.sim-result,.testride-card,.soon-card,.tribute-calc,.life-card{
+.sim-result,.soon-card,.tribute-calc,.life-card{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.16), var(--shadow-md)}
 .sim{box-shadow:inset 0 1px 0 rgba(255,255,255,.8), var(--shadow-lg)}
 .card:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.9), var(--shadow-lg)}
@@ -917,9 +912,59 @@ html{scroll-padding-top:92px}
 .logo,.foot-logo,.soon-title{background-size:220% auto;animation:logoShine 7s linear infinite}
 @keyframes logoShine{to{background-position:220% center}}
 
+/* ─── WAX NANO CRISTAL · the catalog's material ────────────────────────
+   MIA FOUR's body is a MATTE nano-crystal black with teal springs — that is
+   the manufacturer's own material language (public/models/README.md), and it
+   is what the photography shows. The catalog surfaces were plain white cards
+   over a flat gradient, which reads as a template rather than as this product.
+
+   The finish here is matte-with-a-specular-edge, never glossy plastic: a fine
+   crystalline rim, real depth under it, and a light that ARRIVES FROM THE ROOM
+   rather than from a fixed colour. That last part is the point — every
+   highlight below is drawn in `hsla(var(--amb-hue-a) …)`, the same variable
+   the model tilt writes, so choosing 4×4 Pro Max re-lights the CARD and the
+   page together, from ONE source. A second hardcoded accent here would be a
+   second truth about what colour the site is. */
+
+/* The stage the vehicle stands on. A crown of room-light above it and a
+   crystalline floor-line beneath, so the product sits IN the card rather than
+   on top of it. */
+.card-stage{
+  background:
+    radial-gradient(118% 86% at 50% -18%, hsla(var(--amb-hue-a),96%,74%,calc(.20*var(--amb-intensity,1))), transparent 64%),
+    linear-gradient(180deg,#f3f8ff,#e7f0fc)}
+.card-stage::after{content:"";position:absolute;inset-inline:0;bottom:0;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,hsla(var(--amb-hue-a),96%,62%,.42),transparent)}
+
+/* The selected model earns the specular edge — the wet look on a waxed panel.
+   It rides `.card.sel`, which the configurator already sets, so no new state. */
+.card.sel .card-stage{
+  background:
+    radial-gradient(118% 86% at 50% -18%, hsla(var(--amb-hue-a),96%,70%,calc(.34*var(--amb-intensity,1))), transparent 66%),
+    linear-gradient(180deg,#f6fbff,#e2eefb)}
+.card.sel{box-shadow:
+  inset 0 1px 0 rgba(255,255,255,.92),
+  0 0 0 3px hsla(var(--amb-hue-a),92%,58%,.16),
+  var(--shadow-md)}
+
+/* The picker chips get the same rim, so the two places a model is chosen agree. */
+.mp{box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.mp.on{border-color:hsla(var(--amb-hue-a),92%,52%,.85);
+  background:hsla(var(--amb-hue-a),96%,96%,1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 0 0 3px hsla(var(--amb-hue-a),92%,58%,.14)}
+
+/* The lifestyle tiles carried the deep inset but not the sweep — the one
+   catalog surface where a hover said nothing. `.life-cap` is lifted above it so
+   the caption never dims under the shine. */
+.life-card::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(115deg,transparent 42%,hsla(var(--amb-hue-a),96%,86%,.16) 50%,transparent 58%);
+  transform:translateX(-130%);transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.life-card:hover::after{transform:translateX(130%)}
+.life-cap{z-index:2}
+
 /* keep the detailing calm for reduced-motion visitors */
 @media (prefers-reduced-motion: reduce){
-  .card::after,.feat-card::after{display:none}
+  .card::after,.feat-card::after,.life-card::after{display:none}
   .logo,.foot-logo,.soon-title{animation:none}
 }
 
@@ -1431,15 +1476,15 @@ a,button,.btn,.mp,input{touch-action:manipulation}
    ════════════════════════════════════════════════════════════════════ */
 
 /* ── ואקס · hover light-sweep on the last premium panels + cards ── */
-.elig-card,.testride-card,.tribute-calc,.soon-card{
+.elig-card,.tribute-calc,.soon-card{
   position:relative;overflow:hidden}
-.elig-card::after,.testride-card::after,.tribute-calc::after,.soon-card::after{
+.elig-card::after,.tribute-calc::after,.soon-card::after{
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.18) 50%,transparent 58%);
   transform:translateX(-130%);transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
-.elig-card:hover::after,.testride-card:hover::after,.tribute-calc:hover::after,.soon-card:hover::after{transform:translateX(130%)}
+.elig-card:hover::after,.tribute-calc:hover::after,.soon-card:hover::after{transform:translateX(130%)}
 /* keep interactive children above the sheen so hover/taps read cleanly */
-.elig-card>*,.testride-card>*,.tribute-calc>*,.soon-card>*{position:relative;z-index:2}
+.elig-card>*,.tribute-calc>*,.soon-card>*{position:relative;z-index:2}
 
 /* ── ליטוש · crisp תכלת underline reveal on the nav links (RTL-aware) ── */
 .nav-link{position:relative}
@@ -1451,7 +1496,7 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 
 /* keep the finishing sweep calm for reduced-motion visitors */
 @media (prefers-reduced-motion: reduce){
-  .elig-card::after,.testride-card::after,.tribute-calc::after,.soon-card::after{display:none}
+  .elig-card::after,.tribute-calc::after,.soon-card::after{display:none}
   .nav-link::after{transition:none}
 }
 
