@@ -51,6 +51,21 @@ const ROLLBACK_BASELINE = new Set([
   "20260624053746_harden_anon_insert_bounded_checks.sql",
 ]);
 
+/**
+ * M-06 exemption. A forward migration may drop a table ONLY if it is listed here.
+ *
+ * Being listed is not sufficient: the rule additionally requires the file to prove,
+ * in its own body, that the table is empty and that nothing references it. Listing
+ * records that a human decided; the proof is what makes the decision safe to
+ * execute weeks later against a database that has moved on.
+ *
+ * 20260902_partners_drop_orphan_table.sql — public.partners, the MiaMe Hub
+ *   partnership table. The product was withdrawn by owner decision on 2026-09-02
+ *   (PR #162 removed the page, the components, the corpus rows and the write path).
+ *   Measured on production the same day: 0 rows, 0 foreign keys, 0 readers.
+ */
+const DESTRUCTIVE_APPROVED = new Set(["20260902_partners_drop_orphan_table.sql"]);
+
 /** M-01 exemption: the single pre-convention filename. Not extensible. */
 const NAMING_BASELINE = new Set(["0001_crm.sql"]);
 
@@ -247,7 +262,42 @@ for (const f of forward) {
 
   // M-06 · destructive DDL/DML. `drop policy|trigger|index if exists` is the
   // idempotency convention above and is NOT destructive; dropping a table is.
-  if (/drop\s+table/.test(sql)) err("M-06", f, "drop table in a forward migration");
+  //
+  // ONE EXEMPTION, AND IT IS NARROWER THAN AN ALLOWLIST. A file may drop a table
+  // only if it is named in DESTRUCTIVE_APPROVED *and* it proves, in its own body,
+  // that the table is empty and unreferenced before dropping it. The allowlist
+  // records the human decision; the structural half is what stops the exemption
+  // from becoming a hole. A future entry that forgets the guard fails here rather
+  // than at 3am on a table that turned out not to be empty after all.
+  const dropped = [...sql.matchAll(/drop\s+table\s+(?:if\s+exists\s+)?([a-z0-9_."]+)/gi)].map((m) => m[1]);
+  if (dropped.length && !DESTRUCTIVE_APPROVED.has(f)) {
+    err("M-06", f, "drop table in a forward migration");
+  }
+  for (const target of DESTRUCTIVE_APPROVED.has(f) ? dropped : []) {
+    // BOTH PROOFS ARE ANCHORED TO THE TABLE BEING DROPPED. The first version asked
+    // only whether the file contained *some* count(*) before *some* raise — and the
+    // foreign-key guard satisfied it, so deleting the emptiness check changed
+    // nothing. A proof that any guard can stand in for is not a proof of anything.
+    const t = target.replace(/"/g, "").replace(/[.]/g, "\\.");
+    // The emptiness proof IS anchored to the table, because `from public.partners`
+    // is a bare identifier and survives normalisation.
+    const provesEmpty = new RegExp(`count\\(\\*\\)\\s+into\\s+\\w+\\s+from\\s+${t}\\b[\\s\\S]{0,300}?raise\\s+exception`, "i").test(sql);
+    // The reference proof CANNOT be. A catalog query has to name its table inside a
+    // quoted literal — `confrelid = 'public.partners'::regclass` — and `sql` above
+    // has already been through stripStrings(), which is what stops a Hebrew corpus
+    // body from being mis-parsed as SQL. So the name is gone by the time this runs,
+    // and demanding it here would make the rule unsatisfiable by any correct
+    // migration. Requiring the confrelid check itself is enough to separate the two
+    // proofs, which is all the anchoring buys: the emptiness guard contains no
+    // `confrelid`, so it cannot stand in for this one.
+    const provesUnreferenced = /confrelid[\s\S]{0,400}?raise\s+exception/i.test(sql);
+    if (!provesEmpty) {
+      err("M-06", f, `approved to drop ${target} but never proves IT is empty — add "select count(*) into … from ${target}" with a raise`);
+    }
+    if (!provesUnreferenced) {
+      err("M-06", f, `approved to drop ${target} but never proves nothing references IT — add a confrelid check naming ${target} with a raise`);
+    }
+  }
   if (/\btruncate\b/.test(sql)) err("M-06", f, "truncate in a forward migration");
   for (const m of sql.matchAll(/\bdelete\s+from\s+[a-z0-9_."]+\s*;/g)) {
     err("M-06", f, `unqualified DELETE (no WHERE) at offset ${m.index}`);
