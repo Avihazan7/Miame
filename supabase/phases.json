@@ -554,6 +554,36 @@
         "\"אין סניפים ואין קווי טלפון נוספים\" true."
       ],
       "evidence": "applied 2026-09-02 12:25:43Z · ledger 20260902122543 · verified live on thhyfwoeybkptxvbpcmg: rows stating the warranty period as a number 0→2 · in words 0→2 · rows naming where the online sale happens 0→1 · corpus still 37 rows · phone-shaped strings in the corpus: 0, which is the owner instruction and not a side effect — a postcondition fails the migration if one enters by any route · four in-transaction postconditions passed · PRE-FLIGHT: the rollback's three bodies were md5-checked against the LIVE rows BEFORE applying and matched byte-for-byte (warranty ec94883f… / service 4a6e69d5… / lead d9e41fe4…) · all three rewritten rows had their embedding cleared and the backfill was run immediately: 0 rows awaiting an embedding."
+    },
+    {
+      "id": "20-partners-drop-orphan",
+      "title": "Drop public.partners — the table of a withdrawn product",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260902_partners_drop_orphan_table.sql",
+          "ledger": "20260902155654"
+        }
+      ],
+      "risk": "medium — drops a table; irreversible for data, and there was none",
+      "why": [
+        "Measured on production 2026-09-02: 0 rows, 0 foreign keys referencing it, and",
+        "0 readers or writers left in the code. `partners` was created by the baseline",
+        "CRM migration for the MiaMe Hub partnership; the owner settled on 2026-09-02",
+        "that MiaMe sells MIA FOUR and nothing else, and PR #162 removed the page, five",
+        "components, the FAQ entry, the corpus rows and savePartner() in one sweep.",
+        "It is not merely untidy. `anon` held SELECT/INSERT/UPDATE/DELETE/TRUNCATE",
+        "grants on it. Nothing leaked — RLS was on and the single policy was INSERT-only,",
+        "so every other verb was default-denied — but it was a table an anonymous key",
+        "could reach, kept alive for a product that was withdrawn. The drop removed the",
+        "grants, the policy and the reachability together.",
+        "The drop is guarded: the migration refuses if a row appeared between review and",
+        "apply, and refuses if anything references it. scripts/migrations-check.mjs M-06",
+        "now accepts a drop only from an approved file that carries both proofs.",
+        "APPLIED 2026-09-02 15:56:54Z, ledger 20260902155654. Verified live immediately",
+        "after: to_regclass('public.partners') is null, 0 policies left, 0 grants left,",
+        "public tables 6 -> 5, and the corpus untouched at 37 rows / 0 awaiting embedding."
+      ]
     }
   ]
 }
