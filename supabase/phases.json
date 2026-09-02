@@ -519,6 +519,41 @@
         "and the brain would still offer the rental."
       ],
       "evidence": "applied 2026-09-02 12:05:48Z · ledger 20260902120548 · verified live on thhyfwoeybkptxvbpcmg: corpus 39→37 rows · the two removed ids return 0 · rows offering a rental or a partnership (MiaMe Hub / Success Fee / Green Extreme) 2→0 · categories 10→8 (rental and partner are gone as categories, not just as rows) · pricing still covers 4 rows and mia-four-what survives, which the third postcondition exists to prove — a delete that took the catalogue with it would satisfy the first two · four in-transaction postconditions passed · PRE-FLIGHT: the rollback bodies were md5-checked against the LIVE rows BEFORE applying and matched byte-for-byte (rental 1aef2aa9… / partner e1570615…), so the undo is verified rather than asserted; the first draft of that rollback carried invented hashes and they were replaced with measured ones before anything was applied · no embedding backfill needed: a delete leaves no NULL vector behind."
+    },
+    {
+      "id": "19-knowledge-warranty-and-seller",
+      "title": "The corpus can answer how long the warranty runs, and who sells",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260902_knowledge_zzzzzzzz_warranty_and_seller.sql",
+          "ledger": "20260902122543"
+        }
+      ],
+      "why": [
+        "MEASURED on the live corpus 2026-09-02: 4 rows name the importer, and ZERO state",
+        "the warranty PERIOD. The site displays 12 months in three places — the Hero strip,",
+        "the Importer block and the Configurator spec table, all derived from",
+        "WARRANTY_MONTHS in lib/content.ts. The corpus says \"אחריות יבואן רשמי\" and stops.",
+        "So the assistant answers the most common question after price with a reassurance",
+        "and no number, while that number sits on the page behind the visitor. Not a missing",
+        "keyword — the answer withheld at the moment it is asked for.",
+        "The owner states the term as \"שנה\" and the code as 12 months. Same fact, so both",
+        "forms are written, in that order: the word a buyer uses, then the number the rest",
+        "of the site shows. A guard pins the corpus to WARRANTY_MONTHS so the two cannot",
+        "drift.",
+        "AND WHO SELLS. Three parties are easy to confuse and the corpus named two: MIA",
+        "Dynamics manufactures, MEU imports and backs the warranty, MiaMe.co.il SELLS. The",
+        "`lead` row described the mechanism (WhatsApp, the simulator's offer) without ever",
+        "saying whose sale it is — so an answer engine asked \"where do I buy MIA FOUR in",
+        "Israel\" could name the importer, because the importer is who the corpus named.",
+        "IT PUBLISHES NO PHONE NUMBER FOR MEU, by owner instruction: MEU is named as the",
+        "official importer and as the party behind the warranty, and nothing more. A",
+        "postcondition fails the migration if any phone-shaped string enters the corpus at",
+        "all, and the `contact` row is left untouched because it is what keeps the claim",
+        "\"אין סניפים ואין קווי טלפון נוספים\" true."
+      ],
+      "evidence": "applied 2026-09-02 12:25:43Z · ledger 20260902122543 · verified live on thhyfwoeybkptxvbpcmg: rows stating the warranty period as a number 0→2 · in words 0→2 · rows naming where the online sale happens 0→1 · corpus still 37 rows · phone-shaped strings in the corpus: 0, which is the owner instruction and not a side effect — a postcondition fails the migration if one enters by any route · four in-transaction postconditions passed · PRE-FLIGHT: the rollback's three bodies were md5-checked against the LIVE rows BEFORE applying and matched byte-for-byte (warranty ec94883f… / service 4a6e69d5… / lead d9e41fe4…) · all three rewritten rows had their embedding cleared and the backfill was run immediately: 0 rows awaiting an embedding."
     }
   ]
 }
