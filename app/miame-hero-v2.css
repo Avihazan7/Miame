@@ -90,6 +90,21 @@
   letter-spacing: -.012em; /* Hebrew stays legible; no letter-clamping */
   text-wrap: balance;
 }
+/* The naming line inside the H1. It has to sit INSIDE the heading to count as
+   heading text, and it must not compete with it visually — so it takes the
+   eyebrow's scale and the cyan accent, not the 74px clamp above. The selector is
+   two classes deep on purpose: `.hero-v2-title span` below would otherwise paint
+   it white at weight 850 and it would read as a third headline. */
+.hero-v2-title .hero-v2-h1-name {
+  font-family: var(--font-grotesk), system-ui, sans-serif;
+  font-size: clamp(15px, 1.5vw, 20px);
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: .03em;
+  color: var(--hero-cyan);
+  margin-bottom: 12px;
+}
+
 .hero-v2-title span { color: var(--hero-white); font-weight: 850; }
 .hero-v2-title strong { color: var(--hero-cyan); font-weight: 900; }
 

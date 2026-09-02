@@ -23,15 +23,41 @@ export default function Hero() {
             <LexIcon name="m-roundel" /> MIA FOUR · ELECTRIC FREEDOM <LexIcon name="bolt" />
           </span>
 
-          <h1 className="hero-v2-title" aria-label="החופש שלך. עכשיו בתנועה.">
+          {/* The H1 names the product now, and keeps its line.
+              Measured 2026-09-01 it read "החופש שלך. עכשיו בתנועה." alone — the
+              second most weighted element on the strongest page of the domain,
+              naming nothing anyone searches for. The naming line goes FIRST and
+              small: it carries מיה פור and קלנועית for a crawler and for an answer
+              engine resolving the entity, while the two large lines below stay
+              exactly as they were and still open the page.
+              Hebrew here on purpose — the eyebrow directly above already carries
+              the Latin "MIA FOUR", so both scripts are present without either
+              being said twice.
+              aria-label carries all three lines: the children are aria-hidden, so
+              the label IS the accessible name, and a screen reader that heard only
+              the poetry would be getting a different H1 than the one on screen. */}
+          <h1
+            className="hero-v2-title"
+            aria-label="מיה פור · קלנועית חשמלית. החופש שלך, עכשיו בתנועה."
+          >
+            <span className="hero-v2-h1-name" aria-hidden="true">
+              מיה פור · קלנועית חשמלית
+            </span>
             <span aria-hidden="true">החופש שלך.</span>
             <strong aria-hidden="true">
               עכשיו בתנועה.<LexIcon name="liberty" className="hero-v2-h1-icon" />
             </strong>
           </h1>
 
+          {/* The first paragraph after the H1, which is the most heavily read
+              prose on the strongest page — and it named the product in Latin
+              only and called it "ניידות חשמלית", a phrase nobody searches. The
+              H1 above keeps its line; this sentence does the naming: the Hebrew
+              name (מיה פור), the Latin one, and what the thing legally IS
+              (קלנועית — the site's own legal page is explicit that it is not a
+              רכב, and it is also the word buyers type). */}
           <p className="hero-v2-sub">
-            <bdi dir="ltr">MIA FOUR</bdi>, ניידות חשמלית פרימיום על ארבעה גלגלים.
+            <bdi dir="ltr">MIA FOUR</bdi> · מיה פור, קלנועית חשמלית פרימיום על ארבעה גלגלים.
             עוצמה, יציבות וחופש שמתאימים לחיים שלכם.
           </p>
 

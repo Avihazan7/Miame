@@ -1,5 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { SAME_AS } from "@/lib/brand-social";
+import {
+  MANUFACTURER_NAME,
+  MANUFACTURER_NAME_HE,
+  PRODUCT_ALTERNATE_NAMES,
+  PRODUCT_CATEGORY_HE,
+  PRODUCT_NAME,
+  PRODUCT_NAME_HE,
+} from "@/lib/content";
 import { SALES_PHONE_E164 } from "@/lib/whatsapp";
 import { Heebo, Suez_One, Space_Grotesk } from "next/font/google";
 import "./globals.css";
@@ -59,14 +67,35 @@ const PRODUCT_IMAGE = "/mia-four-x4-hero.webp";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  // THE TITLE NAMES THE THING NOW. Measured 2026-09-01, it read
+  // "MiaMe · החופש שלך על ארבעה גלגלים" — poetic, and invisible: neither the
+  // product (מיה פור / MIA FOUR) nor the category (קלנועית) appeared in the most
+  // heavily weighted element on the strongest page of the domain. Someone
+  // searching either term saw a title that answered neither. The brand line is
+  // kept, second, where it still reads as a promise rather than a keyword.
   title: {
-    default: "MiaMe · החופש שלך על ארבעה גלגלים",
+    default: `${PRODUCT_NAME_HE} · ${PRODUCT_CATEGORY_HE} חשמלית 4 גלגלים | MiaMe`,
     template: "%s | MiaMe",
   },
   description:
     "ניידות חשמלית פרימיום במחיר חכם. בנה הצעת תשלום מותאמת תוך דקה וקבל אותה ישירות בוואטסאפ. מבית Leasing.co.il.",
   applicationName: "MiaMe",
-  keywords: ["MiaMe", "רכב חשמלי", "ניידות חשמלית", "ליסינג", "השכרה", "Leasing.co.il"],
+  // "רכב חשמלי" was removed, and not for SEO: the site's own legal page states
+  // that MIA FOUR is classified as a קלנועית and is NOT a vehicle. A keyword that
+  // contradicts your own compliance copy is a liability before it is a miss.
+  keywords: [
+    PRODUCT_NAME_HE,
+    PRODUCT_NAME,
+    PRODUCT_CATEGORY_HE,
+    `${PRODUCT_CATEGORY_HE} חשמלית`,
+    `${PRODUCT_CATEGORY_HE} 4 גלגלים`,
+    `${PRODUCT_CATEGORY_HE} מיה`,
+    MANUFACTURER_NAME_HE,
+    MANUFACTURER_NAME,
+    "ניידות חשמלית",
+    "MiaMe",
+    "Leasing.co.il",
+  ],
   alternates: { canonical: "/" },
   // Icons are resolved by the file conventions in app/ (favicon.ico, icon.svg,
   // icon.png, apple-icon.png) — those take precedence over a metadata.icons object,
@@ -103,16 +132,39 @@ export const metadata: Metadata = {
 const HOME_PRODUCTS = MODELS.map((m) => ({
   "@type": "Product",
   "@id": `${SITE_URL}/#product-${m.id}`,
-  name: `MiaMe Four ${m.name}`,
+  // WAS `MiaMe Four ${m.name}` — a name that exists in NO source. The hero says
+  // MIA FOUR, the corpus says מיה פור, the manufacturer says MIA FOUR; nothing
+  // anywhere says "MiaMe Four". It is the site's name welded onto the product's,
+  // sitting in the one place a machine reads it as authoritative.
+  name: `${PRODUCT_NAME} ${m.name}`,
+  // The entity-resolution anchor: one declaration that MIA FOUR, מיה פור and מיה
+  // are the same thing. This is what earns the Hebrew queries — without repeating
+  // a single word in the prose, which is the line between naming and stuffing.
+  alternateName: [`${PRODUCT_NAME_HE} ${m.name}`, ...PRODUCT_ALTERNATE_NAMES],
+  category: PRODUCT_CATEGORY_HE,
   image: SITE_URL + PRODUCT_IMAGE,
-  description: `MIA FOUR ${m.name}, ${m.tagline}. פלטפורמת 4 גלגלים מוגנת פטנט, סוללת ליתיום נשלפת 60V.`,
-  brand: { "@type": "Brand", name: "MiaMe" },
+  description: `${PRODUCT_NAME} ${m.name} (${PRODUCT_NAME_HE}), ${m.tagline}. ${PRODUCT_CATEGORY_HE} חשמלית על פלטפורמת 4 גלגלים מוגנת פטנט, סוללת ליתיום נשלפת 60V. מתוצרת ${MANUFACTURER_NAME} (${MANUFACTURER_NAME_HE}).`,
+  // WAS `brand: MiaMe`. MiaMe is the SELLER, not the brand — and saying otherwise
+  // told every engine that the manufacturer's reputation belongs to the shop.
+  // The brand is the product line; the manufacturer is its own Organization; the
+  // seller moves down into the Offer, which is where schema.org puts a retailer.
+  brand: {
+    "@type": "Brand",
+    name: PRODUCT_NAME,
+    alternateName: [...PRODUCT_ALTERNATE_NAMES],
+  },
+  manufacturer: {
+    "@type": "Organization",
+    name: MANUFACTURER_NAME,
+    alternateName: [MANUFACTURER_NAME_HE],
+  },
   offers: {
     "@type": "Offer",
     priceCurrency: "ILS",
     price: m.price,
     availability: "https://schema.org/InStock",
-    url: SITE_URL
+    url: SITE_URL,
+    seller: { "@id": `${SITE_URL}/#organization` }
   },
   additionalProperty: PRODUCT_PROPERTIES
 }));

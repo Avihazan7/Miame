@@ -89,6 +89,63 @@ export const MIA_FOUR_DELIVERY_DAYS = 3;
 /** The manufacturer brand behind MIA FOUR. */
 export const MANUFACTURER_NAME = "MIA Dynamics";
 
+/**
+ * The manufacturer's HEBREW name — and the reason it now exists.
+ *
+ * MEASURED 2026-09-01 across the whole served tree: "מיה דיינמיקס" appeared
+ * ZERO times, on every page, in the corpus, and in llms.txt. The manufacturer
+ * had a Latin name only. An Israeli buyer typing the name the way they would say
+ * it matched nothing at all — the identical defect this repo already paid for
+ * once with SPYQE, where 0 rows contained "ספייק" while 7 contained "SPYQE".
+ *
+ * A transliteration is not decoration: it is how a Hebrew speaker searches, and
+ * how an answer engine resolves the Hebrew query to this entity.
+ */
+export const MANUFACTURER_NAME_HE = "מיה דיינמיקס";
+
+/**
+ * THE PRODUCT'S NAME, in one place, because two machine-readable surfaces were
+ * declaring a name that exists in NO source.
+ *
+ * MEASURED 2026-09-01: the Product schema said `MiaMe Four` and llms.txt said
+ * `MiaMe Four` — a hybrid of the SITE's name (MiaMe) and the PRODUCT's (MIA
+ * FOUR). The hero says MIA FOUR, the corpus says מיה פור, the manufacturer says
+ * MIA FOUR. Nothing anywhere says "MiaMe Four".
+ *
+ * That is the same defect class as the catalogue's "4×2": a designation from no
+ * source, sitting in exactly the two places a machine reads. For entity
+ * resolution it is worse than a typo — it teaches Google and the answer engines
+ * a name that will never appear in a query.
+ */
+export const PRODUCT_NAME = "MIA FOUR";
+export const PRODUCT_NAME_HE = "מיה פור";
+
+/** What the product legally IS. Not "רכב" — the site's own legal page is explicit
+ *  that MIA FOUR is classified as a קלנועית and is not a vehicle, and that is also
+ *  the word buyers search. Keeping the two consistent is truth first, SEO second. */
+export const PRODUCT_CATEGORY_HE = "קלנועית";
+
+/**
+ * Every name this one product answers to, for schema `alternateName`.
+ *
+ * This is the entity-resolution anchor, and it is the highest-value, lowest-risk
+ * SEO/GEO move available here: it declares — once, in machine-readable form —
+ * that MIA FOUR, מיה פור and מיה are the same thing. It earns the Hebrew queries
+ * without repeating a single word in the prose, which is the difference between
+ * naming an entity and stuffing a page.
+ */
+export const PRODUCT_ALTERNATE_NAMES = [
+  PRODUCT_NAME,
+  PRODUCT_NAME_HE,
+  "מיה",
+  // How a buyer types it when they lead with the category rather than the brand —
+  // "קלנועית מיה" rather than "מיה פור". It belongs in the entity's alternate names,
+  // where it earns the query, and NOT in the prose: forcing the phrase into a
+  // sentence is the exact keyword-stuffing that costs more than the phrase is worth.
+  `${PRODUCT_CATEGORY_HE} מיה`,
+  "MIA 4",
+] as const;
+
 /** Brand WhatsApp / sales line (also configurable via NEXT_PUBLIC_WHATSAPP_NUMBER). */
 /**
  * The sales line, re-exported rather than repeated. It used to be its own literal
