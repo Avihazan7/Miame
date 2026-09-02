@@ -15,7 +15,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 import { MODELS } from "@/lib/models";
-import { MIA_FOUR_DELIVERY_DAYS, SUCCESS_FEE_PCT, SALES_WHATSAPP } from "@/lib/content";
+import { MIA_FOUR_DELIVERY_DAYS, SALES_WHATSAPP } from "@/lib/content";
 import { TRACKS } from "@/lib/finance";
 import {
   SPYQE,
@@ -126,7 +126,6 @@ describe("public/llms.txt quotes the modules, not a memory of them", () => {
     ["SPYQE importer list price", `${ils(SPYQE.listPrice)} ₪`],
     ["SPYQE allocation", `${SPYQE.slots} הזוכים`],
     ["SPYQE delivery estimate", `${SPYQE.deliveryBusinessDays} ימי עסקים`],
-    ["partner success fee (lib/content.ts)", `${SUCCESS_FEE_PCT}% Success Fee`],
   ];
 
   for (const [label, expected] of bound) {
@@ -234,7 +233,12 @@ describe("every route serves its own share card", () => {
   });
 
   it("finds the whole app-router surface", () => {
-    expect(routes.length, "13 routes measured 01.09.26").toBeGreaterThanOrEqual(13);
+    // Baseline 13 → 12 on 2026-09-02: /partners and /rent-eilat were REMOVED by
+    // owner decision (MiaMe sells MIA FOUR and nothing else) and now answer 410.
+    // This number is a vacuity guard — it exists to catch a walk that stopped
+    // finding files, not to pin a count — so it tracks reality rather than
+    // holding a number the site no longer has.
+    expect(routes.length, "12 routes measured 02.09.26").toBeGreaterThanOrEqual(12);
     expect(routes).toContain("app/page.tsx");
   });
 

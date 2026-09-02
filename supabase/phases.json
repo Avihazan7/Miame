@@ -196,10 +196,14 @@
       "risk": "medium — creates four new tables",
       "why": [
         "Measured 2026-08-31: none of the four tables exist.",
-        "HOLD. The focused sales campaign removed the rental surface from the",
-        "site, so this schema currently has no reader. Landing it would create",
-        "four empty tables nobody queries. Apply only if rental returns as a",
-        "product decision — not as migration housekeeping."
+        "HOLD, and as of 2026-09-02 this is SETTLED rather than pending a decision. The",
+        "owner confirmed the business is marketing and selling MIA FOUR and nothing else —",
+        "no rental, no business partners. Phase 18 removed the last rental surfaces from the",
+        "site and the corpus, and /rent-eilat now answers 410 Gone.",
+        "So this schema has no reader and is not going to get one. Landing it would create",
+        "four empty tables nobody queries. It stays on hold rather than being deleted only",
+        "because the file is a faithful record of a product that was once planned; apply it",
+        "solely if rental returns as a product decision, never as migration housekeeping."
       ]
     },
     {
@@ -481,6 +485,40 @@
         "homepage title, and llms.txt — because neither closes the entity gap alone."
       ],
       "evidence": "applied 2026-09-02 · ledger 20260902112336 · verified live on thhyfwoeybkptxvbpcmg: corpus 37→39 rows · rows naming the manufacturer in Hebrew 0→2 · rows naming the product in Latin 0→1 · rows saying what it legally is (קלנועי*) 3→4 · three in-transaction postconditions passed · both new rows inserted with a NULL embedding (they have no prior vector to outlive), and the backfill was run immediately rather than left for the next person, since `retrieve` is vector-first and an unembedded row is reachable only through the keyword top-up."
+    },
+    {
+      "id": "18-knowledge-sell-one-thing",
+      "title": "The corpus offers only what the business actually sells",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260902_knowledge_zzzzzzz_sell_one_thing.sql",
+          "ledger": "20260902120548"
+        }
+      ],
+      "why": [
+        "OWNER DECISION 2026-09-02: MiaMe markets and sells MIA FOUR — the קלנועית made by",
+        "MIA Dynamics (מיה דיינמיקס), imported to Israel by MEU. No rental, no business",
+        "partners, nothing else.",
+        "MEASURED on the live corpus: TWO rows offered products that do not exist —",
+        "`rental` (₪50/100/180/245 per 1/3/6/9 hours via רשת MiaMe Hub) and `partner`",
+        "(MiaMe Hub, 13% Success Fee). These are not stale marketing copy on a page nobody",
+        "opens: they are ANSWERS the assistant gives a buyer who asks. A visitor acts on an",
+        "answer — they plan around an hourly rate, or they write in asking to become an",
+        "operator. Publishing an offer that cannot be honoured is worse than publishing",
+        "nothing, and it is the failure mode a knowledge corpus is uniquely able to cause.",
+        "DELETED rather than rewritten. There is no true version of these rows: a row exists",
+        "to answer a question, and the questions no longer have an answer this business can",
+        "give. Rewriting them into \"we do not offer that\" would keep two rows competing for",
+        "retrieval against the rows that DO sell something, spending IDF weight on a",
+        "non-product.",
+        "Ships with the site half in the same commit — /partners (which sat in the header",
+        "nav) and /rent-eilat now answer 410 Gone, five components, three modules, the",
+        "homepage FAQ entry explaining how to become a MiaMe Hub, and three offline answers",
+        "in the assistant are removed. Neither half closes the gap alone: the pages could go",
+        "and the brain would still offer the rental."
+      ],
+      "evidence": "applied 2026-09-02 12:05:48Z · ledger 20260902120548 · verified live on thhyfwoeybkptxvbpcmg: corpus 39→37 rows · the two removed ids return 0 · rows offering a rental or a partnership (MiaMe Hub / Success Fee / Green Extreme) 2→0 · categories 10→8 (rental and partner are gone as categories, not just as rows) · pricing still covers 4 rows and mia-four-what survives, which the third postcondition exists to prove — a delete that took the catalogue with it would satisfy the first two · four in-transaction postconditions passed · PRE-FLIGHT: the rollback bodies were md5-checked against the LIVE rows BEFORE applying and matched byte-for-byte (rental 1aef2aa9… / partner e1570615…), so the undo is verified rather than asserted; the first draft of that rollback carried invented hashes and they were replaced with measured ones before anything was applied · no embedding backfill needed: a delete leaves no NULL vector behind."
     }
   ]
 }

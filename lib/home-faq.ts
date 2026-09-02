@@ -3,7 +3,7 @@
 // gate asserts the schema answers appear verbatim in the visible HTML).
 
 import { SPYQE, SPYQE_TOTAL, SPYQE_BALANCE } from "@/lib/spyqe";
-import { MIA_FOUR_DELIVERY_DAYS, SUCCESS_FEE_PCT } from "@/lib/content";
+import { MIA_FOUR_DELIVERY_DAYS } from "@/lib/content";
 
 export const HOME_FAQ: { q: string; a: string }[] = [
   {
@@ -25,10 +25,6 @@ export const HOME_FAQ: { q: string; a: string }[] = [
   {
     q: "מתי SPYQE יגיע, והאם ההרשמה מחייבת?",
     a: `אספקה משוערת עד ${SPYQE.deliveryBusinessDays} ימי עסקים מהמשלוח הראשון — הערכה ולא התחייבות. ההרשמה שומרת מקום במשלוח ואינה מחייבת ברכישה; הכמות, המחיר ומועד האספקה כפופים לעדכון ולאישור החברה/היבואן.`,
-  },
-  {
-    q: "איך הופכים ל-MiaMe Hub?",
-    a: `מודל שותפות רזה: אתם מחזיקים את הצי, MiaMe מביאה את הביקוש, ומשלמים ${SUCCESS_FEE_PCT}% Success Fee מהפניות בלבד.`,
   },
 ];
 

@@ -4,8 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { MODELS } from "@/lib/models";
 import { SPYQE, SPYQE_SPEC, SPYQE_BALANCE, SPYQE_TOTAL } from "@/lib/spyqe";
-import { RENTAL_FROM, SUCCESS_FEE_PCT } from "@/lib/content";
-import { FLEET_SIZE } from "@/lib/rental-fleet";
 import { TRACKS } from "@/lib/finance";
 import { track } from "@/lib/analytics";
 import MiaMark from "./MiaMark";
@@ -17,7 +15,11 @@ interface Msg {
   source?: string;
 }
 
-const SUGGESTIONS = ["מה הטווח?", "כמה עולה?", "איך עובדת ההשכרה?", "סבסוד לכוחות הביטחון?"];
+// The rental chip was removed with the product on 2026-09-02. A suggested question
+// is a promise that an answer exists — offering one the brain can no longer answer
+// is worse than both states it sits between: it invites the visitor to ask, then
+// fails them. Replaced with a question the corpus does answer.
+const SUGGESTIONS = ["מה הטווח?", "כמה עולה?", "מה זה מיה פור?", "סבסוד לכוחות הביטחון?"];
 
 // Client-side fallback so the chat is useful instantly — before ANTHROPIC_API_KEY is
 // set, or if the brain is briefly unreachable. Same facts as the Supabase corpus.
@@ -59,12 +61,10 @@ const FAQ: { keys: string[]; a: string }[] = [
   { keys: ["מהירות", "speed", 'קמ"ש'], a: 'מהירות מרבית 12 קמ"ש, מותאם לתקנות הקלנועית בישראל (תקן EN17128).' },
   { keys: ["משקל", "weight"], a: 'משקל הקלנועית 42 ק"ג (דגם ⁦2×4 City⁩), עומס עד 136 ק"ג.' },
   // "רשת MiaMe Hub" asserted a network. MEASURED 2026-09-01 against the live
-  // database: public.partners holds 0 rows, so the network was a claim with
-  // nothing behind it. MiaMe Hub is the model we are opening to operators — the
-  // invitation is both true today and the stronger ask.
-  { keys: ["השכר", "שעה", "rental", "hub"], a: `השכרה החל מ-${RENTAL_FROM} ₪ לשעה. MiaMe Hub הוא מודל השותפות שאנחנו פותחים למפעילים: אתם מחזיקים את הצי, MiaMe מביאה את הביקוש, ${SUCCESS_FEE_PCT}% Success Fee מהפניות בלבד.` },
-  { keys: ["אילת", "eilat", "green extreme", "גרין אקסטרים", "טרמינל", "השכרה אילת"], a: `באילת: צי השכרה של ${FLEET_SIZE} כלי MIA FOUR ב-Green Extreme, החל מ-${RENTAL_FROM} ₪ לשעה. משריינים מראש בוואטסאפ. זמינות בזמן אמת תיפתח עם השלמת חיבור המעקב.` },
-  { keys: ["שותף", "partner"], a: `מודל MiaMe Hub: אתם מחזיקים את הצי, אנחנו מביאים את הביקוש, ${SUCCESS_FEE_PCT}% Success Fee מהפניות בלבד, ללא עלות קבועה. אנחנו פותחים עכשיו את המקומות הראשונים למפעילים.` },
+  // Rental, the Eilat fleet and the MiaMe Hub partnership were removed here on
+  // 2026-09-02 by owner decision: the business is marketing and selling MIA FOUR,
+  // and nothing else. They were not stale copy — they were three answers the brain
+  // gave a buyer about products that do not exist, which is worse than silence.
   { keys: ["שירות", "תחזוק", "אחריות", "חלפים"], a: "יבואן רשמי MEU · Mayer Electric Utilities. אחריות יבואן רשמי, שירות וחלפים מקוריים, ומסירה מתואמת בכל אזורי הארץ." },
   { keys: ["סבסוד", "נכה", 'צה"ל', "ביטחון", "שכול"], a: 'כוחות הביטחון: נכי צה"ל עד 100% מוכר לסבסוד; משפחות שכולות עד 17,988 ₪ + מענק הוקרה MEU 10%, בכפוף לאישור משרד הביטחון.' },
   { keys: ["מימון", "תשלום", "ריבית", "מקדמה", "תשלומים"], a: `מסלולי תשלום ב-0% ריבית (בכפוף לאישור): עד ${TRACKS.private.months.max} תשלומים ללא ריבית והצמדה. בנו הצעה בסימולטור תוך דקה.` }
@@ -84,7 +84,7 @@ export default function AskBrain() {
   const [msgs, setMsgs] = useState<Msg[]>([
     {
       role: "bot",
-      text: "היי, כאן MiaMe. שאלו אותי כל דבר על מיה פור, טווח, מחיר, השכרה, שירות או סבסוד. החופש שלכם מתחיל בשאלה טובה."
+      text: "היי, כאן MiaMe. שאלו אותי כל דבר על מיה פור, טווח, מחיר, מימון, שירות או סבסוד. החופש שלכם מתחיל בשאלה טובה."
     }
   ]);
   const [input, setInput] = useState("");
@@ -145,7 +145,7 @@ export default function AskBrain() {
           <div className="sec-kicker">עוזר חכם</div>
           <h2 className="sec-title">שאל/י את MiaMe על מיה פור</h2>
           <p className="sec-desc">
-            תשובות מיידיות על מפרט, מחיר, השכרה, שירות וסבסוד, מבוסס מוח U.M.M.
+            תשובות מיידיות על מפרט, מחיר, מימון, שירות וסבסוד, מבוסס מוח U.M.M.
           </p>
         </div>
 

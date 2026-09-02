@@ -48,7 +48,6 @@ export const LEAD_STAGES: LeadStage[] = [
         options: [
           { value: "private", label: "פרטי" },
           { value: "business", label: "עסק או צי" },
-          { value: "hub", label: "שותף MiaMe Hub" },
         ],
       },
       {

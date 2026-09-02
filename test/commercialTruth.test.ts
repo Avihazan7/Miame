@@ -20,8 +20,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { MODELS, getModel } from "@/lib/models";
 import { TRACKS } from "@/lib/finance";
-import { RENTAL_FROM, SUCCESS_FEE_PCT, WARRANTY_MONTHS, WARRANTY_TERM } from "@/lib/content";
-import { RENTAL_HOURLY_FROM } from "@/lib/rental";
+import { WARRANTY_MONTHS, WARRANTY_TERM } from "@/lib/content";
 import { TRUST_SIGNALS } from "@/lib/deal-buzz";
 import { HOME_FAQ } from "@/lib/home-faq";
 
@@ -154,33 +153,39 @@ describe("the Ministry of Defence worksheet reads the catalogue", () => {
   });
 });
 
-describe("lib/content.ts's own constants are not bypassed", () => {
-  it("the hourly rental rate has one definition", () => {
-    expect(RENTAL_HOURLY_FROM).toBe(RENTAL_FROM);
-    expect(
-      code(read("lib/rental.ts")),
-      "lib/rental.ts defines its own rate again",
-    ).not.toMatch(/RENTAL_HOURLY_FROM\s*=\s*\d/);
-  });
+describe("the site sells ONE thing, and offers nothing it does not sell", () => {
+  // OWNER DECISION, 2026-09-02: MiaMe markets and sells MIA FOUR. No rental, no
+  // business partners. What this replaced was not stale copy — it was live offers:
+  // the homepage FAQ answered "how do I become a MiaMe Hub", the assistant quoted
+  // ₪50/hour and a 13% success fee, /partners sat in the header nav, and the corpus
+  // told a buyer about a rental fleet in Eilat. A visitor ACTS on an offer, so
+  // publishing one that does not exist is worse than publishing nothing.
+  //
+  // These tests replace two that pinned the removed numbers to a single definition.
+  // That was the right guard while the numbers existed; the guard that matters now
+  // is that they cannot come back by accident — which is the shape below, because a
+  // deletion with no gate is a deletion that gets undone by the next person who
+  // finds an old component and wires it up again.
 
-  it("the partner success fee is never retyped", () => {
-    const hits = MODULES.filter(
-      (f) => f !== "lib/content.ts" && /\d+%\s*Success\s*Fee/i.test(code(read(f))),
+  it("no module defines rental or partner economics", () => {
+    const hits = MODULES.filter((f) =>
+      /\bRENTAL_FROM\b|\bRENTAL_PRICES\b|\bSUCCESS_FEE_PCT\b|\bRENTAL_HOURLY_FROM\b/.test(code(read(f))),
     );
-    expect(hits, `the success fee is typed in: ${hits.join(", ")}`).toEqual([]);
-    const hub = HOME_FAQ.find((f) => f.q.includes("MiaMe Hub"));
-    expect(hub?.a).toContain(`${SUCCESS_FEE_PCT}%`);
+    expect(hits, `rental/partner economics reappeared in: ${hits.join(", ")}`).toEqual([]);
   });
-});
 
-describe("no surface claims a partner network that has no members", () => {
-  // MEASURED 2026-09-01 against the live MiaMe database: public.partners holds 0
-  // rows. "רשת MiaMe Hub" and "PARTNER NETWORK" asserted a network anyway. The
-  // model is real and worth selling; the network is what we are inviting people
-  // to build, and an invitation is the honest form of the same sentence.
-  it("names no MiaMe network", () => {
-    const hits = SOURCES.filter((f) => /רשת\s*MiaMe|PARTNER\s+NETWORK/i.test(code(read(f))));
-    expect(hits, `a partner network is claimed in: ${hits.join(", ")}`).toEqual([]);
+  it("no surface offers a rental, a fleet, or a partnership", () => {
+    const hits = SOURCES.filter((f) =>
+      /רשת\s*MiaMe|MiaMe\s*Hub|PARTNER\s+NETWORK|Success\s*Fee|Green\s*Extreme/i.test(code(read(f))),
+    );
+    expect(hits, `an offer we do not sell is published in: ${hits.join(", ")}`).toEqual([]);
+  });
+
+  it("the homepage FAQ asks nothing about becoming a partner", () => {
+    // It did, and the same entry fed the visible accordion AND the FAQPage JSON-LD,
+    // so the offer was made twice: once to a reader and once to a machine.
+    const hub = HOME_FAQ.find((f) => /Hub|שותפ/.test(f.q));
+    expect(hub, `the FAQ still offers a partnership: ${hub?.q}`).toBeUndefined();
   });
 });
 

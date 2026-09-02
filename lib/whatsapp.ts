@@ -170,7 +170,6 @@ export function buildLeadMessage(input: LeadMessageInput): string {
 
 export function buildPartnerMessage(name: string, phone: string, city: string): string {
   return [
-    "שלום, אני מעוניין להפוך ל-MiaMe Hub.",
     "",
     name ? `שם: ${name}` : "",
     phone ? `טלפון: ${phone}` : "",
