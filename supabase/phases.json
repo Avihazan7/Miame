@@ -609,6 +609,71 @@
         "(/api/embed, which needs VOYAGE_API_KEY + EMBED_ADMIN_TOKEN). Until it runs they",
         "are reachable by the Hebrew keyword top-up but not by vector similarity."
       ]
+    },
+    {
+      "id": "22-knowledge-site-truths",
+      "title": "The corpus answers what the SITE already publishes",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260902_zzknowledge_site_truths.sql",
+          "ledger": "20260902191426"
+        }
+      ],
+      "risk": "low — three idempotent inserts and two id-scoped updates; no schema change",
+      "why": [
+        "MEASURED through the real retrieval path (brain/knowledge.ts) against the live",
+        "38-row corpus, 2026-09-02. These were the rows a buyer actually got:",
+        "  \"מה המידות של מיה פור\"   -> spyqe-spec          6.26  ANOTHER PRODUCT'S numbers",
+        "  \"כמה זמן טעינה\"          -> spyqe-spec-missing  6.36  \"not published\" — of SPYQE",
+        "  \"כמה זמן לוקח לטעון\"     -> spyqe-register      2.60  a pre-order form",
+        "  \"צריך רישיון לקלנועית\"   -> spec-speed          3.69  top speed and a standard",
+        "  \"מה מספר הפטנט\"          -> patent              3.95  says patented, names none",
+        "  \"האם היא נכנסת לתא מטען\" -> testride            5.40  book a test ride",
+        "The first two are WRONG ANSWERS, not gaps. `spyqe-spec` was the only row carrying",
+        "the word מידות, so a question naming מיה פור returned SPYQE's 562x1225x1248 and its",
+        "439mm folded height. Its closing sentence (\"אלה נתוני SPYQE\") only helps if the",
+        "model reads it — retrieval had already chosen the wrong document.",
+        "AND THE OFFLINE FALLBACK KNEW MORE THAN THE LIVE CORPUS. brain/knowledge.ts ships a",
+        "FALLBACK used only when Supabase is unreachable, and it carried the charging time,",
+        "the four patent numbers and a whole legal-status row. None were live. With the",
+        "database UP the buyer got the thinner answer — an inversion nothing reports.",
+        "NOT ONE NEW CLAIM. Every figure is already on a live surface: Specs.tsx (dimensions,",
+        "charging), LegalStatus.tsx (chassis number, zero fees, exposure to fines, EN17128),",
+        "Patents.tsx (the four registered numbers). The corpus is brought into agreement with",
+        "the storefront and does not become a second source.",
+        "WHAT IS NOT PUBLISHED IS SAID SO: MIA FOUR has no published FOLDED height, and the",
+        "row states that rather than leaving a silence for SPYQE's 439mm to fill. A",
+        "postcondition FAILS if spec-dimensions ever contains 439.",
+        "The legal row carries the page's own hedges and makes no determination about a",
+        "licence, insurance or a minimum age — the site makes none either.",
+        "ONE lexicon entry ships with it (brain/knowledge.ts): רישיון -> רישוי. רישוי is",
+        "registration and רישיון is a licence; only the first is anywhere in the corpus, so",
+        "the buyer's word matched nothing and the question fell to spec-speed — a row about",
+        "12 km/h. A SECOND entry was written and removed: לטעון -> טעינה lifted the score",
+        "from 2.60 to 6.32 but spec-charging was ALREADY rank 1 at 2.60, so it never changed",
+        "an answer, and removing it failed no test. An entry nothing can hold is a decision",
+        "nobody checked. It is not in the code; the reason is, so it is not re-added.",
+        "ONE SELF-INFLICTED DEFECT, FOUND BY MEASURING: the first spec-charging draft also",
+        "repeated the battery spec and stole \"מה הסוללה\" from spec-battery, 3.05 to 2.92 —",
+        "the exact case test/retrievalRanking.test.ts holds. A short row wins on length",
+        "normalisation, so a short row must not be about two things. It was cut to one.",
+        "AFTER, measured on the same path: all six land on the right row, and the four SPYQE",
+        "questions plus \"מה הסוללה\" are unchanged.",
+        "APPLIED 2026-09-02 19:14:26Z, ledger 20260902191426. Verified live immediately after:",
+        "corpus 38 -> 41 · ledger 22 -> 23 · 3 new rows · exactly 1 row states the dimensions ·",
+        "exactly 2 state the charging time · 1 carries the patent numbers · 0 rows borrow the",
+        "439mm folded height · 0 phone-shaped strings.",
+        "AND THE FIVE BODIES WERE md5-COMPARED AGAINST THE MIGRATION IN GIT: 5 of 5 identical",
+        "byte for byte (legal-status d52ca21d… · patent 719cfe84… · spec-battery d4fdbf5b… ·",
+        "spec-charging 7a05541e… · spec-dimensions d7836835…). test/corpusFixtureFidelity.test.ts",
+        "ties the ranking fixture to that same SQL, so the fixture equals production",
+        "transitively rather than by assertion — which is all it had been doing before.",
+        "NOTE: the five touched rows carry embedding = null. Awaiting the backfill went 2 -> 7",
+        "(/api/embed needs VOYAGE_API_KEY + EMBED_ADMIN_TOKEN). Until it runs they are reachable",
+        "by the Hebrew keyword top-up — the path every measurement above was taken on — but not",
+        "by vector similarity."
+      ]
     }
   ]
 }
