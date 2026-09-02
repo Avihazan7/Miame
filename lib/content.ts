@@ -138,6 +138,11 @@ export const PRODUCT_ALTERNATE_NAMES = [
   PRODUCT_NAME,
   PRODUCT_NAME_HE,
   "מיה",
+  // How a buyer types it when they lead with the category rather than the brand —
+  // "קלנועית מיה" rather than "מיה פור". It belongs in the entity's alternate names,
+  // where it earns the query, and NOT in the prose: forcing the phrase into a
+  // sentence is the exact keyword-stuffing that costs more than the phrase is worth.
+  `${PRODUCT_CATEGORY_HE} מיה`,
   "MIA 4",
 ] as const;
 

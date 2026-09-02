@@ -89,6 +89,7 @@ export const metadata: Metadata = {
     PRODUCT_CATEGORY_HE,
     `${PRODUCT_CATEGORY_HE} חשמלית`,
     `${PRODUCT_CATEGORY_HE} 4 גלגלים`,
+    `${PRODUCT_CATEGORY_HE} מיה`,
     MANUFACTURER_NAME_HE,
     MANUFACTURER_NAME,
     "ניידות חשמלית",

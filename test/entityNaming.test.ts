@@ -78,6 +78,10 @@ describe("the product has one name, and it comes from a real source", () => {
     // The bare Hebrew token, which is how the brand is often typed and which
     // appeared standalone nowhere on the site.
     expect(PRODUCT_ALTERNATE_NAMES).toContain("מיה");
+    // And the category-led form: a buyer who leads with what the thing IS rather
+    // than with the brand types "קלנועית מיה". It earns the query as an alternate
+    // name; it is deliberately NOT forced into any sentence.
+    expect(PRODUCT_ALTERNATE_NAMES).toContain(`${PRODUCT_CATEGORY_HE} מיה`);
   });
 });
 
@@ -98,6 +102,40 @@ describe("the homepage title names what is being sold", () => {
     // and NOT a רכב — a keyword that contradicts your compliance copy is a
     // liability before it is a missed ranking.
     expect(kw, 'keywords claim "רכב חשמלי", which the legal page contradicts').not.toContain("רכב חשמלי");
+  });
+});
+
+describe("the H1 names what is being sold", () => {
+  const hero = read("components/Hero.tsx");
+
+  it("carries the product name and the category inside the heading", () => {
+    // It has to be INSIDE the <h1> to count as heading text. The two large lines
+    // stay; this is the small line above them.
+    // The CONTENT, not the whole element: the opening tag carries aria-label,
+    // which also names the product, so slicing from "<h1" passed with the naming
+    // line deleted. Mutation found that; this starts after the tag closes.
+    const open = hero.indexOf("<h1");
+    const h1 = hero.slice(hero.indexOf(">", open) + 1, hero.indexOf("</h1>"));
+    expect(h1, "the H1 does not name the product").toContain(PRODUCT_NAME_HE);
+    expect(h1, "the H1 does not say what the product is").toContain(PRODUCT_CATEGORY_HE);
+  });
+
+  it("the accessible name matches what is on screen", () => {
+    // The children are aria-hidden, so aria-label IS the accessible name. A label
+    // that kept only the poetry would hand a screen reader a different H1 than the
+    // one a sighted visitor reads — and would quietly hide the naming line from
+    // exactly the users who depend on the heading most.
+    const label = /aria-label="([^"]+)"/.exec(hero.slice(hero.indexOf("<h1")))?.[1] ?? "";
+    expect(label, `the H1 aria-label omits the product: "${label}"`).toContain(PRODUCT_NAME_HE);
+    expect(label, `the H1 aria-label omits the category: "${label}"`).toContain(PRODUCT_CATEGORY_HE);
+  });
+
+  it("the naming line is styled, not left to inherit the headline", () => {
+    // Without its own rule it inherits the 74px clamp and reads as a third
+    // headline, which is a worse page than the one that named nothing.
+    expect(read("app/miame-hero-v2.css"), "hero-v2-h1-name has no style rule").toContain(
+      ".hero-v2-title .hero-v2-h1-name",
+    );
   });
 });
 
