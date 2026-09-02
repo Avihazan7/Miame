@@ -1,3 +1,4 @@
+import Image from "next/image";
 import WaCta from "@/components/WaCta";
 import LexIcon from "@/components/LexIcon";
 // Engineering — the chassis deep-dive. Shows the real Mia FOUR 4×4 Pro Max frame (rear
@@ -16,7 +17,7 @@ export default function Engineering() {
           </p>
         </div>
 
-        <div className="eng-stage">
+        <div className="eng-stage eng-stage--pair">
           <img
             className="eng-veh floaty"
             src="/mia-four-x4-rear.webp"
@@ -24,6 +25,23 @@ export default function Engineering() {
             loading="lazy"
           width={934}
           height={521}
+          />
+          {/* ADDED, not swapped: the rear 3/4 is the right frame for "four-wheel
+              platform" and nothing replaces it. What the section lacked was any
+              close-up at all — every engineering claim above was a sentence beside a
+              wide shot. This is the manufacturer's cockpit detail (2026-09-02), and
+              it is the one frame on the site where the spec table's
+              "דיסק הידראולי כפול" is actually VISIBLE: the hydraulic master cylinder,
+              the lever, and the LOCK/UNLOCK collar. A claim a buyer can see. */}
+          <Image
+            className="eng-detail"
+            src="/mia-four-x4-brake-detail.jpg"
+            alt="מיה פור 4×4 Pro Max · תקריב כידון — בלם דיסק הידראולי, ידית ונעילת LOCK/UNLOCK"
+            loading="lazy"
+            quality={90}
+            sizes="(min-width: 1120px) 527px, (max-width: 780px) 100vw, 48vw"
+            width={1000}
+            height={1000}
           />
         </div>
 

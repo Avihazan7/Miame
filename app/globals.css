@@ -201,6 +201,14 @@ svg{display:block}
 .eng-stage{position:relative;max-width:760px;margin:0 auto 34px}
 .eng-stage::before{content:"";position:absolute;inset:8% 12% 10%;background:radial-gradient(60% 60% at 50% 56%,rgba(14,182,223,.40),transparent 70%);filter:blur(20px);z-index:0}
 .eng-veh{position:relative;z-index:1;display:block;width:100%;height:auto}
+/* The stage became a PAIR on 2026-09-02: the wide chassis frame plus the cockpit
+   close-up that makes "דיסק הידראולי כפול" visible instead of merely listed. One
+   column on a phone — a 1000px detail shot squeezed beside a wide frame on a
+   360px screen shows neither. */
+.eng-stage--pair{display:grid;grid-template-columns:1fr;gap:16px;align-items:center}
+.eng-detail{position:relative;z-index:1;display:block;width:100%;height:auto;
+  border-radius:var(--r-lg);background:#fff}
+@media(min-width:780px){.eng-stage--pair{grid-template-columns:1.15fr .85fr;gap:22px}}
 .eng-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1000px;margin:0 auto}
 .eng-card{background:rgba(255,255,255,.05);border:1px solid rgba(122,200,250,.16);border-radius:18px;padding:20px 18px;text-align:center}
 .eng-ic{font-size:26px;margin-bottom:8px}

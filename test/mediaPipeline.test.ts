@@ -75,7 +75,11 @@ describe("every local image src points at a file that ships", () => {
 const RAW_LOCAL_IMG_BASELINE = new Set([
   "components/Engineering.tsx:/mia-four-x4-rear.webp",
   "components/Features.tsx:/mia-fold-trunk.webp",
-  "components/Features.tsx:/mia-four-x4-night-front.jpg",
+  // 6 → 5 on 2026-09-02. Features' detail tile served /mia-four-x4-night-front.jpg
+  // — 554×554, the smallest product shot on the site — as a raw <img>, so the
+  // committed JPEG shipped whole with no AVIF, no WebP and no srcset. The
+  // manufacturer's 1000×1000 standing profile replaced it THROUGH next/image, so
+  // the entry is gone rather than merely re-pointed. The ratchet only tightens.
   "components/Patents.tsx:/mia-four-x4-pure-freedom.webp",
   "components/Configurator.tsx:/mia-four-logo.webp",
   "components/Importer.tsx:/mia-dynamics-logo.webp",
