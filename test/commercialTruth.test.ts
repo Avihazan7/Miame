@@ -181,6 +181,25 @@ describe("the site sells ONE thing, and offers nothing it does not sell", () => 
     expect(hits, `an offer we do not sell is published in: ${hits.join(", ")}`).toEqual([]);
   });
 
+  it("no code writes to a table for a product we do not sell", () => {
+    // THE GAP THIS CLOSES, found by the removal missing it. The two checks above
+    // look for OFFER COPY — "MiaMe Hub", "Success Fee", a rate. They passed while
+    // lib/supabase.ts still carried savePartner(), saveRentalLead(), their record
+    // types and writes to `partners` and `rental_leads`: 48 lines of live write
+    // path to two products that no longer exist, with zero callers.
+    //
+    // Dead plumbing is not harmless. It is the thing a future component imports
+    // when someone decides to "bring the partner form back" — the copy would be
+    // rewritten and reviewed, and the persistence would be picked up unread. So
+    // the guard has to cover the pipe, not only the sign on it.
+    const hits = MODULES.filter((f) =>
+      /\brental_leads\b|\bsaveRentalLead\b|\bsavePartner\b|\bPartnerRecord\b|\bRentalLeadRecord\b|insertLenient\(\s*"partners"/.test(
+        code(read(f)),
+      ),
+    );
+    expect(hits, `a write path for a removed product survives in: ${hits.join(", ")}`).toEqual([]);
+  });
+
   it("the homepage FAQ asks nothing about becoming a partner", () => {
     // It did, and the same entry fed the visible accordion AND the FAQPage JSON-LD,
     // so the offer was made twice: once to a reader and once to a machine.
