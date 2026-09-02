@@ -21,8 +21,26 @@ import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, extname } from "node:path";
 
-const css = readFileSync("app/globals.css", "utf8");
 const read = (p: string) => readFileSync(p, "utf8");
+
+/**
+ * EVERY stylesheet the root layout ships, DERIVED from the layout's own imports.
+ *
+ * The first version of this file read app/globals.css alone — and there are five
+ * stylesheets, three of them loaded on every page. app/miame-ultra.css still
+ * carried `.partner-card.dark` and ~45 rules of RENTAL FLEET OS for products
+ * removed on 2026-09-02, and this guard passed the whole time. A dead-CSS check
+ * that reads one file of three is not a weaker guard, it is a false one.
+ *
+ * Derived rather than listed, so a sixth stylesheet is covered the day it is
+ * imported instead of the day someone remembers this file.
+ */
+const LAYOUT = read("app/layout.tsx");
+const SHEETS = [...LAYOUT.matchAll(/^import\s+"\.\/([\w.-]+\.css)";/gm)].map((m) => `app/${m[1]}`);
+const ALL_CSS = SHEETS.map(read).join("\n");
+
+/** globals.css alone, where the tokens and the finish block live. */
+const css = read("app/globals.css");
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const n of readdirSync(dir)) {
@@ -35,10 +53,14 @@ function walk(dir: string, out: string[] = []): string[] {
 const TSX = [...walk("components"), ...walk("app")].map(read).join("\n");
 
 describe("no stylesheet survives the component it dressed", () => {
-  it("is reading a real stylesheet", () => {
-    // A guard pointed at an empty string passes forever.
+  it("is reading every stylesheet the layout ships", () => {
+    // A guard pointed at an empty string passes forever — and one pointed at the
+    // wrong file passes just as reliably.
     expect(css.length).toBeGreaterThan(20_000);
     expect(TSX).toContain("className");
+    expect(SHEETS, "no stylesheet imports were found in the layout").toContain("app/globals.css");
+    expect(SHEETS.length, "the layout ships more sheets than this guard resolved").toBeGreaterThan(2);
+    expect(ALL_CSS.length).toBeGreaterThan(css.length);
   });
 
   it.each([
@@ -50,7 +72,10 @@ describe("no stylesheet survives the component it dressed", () => {
     // Both halves matter: the class is gone from the markup AND from the CSS.
     // Checking only the markup is how the rules stayed for three weeks.
     expect(TSX, `${cls} is still rendered`).not.toContain(`"${cls}`);
-    expect(css, `${cls} is still styled — dead CSS for a removed component`).not.toContain(`.${cls}`);
+    // ALL_CSS, not globals.css: the rules that survived lived in a sibling sheet.
+    // Comments are stripped so the note recording a removal is not read as a rule.
+    const rules = ALL_CSS.replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(rules, `${cls} is still styled — dead CSS for a removed component`).not.toContain(`.${cls}`);
   });
 });
 
