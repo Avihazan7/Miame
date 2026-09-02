@@ -201,6 +201,41 @@ export function inspectGlb(bytes) {
   if (triangles > LIMITS.trisFail) fail(`${triangles.toLocaleString()} triangles drawn — over the ${LIMITS.trisFail.toLocaleString()} budget`);
   else if (triangles > LIMITS.trisWarn) warn(`${triangles.toLocaleString()} triangles drawn — heavy for a phone`);
 
+  // ── 3b. Appearance. A model that carries none renders as a grey blob. ─────
+  //
+  // THIS IS THE "NO MTL" FAILURE, AND IT IS NOT A BROKEN FILE. It loads, it draws,
+  // it passes every structural check above — and it shows a colourless shape. Two
+  // routes lead here and both are one click away in any online converter: an OBJ
+  // converted without its .mtl sidecar (some tools offer "OBJ → OBJ, no MTL" as a
+  // feature), and any STL source, which is a geometry-only format with no material
+  // channel at all.
+  //
+  // MIA FOUR is a matte nano-crystal black body with teal springs. A grey mesh of
+  // it is not a rougher version of the product — it is a different object, and the
+  // repo's own recorded decision (lib/content.ts) is that a placeholder-looking
+  // model beside the 4K photography is worse than no 3D tab.
+  //
+  // The test is deliberately narrow: colour counts, so a materials-only model with
+  // no textures — which is exactly what scripts/build-glb.mjs emits — passes. Only
+  // a model with NOTHING is rejected.
+  const mats = gltf.materials ?? [];
+  const isDefaultWhite = (f) => !f || (f.length >= 3 && f[0] === 1 && f[1] === 1 && f[2] === 1);
+  const hasAppearance = mats.some((m) => {
+    const pbr = m.pbrMetallicRoughness ?? {};
+    if (pbr.baseColorTexture || m.emissiveTexture || m.normalTexture || m.occlusionTexture) return true;
+    if (!isDefaultWhite(pbr.baseColorFactor)) return true;
+    if (m.emissiveFactor && m.emissiveFactor.some((v) => v > 0)) return true;
+    return false;
+  });
+  if (primitives > 0 && !hasAppearance) {
+    fail(
+      mats.length === 0
+        ? "no materials at all — the model would render as an untextured grey shape. An OBJ converted without its .mtl, or an STL source, produces exactly this."
+        : `${mats.length} material(s) but not one carries a colour or a texture — the model would render as an untextured grey shape. ` +
+            "An OBJ converted without its .mtl, or an STL source, produces exactly this.",
+    );
+  }
+
   // ── 4. Textures, measured from their own headers. ──────────────────────────
   const textures = [];
   for (const [i, im] of (gltf.images ?? []).entries()) {
@@ -234,7 +269,8 @@ export function inspectGlb(bytes) {
       primitives,
       triangles,
       trianglesUnique: unique,
-      materials: (gltf.materials ?? []).length,
+      materials: mats.length,
+      hasAppearance,
       animations: (gltf.animations ?? []).length,
       textures,
       extensionsRequired: gltf.extensionsRequired ?? [],

@@ -51,14 +51,17 @@ function glb(doc: unknown, bin?: Buffer): Buffer {
   return Buffer.concat([head, body]);
 }
 
-/** A minimal shippable model: one triangle, in a scene, with nothing external. */
+/** A minimal SHIPPABLE model: one triangle, in a scene, nothing external — and a
+ *  real base colour. The first version of this fixture used `materials: [{}]`, which
+ *  the appearance check correctly rejects: an empty material IS the "no MTL" defect.
+ *  A fixture meant to represent a passing file has to actually be one. */
 const MINIMAL = {
   asset: { version: "2.0", generator: "test" },
   scene: 0,
   scenes: [{ nodes: [0] }],
   nodes: [{ mesh: 0 }],
   meshes: [{ primitives: [{ attributes: { POSITION: 0 }, indices: 0, material: 0 }] }],
-  materials: [{}],
+  materials: [{ pbrMetallicRoughness: { baseColorFactor: [0.045, 0.05, 0.058, 1] } }],
   accessors: [{ count: 3, componentType: 5123, type: "SCALAR" }],
 };
 
@@ -181,6 +184,55 @@ describe("it refuses a file that would render nothing", () => {
     );
     expect(r.ok).toBe(true);
     expect(r.stats!.triangles).toBe(1);
+  });
+});
+
+describe("it refuses a model that carries no appearance", () => {
+  // The "NO MTL" failure: the file loads, draws, and passes every structural check
+  // — and shows a colourless shape. Two routes lead here and both are one click
+  // away in an online converter: an OBJ converted without its .mtl sidecar, and any
+  // STL source, which has no material channel at all.
+
+  it("rejects a model with no materials", () => {
+    const r: Result = inspectGlb(glb({ ...MINIMAL, materials: [] }));
+    expect(r.ok).toBe(false);
+    expect(r.problems!.join(" ")).toContain("grey shape");
+    expect(r.problems!.join(" "), "the message does not name the cause").toContain(".mtl");
+  });
+
+  it("rejects materials that carry neither colour nor texture", () => {
+    const r: Result = inspectGlb(
+      glb({ ...MINIMAL, materials: [{ name: "default" }, { pbrMetallicRoughness: { metallicFactor: 0.5 } }] }),
+    );
+    expect(r.ok).toBe(false);
+    expect(r.problems!.join(" ")).toContain("not one carries a colour");
+  });
+
+  it("treats an explicit default-white material as no appearance", () => {
+    // A converter that drops the MTL commonly leaves baseColorFactor at [1,1,1,1]
+    // rather than omitting it, which would slip past a mere presence check.
+    const r: Result = inspectGlb(
+      glb({ ...MINIMAL, materials: [{ pbrMetallicRoughness: { baseColorFactor: [1, 1, 1, 1] } }] }),
+    );
+    expect(r.ok).toBe(false);
+  });
+
+  it("accepts colour without any texture — which is what the repo's own GLB is", () => {
+    // The discrimination that matters: scripts/build-glb.mjs emits 7 materials with
+    // real baseColorFactors and ZERO textures. Rejecting that would reject the
+    // repo's own artifact and make the check unusable.
+    const r: Result = inspectGlb(
+      glb({ ...MINIMAL, materials: [{ pbrMetallicRoughness: { baseColorFactor: [0.04, 0.78, 0.86, 1] } }] }),
+    );
+    expect(r.ok).toBe(true);
+    expect(inspectGlb(readFileSync("public/models/mia-four-x4.glb")).stats!.hasAppearance).toBe(true);
+  });
+
+  it("accepts a textured material with no colour factor", () => {
+    const r: Result = inspectGlb(
+      glb({ ...MINIMAL, materials: [{ pbrMetallicRoughness: { baseColorTexture: { index: 0 } } }] }),
+    );
+    expect(r.ok).toBe(true);
   });
 });
 
