@@ -453,9 +453,19 @@ export default function Configurator() {
                 height={860}
                 className="res-product"
               />
-              <img src="/mia-four-logo.webp" alt="MIA FOUR" className="res-logo" loading="lazy"
-          width={1600}
-          height={599} />
+              {/* 1600×599 shipped whole into a box that is `min(178px,48%)` wide —
+                  a ~9× oversupply on every simulator render, with no srcset because
+                  it was a raw <img>. `sizes="178px"` is the CSS cap, so the
+                  optimizer can serve the 256px candidate and stop. */}
+              <Image
+                src="/mia-four-logo.webp"
+                alt="MIA FOUR"
+                className="res-logo"
+                loading="lazy"
+                sizes="178px"
+                width={1600}
+                height={599}
+              />
               <div className="res-eyebrow">עד {MAX_MONTHS} תשלומים ללא ריבית והצמדה</div>
               <div className="res-model">
                 <bdi dir="ltr">{model.name}</bdi>

@@ -81,8 +81,13 @@ const RAW_LOCAL_IMG_BASELINE = new Set([
   // manufacturer's 1000×1000 standing profile replaced it THROUGH next/image, so
   // the entry is gone rather than merely re-pointed. The ratchet only tightens.
   "components/Patents.tsx:/mia-four-x4-pure-freedom.webp",
-  "components/Configurator.tsx:/mia-four-logo.webp",
-  "components/Importer.tsx:/mia-dynamics-logo.webp",
+  // 5 → 4: /mia-four-logo.webp is 1600×599 and `.res-logo` is `min(178px,48%)`.
+  // A ~9× oversupply on every simulator render, shipped whole because a raw
+  // <img> has no srcset. Converted to next/image with sizes="178px".
+  // 4 → 3: /mia-dynamics-logo.webp is 1920×1080 and `.imp-logo-tile img` is
+  // `height:50px;width:auto` — about 89px wide, a ~21× oversupply on every page
+  // carrying the importer band. The baseline comment above had already named
+  // both of these as "worth converting"; this is that, done.
 ]);
 
 describe("local stills go through the Next optimizer", () => {

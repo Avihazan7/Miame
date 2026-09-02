@@ -32,6 +32,23 @@ function dims(file: string): { w: number; h: number; bytes: number; palette: boo
   if (b.readUInt32BE(0) === 0x89504e47) {
     return { w: b.readUInt32BE(16), h: b.readUInt32BE(20), bytes: b.length, palette: b[25] === 3 };
   }
+  // WebP. Added when the comparison below reached for the file this upgrade
+  // replaced and the helper — PNG and JPEG only — reported "no frame header" on a
+  // file that is perfectly readable. Half the repo's stills are WebP; a measurement
+  // tool that cannot open them measures the wrong half.
+  if (b.length > 30 && b.toString("ascii", 0, 4) === "RIFF" && b.toString("ascii", 8, 12) === "WEBP") {
+    const chunk = b.toString("ascii", 12, 16);
+    if (chunk === "VP8X") {
+      return { w: b.readUIntLE(24, 3) + 1, h: b.readUIntLE(27, 3) + 1, bytes: b.length, palette: false };
+    }
+    if (chunk === "VP8 ") {
+      return { w: b.readUInt16LE(26) & 0x3fff, h: b.readUInt16LE(28) & 0x3fff, bytes: b.length, palette: false };
+    }
+    if (chunk === "VP8L") {
+      const n = b.readUInt32LE(21);
+      return { w: (n & 0x3fff) + 1, h: ((n >> 14) & 0x3fff) + 1, bytes: b.length, palette: false };
+    }
+  }
   let i = 2;
   while (i + 9 < b.length) {
     if (b[i] !== 0xff) { i++; continue; }
@@ -68,6 +85,7 @@ const SHOTS = [
   { file: "mia-four-x4-hero-cutout.png", w: 1066, h: 1141, host: "components/Specs.tsx", floor: 900 },
   { file: "mia-four-x4-side-standing.jpg", w: 1000, h: 1000, host: "components/Features.tsx", floor: 554 },
   { file: "mia-four-x4-brake-detail.jpg", w: 1000, h: 1000, host: "components/Engineering.tsx", floor: 0 },
+  { file: "mia-four-x4-wheel-suspension.jpg", w: 1000, h: 1000, host: "components/Lifestyle.tsx", floor: 0 },
 ] as const;
 
 describe("the manufacturer's photography is present and measured", () => {
@@ -101,6 +119,23 @@ describe("the manufacturer's photography is present and measured", () => {
     // The regression this catches is a well-meaning "optimisation" that swaps in a
     // smaller file. Softer is not cheaper when the browser upscales it anyway.
     expect(dims(shot.file).w).toBeGreaterThan(shot.floor);
+  });
+});
+
+describe("the wheel frame is an upgrade in DATA, not in pixels", () => {
+  it("carries materially more information than the shot it replaced", () => {
+    // Both are 1000×1000, so a dimension check would call this a lateral move. The
+    // upgrade is density: on a black tyre against white, twice the bytes is the
+    // difference between tread and a smudge. The replaced file is still on disk
+    // (other surfaces may reference it), so the comparison stays live.
+    const now = dims("mia-four-x4-wheel-suspension.jpg");
+    const before = dims("mia-wheel-detail.webp");
+    expect(now.w).toBe(before.w);
+    expect(
+      now.bytes / before.bytes,
+      `the new wheel frame is ${(now.bytes / 1024).toFixed(0)}KB against ${(before.bytes / 1024).toFixed(0)}KB — ` +
+        "the whole reason to swap two files of identical dimensions",
+    ).toBeGreaterThan(1.5);
   });
 });
 
