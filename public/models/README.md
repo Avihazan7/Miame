@@ -49,3 +49,51 @@ The asset row is registered in `vehicle_media_assets` by
 chunk types / accessor bounds) before writing. The artifact additionally parses
 cleanly through the real `three.js` `GLTFLoader` (34 nodes · 10 meshes ·
 7 PBR materials · 2,508 triangles · ~12 KB).
+
+
+---
+
+## Intake — how a real model gets onto the site
+
+```bash
+npm run glb:check -- path/to/model.glb      # 0 = fit to ship · 1 = rejected · 2 = unusable
+npm run publish:glb                          # only after the check passes
+# then set NEXT_PUBLIC_MIA_GLB_URL to the published URL
+```
+
+`scripts/glb-check.mjs` reads the container by hand — no dependencies, no network —
+and reports weight, triangles **drawn** (not merely stored: a node tree instances a
+mesh, so four wheels are one mesh referenced four times), materials, and every
+embedded texture's real pixel size.
+
+### The two rejections that exist because the failure is otherwise silent
+
+1. **An external URI.** A GLB may reference its buffers or textures by URL instead
+   of embedding them. The loader fetches those URLs, `connect-src` allows only
+   `'self'` and Supabase, the fetch is blocked, and the model renders incomplete
+   with **no error anyone sees**. A converter whose own preview looked correct is
+   exactly how such a file arrives.
+2. **A truncated or padded container.** A concatenated download leaves every chunk
+   intact and only the header's declared length disagrees, so it is caught there.
+
+`KHR_draco_mesh_compression` and `EXT_meshopt_compression` are reported as
+**warnings, not rejections**: they are the right answer for the web, but drei
+fetches their decoder from a third-party CDN by default and that is the same silent
+CSP failure. Self-host the decoder and the file ships.
+
+### Choosing a source format — this decides the ceiling
+
+| Format | Carries | Verdict |
+|---|---|---|
+| **GLB / glTF** | geometry · PBR materials · textures · animation, in one file | **Ask the manufacturer for this.** It is the web's native format; nothing is lost |
+| FBX · USDZ | geometry · materials · textures | Fine. Converts cleanly |
+| OBJ + MTL | geometry · materials, **textures as separate files** | Workable — but the conversion must **embed** the textures. An OBJ converted without them produces exactly the external-URI file rejected above |
+| **STL** | **geometry only** | **Not usable for a product hero.** No materials, no textures, no UVs, no colour. MIA FOUR is a matte nano-crystal black body with teal springs; an STL can only ever produce a grey shape |
+
+### On "8K"
+
+A texture larger than the screen buys nothing, and above **4096px** it is not
+safely supported on every mobile GPU — the upload either fails or is silently
+downscaled by the driver. Sharpness on a phone comes from **KTX2/Basis compression
+at 2048–4096px**, not from an 8192px PNG. `glb:check` warns above 4096 for that
+reason.
