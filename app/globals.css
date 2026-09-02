@@ -703,6 +703,27 @@ svg{display:block}
   -webkit-text-fill-color:transparent;color:var(--sky)}
 
 /* ─── adaptive ambient lighting ─────────────────────────────────────── */
+
+/* The two hue numbers are REGISTERED, and that registration is the feature.
+   To the animation engine an unregistered custom property is an untyped string,
+   so `--amb-hue-a:186 -> 208` is not an interpolation and the room's colour
+   SNAPS. Declared as <number> they animate, and choosing a model becomes the
+   light changing rather than a repaint. Where @property is unsupported the
+   declarations below are simply ignored and the colour snaps — the same result
+   as before this block existed, which is why no fallback is needed.
+   Values match the :root defaults at the top of this file. */
+@property --amb-hue-a{syntax:"<number>";inherits:true;initial-value:186}
+@property --amb-hue-b{syntax:"<number>";inherits:true;initial-value:200}
+
+/* Guarded, because this one IS motion: a 700ms colour sweep across the whole
+   viewport is exactly what a visitor who asked for reduced motion asked not to
+   get. The hue still changes for them — instantly. The time-of-day axis writes
+   these vars once every five minutes and rides the same transition, which is a
+   gentler dusk than it used to have, for free. */
+@media (prefers-reduced-motion:no-preference){
+  :root{transition:--amb-hue-a 700ms ease,--amb-hue-b 700ms ease}
+}
+
 .ambient{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
   background:radial-gradient(58% 50% at 50% -8%,
     hsla(var(--amb-hue-a),96%,72%,calc(.10*var(--amb-intensity))),transparent 70%);
