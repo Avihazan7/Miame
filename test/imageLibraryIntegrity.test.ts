@@ -5,18 +5,35 @@
 // the site actually serves. Nothing was broken by it — and that is the problem. The
 // repo has already paid once for the shape this creates: a photograph reachable under
 // several names is a photograph that gets a second, contradictory alt text, and
-// `mia-white.webp` (a BLACK vehicle) is the standing proof that the naming and the
-// pixels drift apart the moment they can.
+// `mia-white.webp` was the standing proof — a name describing the BACKGROUND, on a
+// file byte-identical to `mia-four-x4-seat.webp`.
+//
+// SECOND MEASUREMENT, SAME DAY, AND IT MOVED THE GATE. Deleting an alias from
+// public/ does NOT retire it. `assets-archive/` — where scripts/optimize-images.mjs
+// parks every original it re-encodes — held the SAME duplicate pair, in a directory
+// this file never opened, behind a script whose next run would have written the alias
+// straight back into public/ with no diff to notice it. A guard that watches one of
+// two directories the same photograph can live in is a guard with a documented blind
+// spot. It now walks BOTH, and the three aliases that only the wider scan could see
+// are gone:
+//
+//   assets-archive/mia-white.webp        == assets-archive/mia-four-x4-seat.webp
+//   assets-archive/mia-fold-lot.jpg      == the new public/mia-four-x4-fold-parking.jpg
+//                                           (the archived ORIGINAL, restored to /public
+//                                            at full resolution instead of re-encoded
+//                                            down to 1100px on the way in)
+//   public/mia-four-freedom.png          == assets-archive/mia-four-x4-pure-freedom.png
+//                                           — 428KB, referenced by NOTHING, deployed on
+//                                             every build. Found only by the wider scan.
 //
 // WHAT THIS ENFORCES
-//   1. No two files in public/ are byte-identical. An alias is free to create and
-//      expensive to notice.
+//   1. No two image files under public/ OR assets-archive/ are byte-identical. An
+//      alias is free to create and expensive to notice.
 //   2. Every image referenced by the live vehicle_media_assets row still exists.
-//      Three of the eight were NOT dead: they are that row's gallery. The row has no
-//      renderer today (components/seo/SeoLanding.tsx passes no mediaKey, on purpose,
-//      and Product360Stage reads only spin360Paths and glbPath) — but "no consumer
-//      today" is not "safe to delete", and the list below is what stops a future
-//      cleanup from removing them on the same reasoning that spared them here.
+//      The row has no renderer today (components/seo/SeoLanding.tsx passes no
+//      mediaKey, on purpose, and Product360Stage reads only spin360Paths and
+//      glbPath) — but "no consumer today" is not "safe to delete", and the list
+//      below is what stops a future cleanup from removing them.
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
@@ -24,14 +41,28 @@ import { join, extname } from "node:path";
 
 const IMAGE = new Set([".webp", ".png", ".jpg", ".jpeg", ".avif"]);
 
-function publicImages(dir = "public", out: string[] = []): string[] {
+/**
+ * Both directories a photograph can live in.
+ *
+ * `public/` is what deploys; `assets-archive/` is where optimize-images.mjs keeps
+ * the originals it re-encoded, and it is a WRITE-BACK path — a name left in that
+ * script's TARGETS list turns an archived file into a public one on the next run.
+ * Scanning only public/ therefore misses both the duplicate and the mechanism that
+ * restores it.
+ */
+const ROOTS = ["public", "assets-archive"];
+
+function imageFiles(dir: string, out: string[] = []): string[] {
+  if (!existsSync(dir)) return out;
   for (const e of readdirSync(dir, { withFileTypes: true })) {
     const p = join(dir, e.name);
-    if (e.isDirectory()) publicImages(p, out);
+    if (e.isDirectory()) imageFiles(p, out);
     else if (IMAGE.has(extname(e.name).toLowerCase())) out.push(p);
   }
   return out;
 }
+
+const publicImages = () => ROOTS.flatMap((r) => imageFiles(r));
 
 /**
  * Paths named by the one published row in vehicle_media_assets (id
@@ -52,25 +83,28 @@ const LIVE_MEDIA_ROW_GALLERY = [
 /**
  * Duplicate pairs that CANNOT be resolved by deleting a file, because both names are
  * live. This list may only SHRINK — a new pair is the defect, and the baseline is not
- * the place to record it. Each entry is an open decision, not an exemption:
+ * the place to record it.
  *
- *  mia-beach.webp == miame-life-1.webp
- *    `mia-beach` is the Lifestyle band; `miame-life-1` is in the live
- *    vehicle_media_assets gallery. Two owners, one photograph. Resolving it means
- *    pointing the DB row at `mia-beach.webp` — a production data edit, not a delete.
+ * IT IS EMPTY, AND THAT IS THE POINT. Both entries it carried are resolved, and
+ * neither needed the production data edit the earlier note here proposed:
  *
- *  mia-four-x4-seat.webp == mia-white.webp
- *    Both are rendered by components: the Lifestyle seat tile and Specs. The
- *    photograph shows a BLACK vehicle with a quick-release seat, so `mia-white` is
- *    misnamed, and Tribute renders it beside a calculator built from the 2×4 City
- *    entry model while the frame is a Pro Max. Surfaced to the owner 2026-09-02;
- *    it is a content decision (which photo belongs on the eligibility page), not a
- *    file operation, and it stays visible here until he rules.
+ *  mia-beach.webp == miame-life-1.webp — the note said resolving it meant pointing the
+ *    live vehicle_media_assets row at `mia-beach.webp`. It did not. The lifestyle band
+ *    moved to the manufacturer's 1500×1000 seated frame, which left `mia-beach.webp`
+ *    with no consumer at all; `miame-life-1.webp` — the name the DB row actually holds
+ *    — stays exactly where it was. A better photograph dissolved the duplicate, and
+ *    nothing was written to production.
+ *
+ *  mia-four-x4-seat.webp == mia-white.webp — one file, two names, two alt texts. The
+ *    alias is deleted (in public/ AND in assets-archive/, and its name is out of
+ *    optimize-images.mjs so the next run cannot rewrite it), Tribute renders the
+ *    surviving name, and its alt no longer claims a configuration the page does not
+ *    price.
+ *
+ * An empty baseline makes the second test below vacuous — deliberately. The gate is
+ * the first test; this list exists to hold exceptions, and there are none.
  */
-const KNOWN_UNRESOLVED_DUPLICATES = [
-  ["public/mia-beach.webp", "public/miame-life-1.webp"],
-  ["public/mia-four-x4-seat.webp", "public/mia-white.webp"],
-].map((pair) => pair.sort().join("  ==  "));
+const KNOWN_UNRESOLVED_DUPLICATES: string[] = [];
 
 describe("one photograph, one filename", () => {
   const files = publicImages();

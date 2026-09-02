@@ -86,6 +86,30 @@ const SHOTS = [
   { file: "mia-four-x4-side-standing.jpg", w: 1000, h: 1000, host: "components/Features.tsx", floor: 554 },
   { file: "mia-four-x4-brake-detail.jpg", w: 1000, h: 1000, host: "components/Engineering.tsx", floor: 0 },
   { file: "mia-four-x4-wheel-suspension.jpg", w: 1000, h: 1000, host: "components/Lifestyle.tsx", floor: 0 },
+  // ── SECOND BATCH, 2026-09-02. Six frames, and the whole lifestyle grid plus its
+  //    band are now photographs of the machine in a place, at 1500×1000 — against a
+  //    grid that held two studio renders and two renditions smaller than their slot.
+  { file: "mia-four-x4-fold-parking.jpg", w: 1500, h: 1000, host: "components/Lifestyle.tsx", floor: 1100 },
+  { file: "mia-four-marina-dusk.jpg", w: 1500, h: 1000, host: "components/Lifestyle.tsx", floor: 1080 },
+  { file: "mia-four-x4-beach-standing.jpg", w: 1500, h: 1000, host: "components/Lifestyle.tsx", floor: 900 },
+  { file: "mia-four-x4-beach-seated.jpg", w: 1500, h: 1000, host: "components/Lifestyle.tsx", floor: 960 },
+] as const;
+
+/**
+ * The two landing heroes, which live in DATA rather than in JSX.
+ *
+ * test/seoHeroIntrinsic.test.ts already asserts that every hero's declared w/h
+ * equals its file — that is the layout-shift contract. It says nothing about
+ * SIZE, and size is the defect that was actually there: /klnoit-shetach shipped a
+ * 554×554 studio render as the LCP element AND the OpenGraph card of the page
+ * about terrain, into a slot that asks for 50vw. A future "optimisation" that
+ * swaps a smaller file back in would keep that suite green.
+ *
+ * `floor` is the width of the file each one replaced. Strictly greater, always.
+ */
+const SEO_HEROES = [
+  { slug: "klnoit-shetach", file: "/mia-four-x4-sand-traction.jpg", floor: 554 },
+  { slug: "klnoit-4-galgalim", file: "/mia-four-bridge-front.jpg", floor: 1000 },
 ] as const;
 
 describe("the manufacturer's photography is present and measured", () => {
@@ -161,6 +185,24 @@ describe("every one of them goes through the optimizer", () => {
     const sizes = element(read(shot.host), shot.file).match(/sizes="([^"]+)"/)?.[1] ?? "";
     expect(sizes, `${shot.file} has no sizes at all — every viewport is quoted 100vw`).not.toBe("");
     expect(sizes, `${shot.file} ignores the ${MAXW}px container`).toContain(`(min-width: ${MAXW}px)`);
+  });
+});
+
+describe("the landing heroes are bigger than what they replaced", () => {
+  const pages = read("lib/seo-pages.ts");
+
+  it.each(SEO_HEROES)("$slug is fronted by $file", (hero) => {
+    expect(pages, `${hero.slug} no longer points at ${hero.file}`).toContain(`image: "${hero.file}"`);
+  });
+
+  it.each(SEO_HEROES)("$file is wider than the $floor px file it replaced", (hero) => {
+    const d = dims(hero.file.replace(/^\//, ""));
+    expect(
+      d.w,
+      `${hero.file} is ${d.w}px wide; the file it replaced was ${hero.floor}px. ` +
+        "This is the LCP element and the OpenGraph card — smaller is not cheaper, " +
+        "the browser upscales it and the share card is what it is.",
+    ).toBeGreaterThan(hero.floor);
   });
 });
 

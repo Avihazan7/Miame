@@ -52,10 +52,22 @@ export default function Tribute({
               <span className="tb-pre">עד</span>
               100%<small>סבסוד*</small>
             </div>
+            {/* ONE photograph, one filename. This file shipped twice — as
+                `mia-white.webp` here and as `mia-four-x4-seat.webp` in the
+                lifestyle grid — byte for byte, under two names and two alt texts.
+                `mia-white` named the BACKGROUND, not the vehicle, which is exactly
+                how an alias survives review. The alias is deleted; this is the
+                surviving name.
+
+                AND THE ALT NO LONGER CLAIMS A CONFIGURATION. It read "בתצורה
+                המוצעת לזכאי כוחות הביטחון" while the frame is a Pro Max and the
+                worksheet below it starts from getModel("4x2") — the entry price.
+                An alt that names an offer the page does not price is a claim, and
+                claims here are legally reviewed. It describes the frame instead. */}
             <Image
               className="floaty"
-              src="/mia-white.webp"
-              alt="מיה פור · הקלנועית המלאה, בתצורה המוצעת לזכאי כוחות הביטחון"
+              src="/mia-four-x4-seat.webp"
+              alt="מיה פור · צילום סטודיו בתצורת ישיבה, כיסא וגב מותקנים"
               width={900}
               height={880}
               sizes="(max-width: 899px) 92vw, 450px"
