@@ -15,6 +15,7 @@ import "./globals.css";
 import "./miame-ultra.css";
 import "./miame-hero-v2.css";
 import AmbientLight from "@/components/AmbientLight";
+import CardSpotlight from "@/components/CardSpotlight";
 import MarkField from "@/components/MarkField";
 import MotionFx from "@/components/MotionFx";
 import ScrollProgress from "@/components/ScrollProgress";
@@ -259,6 +260,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ScrollProgress />
         <ScrollTop />
         <AmbientLight />
+        <CardSpotlight />
         <MarkField />
         {children}
         <MotionFx />

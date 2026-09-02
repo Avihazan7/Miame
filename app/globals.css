@@ -947,6 +947,26 @@ html{scroll-padding-top:92px}
   0 0 0 3px hsla(var(--amb-hue-a),92%,58%,.16),
   var(--shadow-md)}
 
+/* ── The near-field light. A soft spot that follows the pointer ACROSS ONE
+      CARD, drawn from the same room-hue as everything above it. `--cx/--cy` are
+      written by components/CardSpotlight.tsx (one delegated listener for the
+      whole document); `--spot` is its on/off, so the surfaces below are inert —
+      a plain gradient at 0 opacity — until something writes to them. That is why
+      a touch device, a reduced-motion visitor and a server-rendered page all get
+      the card exactly as it was before this block existed. ── */
+.card-stage::before,.elig-card::before,.tribute-calc::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  opacity:var(--spot,0);transition:opacity .35s ease;
+  background:radial-gradient(260px circle at var(--cx,50%) var(--cy,50%),
+    hsla(var(--amb-hue-a),96%,68%,.30),transparent 72%)}
+/* The dark calculator takes a brighter, tighter spot — the same light reads as
+   nothing at 30% over a navy gradient. */
+.tribute-calc::before{
+  background:radial-gradient(220px circle at var(--cx,50%) var(--cy,50%),
+    hsla(var(--amb-hue-a),96%,72%,.22),transparent 70%)}
+/* The stage's own children sit above the light, so the vehicle is lit, not washed. */
+.card-stage>*{position:relative;z-index:2}
+
 /* The picker chips get the same rim, so the two places a model is chosen agree. */
 .mp{box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
 .mp.on{border-color:hsla(var(--amb-hue-a),92%,52%,.85);
@@ -965,6 +985,7 @@ html{scroll-padding-top:92px}
 /* keep the detailing calm for reduced-motion visitors */
 @media (prefers-reduced-motion: reduce){
   .card::after,.feat-card::after,.life-card::after{display:none}
+  .card-stage::before,.elig-card::before,.tribute-calc::before{display:none}
   .logo,.foot-logo,.soon-title{animation:none}
 }
 
