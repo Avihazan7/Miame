@@ -17,9 +17,29 @@ export default function Specs() {
                 to a box that is .9fr of a two-column grid (~45vw) and one column on
                 a phone. The optimizer needs `sizes` to know that; without it every
                 viewport is quoted 100vw and gets a rendition it cannot use. */}
-            <Image sizes="(max-width: 760px) 100vw, 45vw" className="floaty" src="/mia-white.webp" alt="מיה פור 4×4 Pro Max · הקלנועית המלאה" loading="lazy"
-          width={900}
-          height={880} />
+            {/* The manufacturer's cut-out, supplied 2026-09-02. It replaces a
+                900×880 shot in a slot that needs 968px at 2× DPR — the old one was
+                short and the browser was upscaling it. This one also carries real
+                alpha (a tRNS chunk), so it sits on the white stage without a baked
+                background edge.
+                ⚠ It is a 256-colour PALETTE png and the palette is FULL, which is
+                the fingerprint of a quantised export: on a black body with gradients
+                that means banding in the shadows. Nothing downstream can undo it —
+                the optimizer re-encodes to AVIF from whatever colours survive. A
+                PNG-24 or lossless-WebP original is still worth asking for.
+                quality={90} because Next defaults to 75, and 75 on a near-black
+                subject is where gradient banding is manufactured rather than merely
+                inherited. */}
+            <Image
+              sizes="(min-width: 1120px) 484px, (max-width: 760px) 100vw, 45vw"
+              className="floaty"
+              src="/mia-four-x4-hero-cutout.png"
+              alt="מיה פור 4×4 Pro Max · מבט חזית-צד, כיסא בשחרור מהיר ומתלים עצמאיים"
+              loading="lazy"
+              quality={90}
+              width={1066}
+              height={1141}
+            />
           </div>
           <div className="specs-table">
             <div className="spec-row">

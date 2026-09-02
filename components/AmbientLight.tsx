@@ -1,30 +1,37 @@
 "use client";
 
 import { useEffect } from "react";
+import { ambienceTilt, onAmbienceTilt } from "@/lib/ambience";
+import { ambientForHour, composeHue } from "@/lib/model-ambience";
 
 /**
  * AmbientLight — "תאורת אווירה אדפטיבית".
  *
  * Paints a fixed, behind-everything atmosphere of soft תכלת (sky/cyan) light
- * that ADAPTS on two axes:
+ * that ADAPTS on four axes:
  *   1. Time of day  → hue + intensity shift (bright cyan midday, deeper azure
  *      at night) so the site feels alive at any hour.
  *   2. Cursor       → a gentle spotlight follows the pointer on fine-pointer
  *      devices, lighting the glass surfaces as you move.
+ *   3. Scroll       → the aurora drifts at its own pace as the page moves.
+ *   4. Chosen model → the configurator publishes a signed hue TILT
+ *      (lib/model-ambience.ts) and the room leans with the model being
+ *      considered. Not a chip that changes colour — the light itself.
+ *
+ * ── ONE WRITER, WHICH IS THE WHOLE POINT ─────────────────────────────────────
+ * Axes 1 and 4 both want the same two variables. If the model wrote them
+ * directly, the five-minute time-of-day clock would erase the model's tilt on
+ * its next tick — a bug that appears minutes after the click, on a decorative
+ * layer nobody is watching. So `applyAmbience()` below is the ONLY function that
+ * writes them: it reads the hour AND the published tilt and emits their sum.
+ * Both axes therefore survive each other by construction, not by timing.
  *
  * It only sets CSS custom properties (no React re-renders) and fully backs off
  * when the visitor prefers reduced motion.
  */
 
-type Ambient = { hueA: number; hueB: number; intensity: number };
-
-function ambientForHour(hour: number): Ambient {
-  // Hours are local to the visitor — the atmosphere matches their sky.
-  if (hour >= 5 && hour < 9) return { hueA: 190, hueB: 208, intensity: 0.82 }; // dawn
-  if (hour >= 9 && hour < 17) return { hueA: 186, hueB: 200, intensity: 1.0 }; // bright day
-  if (hour >= 17 && hour < 21) return { hueA: 196, hueB: 230, intensity: 0.78 }; // golden dusk
-  return { hueA: 205, hueB: 250, intensity: 0.56 }; // evening / night
-}
+// The hour table, the model tilts and the band that holds both live together in
+// lib/model-ambience.ts — this component writes the result, it does not decide it.
 
 export default function AmbientLight() {
   useEffect(() => {
@@ -32,15 +39,21 @@ export default function AmbientLight() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const finePointer = window.matchMedia("(pointer: fine)").matches;
 
-    // 1) Time-of-day adaptation (re-evaluated every few minutes).
-    const applyTimeOfDay = () => {
+    // 1) + 4) Time of day, composed with the model tilt. The single writer.
+    const applyAmbience = () => {
       const { hueA, hueB, intensity } = ambientForHour(new Date().getHours());
-      root.style.setProperty("--amb-hue-a", String(hueA));
-      root.style.setProperty("--amb-hue-b", String(hueB));
+      const tilt = ambienceTilt();
+      root.style.setProperty("--amb-hue-a", String(composeHue(hueA, tilt)));
+      root.style.setProperty("--amb-hue-b", String(composeHue(hueB, tilt)));
       root.style.setProperty("--amb-intensity", intensity.toFixed(2));
     };
-    applyTimeOfDay();
-    const clock = window.setInterval(applyTimeOfDay, 5 * 60 * 1000);
+    applyAmbience();
+    const clock = window.setInterval(applyAmbience, 5 * 60 * 1000);
+    // Re-emit when the configurator publishes a different model. The transition
+    // that makes this a glide rather than a snap is in app/globals.css, where it
+    // is suppressed for reduced-motion — a colour change is not motion, a
+    // seven-hundred-millisecond sweep across the viewport is.
+    const stopTilt = onAmbienceTilt(applyAmbience);
 
     // 2) Cursor spotlight (skipped for reduced-motion / touch).
     let raf = 0;
@@ -93,6 +106,7 @@ export default function AmbientLight() {
 
     return () => {
       window.clearInterval(clock);
+      stopTilt();
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("scroll", onScroll);
       if (raf) cancelAnimationFrame(raf);

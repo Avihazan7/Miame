@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MODELS, getModel } from "@/lib/models";
+import { setAmbienceTilt } from "@/lib/ambience";
+import { hueShiftFor, AMBIENCE_BASE_TILT } from "@/lib/model-ambience";
 import { WARRANTY_MONTHS } from "@/lib/content";
 import {
   CustomerType,
@@ -137,6 +139,20 @@ export default function Configurator() {
   useEffect(() => {
     track("PageViewed", { page: "home" });
   }, []);
+
+  // The selected model publishes a hue TILT and the whole page's ambient light
+  // leans with it (lib/model-ambience.ts). It follows `modelId` rather than
+  // living inside selectModel() so the initial model is lit on mount too, and so
+  // any future path that changes the model — a deep link, a restored draft —
+  // cannot forget to light it.
+  useEffect(() => {
+    setAmbienceTilt(hueShiftFor(modelId));
+  }, [modelId]);
+
+  // AmbientLight is mounted in app/layout.tsx and survives client navigation;
+  // this component does not. Without the release, leaving the homepage would
+  // leave /eligibility and the legal pages lit for a model they never show.
+  useEffect(() => () => setAmbienceTilt(AMBIENCE_BASE_TILT), []);
 
   function selectModel(id: string, scroll = false) {
     setModelId(id);
@@ -437,9 +453,19 @@ export default function Configurator() {
                 height={860}
                 className="res-product"
               />
-              <img src="/mia-four-logo.webp" alt="MIA FOUR" className="res-logo" loading="lazy"
-          width={1600}
-          height={599} />
+              {/* 1600×599 shipped whole into a box that is `min(178px,48%)` wide —
+                  a ~9× oversupply on every simulator render, with no srcset because
+                  it was a raw <img>. `sizes="178px"` is the CSS cap, so the
+                  optimizer can serve the 256px candidate and stop. */}
+              <Image
+                src="/mia-four-logo.webp"
+                alt="MIA FOUR"
+                className="res-logo"
+                loading="lazy"
+                sizes="178px"
+                width={1600}
+                height={599}
+              />
               <div className="res-eyebrow">עד {MAX_MONTHS} תשלומים ללא ריבית והצמדה</div>
               <div className="res-model">
                 <bdi dir="ltr">{model.name}</bdi>

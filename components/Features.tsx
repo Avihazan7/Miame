@@ -1,3 +1,4 @@
+import Image from "next/image";
 function Ic({ d }: { d: string }) {
   return (
     <div className="feat-ic">
@@ -84,12 +85,23 @@ export default function Features() {
             </div>
           </div>
           <div className="feat-show-detail photo-frame">
-            <img src="/mia-four-x4-night-front.jpg" alt="מיה פור 4×4 Pro Max · גימור סטודיו פרימיום, פלטפורמת ארבעה גלגלים" loading="lazy"
-          width={554}
-          height={554} />
+            {/* The manufacturer's standing side profile, 2026-09-02. TWO upgrades
+                at once, and the second is the larger: the tile held a 554×554 source
+                in a square slot that needs ~814px at 2×, AND it was a raw <img>, so
+                it bypassed the optimizer entirely — no AVIF, no WebP, no srcset. The
+                bytes a visitor downloaded were the JPEG as committed. */}
+            <Image
+              src="/mia-four-x4-side-standing.jpg"
+              alt="מיה פור 4×4 Pro Max · פרופיל צד מלא, פלטפורמת ארבעה גלגלים וצמיגי שטח"
+              loading="lazy"
+              quality={90}
+              sizes="(min-width: 1120px) 407px, (max-width: 780px) 100vw, 38vw"
+              width={1000}
+              height={1000}
+            />
             <div className="photo-cap">
               <b>MIA FOUR 4×4 Pro Max</b>
-              <span>עיצוב פרימיום · פלטפורמת 4×4</span>
+              <span>פרופיל מלא · פלטפורמת 4×4</span>
             </div>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { IMPORTER_NAME, MANUFACTURER_NAME, WARRANTY_TERM } from "@/lib/content";
 
 /**
@@ -36,8 +37,12 @@ export default function Importer() {
                 was the last measurable layout shift on the page. CSS still sizes
                 it (height:50px, width:auto); the attributes only have to state the
                 true ratio so the space reserved is the space used. */}
-            <img
+            {/* 1920×1080 shipped whole for a tile whose CSS is `height:50px;
+                width:auto` — about 89px wide, a ~21× oversupply on every page that
+                renders the importer band. */}
+            <Image
               src="/mia-dynamics-logo.webp"
+              sizes="89px"
               alt={`${MANUFACTURER_NAME} · Make it anywhere`}
               width={1920}
               height={1080}
