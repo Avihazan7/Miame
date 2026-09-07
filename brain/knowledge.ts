@@ -190,6 +190,14 @@ const ASK_TO_CORPUS: Record<string, string[]> = {
   // not "הזמנה" (an order). MEASURED: "איך אני מזמין" was answered from the row that
   // says the vehicle comes in premium black.
   מזמין: ["הזמנה", "הרשמה"],
+  // ONE ENTRY WAS WRITTEN AND THEN REMOVED, recorded so it is not added again on the
+  // same reasoning: לטעון → טעינה. It looked obviously right — "לטעון" strips to the
+  // stem "טעון", which is in no row — and MEASURED it lifted "כמה זמן לוקח לטעון" from
+  // 2.60 to 6.32 on spec-charging. But spec-charging was already rank 1 at 2.60, on the
+  // word "זמן" alone, so the entry never changed an ANSWER. Removing it failed no test,
+  // which is the whole objection: an entry nothing can hold is a decision nobody
+  // checked. The row fixed that question; the entry only flattered the score.
+  רישיון: ["רישוי"],
 };
 
 /**

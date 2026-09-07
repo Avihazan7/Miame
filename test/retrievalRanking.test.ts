@@ -90,14 +90,30 @@ const CORPUS = [
   { id: "delivery", source: "MiaMe/Service", body: "מיה פור נמצאת במלאי. האספקה אליכם עד 3 ימי עסקים, בכפוף לזמינות מלאי, בכל אזור בארץ ובמסירה מתואמת מראש. זמן האספקה של SPYQE (ספייק) שונה - הוא דגם בהזמנה מוקדמת." },
   { id: "contact", source: "MiaMe/Funnel", body: "יצירת קשר: וואטסאפ ישיר באתר (כפתור \"דברו איתי\"), או השארת פרטים בסימולטור התשלומים. אין סניפים ואין קווי טלפון נוספים — כל פנייה מגיעה לנציג MiaMe." },
   { id: "spec-range", source: "MiaMe/Specs", body: "טווח שימוש ריאלי עד 100 ק\"מ; נתון יצרן עד 120 ק\"מ (תנאי מעבדה)." },
-  { id: "spec-battery", source: "MiaMe/Specs", body: "סוללת ליתיום נשלפת 60V, קיבולת 25/35Ah, תאי LG 21700, משקל כ-6.3 ק\"ג." },
+  { id: "spec-battery", source: "MiaMe/Specs", body: "סוללת ליתיום נשלפת 60V, קיבולת 25/35Ah, תאי LG 21700, משקל כ-6.3 ק\"ג. זמן טעינה עד 8 שעות במטען סטנדרטי." },
   { id: "model-choose", source: "MiaMe/Models", body: "איך לבחור דגם: 2×4 City לעיר וזריזות · 2×4 City Long Range לטווח מורחב (35Ah) · 4×4 Pro Max לארבעה מנועים והנעה כפולה בשטח." },
   { id: "finance", source: "MiaMe/Finance", body: "מימון ומסלולי תשלום ב-0% ריבית בכפוף לאישור עסקה; עד 18 תשלומים ללא ריבית והצמדה. הסימולטור באתר בונה הצעה תוך דקה." },
   { id: "simulator-how", source: "MiaMe/Finance", body: "הסימולטור באתר מריץ מסלול אחד: בוחרים דגם, קובעים מקדמה וגוררים את מספר התשלומים (עד 18, ללא ריבית והצמדה), ומקבלים תשלום חודשי משוער מיידי." },
-  { id: "lead", source: "MiaMe/Funnel", body: "איך מזמינים מיה פור: הזמנה ורכישה דרך וואטסאפ. הסימולטור שולח הצעה מלאה - דגם, מקדמה, מספר תשלומים ותשלום חודשי - ישירות לוואטסאפ." },
+  // CORRECTED 2026-09-02 by test/corpusFixtureFidelity.test.ts on its first run: this
+  // row carried the body from BEFORE 20260902_knowledge_zzzzzzzz_warranty_and_seller.sql
+  // rewrote it, so "איך אני מזמין" was being graded against text production does not
+  // have. That is the precise failure the fidelity guard exists to catch, and it caught
+  // it immediately. The body below is the migration's — and the live row's.
+  { id: "lead", source: "MiaMe/Funnel", body: "איך מזמינים מיה פור: המכירה המקוונת מתנהלת ב-MiaMe.co.il. ההזמנה והרכישה דרך וואטסאפ - הסימולטור שולח הצעה מלאה (דגם, מקדמה, מספר תשלומים ותשלום חודשי) ישירות לוואטסאפ." },
   { id: "testride", source: "MiaMe/Funnel", body: "אפשר לתאם נסיעת מבחן — פנו אלינו בוואטסאפ ונקבע מועד." },
   { id: "rental", source: "MiaMe/Hub", body: "השכרת מיה פור: החל מ-50 ש\"ח לשעה (50/100/180/245 ל-1/3/6/9 שעות) דרך רשת MiaMe Hub." },
   { id: "colors", source: "MiaMe/Models", body: "מיה פור זמינה בשחור פרימיום עם הדגשי תכלת." },
+  // ── PHASE 22 (20260902_zzknowledge_site_truths.sql) and the rows it competes with.
+  //    Bodies are the migration's end-state; the four unchanged ones are verbatim live,
+  //    2026-09-02.
+  { id: "spec-dimensions", source: "MiaMe/Specs", body: "מידות מיה פור: 689 × 1,244 × 1,190 מ\"מ (רוחב × אורך × גובה). משקל 42 ק\"ג, הכידון מתקפל והכיסא משתחרר ביד אחת, ולכן היא נכנסת לתא מטען של רכב פרטי. גובה מיה פור במצב מקופל טרם פורסם — אין למסור עבורו מספר." },
+  { id: "spec-charging", source: "MiaMe/Specs", body: "זמן הטעינה של מיה פור: עד 8 שעות במטען סטנדרטי." },
+  { id: "legal-status", source: "MiaMe/LegalStatus", body: "מיה פור מסווגת כקלנועית ואינה רכב. כל כלי מזוהה במספר שילדה ייחודי, בלי רישוי ובלי לוחית רישוי; אין אגרת רישוי ואין עלויות רישוי שנתיות. לפי המעמד החוקי של קלנועית ובכפוף לדין, היא אינה חשופה לחלק מהקנסות והדוחות שדו-גלגלי ממונע סופג. תואמת תקן EN17128 ומותאמת לתקנות הקלנועית בישראל. המידע כללי ואינו ייעוץ משפטי; השימוש כפוף לדין, לתקנות הקלנועית ולהוראות הרשויות." },
+  { id: "patent", source: "MiaMe/Patents", body: "מספרי הפטנטים של פלטפורמת MIA Dynamics: US 11,878,763 B2, US 12,097,926 B2, IL 280339, IL 285336 — רשומים בארה\"ב ובישראל. טכנולוגיית מזעור ארבעה גלגלים." },
+  { id: "spyqe-spec-missing", source: "MiaMe/Spyqe", body: "עבור SPYQE (ספייק) טרם פורסמו משקל הכלי, עומס מרבי, זמן טעינה, מתח סוללה והספק מנוע בוואט. אין למסור עבורם מספר, ובפרט אין להשתמש בנתוני מיה פור. התשובה הנכונה היא שהנתון יפורסם כשיאומת." },
+  { id: "spec-brakes", source: "MiaMe/Specs", body: "בלמים: דיסק הידראולי כפול 140 מ\"מ; מערכת מתלים מלאה קדמית ואחורית, פלטפורמה מוגנת פטנט. צמיגי שטח במידה 14.5X4.8-7 על חישוקי סגסוגת." },
+  { id: "spec-speed", source: "MiaMe/Specs", body: "מהירות מרבית 12 קמ\"ש; תקן EN17128, מותאם לתקנות הקלנועית בישראל." },
+  { id: "mia-four-what", source: "MiaMe/Models", body: "מיה פור (MIA FOUR, ולפעמים פשוט \"מיה\") היא קלנועית חשמלית על פלטפורמת ארבעה גלגלים מוגנת פטנט, מתוצרת MIA Dynamics (מיה דיינמיקס). היא מסווגת כקלנועית ואינה רכב: אין לה לוחית רישוי ואין אגרות רישוי." },
 ];
 
 describe("a buyer's question reaches the row that answers it", () => {
@@ -126,6 +142,28 @@ describe("a buyer's question reaches the row that answers it", () => {
     ["כמה תשלומים אפשר", "finance", '"אפשר" sits in one row, so IDF makes a filler word decisive'],
     ["כמה עולה להשכיר", "rental", "renting is a different product line from buying"],
     ["איך אני מזמין", "lead", 'final forms: "מזמין" is not a substring of "מזמינים"'],
+
+    // ── PHASE 22. Six questions the SITE answers and the corpus did not, measured
+    //    through this same path against the live 38-row corpus on 2026-09-02. The
+    //    first two were not gaps but WRONG PRODUCTS: `spyqe-spec` was the only row
+    //    carrying the word "מידות", so a question naming מיה פור returned SPYQE's
+    //    562×1225×1248 and its 439mm folded height.
+    ["מה המידות של מיה פור", "spec-dimensions", "returned SPYQE's dimensions, 6.26"],
+    ["האם היא נכנסת לתא מטען", "spec-dimensions", 'returned the test-ride row, 5.40'],
+    ["כמה זמן טעינה", "spec-charging", 'returned SPYQE\'s "not published yet", 6.36'],
+    ["כמה זמן לוקח לטעון", "spec-charging", 'returned a SPYQE pre-order form, 2.60'],
+    ["מה מספר הפטנט", "patent", "the row said a patent exists and named none"],
+    ["יש אגרת רישוי", "legal-status", "the corpus had half a sentence of the legal status"],
+    // רישוי (registration) and רישיון (a licence) are different words, and only the
+    // first is anywhere in the corpus — so the buyer's word matched nothing and the
+    // question fell to spec-speed, a row about 12 km/h. The lexicon entry is what
+    // moves it; without it this case goes back to spec-speed.
+    ["צריך רישיון לקלנועית", "mia-four-what", 'the corpus writes "רישוי", the buyer types "רישיון"'],
+
+    // The other product must stay reachable. Adding MIA FOUR's own rows for the same
+    // two subjects is exactly the change that could push SPYQE's off the top.
+    ["כמה זמן טעינה לספייק", "spyqe-spec-missing", "SPYQE's charging time is still unpublished"],
+    ["מה המידות של ספייק", "spyqe-spec", "SPYQE keeps its own dimensions"],
   ];
 
   for (const [q, expected, why] of CASES) {
