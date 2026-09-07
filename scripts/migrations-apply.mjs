@@ -85,6 +85,55 @@ async function readLedger(client) {
   return new Map(rows.map((r) => [r.version, r.name]));
 }
 
+/**
+ * Rows the VECTOR path cannot see, or -1 if the corpus is unreadable from here.
+ *
+ * WHY THIS BELONGS IN THE MIGRATION TOOL. Applying a corpus phase is not the end of
+ * the operation, and on 2026-09-02 that gap bit twice in one afternoon. Every corpus
+ * migration sets `embedding = null` on the rows it writes — deliberately, because a
+ * vector of the old text must not outlive the text. But `match_knowledge` is
+ * `where k.embedding is not null`, and brain/knowledge.ts returns from the vector
+ * path the moment it fills k:
+ *
+ *     const hits = await vectorRetrieve(query, k);
+ *     if (hits.length >= k) return hits;      // the keyword path never runs
+ *
+ * So with 34 of 41 rows embedded, four hits come back from the 34 and the seven
+ * freshly-written rows are UNREACHABLE. Phases 21 and 22 both landed, both were
+ * verified live, both reported success — and neither was in effect for a buyer. The
+ * apply is not wrong; it is INCOMPLETE, and nothing said so.
+ */
+export async function corpusAwaitingEmbedding(client) {
+  try {
+    const { rows } = await client.query(
+      `select count(*)::int as n from public.knowledge where embedding is null`
+    );
+    return rows[0].n;
+  } catch {
+    // No table, or no permission to read it. Report that rather than claim zero:
+    // "0 pending" from a failed query is the silent green this whole tool avoids.
+    return -1;
+  }
+}
+
+/** Does this phase write to the corpus? Read from the SQL, not from a list to keep. */
+export const touchesCorpus = (sql) => /public\.knowledge/i.test(sql);
+
+/** The one instruction that closes the gap, printed wherever the gap is detected. */
+export function embedInstructions(pending) {
+  return [
+    `⚠ ${pending} corpus row(s) carry no embedding — the phase is APPLIED but NOT IN EFFECT.`,
+    `  public.match_knowledge filters \`embedding is not null\`, and brain/knowledge.ts`,
+    `  returns from the vector path as soon as it fills k. A row without a vector cannot`,
+    `  be retrieved at all while the rest of the corpus has one.`,
+    ``,
+    `  Run the backfill — no terminal needed, and the secret never leaves the runner:`,
+    `    GitHub → Actions → "Knowledge Embed (backfill)" → Run workflow → mode: embed`,
+    `  or, with EMBED_ADMIN_TOKEN in the shell:`,
+    `    npm run knowledge:embed -- --yes`,
+  ].join("\n");
+}
+
 /** Repo filename → the 14-digit version this tool writes for a NEW apply. */
 function versionFor(file) {
   const m = file.match(/^(\d{14}|\d{8})/);
@@ -144,6 +193,21 @@ async function status(client) {
     console.log("⚠ manifest/ledger drift:");
     for (const d of drift) console.log(`    ${d}`);
     process.exitCode = 1;
+  }
+
+  // The corpus half of "is the database where the repo says it is". A landed phase
+  // whose rows have no vector is a phase that is live in the TABLE and dead in the
+  // ANSWER, and until this check existed the only way to notice was to go looking.
+  // It belongs in the standing status command for the same reason ledger drift does.
+  const pending = await corpusAwaitingEmbedding(client);
+  if (pending > 0) {
+    console.log(embedInstructions(pending));
+    console.log();
+    process.exitCode = 1;
+  } else if (pending === 0) {
+    console.log("✓ corpus fully embedded — the vector path can see every row.\n");
+  } else {
+    console.log("· corpus not readable from this connection — embedding state unknown.\n");
   }
 }
 
@@ -245,6 +309,25 @@ async function run(client, phase, write) {
     console.log(`  Now set its status to "applied" in supabase/phases.json and record`);
     console.log(`  ledger: ${steps.map((s) => `"${s.version}"`).join(", ")} — a landed phase left`);
     console.log(`  pending makes the next run's plan disagree with the database.`);
+
+    // THE SECOND HALF OF A CORPUS PHASE. The write committed; that is not the same as
+    // the phase being in effect. Checked here rather than left to the operator because
+    // "remember to run the backfill" is exactly the kind of step that gets remembered
+    // right up until the afternoon it does not.
+    if (steps.some((s) => touchesCorpus(s.sql))) {
+      const pending = await corpusAwaitingEmbedding(client);
+      if (pending > 0) {
+        console.log(`\n${embedInstructions(pending)}`);
+        // NOT a failure of the apply — the transaction committed and the ledger rows
+        // are in. Its own code so no wrapper can read this as a rollback, and non-zero
+        // so nothing downstream can read the OPERATION as finished.
+        process.exitCode = 3;
+      } else if (pending === 0) {
+        console.log(`\n✓ corpus fully embedded — the vector path can see every row.`);
+      } else {
+        console.log(`\n· corpus not readable from this connection — embedding state unknown.`);
+      }
+    }
   } catch (e) {
     await client.query("rollback");
     console.error(`\n✗ FAILED — rolled back, nothing was applied.\n  ${e.message}`);
