@@ -26,9 +26,13 @@ import { readFileSync, existsSync } from "node:fs";
 
 const PORT = process.env.PORT || "4444";
 const BASE = `http://127.0.0.1:${PORT}`;
+// /partners and /rent-eilat left this list on 2026-09-08: middleware.ts has answered
+// both with 410 since 2026-09-02 (owner decision), and a route that is gone is not
+// a page to audit — it was the first stop, so the whole run died before it measured
+// anything. Every route here is one the build actually serves.
 const ROUTES = [
   "/", "/mia-four", "/klnoit-4-galgalim", "/klnoit-mitkapelet", "/klnoit-shetach",
-  "/eligibility", "/partners", "/rent-eilat", "/thank-you", "/marketplace-preview",
+  "/eligibility", "/thank-you", "/marketplace-preview",
   "/legal/terms", "/legal/privacy", "/legal/accessibility",
 ];
 

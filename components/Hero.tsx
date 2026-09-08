@@ -1,17 +1,86 @@
 "use client";
 
-// components/Hero.tsx — Ultra Master cinematic Hero Gate V3.
-// Replaces the pale, overloaded first screen with a dark, product-dominant gate:
-// one promise (H1), one primary action (#sim), one secondary (#cinema). Brand
-// Lexicon glyphs are SVG (never system emoji); real emoji live only in native
-// channels (WhatsApp / OG). Palette + type scoped in app/miame-hero-v2.css.
+// components/Hero.tsx — Ultra Master Hero Gate V4 · STUDIO LIGHT.
+// One promise (H1), one primary action (#sim), one secondary (#cinema), on the
+// same white ground as the launch strip above it and lit by the site's adaptive
+// ambient light (V3 was a dark gate with its own palette — retired 2026-09-08 on
+// the owner's call). Brand Lexicon glyphs are SVG (never system emoji); real
+// emoji live only in native channels (WhatsApp / OG). Palette, type and the 3D
+// stage are scoped in app/miame-hero-v2.css.
 
 import Image from "next/image";
+import { useEffect, useRef } from "react";
 import LexIcon from "@/components/LexIcon";
 import { track } from "@/lib/analytics";
 import { WARRANTY_TERM } from "@/lib/content";
 
+/** Degrees of yaw / pitch at the stage's edge. Small on purpose: the product is a
+ *  still, and past ~8° a flat still starts to read as a card, not an object. */
+const TILT_YAW_DEG = 7;
+const TILT_PITCH_DEG = 5;
+
 export default function Hero() {
+  const stageRef = useRef<HTMLDivElement>(null);
+
+  // ── The 3D stage's pointer axis ─────────────────────────────────────────────
+  // Writes four custom properties on the stage (--tilt-x/--tilt-y in degrees,
+  // --sheen-x/--sheen-y in %), which app/miame-hero-v2.css turns into a
+  // perspective tilt of the product and a pool of the room's light under the
+  // pointer. Same discipline as AmbientLight and CardSpotlight: CSS variables,
+  // no React state, one rAF per frame at most. Scoped to the stage element, so
+  // it cannot collide with the --mx/--my the page-level spotlight writes on
+  // <html>.
+  //
+  // Gated on `(pointer: fine)` — a finger cannot hover, so on touch the
+  // stylesheet gives the stage a slow idle turn instead — and on
+  // `(prefers-reduced-motion: reduce)`, for whom neither happens: the product
+  // stands still. Both gates are also asserted by test/heroLight.test.ts.
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    const fine = window.matchMedia("(pointer: fine)").matches;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!fine || reduce) return;
+
+    let raf = 0;
+    let next: { x: number; y: number } | null = null;
+
+    const write = () => {
+      raf = 0;
+      if (!next) return;
+      // "Look around" convention: the side under the pointer comes toward the
+      // viewer (rotateY is negative for +x in CSS's left-handed screen space).
+      el.style.setProperty("--tilt-x", (-next.x * TILT_YAW_DEG).toFixed(2) + "deg");
+      el.style.setProperty("--tilt-y", (next.y * TILT_PITCH_DEG).toFixed(2) + "deg");
+      el.style.setProperty("--sheen-x", (50 + next.x * 50).toFixed(1) + "%");
+      el.style.setProperty("--sheen-y", (50 + next.y * 50).toFixed(1) + "%");
+    };
+    const onMove = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      next = {
+        x: ((e.clientX - r.left) / r.width) * 2 - 1,
+        y: ((e.clientY - r.top) / r.height) * 2 - 1,
+      };
+      el.style.setProperty("--sheen", "1");
+      if (!raf) raf = requestAnimationFrame(write);
+    };
+    const onLeave = () => {
+      next = null;
+      el.style.setProperty("--tilt-x", "0deg");
+      el.style.setProperty("--tilt-y", "0deg");
+      el.style.setProperty("--sheen", "0");
+    };
+
+    el.addEventListener("pointermove", onMove, { passive: true });
+    el.addEventListener("pointerleave", onLeave);
+    return () => {
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerleave", onLeave);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
   return (
     <section className="hero-v2" aria-label="MIA FOUR · Electric Freedom">
       <div className="hero-v2-energy hero-v2-energy-a" aria-hidden="true" />
@@ -97,10 +166,21 @@ export default function Hero() {
         </div>
 
         <div className="hero-v2-visual">
-          <div className="hero-v2-product-stage">
+          <div className="hero-v2-product-stage" ref={stageRef}>
             <div className="hero-v2-orbit hero-v2-orbit-a" aria-hidden="true" />
             <div className="hero-v2-orbit hero-v2-orbit-b" aria-hidden="true" />
+            <div className="hero-v2-sheen" aria-hidden="true" />
+            <div className="hero-v2-ground" aria-hidden="true" />
 
+            {/* The studio still, at the file's full intrinsic detail (1400×1498 —
+                test/imageLayout.test.ts holds width/height to the header).
+                `sizes` is the slot the grid actually gives: 92vw stacked, ~48vw in
+                the two-column band, and a 520px ceiling once --maxw caps the
+                container — DERIVED in test/heroLight.test.ts from --maxw and the
+                grid, so the browser fetches the rendition the edge needs and not
+                the one a guess allowed. quality=90 (default 75): this is the LCP
+                and the product; the extra bytes buy clean edges on the cut-out,
+                which is where AVIF/WebP at 75 ring first. */}
             <Image
               src="/mia-four-x6-studio.webp"
               alt="MIA FOUR, קלנועית חשמלית פרימיום על ארבעה גלגלים"
@@ -108,7 +188,8 @@ export default function Hero() {
               height={1498}
               priority
               fetchPriority="high"
-              sizes="(max-width: 900px) 92vw, (max-width: 1280px) 46vw, 510px"
+              quality={90}
+              sizes="(max-width: 900px) 92vw, (max-width: 1120px) 48vw, 520px"
               className="hero-v2-product"
             />
 
