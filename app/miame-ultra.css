@@ -460,11 +460,12 @@ img,svg,video,canvas{max-width:100%}
 /* SHARPNESS. `-webkit-font-smoothing:antialiased` disables subpixel rendering and
    thins every stroke — on the light Pearl surfaces that reads as soft/washed. Let
    the OS render body copy natively (sharper, slightly heavier), and keep the
-   antialiased path ONLY on the dark panels, where subpixel fringing is visible. */
+   antialiased path ONLY on the dark panels, where subpixel fringing is visible.
+   (.hero-v2 left this list on 2026-09-08 when the Hero moved to the white ground.) */
 body{text-rendering:optimizeLegibility;-webkit-font-smoothing:auto;
   -moz-osx-font-smoothing:auto;font-optical-sizing:auto;
   font-synthesis-weight:none}
-.sim-result,.hero-v2,.importer-band,.tribute-calc,.soon-card,.eng-sec,
+.sim-result,.importer-band,.tribute-calc,.soon-card,.eng-sec,
 .patent-showcase{
   -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 
