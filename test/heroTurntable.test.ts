@@ -143,6 +143,21 @@ describe("the crossfade cannot ghost", () => {
     expect(rule(".hero-v2-product-img")).not.toMatch(/opacity|transition/);
   });
 
+  it("the base leaves the stage while another angle shows — with the fade's own delay, by visibility", () => {
+    // The frames are cut-outs. An opaque base under a different angle shows
+    // through that angle's transparent pixels: measured live on 2026-09-08 as two
+    // vehicles at once. So the base hides — by visibility, never opacity, it is
+    // the LCP — exactly when the incoming frame has finished fading in.
+    const covered = rule('.hero-v2-product-img[data-covered="true"]');
+    expect(covered).toMatch(/visibility:\s*hidden/);
+    const delay = covered.match(/transition:\s*visibility\s+0s\s+linear\s+([\d.]+)s/)?.[1];
+    const fade = rule('.hero-v2-frame[data-active="true"]').match(/transition:\s*opacity\s+([\d.]+)s/)?.[1];
+    expect(delay, "the base has no delayed visibility transition").toBeTruthy();
+    expect(Number(delay)).toBe(Number(fade));
+    expect(covered).not.toMatch(/opacity/);
+    expect(tsx).toMatch(/data-covered=\{frame !== 0 \? "true" : undefined\}/);
+  });
+
   it("reduced motion turns the fade into a cut", () => {
     const reduce = hero.slice(hero.lastIndexOf("prefers-reduced-motion: reduce"));
     expect(reduce).toMatch(/\.hero-v2-frame\s*\{\s*transition:\s*none/);

@@ -411,7 +411,11 @@ export default function Hero() {
                       the LCP and the product; the extra bytes buy clean edges on
                       the cut-out, which is where AVIF/WebP at 75 ring first. It
                       is the ONLY in-flow child of the rig, so the reserved box is
-                      the image's own. */}
+                      the image's own. While another angle is showing it is
+                      hidden (visibility, never opacity) — the frames are
+                      cut-outs, and an opaque base would show through the
+                      silhouette of every other angle. Measured live on
+                      2026-09-08: two vehicles at once on a phone. */}
                   <Image
                     src="/mia-four-360-1.webp"
                     alt="MIA FOUR, קלנועית חשמלית פרימיום על ארבעה גלגלים"
@@ -423,6 +427,7 @@ export default function Hero() {
                     sizes="(max-width: 900px) 92vw, (max-width: 1120px) 48vw, 520px"
                     draggable={false}
                     className="hero-v2-product-img"
+                    data-covered={frame !== 0 ? "true" : undefined}
                   />
                   {/* The other angles, mounted after the LCP has landed. Each is
                       the base box's absolute twin; the stylesheet crossfades the
