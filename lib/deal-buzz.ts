@@ -36,12 +36,20 @@ export interface TrustSignal {
 }
 
 // ── Launch offer (top strip) ────────────────────────────────────────────────
-// "מבצע השקה" is a real launch promotion; "מלאי מוגבל לפי זמינות" is honest
-// availability language (not a fabricated countdown or a fake unit counter).
+// "מבצע השקה" is a real launch promotion. The label is read by BOTH renders —
+// the strip's badge and the DealBuzz section kicker — so a renamed campaign
+// cannot half-land.
+//
+// `text` and `title` were retired on 2026-09-08. `title` had never had a render
+// site at all; `text` was the strip's paragraph, and every fact in it was
+// already said elsewhere on the page — the finance line by Hero.tsx (with the
+// asterisk this one lacked), the availability language by BUZZ_DISCLAIMER and
+// by the Hero's legal line, "בדיקת התאמה" by two CTAs on the same screen. It
+// also promised WhatsApp while the strip's only control scrolls to #sim. A copy
+// constant nobody renders is not honest urgency, it is decoration with a test
+// around it, so both are gone rather than kept for the guard's sake.
 export const LAUNCH_OFFER = {
   kicker: "מבצע השקה",
-  title: "מבצע השקה, מיה פור",
-  text: "מסלול אחד ברור: מקדמה גמישה ועד 18 תשלומים ללא ריבית והצמדה. בדיקת התאמה בוואטסאפ, מלאי מוגבל לפי זמינות.",
   cta: "לבדיקת התאמה מהירה",
 } as const;
 
@@ -104,7 +112,7 @@ export const BUZZ_DISCLAIMER =
 
 // ── The no-fake-scarcity contract (enforced by test/dealBuzz.test.ts) ───────
 // The concatenated buzz copy must match NONE of these. Kept deliberately narrow
-// so honest copy ("מלאי מוגבל לפי זמינות", "0% ריבית*", "12 חודשים") never trips
+// so honest copy ("זמינות מלאי", "0% ריבית*", "12 חודשים") never trips
 // a false positive, while any fabricated counter/timer/guarantee does.
 export const FORBIDDEN_BUZZ_PATTERNS: RegExp[] = [
   // fake "N people watching / viewing right now"

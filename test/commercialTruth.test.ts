@@ -21,7 +21,7 @@ import { join, resolve } from "node:path";
 import { MODELS, getModel } from "@/lib/models";
 import { TRACKS } from "@/lib/finance";
 import { WARRANTY_MONTHS, WARRANTY_TERM } from "@/lib/content";
-import { TRUST_SIGNALS } from "@/lib/deal-buzz";
+import { TRUST_SIGNALS, LAUNCH_OFFER } from "@/lib/deal-buzz";
 import { HOME_FAQ } from "@/lib/home-faq";
 
 const ROOT = process.cwd();
@@ -256,5 +256,62 @@ describe("no price renders with a stray separator before the currency sign", () 
       }
     }
     expect(hits, `malformed price:\n${hits.join("\n")}`).toEqual([]);
+  });
+});
+
+// ── the footnote marker and its resolution travel together ──────────────────
+//
+// Added 2026-09-08, when the launch strip's two paragraphs were deleted for
+// saying what the page already said. `.hero-v2-legal` is the next line that
+// LOOKS like the same kind of excess — eleven words, small type — and it is the
+// one that must not go: it is the sole resolution of the `*` in the Hero's
+// "עד 18 תשלומים ללא ריבית והצמדה*", and with the strip's disclaimer retired it
+// is now the only disclosure above the simulator. Cutting it would leave a
+// dangling footnote marker AND a real disclosure gap. Nothing in test/ asserted
+// it existed; now something does.
+describe("a payments asterisk in the Hero resolves in the Hero", () => {
+  const hero = code(read("components/Hero.tsx"));
+
+  it("is reading the Hero this test thinks it is", () => {
+    expect(hero, "components/Hero.tsx renders no payments claim — this guard is now blind").toMatch(/תשלומים/);
+  });
+
+  it("carries its own conditions line whenever it stars a payments claim", () => {
+    if (!/תשלומים[^*\n]*\*/.test(hero)) return; // no marker, nothing to resolve
+    expect(
+      hero,
+      'components/Hero.tsx marks a payments claim with "*" but no longer resolves it. ' +
+        'The Hero\'s legal line is the only thing that does, and after the launch strip\'s ' +
+        "disclaimer was retired it is the page's only disclosure above the simulator — " +
+        "restore it, or drop the asterisk it belongs to.",
+    ).toContain("בכפוף לאישור עסקה");
+    expect(hero, "the same line is what promises stock is not guaranteed").toContain("זמינות מלאי");
+  });
+});
+
+// ── the campaign label is written once ──────────────────────────────────────
+//
+// "מבצע השקה" renders twice on the home page — the launch strip's badge and the
+// DealBuzz section kicker — and until 2026-09-08 the second was a hard-typed
+// literal. Two copies of a promotional label agree on the day they are written
+// and disagree on the day the campaign is renamed, which is this file's whole
+// subject. An absence assertion, per the doctrine at the top: the literal must
+// not be in the components at all.
+describe("the launch campaign has one label", () => {
+  const LABEL = LAUNCH_OFFER.kicker;
+
+  it("is a label worth guarding", () => {
+    expect(LABEL.length).toBeGreaterThan(3);
+  });
+
+  it("is never re-typed in a component — every render reads LAUNCH_OFFER.kicker", () => {
+    const offenders = publicSources()
+      .filter((rel) => rel.startsWith("components/") || rel.startsWith("app/"))
+      .filter((rel) => code(read(rel)).includes(LABEL));
+    expect(
+      offenders,
+      `these files type "${LABEL}" instead of reading LAUNCH_OFFER.kicker from ` +
+        "lib/deal-buzz.ts. Rename the campaign once and they keep the old name.",
+    ).toEqual([]);
   });
 });

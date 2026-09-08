@@ -208,11 +208,20 @@ describe("stage — 3D that is inert by default and honest about its gates", () 
     expect(reduce).toContain(".hero-v2-product { animation: none");
   });
 
-  it("the idle turn exists only where there is no pointer to follow", () => {
+  it("the idle turn exists only where there is no pointer to follow, and only until the real one can run", () => {
     const hoverNone = hero.slice(hero.indexOf("@media (hover: none)"));
     expect(hoverNone).toContain(".hero-v2-product { animation: hero-yaw");
     // and not outside it: on a fine pointer the tilt owns the transform.
     expect(rule(".hero-v2-product")).not.toContain("animation:");
+    // THE GATE. A continuously-animated fractional rotateY makes the compositor
+    // resample the layer holding the LCP on every frame, forever: measured
+    // 2026-09-08 at 390×844 DPR3 over three alternating repeats (within-group
+    // spread 0.3%), turning it off raised the product's mean gradient magnitude
+    // 16.104 → 19.452 (+20.8%) and its p99 edge contrast 127.4 → 179.1 (+40.6%).
+    // The stage does the same thing for real once its six angles have loaded, so
+    // the fake yaw may only cover the window BEFORE that — hence the
+    // :not([data-spin]) qualifier, which Hero.tsx sets when the turntable arms.
+    expect(hoverNone).toContain(".hero-v2-product-stage:not([data-spin]) .hero-v2-product { animation: hero-yaw");
   });
 });
 
@@ -237,6 +246,28 @@ describe("the priority image fetches for the slot the grid gives it", () => {
     expect(tag).toMatch(new RegExp(`sizes="[^"]*,\\s*${ceiling}px"`));
     // and the two-column band is not under-declared (48vw covers the 46.4vw peak).
     expect(tag).toContain("(max-width: 1120px) 48vw");
+  });
+
+  // Added 2026-09-08. On a phone the product box was capped BELOW the stage that
+  // holds it — 300px inside 354px — so the browser downscaled the rendition it had
+  // already fetched: 1080 real pixels squeezed into 900 device pixels, a 1.20
+  // ratio, which the encode measurements showed is where ~29% of the source's edge
+  // energy goes. Filling the stage instead puts 1080 onto 1062 (ratio 1.02): the
+  // same bytes, no resampling, and a vehicle 18% larger. So the cap is DERIVED
+  // from the stage's own width, never typed — if .wrap's padding changes, this
+  // moves with it or fails.
+  it("the product fills the box the stage gives it, so the fetched rendition is not downscaled", () => {
+    const pad = ultra.match(/\.wrap\{[^}]*padding-inline:\s*clamp\((\d+)px/)?.[1];
+    expect(pad, ".wrap's padding-inline clamp is not where this test thinks it is").toBeTruthy();
+    // 390px is the reference phone the Hero's mobile branch is measured on; at that
+    // width 4vw = 15.6px, so the clamp floor wins on both sides.
+    const stage = 390 - 2 * Number(pad);
+    expect(stage).toBe(354);
+    const mobile = hero.slice(hero.indexOf("@media (max-width: 900px)"));
+    const cap = Number(mobile.match(/\.hero-v2-body\s*\{\s*width:\s*min\(100%,\s*(\d+)px\)/)?.[1]);
+    expect(cap, ".hero-v2-body declares no mobile width cap").toBeTruthy();
+    expect(cap, `the product is capped at ${cap}px inside a ${stage}px stage — the browser ` +
+      "will downscale the rendition it already paid for").toBeGreaterThanOrEqual(stage);
   });
 
   it("is the LCP: priority, high fetch priority, and a quality that keeps the cut-out's edge", () => {

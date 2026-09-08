@@ -31,7 +31,12 @@ export default function StickyCta() {
       setHidden(false);
       return;
     }
-    const io = new IntersectionObserver(([entry]) => setHidden(entry.isIntersecting));
+    // threshold 1, not 0: the bar's job is to supply a CTA when the Hero's is not
+    // usable, and half a button is not usable. With the product box widened on
+    // 2026-09-08 the action row falls a few pixels past the fold on a short phone
+    // (360×780), and at threshold 0 that partial sliver would have kept the bar
+    // hidden behind a clipped button.
+    const io = new IntersectionObserver(([entry]) => setHidden(entry.isIntersecting), { threshold: 1 });
     io.observe(heroCta);
     return () => io.disconnect();
   }, []);

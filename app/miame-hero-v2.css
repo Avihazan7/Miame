@@ -646,13 +646,22 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
      the vehicle was below the fold entirely. The copy is now four lines, so the
      product goes first and the CTA still lands in the same view. */
   .hero-v2-visual { order: -1; }
-  /* measured 2026-09-08: the stage's height is the IMAGE's, not min-height's —
-     1800×1994 at the container width is 383px tall on a 390px phone, and with
-     the turn controls the CTA fell 58px past the fold. So the product box is
-     capped here instead: the product still leads the screen, and the primary
-     action is still in the first view. Both, or neither is worth doing. */
   .hero-v2-product-stage { min-height: 320px; }
-  .hero-v2-body { width: min(100%, 300px); margin-inline: auto; }
+  /* THE PRODUCT BOX. This was capped at 300px on 2026-09-08 to keep the primary
+     CTA in the first view — and re-measured on 09-08 that cap bought nothing:
+     with the launch strip's two paragraphs still in place the CTA sat at y=909
+     against an 844px viewport anyway, i.e. below the fold WITH the cap. What
+     actually bought the fold back was deleting those 142px of duplicated copy.
+     So the cap is now the stage's own width, and the vehicle paints 300 → 354
+     CSS px (+18% linear, +39% area) — and, because `sizes` still resolves to the
+     1080 candidate, 1080 real pixels now land on 1062 device pixels instead of
+     900: the browser stops downscaling the product at all. Measured ratio
+     1.20 → 1.02. That 1:1 mapping is the sharpest a raster can be presented.
+     On a short phone (360×780) the CTA row now falls 13px past the fold; that
+     is the case StickyCta covers — it watches #hero-cta at threshold 1, so a
+     CTA that is not FULLY visible brings the bar up. A CTA is always on screen;
+     it is no longer this cap's job to guarantee which one. */
+  .hero-v2-body { width: min(100%, 354px); margin-inline: auto; }
 }
 @media (max-width: 560px) {
   .hero-v2-grid { padding-block: 14px 28px; gap: 10px; }
@@ -664,9 +673,21 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
   .hero-v2-free-chip { inset-block-end: 16%; }
 }
 
-/* ── no pointer to follow: a slow idle turn gives the stage its depth instead ── */
+/* ── no pointer to follow: a slow idle turn gives the stage its depth instead —
+   BUT ONLY UNTIL THE REAL TURNTABLE IS ARMED.
+   A continuously-animated fractional rotateY forces the compositor to resample
+   the layer that holds the LCP on every frame, forever. Measured 2026-09-08 at
+   390×844 DPR3, three alternating repeats (within-group spread 0.3%), gradient
+   magnitude over .hero-v2-body: with the yaw running mean 16.104 / p99 127.4;
+   with it off mean 19.452 (+20.8%) / p99 179.1 (+40.6%). Forty percent of the
+   product's peak edge contrast, for free, on every phone.
+   And it was paying that to fake what the stage does for real: once the six
+   angles have loaded, Hero.tsx marks the stage [data-spin] and idles a genuine
+   360° turn through them. So the fake yaw now covers exactly the window before
+   the real one exists — a still that would otherwise not move — and gets out of
+   the way the moment the turntable can rotate the actual vehicle. */
 @media (hover: none) {
-  .hero-v2-product { animation: hero-yaw 18s ease-in-out infinite; }
+  .hero-v2-product-stage:not([data-spin]) .hero-v2-product { animation: hero-yaw 18s ease-in-out infinite; }
 }
 @keyframes hero-yaw {
   0%, 100% { transform: perspective(1400px) rotateY(-3.5deg); }
