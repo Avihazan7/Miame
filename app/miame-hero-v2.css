@@ -480,12 +480,15 @@
 }
 /* the other five angles (and a twin of the first, for a fade back to it) —
    absolute copies of the base box, mounted by Hero.tsx after the LCP has landed.
-   A frame fades IN over the opaque base; the one it replaces stays until the
-   fade is complete and then drops in zero time, so at no point does the base
-   angle ghost through two half-transparent frames. The fade is short (280ms):
-   sixty degrees apart, two angles blended for longer read as two vehicles, not
-   one turning — measured on the first build, where a 550ms dissolve was caught
-   mid-way as a double image. The base <img> itself never
+   A frame fades IN over the frame before it; the one it replaces stays until
+   the fade is complete and then drops in zero time, so at no point do two
+   half-transparent frames blend over a third. The frames are CUT-OUTS: the base
+   image therefore hides (visibility, with the same delay — never opacity, it is
+   the LCP) while any other angle shows, or its silhouette would stay visible
+   through every other angle's transparent pixels — which is exactly what the
+   first live build did, measured on a phone as two vehicles at once. The fade
+   is short (180ms): sixty degrees apart, two angles blended for longer read as
+   two vehicles, not one turning. The base <img> itself never
    changes opacity (the LCP stays a plain box). */
 .hero-v2-frame {
   position: absolute;
@@ -495,11 +498,17 @@
   object-fit: contain;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0s linear .28s;
+  transition: opacity 0s linear .18s;
 }
 .hero-v2-frame[data-active="true"] {
   opacity: 1;
-  transition: opacity .28s ease;
+  transition: opacity .18s ease;
+}
+/* the base leaves the stage the instant the incoming frame is fully in, and is
+   back the instant its own twin (frame 0) is chosen — identical pixels, no flash */
+.hero-v2-product-img[data-covered="true"] {
+  visibility: hidden;
+  transition: visibility 0s linear .18s;
 }
 /* specular carrier — masked with the SAME URL the <img> loaded (Hero.tsx writes
    --product-src from img.currentSrc; a cache hit, never a second fetch). Invisible
