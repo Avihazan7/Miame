@@ -45,11 +45,27 @@ export default function Hero() {
   const stageRef = useRef<HTMLDivElement>(null);
   /** Which of the six angles is showing. 0 is the hero angle, the base image. */
   const [frame, setFrame] = useState(0);
-  /** The five other angles are mounted only once the LCP has landed and the
-   *  browser is idle — they must never compete with it for bandwidth. Spin is
-   *  armed only when every frame has DECODED: a turntable that stalls on a
-   *  frame that has not arrived is not a turntable. */
-  const [spin, setSpin] = useState(false);
+  /** The five other angles are MOUNTED once the LCP has landed and the browser
+   *  is idle — they must never compete with it for bandwidth. */
+  const [mounted, setMounted] = useState(false);
+  /** Which angles have actually painted, by their OWN load event.
+   *
+   *  This is the fix for a bug that reached production on 2026-09-08 and showed
+   *  as an EMPTY STAGE: the previous version armed the turntable from a manual
+   *  `new Image(); im.src = "/mia-four-360-2.webp"` preload, but next/image does
+   *  not request that path — it requests
+   *  `/_next/image?url=%2Fmia-four-360-2.webp&w=750&q=90`. Two different URLs,
+   *  two different cache entries. So the controls appeared while the overlays
+   *  still had no bytes, and the first turn hid the base image (correct — the
+   *  frames are cut-outs) over an overlay that had not painted. Nothing on
+   *  screen. Warming a URL nobody requests is not a preload; the only honest
+   *  readiness signal is the element's own `load`. */
+  const [loaded, setLoaded] = useState<ReadonlySet<number>>(() => new Set());
+  const markLoaded = useCallback((i: number) => {
+    setLoaded((prev) => (prev.has(i) ? prev : new Set(prev).add(i)));
+  }, []);
+  /** The stage can turn only when EVERY angle is on screen-ready. */
+  const spin = loaded.size === TURNTABLE_FRAMES.length;
   const lastInput = useRef(0);
 
   // ── The stage's pointer axis ────────────────────────────────────────────────
@@ -224,20 +240,10 @@ export default function Hero() {
     let timer = 0;
     let cancelled = false;
     const arm = () => {
-      // Decode every angle BEFORE the stage says it can turn. The frames are the
-      // same URLs next/image will request for the overlays (same width, same
-      // quality) — so this is the fetch, and mounting them afterwards is a cache
-      // hit. Until this resolves the stage is a still: no controls, no spin, and
-      // therefore never a step onto a frame that is not there yet.
-      const go = () => {
-        if (cancelled) return;
-        Promise.all(TURNTABLE_FRAMES.slice(1).map((f) => new Promise<void>((done) => {
-          const im = new window.Image();
-          im.onload = () => { void im.decode?.().catch(() => {}).then(() => done()); };
-          im.onerror = () => done();
-          im.src = f.src;
-        }))).then(() => { if (!cancelled) setSpin(true); });
-      };
+      // Mount the overlays. They then fetch their own renditions through
+      // next/image, and each reports readiness with its own `load` — which is
+      // what arms the turntable. No manual preload: see the note on `loaded`.
+      const go = () => { if (!cancelled) setMounted(true); };
       if (typeof window.requestIdleCallback === "function") idle = window.requestIdleCallback(go, { timeout: 2500 });
       else timer = window.setTimeout(go, 1200);
     };
@@ -430,14 +436,14 @@ export default function Hero() {
                     sizes="(max-width: 900px) 92vw, (max-width: 1120px) 48vw, 520px"
                     draggable={false}
                     className="hero-v2-product-img"
-                    data-covered={frame !== 0 ? "true" : undefined}
+                    data-covered={frame !== 0 && loaded.has(frame) ? "true" : undefined}
                   />
                   {/* The other angles, mounted after the LCP has landed. Each is
                       the base box's absolute twin; the stylesheet crossfades the
                       active one in over the opaque base. Frame 0 is included as
                       an overlay too (same URL — a cache hit), so a turn back to
                       the hero angle fades like every other step. */}
-                  {spin && TURNTABLE_FRAMES.map((f, i) => (
+                  {mounted && TURNTABLE_FRAMES.map((f, i) => (
                     <Image
                       key={f.src}
                       src={f.src}
@@ -451,7 +457,8 @@ export default function Hero() {
                       draggable={false}
                       className="hero-v2-frame"
                       data-index={i}
-                      data-active={i === frame ? "true" : undefined}
+                      data-active={i === frame && loaded.has(i) ? "true" : undefined}
+                      onLoad={() => markLoaded(i)}
                     />
                   ))}
                   <span className="hero-v2-gloss" aria-hidden="true">

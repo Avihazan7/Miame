@@ -97,8 +97,8 @@ describe("the base image is the hero angle, and the only priority image", () => 
   });
 
   it("the other angles mount only after the LCP, at low priority, hidden from assistive tech", () => {
-    expect(code).toMatch(/\{spin && TURNTABLE_FRAMES\.map\(/);
-    const overlay = tsx.match(/\{spin && TURNTABLE_FRAMES\.map\([\s\S]*?\/>\s*\)\)\}/)?.[0] ?? "";
+    expect(code).toMatch(/\{mounted && TURNTABLE_FRAMES\.map\(/);
+    const overlay = tsx.match(/\{mounted && TURNTABLE_FRAMES\.map\([\s\S]*?\/>\s*\)\)\}/)?.[0] ?? "";
     expect(overlay).not.toBe("");
     expect(overlay).not.toMatch(/\bpriority\b/);
     expect(overlay).toContain('fetchPriority="low"');
@@ -113,18 +113,24 @@ describe("the base image is the hero angle, and the only priority image", () => 
     expect(code).toMatch(/img\.addEventListener\("load", arm/);
   });
 
-  it("every angle is DECODED before the stage says it can turn", () => {
-    // The first build armed the spin on an idle callback and guarded each step
-    // with "is this frame loaded yet" — so an early drag simply did not move.
-    // Decoding all five up front removes both the guard and the stall: by the
-    // time a control exists, every angle is a swap away.
-    const at = code.indexOf("const arm = ");
-    expect(at, "the arming block is gone").toBeGreaterThan(0);
-    const arm = code.slice(at, code.indexOf("if (img.complete", at));
-    expect(arm).toContain("TURNTABLE_FRAMES.slice(1).map");
-    expect(arm).toContain("decode?.()");
-    expect(arm).toMatch(/Promise\.all\([\s\S]*?\)\.then\(\(\) => \{ if \(!cancelled\) setSpin\(true\); \}\)/);
-    expect(code, "a step is still gated on a per-frame loaded set").not.toContain("loaded.current");
+  it("readiness comes from the overlays' OWN load — never from a warmed side URL", () => {
+    // SHIPPED BUG, 2026-09-08: the stage went EMPTY in production. The turntable
+    // was armed by `new Image(); im.src = "/mia-four-360-2.webp"`, but next/image
+    // requests `/_next/image?url=%2Fmia-four-360-2.webp&w=750&q=90` — a different
+    // URL and a different cache entry. The controls appeared with no bytes behind
+    // them, the first turn hid the base (correct: the frames are cut-outs), and
+    // the overlay had nothing to show. A preload of a URL nobody requests is not
+    // a preload. The only signal that an angle can be shown is its own `load`.
+    expect(code, "a hand-rolled preload is back — it warms the wrong URL").not.toMatch(/new window\.Image\(\)/);
+    expect(code).toContain("const spin = loaded.size === TURNTABLE_FRAMES.length");
+    expect(code).toMatch(/onLoad=\{\(\) => markLoaded\(i\)\}/);
+  });
+
+  it("nothing can be shown, or hidden for, an angle that has not painted", () => {
+    // Both halves of the empty stage: the overlay only becomes visible once it
+    // has loaded, AND the base only hides once the incoming angle has loaded.
+    expect(code).toMatch(/data-active=\{i === frame && loaded\.has\(i\) \? "true" : undefined\}/);
+    expect(code).toMatch(/data-covered=\{frame !== 0 && loaded\.has\(frame\) \? "true" : undefined\}/);
   });
 });
 
@@ -156,7 +162,7 @@ describe("the swap is a cut — never two angles at once", () => {
     const covered = rule('.hero-v2-product-img[data-covered="true"]');
     expect(covered).toMatch(/visibility:\s*hidden/);
     expect(covered, "the base lingers behind a delay — that is the trail").not.toMatch(/transition|opacity/);
-    expect(tsx).toMatch(/data-covered=\{frame !== 0 \? "true" : undefined\}/);
+    expect(tsx).toMatch(/data-covered=\{frame !== 0 && loaded\.has\(frame\) \? "true" : undefined\}/);
   });
 
   it("the LCP itself is never given opacity or a transition", () => {
