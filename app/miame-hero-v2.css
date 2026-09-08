@@ -574,8 +574,9 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
   margin-top: 6px;
 }
 .hero-v2-turn-btn {
-  width: 40px;
-  height: 40px;
+  /* the one control on the stage — 44 is the floor, not the target size */
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   border: 1px solid var(--hero-rim);
   background: rgba(255, 255, 255, .82);

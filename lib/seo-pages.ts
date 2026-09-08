@@ -117,11 +117,16 @@ export const SEO_PAGES: SeoPage[] = [
     description:
       "כל מה שצריך לדעת על מיה פור (MIA FOUR): פלטפורמת 4 גלגלים מוגנת פטנט, סוללת ליתיום נשלפת 60V, עד 4 מנועים, שלושה דגמים והחל מ-19,900 ₪. בנו הצעת תשלום תוך דקה.",
     lede: "מיה פור היא קלנועית חשמלית פרימיום על פלטפורמת ארבעה גלגלים מוגנת פטנט, יציבה, נשלטת וחכמה. כאן ריכזנו את כל המידע: הדגמים, הסוללה, הטווח, האחריות ומסלולי התשלום, כדי שתוכלו לבחור נכון ולהתקדם לעסקה במיידי.",
+    // The hub hero is the SAME angle the homepage opens on — one of the owner's
+    // six 4K turntable renders (lib/turntable.ts, frame 0). It replaces the older
+    // studio still on 2026-09-08: a visitor arriving here from search should meet
+    // the vehicle they just saw, at 1,683px of silhouette instead of 1,431, and
+    // the two surfaces should not disagree about what MIA FOUR looks like.
     hero: {
-      image: "/mia-four-x6-studio.webp",
-      w: 1400,
-      h: 1498,
-      alt: "מיה פור X6, קלנועית חשמלית פרימיום על 4 גלגלים, צילום סטודיו"
+      image: "/mia-four-360-1.webp",
+      w: 1800,
+      h: 1994,
+      alt: "מיה פור, קלנועית חשמלית פרימיום על 4 גלגלים, צילום סטודיו"
     },
     // The MIA FOUR hub: the X4 is a legitimate representative of the platform this
     // page is about, and the viewer's own title names which model it is showing.

@@ -175,6 +175,30 @@ describe("the snippet names the thing, not only the title", () => {
   });
 });
 
+describe("llms.txt opens with the entity, and answers what it is asked", () => {
+  // An answer engine reads the first lines of llms.txt as the definition of the
+  // site. Until 2026-09-08 they were "MiaMe — החופש שלך על ארבעה גלגלים" and a
+  // blockquote opening on "ניידות חשמלית פרימיום": a poem and a phrase nobody
+  // searches, on the two lines that decide how the entity is resolved.
+  const head = llms.slice(0, llms.indexOf("## מוצר"));
+
+  it("the heading and the summary both name the product and the category", () => {
+    expect(head).toContain(PRODUCT_NAME_HE);
+    expect(head).toContain(PRODUCT_NAME);
+    expect(head).toContain(PRODUCT_CATEGORY_HE);
+    expect(head.startsWith("# " + PRODUCT_NAME_HE), "the H1 of llms.txt does not open on the product").toBe(true);
+  });
+
+  it("carries the two facts a buyer asks before price: is it a vehicle, and is it covered", () => {
+    // The site's own legal page is explicit that MIA FOUR is a קלנועית and NOT a
+    // רכב — the single most-asked question, and the one an answer engine is most
+    // likely to get wrong from a competitor's page.
+    expect(llms, "llms.txt does not state the legal status").toMatch(/מעמד חוקי/);
+    expect(llms).toMatch(/אינה רכב/);
+    expect(llms, "llms.txt does not state the warranty term").toMatch(/אחריות ושירות \d+ חודשים/);
+  });
+});
+
 describe("the schema resolves the entity instead of inventing one", () => {
   const product = layout.slice(layout.indexOf('"@type": "Product"'), layout.indexOf("additionalProperty"));
 

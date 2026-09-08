@@ -360,7 +360,9 @@ export default function Hero() {
             <LexIcon name="check" /> עד 18 תשלומים ללא ריבית והצמדה*
           </p>
 
-          <div className="hero-v2-actions">
+          {/* id, not a class: StickyCta watches THIS box to know when the visitor
+              still has the Hero's own CTAs, so the mobile bar never covers them. */}
+          <div className="hero-v2-actions" id="hero-cta">
             <a
               className="btn hero-v2-primary"
               href="#sim"

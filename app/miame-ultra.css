@@ -363,7 +363,7 @@
   padding:0 26px;border-radius:15px;line-height:1;text-align:center;white-space:nowrap;
   will-change:transform,box-shadow;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .btn-block{width:100%}
-.btn-sm{min-height:42px;padding-inline:16px;font-size:14px}
+.btn-sm{min-height:44px;padding-inline:16px;font-size:14px}
 .cta-stack{display:grid;gap:12px}
 .cta-stack .btn{width:100%}
 
@@ -723,6 +723,7 @@ body{text-rendering:optimizeLegibility;-webkit-font-smoothing:auto;
 .p360-controls{position:absolute;inset:auto clamp(12px,3vw,20px) clamp(12px,3vw,20px) auto;z-index:3}
 .p360-btn{
   cursor:pointer;padding:9px 18px;border-radius:999px;font-weight:900;font-size:13.5px;
+  display:inline-flex;align-items:center;justify-content:center;min-height:44px;
   color:#eafff8;background:rgba(5,7,13,.55);border:1px solid rgba(87,224,180,.35);
   backdrop-filter:blur(6px);transition:border-color .18s ease, background .18s ease;
 }
