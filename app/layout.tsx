@@ -79,8 +79,16 @@ export const metadata: Metadata = {
     default: `${PRODUCT_NAME_HE} · ${PRODUCT_CATEGORY_HE} חשמלית 4 גלגלים | MiaMe`,
     template: "%s | MiaMe",
   },
+  // THE SNIPPET NAMES THE THING TOO. The title was fixed on 2026-09-01 and the H1
+  // on the same day; the description — the two lines Google prints under that
+  // title, and the passage an answer engine quotes — was not re-read, and still
+  // opened on "ניידות חשמלית פרימיום": the exact phrase the H1 comment above
+  // calls one nobody searches. It named neither the product (מיה פור) nor what
+  // the thing legally IS (קלנועית), on the one string that appears beside every
+  // result for the domain. Both are now first, and the imperative is plural, like
+  // every other call to action on the site ("בנו" · "צפו" · "גררו"), not "בנה".
   description:
-    "ניידות חשמלית פרימיום במחיר חכם. בנה הצעת תשלום מותאמת תוך דקה וקבל אותה ישירות בוואטסאפ. מבית Leasing.co.il.",
+    `${PRODUCT_NAME_HE} · ${PRODUCT_CATEGORY_HE} חשמלית פרימיום על 4 גלגלים. בנו הצעת תשלום מותאמת תוך דקה וקבלו אותה ישירות בוואטסאפ. מבית Leasing.co.il.`,
   applicationName: "MiaMe",
   // "רכב חשמלי" was removed, and not for SEO: the site's own legal page states
   // that MIA FOUR is classified as a קלנועית and is NOT a vehicle. A keyword that
@@ -104,9 +112,9 @@ export const metadata: Metadata = {
   // so we let the files drive the <head> links and keep this object focused on the
   // rest of the metadata.
   openGraph: {
-    title: "MiaMe · החופש שלך על ארבעה גלגלים",
+    title: `${PRODUCT_NAME_HE} · ${PRODUCT_CATEGORY_HE} חשמלית | MiaMe`,
     description:
-      "ניידות חשמלית פרימיום במחיר חכם. הצעת תשלום מותאמת תוך דקה, ישירות לוואטסאפ.",
+      `${PRODUCT_NAME_HE} · ${PRODUCT_CATEGORY_HE} חשמלית פרימיום על 4 גלגלים. הצעת תשלום מותאמת תוך דקה, ישירות לוואטסאפ.`,
     url: SITE_URL,
     siteName: "MiaMe",
     locale: "he_IL",
@@ -193,7 +201,7 @@ const JSON_LD = {
       name: "MiaMe",
       url: SITE_URL,
       logo: SITE_URL + "/mia-four-logo.webp",
-      description: "ניידות חשמלית פרימיום במחיר חכם, מבית Leasing.co.il.",
+      description: `${PRODUCT_NAME_HE} · ${PRODUCT_CATEGORY_HE} חשמלית פרימיום, מבית Leasing.co.il.`,
       // `sameAs` — the machine-readable assertion that this business and the
       // accounts listed are ONE entity. It carries the BRAND's profiles and only
       // those: the owner's personal accounts stay unlinked and unnamed in public,
