@@ -169,15 +169,39 @@ export default function Hero() {
     };
   }, []);
 
-  // The mask follows the angle: once a frame is showing and loaded, its own
-  // rendition becomes the silhouette (same URL as its <img> — cache hit).
+  // ── The wax turns with the vehicle ──────────────────────────────────────────
+  // Two things happen on every angle change, and they are the whole reason the
+  // finish is called Wax Nano Cristal rather than "a gloss".
+  //
+  // 1. THE SILHOUETTE FOLLOWS. The specular layer is masked to the product's
+  //    outline, so a mask left on the previous angle would light the shape of a
+  //    vehicle that is no longer there. It reads the SHOWING image's own
+  //    currentSrc — the bytes already decoded, never a second request — and that
+  //    includes frame 0, whose image is the base <img>: the first version of
+  //    this effect returned early on 0 and left the mask stuck on angle 5.
+  // 2. THE LIGHT CATCHES IT. One transform-only sweep across the masked body,
+  //    every time the vehicle turns. On a hard-cut turntable this is what tells
+  //    the eye a surface moved rather than a picture swapped — the material
+  //    doing the work the crossfade used to fake. It outranks the CSS idle loop
+  //    while it runs and leaves no fill, so the loop resumes untouched, and it
+  //    is skipped for a visitor who asked for reduced motion (the stage carries
+  //    no mask at all for them).
+  const firstAngle = useRef(true);
   useEffect(() => {
     const el = stageRef.current;
-    if (!el || frame === 0 || !el.dataset.material) return;
-    const img = el.querySelector<HTMLImageElement>(`img.hero-v2-frame[data-index="${frame}"]`);
+    if (!el || !el.dataset.material) return;
+    const img = frame === 0
+      ? el.querySelector<HTMLImageElement>("img.hero-v2-product-img")
+      : el.querySelector<HTMLImageElement>(`img.hero-v2-frame[data-index="${frame}"]`);
     const src = img?.currentSrc || img?.src;
     if (!img || !img.complete || !src) return;
     el.style.setProperty("--product-src", 'url("' + src.replace(/["\\]/g, encodeURIComponent) + '")');
+
+    if (firstAngle.current) { firstAngle.current = false; return; }
+    el.querySelector<HTMLElement>(".hero-v2-gloss-band")?.animate(
+      [{ transform: "translateX(-140%)" }, { transform: "translateX(240%)" }],
+      { duration: 900, easing: "cubic-bezier(.2,.7,.2,1)" },
+    );
   }, [frame]);
 
   // ── The turntable ───────────────────────────────────────────────────────────

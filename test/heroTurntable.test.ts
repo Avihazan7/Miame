@@ -222,6 +222,27 @@ describe("who turns it, and when", () => {
     expect(hero).toMatch(/\.hero-v2-product-stage:focus-visible\s*\{\s*outline:\s*3px solid var\(--hero-accent\)/);
   });
 
+  it("the wax catches the light on every turn, transform-only, never on the first paint", () => {
+    // A hard cut has no motion of its own. The sweep across the masked body is
+    // what tells the eye a SURFACE turned rather than a picture being swapped —
+    // and it must not fire on mount, where nothing has turned yet.
+    const eff = code.slice(code.indexOf("const firstAngle"), code.indexOf("}, [frame]);"));
+    expect(eff).toContain("firstAngle.current");
+    expect(eff).toContain(".hero-v2-gloss-band");
+    const frames = /animate\(\s*\[([\s\S]*?)\]/.exec(eff)?.[1] ?? "";
+    expect(frames).not.toBe("");
+    for (const key of [...frames.matchAll(/\{\s*([a-zA-Z]+):/g)].map((m) => m[1])) expect(key).toBe("transform");
+  });
+
+  it("the mask follows EVERY angle, frame 0 included", () => {
+    // The first version returned early on frame 0, so turning back to the hero
+    // angle lit the silhouette of whichever angle came before it.
+    const eff = code.slice(code.indexOf("const firstAngle"), code.indexOf("}, [frame]);"));
+    expect(eff, "frame 0 is skipped again — the mask will stick").not.toMatch(/frame === 0\) return/);
+    expect(eff).toContain('img.hero-v2-product-img');
+    expect(eff).toContain("img.hero-v2-frame[data-index=");
+  });
+
   it("the specular mask follows the showing angle, still from a loaded <img>'s own URL", () => {
     const follow = code.slice(code.indexOf("The mask follows the angle") >= 0 ? code.indexOf("The mask follows the angle") : code.indexOf("}, [frame]);") - 600, code.indexOf("}, [frame]);"));
     expect(follow).toContain("img.hero-v2-frame");

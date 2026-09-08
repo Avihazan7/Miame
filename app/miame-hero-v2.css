@@ -418,7 +418,11 @@
   backface-visibility: hidden;
   transform: perspective(1400px) translateZ(var(--lift, 0px)) rotateX(var(--tilt-y)) rotateY(var(--tilt-x));
   transition: transform .45s cubic-bezier(.2, .7, .2, 1);
-  filter: drop-shadow(0 0 1.5px hsla(var(--amb-hue-a), 95%, 55%, .7));
+  /* the crystalline rim: a room-lit hairline traced along the cut-out's alpha
+     edge — the only way to rim a still without a second mask, and a kernel small
+     enough to cost nothing per frame. 2px, because at 1.5px on a 500px-wide
+     product it was a rumour rather than an edge. */
+  filter: drop-shadow(0 0 2px hsla(var(--amb-hue-a), 95%, 52%, .85));
 }
 /* THE LCP. Nothing but its box. */
 .hero-v2-product-img {
@@ -480,7 +484,7 @@
   top: -10%; bottom: -10%; left: 0;
   width: 60%;
   transform: translateX(-140%);
-  background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, .42) 46%, hsla(var(--amb-hue-a), 95%, 88%, .30) 54%, transparent 80%);
+  background: linear-gradient(105deg, transparent 18%, rgba(255, 255, 255, .55) 44%, hsla(var(--amb-hue-a), 96%, 86%, .42) 56%, transparent 82%);
 }
 
 .hero-v2-power-chip,
