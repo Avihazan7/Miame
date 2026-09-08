@@ -113,54 +113,61 @@ describe("the base image is the hero angle, and the only priority image", () => 
     expect(code).toMatch(/img\.addEventListener\("load", arm/);
   });
 
-  it("a frame is only stepped onto once its bytes have arrived", () => {
-    expect(code).toMatch(/onLoad=\{\(\) => \{ loaded\.current\.add\(i\); \}\}/);
-    expect(code).toMatch(/return loaded\.current\.has\(n\) \? n : f;/);
+  it("every angle is DECODED before the stage says it can turn", () => {
+    // The first build armed the spin on an idle callback and guarded each step
+    // with "is this frame loaded yet" — so an early drag simply did not move.
+    // Decoding all five up front removes both the guard and the stall: by the
+    // time a control exists, every angle is a swap away.
+    const at = code.indexOf("const arm = ");
+    expect(at, "the arming block is gone").toBeGreaterThan(0);
+    const arm = code.slice(at, code.indexOf("if (img.complete", at));
+    expect(arm).toContain("TURNTABLE_FRAMES.slice(1).map");
+    expect(arm).toContain("decode?.()");
+    expect(arm).toMatch(/Promise\.all\([\s\S]*?\)\.then\(\(\) => \{ if \(!cancelled\) setSpin\(true\); \}\)/);
+    expect(code, "a step is still gated on a per-frame loaded set").not.toContain("loaded.current");
   });
 });
 
-describe("the crossfade cannot ghost", () => {
-  it("frames are absolute twins of the base box, invisible by default", () => {
+describe("the swap is a cut — never two angles at once", () => {
+  // MEASURED on the owner's phone, 2026-09-08: "a half-second trail where two
+  // images are visible". That is not a bug in the blend, it IS the blend — any
+  // opacity crossfade between two angles 60° apart shows both vehicles for its
+  // whole duration. A real turntable is a camera moving around a subject: one
+  // angle, then the next. So there is no transition here at all, and these
+  // assertions exist to stop one being re-introduced as a "polish".
+
+  it("frames carry no opacity and no transition — visibility only", () => {
     const f = rule(".hero-v2-frame");
     expect(f).toMatch(/position:\s*absolute/);
     expect(f).toMatch(/inset:\s*0/);
     expect(f).toMatch(/width:\s*100%/);
-    expect(f).toMatch(/opacity:\s*0\s*;/);
+    expect(f).toMatch(/visibility:\s*hidden/);
     expect(f).toMatch(/pointer-events:\s*none/);
-    expect(f, "the frame overlays must not animate on their own").not.toContain("animation");
+    expect(f, "a frame animates or fades — the trail is back").not.toMatch(/opacity|transition|animation/);
   });
 
-  it("the outgoing frame holds until the incoming one is fully in, then drops in zero time", () => {
-    const off = rule(".hero-v2-frame").match(/transition:\s*opacity\s+0s\s+linear\s+([\d.]+)s/);
-    const on = rule('.hero-v2-frame[data-active="true"]').match(/transition:\s*opacity\s+([\d.]+)s\s+ease/);
-    expect(off, "the off transition is not a delayed cut").toBeTruthy();
-    expect(on, "the on transition is not a fade").toBeTruthy();
-    expect(Number(off![1])).toBe(Number(on![1]));
-    expect(rule('.hero-v2-frame[data-active="true"]')).toMatch(/opacity:\s*1/);
+  it("exactly one frame is visible, and it becomes visible instantly", () => {
+    const active = rule('.hero-v2-frame[data-active="true"]');
+    expect(active).toMatch(/visibility:\s*visible/);
+    expect(active, "the active frame fades in").not.toMatch(/opacity|transition/);
   });
 
-  it("the base image never changes opacity — the LCP stays a plain box", () => {
-    expect(rule(".hero-v2-product-img")).not.toMatch(/opacity|transition/);
-  });
-
-  it("the base leaves the stage while another angle shows — with the fade's own delay, by visibility", () => {
-    // The frames are cut-outs. An opaque base under a different angle shows
-    // through that angle's transparent pixels: measured live on 2026-09-08 as two
-    // vehicles at once. So the base hides — by visibility, never opacity, it is
-    // the LCP — exactly when the incoming frame has finished fading in.
+  it("the base image is frame 0 in the same stack, hidden by the same rule", () => {
     const covered = rule('.hero-v2-product-img[data-covered="true"]');
     expect(covered).toMatch(/visibility:\s*hidden/);
-    const delay = covered.match(/transition:\s*visibility\s+0s\s+linear\s+([\d.]+)s/)?.[1];
-    const fade = rule('.hero-v2-frame[data-active="true"]').match(/transition:\s*opacity\s+([\d.]+)s/)?.[1];
-    expect(delay, "the base has no delayed visibility transition").toBeTruthy();
-    expect(Number(delay)).toBe(Number(fade));
-    expect(covered).not.toMatch(/opacity/);
+    expect(covered, "the base lingers behind a delay — that is the trail").not.toMatch(/transition|opacity/);
     expect(tsx).toMatch(/data-covered=\{frame !== 0 \? "true" : undefined\}/);
   });
 
-  it("reduced motion turns the fade into a cut", () => {
-    const reduce = hero.slice(hero.lastIndexOf("prefers-reduced-motion: reduce"));
-    expect(reduce).toMatch(/\.hero-v2-frame\s*\{\s*transition:\s*none/);
+  it("the LCP itself is never given opacity or a transition", () => {
+    expect(rule(".hero-v2-product-img")).not.toMatch(/opacity|transition/);
+  });
+
+  it("no rule anywhere transitions or animates a frame", () => {
+    for (const [sel, body] of RULES) {
+      if (!sel.includes("hero-v2-frame") && !sel.includes("hero-v2-product-img")) continue;
+      expect(body, `${sel} animates the swap`).not.toMatch(/transition|animation|opacity/);
+    }
   });
 });
 
@@ -213,6 +220,27 @@ describe("who turns it, and when", () => {
     expect(tsx).toMatch(/tabIndex=\{0\}/);
     expect(tsx).toMatch(/aria-label=\{`מיה פור בסיבוב 360°, \$\{showing\.label\}/);
     expect(hero).toMatch(/\.hero-v2-product-stage:focus-visible\s*\{\s*outline:\s*3px solid var\(--hero-accent\)/);
+  });
+
+  it("the wax catches the light on every turn, transform-only, never on the first paint", () => {
+    // A hard cut has no motion of its own. The sweep across the masked body is
+    // what tells the eye a SURFACE turned rather than a picture being swapped —
+    // and it must not fire on mount, where nothing has turned yet.
+    const eff = code.slice(code.indexOf("const firstAngle"), code.indexOf("}, [frame]);"));
+    expect(eff).toContain("firstAngle.current");
+    expect(eff).toContain(".hero-v2-gloss-band");
+    const frames = /animate\(\s*\[([\s\S]*?)\]/.exec(eff)?.[1] ?? "";
+    expect(frames).not.toBe("");
+    for (const key of [...frames.matchAll(/\{\s*([a-zA-Z]+):/g)].map((m) => m[1])) expect(key).toBe("transform");
+  });
+
+  it("the mask follows EVERY angle, frame 0 included", () => {
+    // The first version returned early on frame 0, so turning back to the hero
+    // angle lit the silhouette of whichever angle came before it.
+    const eff = code.slice(code.indexOf("const firstAngle"), code.indexOf("}, [frame]);"));
+    expect(eff, "frame 0 is skipped again — the mask will stick").not.toMatch(/frame === 0\) return/);
+    expect(eff).toContain('img.hero-v2-product-img');
+    expect(eff).toContain("img.hero-v2-frame[data-index=");
   });
 
   it("the specular mask follows the showing angle, still from a loaded <img>'s own URL", () => {

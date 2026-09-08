@@ -139,17 +139,15 @@ describe("contrast — computed against the white ground", () => {
     expect(contrast(hex, WHITE)).toBeGreaterThanOrEqual(4.5);
   });
 
-  it("the H1's gradient line: every stop ≥ 3:1 (large text), the solid fallback ≥ 4.5:1", () => {
-    const strong = rule(".hero-v2-title strong");
-    expect(strong).toContain("var(--grad-teal-text)");
-    expect(strong, "the gradient needs a solid colour under it for the SVG glyph and for fallback").toContain("color: var(--hero-accent)");
-    // The H1 clamp floor is 40px at weight 900 — large text by WCAG's 18.66px-bold rule.
-    expect(rule(".hero-v2-title")).toMatch(/font-size:\s*clamp\(40px/);
-    const grad = token(ultra, "--grad-teal-text");
-    const stops = [...grad.matchAll(/#[0-9a-f]{6}|var\(--[\w-]+\)/gi)].map((m) => hexOf(m[0]));
-    expect(stops.length).toBeGreaterThanOrEqual(2);
-    for (const s of stops) expect(contrast(s, WHITE), `gradient stop ${s}`).toBeGreaterThanOrEqual(3);
-    expect(contrast(accent, WHITE)).toBeGreaterThanOrEqual(4.5);
+  it("the H1 is ink on white, at the one scale the sheet declares", () => {
+    // The gradient poetry line was struck on 2026-09-08; what is left is the
+    // naming line, and it is plain ink — so its contrast is the --hero-ink pair
+    // measured above (18.3:1), with nothing clipped to a background.
+    const title = rule(".hero-v2-title");
+    expect(title).toContain("color: var(--hero-ink)");
+    expect(title, "the H1 clips text to a gradient again").not.toContain("background-clip");
+    expect(title).toMatch(/font-size:\s*clamp\(/);
+    expect(contrast(ink, WHITE)).toBeGreaterThanOrEqual(4.5);
   });
 
   it("the lime CTA and the mint chip keep their ink legible", () => {

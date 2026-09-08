@@ -127,30 +127,22 @@
 }
 
 /* ── copy column ── */
-.hero-v2-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  font-family: var(--font-grotesk), system-ui, sans-serif;
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--hero-accent);
-}
 
+/* The page's one H1 — a naming line, not a headline. On 2026-09-08 the owner
+   struck the eyebrow, the two poetry lines, the lede and the trust row off a
+   live screenshot and moved the product to the top of the screen; what a page
+   may not drop is its H1, so this is the entity, said once, at a size that lets
+   the product lead. */
 .hero-v2-title {
-  margin: 22px 0 0;
-  display: grid;
-  gap: 2px;
+  margin: 0;
   font-family: var(--font-heebo), system-ui, sans-serif;
-  /* Ceiling lowered from 92px and `white-space:nowrap` removed: the copy column is
-     ~482px at 1440px, so the old value could not fit "עכשיו בתנועה." and
-     .hero-v2{overflow:hidden} clipped it into the product column. nowrap was also
-     defeating the text-wrap:balance below. `display:grid` already gives each line
-     its own row. ONE clamp governs every width — do not re-add a size override. */
-  font-size: clamp(40px, 5.2vw, 74px);
-  line-height: .96;
+  color: var(--hero-ink);
+  font-weight: 800;
+  /* One clamp, and a low ceiling on purpose: this line names the product, the
+     product itself sells it. A headline scale here would push the vehicle back
+     under the fold on a phone, which is the change the owner asked for. */
+  font-size: clamp(21px, 2.4vw, 30px);
+  line-height: 1.25;
   letter-spacing: -.012em; /* Hebrew stays legible; no letter-clamping */
   text-wrap: balance;
 }
@@ -159,37 +151,8 @@
    eyebrow's scale and the accent, not the 74px clamp above. The selector is two
    classes deep on purpose: `.hero-v2-title span` below would otherwise paint it
    ink at weight 850 and it would read as a third headline. */
-.hero-v2-title .hero-v2-h1-name {
-  font-family: var(--font-grotesk), system-ui, sans-serif;
-  font-size: clamp(15px, 1.5vw, 20px);
-  font-weight: 700;
-  line-height: 1.4;
-  letter-spacing: .03em;
-  color: var(--hero-accent);
-  margin-bottom: 12px;
-}
 
-.hero-v2-title span { color: var(--hero-ink); font-weight: 850; }
-/* The second line wears the brand's light-ground gradient text, the same lockup
-   as the wordmark. `color` stays set underneath it: it is what the SVG glyph
-   inside inherits, and what paints if background-clip:text is unsupported. */
-.hero-v2-title strong {
-  color: var(--hero-accent);
-  font-weight: 900;
-  background: var(--grad-teal-text);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
 
-.hero-v2-sub {
-  max-width: 610px;
-  margin: 24px 0 0;
-  color: var(--hero-muted);
-  font-size: clamp(18px, 1.75vw, 23px);
-  line-height: 1.65;
-}
-.hero-v2-sub bdi { font-family: var(--font-grotesk), system-ui, sans-serif; font-weight: 700; color: var(--hero-ink); }
 
 .hero-v2-finance {
   display: inline-flex;
@@ -264,20 +227,6 @@
   box-shadow: inset 0 1px 0 #fff, var(--glow-room);
 }
 
-.hero-v2-trust {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 18px;
-  margin: 26px 0 0;
-  color: var(--hero-muted);
-  font-size: 13.5px;
-  font-weight: 600;
-}
-.hero-v2-trust span { display: inline-flex; align-items: center; gap: 6px; }
-.hero-v2-trust span + span::before {
-  content: "·"; color: hsla(var(--amb-hue-a), 40%, 45%, .6); margin-inline-end: 18px;
-}
 
 .hero-v2-legal {
   margin: 16px 0 0;
@@ -469,7 +418,11 @@
   backface-visibility: hidden;
   transform: perspective(1400px) translateZ(var(--lift, 0px)) rotateX(var(--tilt-y)) rotateY(var(--tilt-x));
   transition: transform .45s cubic-bezier(.2, .7, .2, 1);
-  filter: drop-shadow(0 0 1.5px hsla(var(--amb-hue-a), 95%, 55%, .7));
+  /* the crystalline rim: a room-lit hairline traced along the cut-out's alpha
+     edge — the only way to rim a still without a second mask, and a kernel small
+     enough to cost nothing per frame. 2px, because at 1.5px on a 500px-wide
+     product it was a rumour rather than an edge. */
+  filter: drop-shadow(0 0 2px hsla(var(--amb-hue-a), 95%, 52%, .85));
 }
 /* THE LCP. Nothing but its box. */
 .hero-v2-product-img {
@@ -480,15 +433,14 @@
 }
 /* the other five angles (and a twin of the first, for a fade back to it) —
    absolute copies of the base box, mounted by Hero.tsx after the LCP has landed.
-   A frame fades IN over the frame before it; the one it replaces stays until
-   the fade is complete and then drops in zero time, so at no point do two
-   half-transparent frames blend over a third. The frames are CUT-OUTS: the base
-   image therefore hides (visibility, with the same delay — never opacity, it is
-   the LCP) while any other angle shows, or its silhouette would stay visible
-   through every other angle's transparent pixels — which is exactly what the
-   first live build did, measured on a phone as two vehicles at once. The fade
-   is short (180ms): sixty degrees apart, two angles blended for longer read as
-   two vehicles, not one turning. The base <img> itself never
+   THE SWAP IS A CUT. A real turntable — a camera moving around a subject —
+   never shows two angles at once, so there is no crossfade here at all: exactly
+   one frame is `visible`, every other is `hidden`, and the change costs zero
+   frames of animation. The dissolve this replaces was measured live on the
+   owner's phone as "a half-second trail where two vehicles are visible", which
+   is precisely what any opacity blend between two 60°-apart angles must look
+   like. The base image is part of the same stack (it is frame 0, and the LCP),
+   so it hides by the same rule. Nothing here transitions. The base <img> itself never
    changes opacity (the LCP stays a plain box). */
 .hero-v2-frame {
   position: absolute;
@@ -497,19 +449,12 @@
   height: auto;
   object-fit: contain;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0s linear .18s;
-}
-.hero-v2-frame[data-active="true"] {
-  opacity: 1;
-  transition: opacity .18s ease;
-}
-/* the base leaves the stage the instant the incoming frame is fully in, and is
-   back the instant its own twin (frame 0) is chosen — identical pixels, no flash */
-.hero-v2-product-img[data-covered="true"] {
   visibility: hidden;
-  transition: visibility 0s linear .18s;
 }
+.hero-v2-frame[data-active="true"] { visibility: visible; }
+/* frame 0 IS the base image. It leaves the stage the instant another angle is
+   chosen and is back the instant it is chosen again — one swap, no blend. */
+.hero-v2-product-img[data-covered="true"] { visibility: hidden; }
 /* specular carrier — masked with the SAME URL the <img> loaded (Hero.tsx writes
    --product-src from img.currentSrc; a cache hit, never a second fetch). Invisible
    until the stage says the mask exists, and gone entirely where masks are not. */
@@ -539,7 +484,7 @@
   top: -10%; bottom: -10%; left: 0;
   width: 60%;
   transform: translateX(-140%);
-  background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, .42) 46%, hsla(var(--amb-hue-a), 95%, 88%, .30) 54%, transparent 80%);
+  background: linear-gradient(105deg, transparent 18%, rgba(255, 255, 255, .55) 44%, hsla(var(--amb-hue-a), 96%, 86%, .42) 56%, transparent 82%);
 }
 
 .hero-v2-power-chip,
@@ -662,8 +607,6 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
 
 /* ── lexicon icons ── */
 .lex-icon { flex: 0 0 auto; width: 1.05em; height: 1.05em; vertical-align: -0.14em; color: currentColor; }
-.hero-v2-eyebrow .lex-icon { width: 1.2em; height: 1.2em; }
-.hero-v2-h1-icon { width: .62em; height: .62em; margin-inline-start: .18em; color: var(--hero-accent); vertical-align: baseline; }
 .hero-v2-finance .lex-icon { color: var(--hero-accent); }
 .hero-v2-free-chip .lex-icon { width: 1.15em; height: 1.15em; }
 
@@ -690,20 +633,31 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
 
 /* ── responsive ── */
 @media (max-width: 900px) {
-  .hero-v2-grid { grid-template-columns: 1fr; padding-block: 104px 72px; }
+  /* The hero was 92svh tall with its content vertically CENTRED, so shrinking the
+     copy did not lift anything — it just grew the empty band above. On a phone the
+     hero is now exactly as tall as what is in it, aligned to the top. */
+  .hero-v2 { min-height: 0; align-items: start; }
+  .hero-v2-grid { grid-template-columns: 1fr; padding-block: 22px 40px; gap: 14px; }
   .hero-v2-copy { text-align: center; margin-inline: auto; }
-  .hero-v2-eyebrow, .hero-v2-actions, .hero-v2-trust, .hero-v2-finance { justify-content: center; }
-  .hero-v2-sub, .hero-v2-legal { margin-inline: auto; }
-  /* copy (incl. the primary CTA) stays first so the CTA lands above the mobile
-     fold; the product follows and still dominates on scroll. */
-  .hero-v2-product-stage { min-height: 420px; }
+  .hero-v2-actions, .hero-v2-finance { justify-content: center; }
+  .hero-v2-legal { margin-inline: auto; }
+  /* THE PRODUCT LEADS. It used to sit under a screenful of copy — on the phone
+     the vehicle was below the fold entirely. The copy is now four lines, so the
+     product goes first and the CTA still lands in the same view. */
+  .hero-v2-visual { order: -1; }
+  /* measured 2026-09-08: the stage's height is the IMAGE's, not min-height's —
+     1800×1994 at the container width is 383px tall on a 390px phone, and with
+     the turn controls the CTA fell 58px past the fold. So the product box is
+     capped here instead: the product still leads the screen, and the primary
+     action is still in the first view. Both, or neither is worth doing. */
+  .hero-v2-product-stage { min-height: 320px; }
+  .hero-v2-body { width: min(100%, 300px); margin-inline: auto; }
 }
 @media (max-width: 560px) {
-  .hero-v2-grid { padding-block: 92px 60px; gap: 26px; }
+  .hero-v2-grid { padding-block: 14px 28px; gap: 10px; }
   .hero-v2-actions { display: grid; grid-template-columns: 1fr; width: 100%; }
   .hero-v2-primary, .hero-v2-secondary { width: 100%; }
-  .hero-v2-product-stage { min-height: 340px; }
-  .hero-v2-trust { font-size: 12.5px; }
+  .hero-v2-product-stage { min-height: 300px; }
   .hero-v2-turn-hint { font-size: 11px; letter-spacing: .04em; }
   .hero-v2-power-chip { inset-block-start: 7%; }
   .hero-v2-free-chip { inset-block-end: 16%; }
@@ -735,8 +689,6 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
      parallax for this visitor, so this is belt and braces, not the only guard. */
   .hero-v2-product { transform: none; }
   .hero-v2-rig, .hero-v2-plane, .hero-v2-ground, .hero-v2-far { translate: none; }
-  /* a visitor's own turn still turns the vehicle — as a cut, not a fade */
-  .hero-v2-frame { transition: none; }
   .hero-v2-sheen { display: none; }
   .hero-v2-gloss { display: none; }
 }

@@ -46,9 +46,10 @@ export default function Hero() {
   /** Which of the six angles is showing. 0 is the hero angle, the base image. */
   const [frame, setFrame] = useState(0);
   /** The five other angles are mounted only once the LCP has landed and the
-   *  browser is idle — they must never compete with it for bandwidth. */
+   *  browser is idle — they must never compete with it for bandwidth. Spin is
+   *  armed only when every frame has DECODED: a turntable that stalls on a
+   *  frame that has not arrived is not a turntable. */
   const [spin, setSpin] = useState(false);
-  const loaded = useRef<Set<number>>(new Set([0]));
   const lastInput = useRef(0);
 
   // ── The stage's pointer axis ────────────────────────────────────────────────
@@ -168,15 +169,39 @@ export default function Hero() {
     };
   }, []);
 
-  // The mask follows the angle: once a frame is showing and loaded, its own
-  // rendition becomes the silhouette (same URL as its <img> — cache hit).
+  // ── The wax turns with the vehicle ──────────────────────────────────────────
+  // Two things happen on every angle change, and they are the whole reason the
+  // finish is called Wax Nano Cristal rather than "a gloss".
+  //
+  // 1. THE SILHOUETTE FOLLOWS. The specular layer is masked to the product's
+  //    outline, so a mask left on the previous angle would light the shape of a
+  //    vehicle that is no longer there. It reads the SHOWING image's own
+  //    currentSrc — the bytes already decoded, never a second request — and that
+  //    includes frame 0, whose image is the base <img>: the first version of
+  //    this effect returned early on 0 and left the mask stuck on angle 5.
+  // 2. THE LIGHT CATCHES IT. One transform-only sweep across the masked body,
+  //    every time the vehicle turns. On a hard-cut turntable this is what tells
+  //    the eye a surface moved rather than a picture swapped — the material
+  //    doing the work the crossfade used to fake. It outranks the CSS idle loop
+  //    while it runs and leaves no fill, so the loop resumes untouched, and it
+  //    is skipped for a visitor who asked for reduced motion (the stage carries
+  //    no mask at all for them).
+  const firstAngle = useRef(true);
   useEffect(() => {
     const el = stageRef.current;
-    if (!el || frame === 0 || !el.dataset.material) return;
-    const img = el.querySelector<HTMLImageElement>(`img.hero-v2-frame[data-index="${frame}"]`);
+    if (!el || !el.dataset.material) return;
+    const img = frame === 0
+      ? el.querySelector<HTMLImageElement>("img.hero-v2-product-img")
+      : el.querySelector<HTMLImageElement>(`img.hero-v2-frame[data-index="${frame}"]`);
     const src = img?.currentSrc || img?.src;
     if (!img || !img.complete || !src) return;
     el.style.setProperty("--product-src", 'url("' + src.replace(/["\\]/g, encodeURIComponent) + '")');
+
+    if (firstAngle.current) { firstAngle.current = false; return; }
+    el.querySelector<HTMLElement>(".hero-v2-gloss-band")?.animate(
+      [{ transform: "translateX(-140%)" }, { transform: "translateX(240%)" }],
+      { duration: 900, easing: "cubic-bezier(.2,.7,.2,1)" },
+    );
   }, [frame]);
 
   // ── The turntable ───────────────────────────────────────────────────────────
@@ -185,10 +210,7 @@ export default function Hero() {
   // transparent overlay. A visitor's own turn also rests the idle spin.
   const step = useCallback((dir: 1 | -1, byVisitor: boolean) => {
     if (byVisitor) lastInput.current = performance.now();
-    setFrame((f) => {
-      const n = wrapFrame(f + dir);
-      return loaded.current.has(n) ? n : f;
-    });
+    setFrame((f) => wrapFrame(f + dir));
   }, []);
 
   // 1) Mount the other angles only after the LCP has landed and the main thread
@@ -202,7 +224,20 @@ export default function Hero() {
     let timer = 0;
     let cancelled = false;
     const arm = () => {
-      const go = () => { if (!cancelled) setSpin(true); };
+      // Decode every angle BEFORE the stage says it can turn. The frames are the
+      // same URLs next/image will request for the overlays (same width, same
+      // quality) — so this is the fetch, and mounting them afterwards is a cache
+      // hit. Until this resolves the stage is a still: no controls, no spin, and
+      // therefore never a step onto a frame that is not there yet.
+      const go = () => {
+        if (cancelled) return;
+        Promise.all(TURNTABLE_FRAMES.slice(1).map((f) => new Promise<void>((done) => {
+          const im = new window.Image();
+          im.onload = () => { void im.decode?.().catch(() => {}).then(() => done()); };
+          im.onerror = () => done();
+          im.src = f.src;
+        }))).then(() => { if (!cancelled) setSpin(true); });
+      };
       if (typeof window.requestIdleCallback === "function") idle = window.requestIdleCallback(go, { timeout: 2500 });
       else timer = window.setTimeout(go, 1200);
     };
@@ -273,7 +308,7 @@ export default function Hero() {
       if (e.key === "ArrowRight") { e.preventDefault(); step(1, true); }
       else if (e.key === "ArrowLeft") { e.preventDefault(); step(-1, true); }
       else if (e.key === "Home") { e.preventDefault(); lastInput.current = performance.now(); setFrame(0); }
-      else if (e.key === "End") { e.preventDefault(); lastInput.current = performance.now(); setFrame((f) => (loaded.current.has(TURNTABLE_FRAMES.length - 1) ? TURNTABLE_FRAMES.length - 1 : f)); }
+      else if (e.key === "End") { e.preventDefault(); lastInput.current = performance.now(); setFrame(TURNTABLE_FRAMES.length - 1); }
     };
     el.addEventListener("pointerdown", onDown);
     el.addEventListener("pointermove", onDrag, { passive: true });
@@ -298,47 +333,22 @@ export default function Hero() {
 
       <div className="wrap hero-v2-grid">
         <div className="hero-v2-copy">
-          <span className="hero-v2-eyebrow" dir="ltr">
-            <LexIcon name="m-roundel" /> MIA FOUR · ELECTRIC FREEDOM <LexIcon name="bolt" />
-          </span>
-
-          {/* The H1 names the product now, and keeps its line.
-              Measured 2026-09-01 it read "החופש שלך. עכשיו בתנועה." alone — the
-              second most weighted element on the strongest page of the domain,
-              naming nothing anyone searches for. The naming line goes FIRST and
-              small: it carries מיה פור and קלנועית for a crawler and for an answer
-              engine resolving the entity, while the two large lines below stay
-              exactly as they were and still open the page.
-              Hebrew here on purpose — the eyebrow directly above already carries
-              the Latin "MIA FOUR", so both scripts are present without either
-              being said twice.
-              aria-label carries all three lines: the children are aria-hidden, so
-              the label IS the accessible name, and a screen reader that heard only
-              the poetry would be getting a different H1 than the one on screen. */}
-          <h1
-            className="hero-v2-title"
-            aria-label="מיה פור · קלנועית חשמלית. החופש שלך, עכשיו בתנועה."
-          >
-            <span className="hero-v2-h1-name" aria-hidden="true">
-              מיה פור · קלנועית חשמלית
-            </span>
-            <span aria-hidden="true">החופש שלך.</span>
-            <strong aria-hidden="true">
-              עכשיו בתנועה.<LexIcon name="liberty" className="hero-v2-h1-icon" />
-            </strong>
-          </h1>
-
-          {/* The first paragraph after the H1, which is the most heavily read
-              prose on the strongest page — and it named the product in Latin
-              only and called it "ניידות חשמלית", a phrase nobody searches. The
-              H1 above keeps its line; this sentence does the naming: the Hebrew
-              name (מיה פור), the Latin one, and what the thing legally IS
-              (קלנועית — the site's own legal page is explicit that it is not a
-              רכב, and it is also the word buyers type). */}
-          <p className="hero-v2-sub">
-            <bdi dir="ltr">MIA FOUR</bdi> · מיה פור, קלנועית חשמלית פרימיום על ארבעה גלגלים.
-            עוצמה, יציבות וחופש שמתאימים לחיים שלכם.
-          </p>
+          {/* ONE line of copy, on the owner's call (2026-09-08): the eyebrow, the
+              two poetry lines, the lede paragraph and the trust row were struck
+              out on a live screenshot — "delete the verbiage" — and the product
+              took their place at the top of the screen.
+              What stays is what the page cannot lose: an H1 that names the thing
+              (מיה פור · קלנועית חשמלית — the entity a crawler and an answer
+              engine resolve on, and the words a buyer types), the offer, the two
+              actions, and the legal line. A page with no H1 forfeits its search
+              anchor, which is not a design decision — so this line is the floor,
+              not a leftover. */}
+          {/* Hebrew only, and one separator. With the Latin name inside it the line
+              wrapped mid-phrase and the bidi algorithm stranded a "·" at the end
+              of the second line — measured at 1440px. "MIA FOUR" still reaches a
+              crawler from the Product schema, the image alt and the secondary
+              CTA; it does not need to break the one heading. */}
+          <h1 className="hero-v2-title">מיה פור · קלנועית חשמלית</h1>
 
           <p className="hero-v2-finance">
             <LexIcon name="check" /> עד 18 תשלומים ללא ריבית והצמדה*
@@ -363,15 +373,8 @@ export default function Hero() {
             </a>
           </div>
 
-          <div className="hero-v2-trust">
-            <span><LexIcon name="p-roundel" /> יבואן רשמי</span>
-            <span>מחקר ופיתוח ישראלי 🇮🇱</span>
-            <span>{WARRANTY_TERM}</span>
-            <span dir="ltr">EN17128</span>
-          </div>
-
           <p className="hero-v2-legal">
-            *בכפוף לאישור עסקה, זמינות מלאי ותנאי החברה/היבואן.
+            *בכפוף לאישור עסקה, זמינות מלאי ותנאי החברה/היבואן. {WARRANTY_TERM}.
           </p>
         </div>
 
@@ -449,7 +452,6 @@ export default function Hero() {
                       className="hero-v2-frame"
                       data-index={i}
                       data-active={i === frame ? "true" : undefined}
-                      onLoad={() => { loaded.current.add(i); }}
                     />
                   ))}
                   <span className="hero-v2-gloss" aria-hidden="true">

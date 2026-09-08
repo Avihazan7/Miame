@@ -120,22 +120,26 @@ describe("the H1 names what is being sold", () => {
     expect(h1, "the H1 does not say what the product is").toContain(PRODUCT_CATEGORY_HE);
   });
 
-  it("the accessible name matches what is on screen", () => {
-    // The children are aria-hidden, so aria-label IS the accessible name. A label
-    // that kept only the poetry would hand a screen reader a different H1 than the
-    // one a sighted visitor reads — and would quietly hide the naming line from
-    // exactly the users who depend on the heading most.
-    const label = /aria-label="([^"]+)"/.exec(hero.slice(hero.indexOf("<h1")))?.[1] ?? "";
-    expect(label, `the H1 aria-label omits the product: "${label}"`).toContain(PRODUCT_NAME_HE);
-    expect(label, `the H1 aria-label omits the category: "${label}"`).toContain(PRODUCT_CATEGORY_HE);
+  it("the accessible name IS the visible text — no aria-label standing in for it", () => {
+    // Until 2026-09-08 the H1 was three spans, all aria-hidden, with an aria-label
+    // carrying the real name: a sighted visitor read poetry and a screen reader
+    // heard the product. The owner struck the poetry off a live screenshot, so the
+    // H1 is now one line of ordinary text — which is the shape that cannot drift,
+    // because there is only one string. An aria-label here would re-open the gap.
+    const h1 = hero.slice(hero.indexOf("<h1"), hero.indexOf("</h1>"));
+    expect(h1, "the H1 carries an aria-label again — the visible text is the name").not.toContain("aria-label");
+    expect(h1, "part of the H1 is hidden from assistive tech").not.toContain("aria-hidden");
   });
 
-  it("the naming line is styled, not left to inherit the headline", () => {
-    // Without its own rule it inherits the 74px clamp and reads as a third
-    // headline, which is a worse page than the one that named nothing.
-    expect(read("app/miame-hero-v2.css"), "hero-v2-h1-name has no style rule").toContain(
-      ".hero-v2-title .hero-v2-h1-name",
-    );
+  it("the H1 is one quiet naming line, not a headline the product must compete with", () => {
+    // The product leads the screen now. A 74px clamp on this line would put the
+    // copy back on top of the vehicle the owner moved up.
+    const css = read("app/miame-hero-v2.css");
+    const at = css.indexOf(".hero-v2-title {");
+    const rule = css.slice(at, css.indexOf("}", at));
+    const ceiling = Number(/font-size:\s*clamp\([^,]*,[^,]*,\s*(\d+(?:\.\d+)?)px\s*\)/.exec(rule)?.[1]);
+    expect(ceiling, "the H1 has no clamped size").toBeGreaterThan(0);
+    expect(ceiling, "the H1 is back to headline scale").toBeLessThanOrEqual(34);
   });
 });
 
