@@ -138,3 +138,54 @@ describe("the finish takes its light from the room", () => {
     );
   });
 });
+
+describe("every Wax Nano Cristal rim takes its light from the room — not only the catalog block", () => {
+  // Measured on 2026-09-07 with a real browser: selecting 4×4 Pro Max moved
+  // --amb-hue-a 190→212 and the catalog floor-line moved with it, while the
+  // crystalline hairline on the catalog card itself, the status / buzz /
+  // engineering / SEO-spec cards and the nav underline stayed on --grad-teal
+  // (hue 170) — a second, fixed answer to "what colour is the room". The guard
+  // above only sliced the block that carries the WAX NANO CRISTAL heading, so
+  // the same defect on the flagship card and the three later blocks was never
+  // caught. This one names each rule and reads its own declaration.
+
+  /** The declaration body of the FIRST rule whose selector list starts with `sel`. */
+  function decl(sel: string): string {
+    const at = css.indexOf(sel + "{");
+    expect(at, `rule not found: ${sel}`).toBeGreaterThanOrEqual(0);
+    return css.slice(at, css.indexOf("}", at) + 1);
+  }
+
+  const HAIRLINES = [
+    ".card::before,.feat-card::before",
+    ".status-card::before,.buzz-card::before,.eng-card::before,.seo-spec::before",
+    ".nav-link::after",
+  ];
+  const HOVERS = [
+    ".feat-card:hover",
+    ".buzz-card:hover",
+    ".status-card:hover,.seo-spec:hover",
+    ".eng-card:hover",
+  ];
+
+  it("declares one room-lit bloom beside the fixed brand glow", () => {
+    expect((css.match(/--glow-room:/g) ?? []).length, "--glow-room must be defined exactly once").toBe(1);
+    const glowRoom = css.slice(css.indexOf("--glow-room:"), css.indexOf(";", css.indexOf("--glow-room:")));
+    expect(glowRoom).toContain("hsla(var(--amb-hue-a)");
+    expect(glowRoom, "--glow-room smuggles a fixed accent").not.toMatch(/rgba\(\s*12,\s*229,\s*221|rgba\(\s*19,\s*182,\s*223/);
+  });
+
+  it.each(HAIRLINES)("%s is drawn from --amb-hue-a, never from --grad-teal", (sel) => {
+    const d = decl(sel);
+    expect(d, `${sel} still paints --grad-teal`).not.toContain("var(--grad-teal)");
+    expect(d, `${sel} is not lit by the room`).toContain("hsla(var(--amb-hue-a)");
+  });
+
+  it.each(HOVERS)("%s borders and blooms with the room, not a fixed accent", (sel) => {
+    const d = decl(sel);
+    expect(d, `${sel} keeps a fixed accent border`).not.toMatch(/rgba\(\s*12,\s*229,\s*221|rgba\(\s*122,\s*200,\s*250/);
+    expect(d, `${sel} border is not lit by the room`).toContain("border-color:hsla(var(--amb-hue-a)");
+    expect(d, `${sel} blooms with the brand glow instead of the room`).toContain("var(--glow-room)");
+    expect(d, `${sel} still carries the fixed --glow`).not.toMatch(/var\(--glow\)/);
+  });
+});
