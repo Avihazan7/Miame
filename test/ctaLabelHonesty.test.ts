@@ -126,7 +126,15 @@ describe("visitor-facing copy addresses the visitor in the plural", () => {
   // Same letters, different part of speech, and nothing in an unpointed string tells
   // them apart. Only add a word whose singular-imperative reading is its ONLY
   // reading — a guard that cries wolf gets suppressed, and then it guards nothing.
-  const SINGULAR = ["בנה", "צפה", "בדוק", "גלה", "הצטרף"];
+  //   "בחר"  was MISSING, and the gate shipped green while
+  //          components/Configurator.tsx rendered "בחר והרץ סימולציה" on all three
+  //          model cards — under an h2 that already reads "בחרו את המיה פור שלך".
+  //          A guard is only as good as its list, and the list is the part that has
+  //          to be revisited when a finding lands. Verified before adding: "בחר"
+  //          with Hebrew lookarounds matches exactly ONE place in the whole tree,
+  //          that button. The noun is בחירה and the plural is בחרו, so neither
+  //          collides.
+  const SINGULAR = ["בנה", "צפה", "בדוק", "גלה", "הצטרף", "בחר", "הרץ"];
   // Hebrew has no word boundary \b can see (the repo already paid for that once:
   // commit bdb91d2). Anchor on "not preceded/followed by a Hebrew letter" instead.
   const RE = new RegExp(`(?<![א-ת])(${SINGULAR.join("|")})(?![א-ת])`, "g");

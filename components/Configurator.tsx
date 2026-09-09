@@ -195,6 +195,10 @@ export default function Configurator() {
   }
 
   function openDeal(intent: string, evt: "LeadSubmitted" | "WhatsAppClicked") {
+    /** Resolves to whether the lead row actually landed in Supabase. Undefined on
+     *  the paths that never build one. The paid conversion below waits on it — see
+     *  the note at the track() call. */
+    let saved: Promise<boolean> | undefined;
     const digits = phone.replace(/[^\d]/g, "");
     // A valid phone is the whole point — without it there is no lead to capture.
     // Block here so we never fire a "lead" event or open WhatsApp with no contact
@@ -224,12 +228,24 @@ export default function Configurator() {
         months: quote.months,
         monthly_payment: quote.monthlyPayment,
         // Attribution rides in `source` — no new Supabase column (schema unchanged).
-        source: `miame-web · ${intent} · nationwide · ${utmTag(utm)}`,
+        // CAPPED AT 300, because supabase/schema.sql:83 enforces
+        // `char_length(coalesce(source,'')) <= 300` and this string is unbounded:
+        // utmTag() carries whatever a campaign manager typed. A Performance Max
+        // campaign name of ~190 chars plus utm_source/utm_medium plus this prefix
+        // clears 300, the INSERT is rejected by the constraint, saveLead returns
+        // false — and it is silent in production by design (lib/supabase.ts:87
+        // only warns outside production). The result would be that the site loses
+        // exactly the leads from the biggest paid campaigns, and nothing anywhere
+        // reports it. Truncating keeps the row; the attribution that survives is
+        // the front of the string, which is the part that identifies the funnel.
+        source: `miame-web · ${intent} · nationwide · ${utmTag(utm)}`.slice(0, 300),
         ...utm
       };
       // Loaded on submit, which is the first moment this page needs a database
-      // client at all. `void` keeps the funnel non-blocking exactly as before.
-      void import("@/lib/supabase").then(({ saveLead }) => saveLead(lead));
+      // client at all. The promise is KEPT now rather than voided — see the note on
+      // `track(evt)` below. Nothing awaits it before the WhatsApp hand-off, so the
+      // funnel is exactly as fast as it was.
+      saved = import("@/lib/supabase").then(({ saveLead }) => saveLead(lead));
       // Additively feed the built deal into the U.M.M central brain (tenant +
       // server-side scoring). Best-effort: the WhatsApp + Supabase funnel above
       // already fired, so a brain hiccup never costs us the lead.
@@ -261,7 +277,27 @@ export default function Configurator() {
         /* never block the funnel */
       }
     }
-    void track(evt, { modelId, type: TRACK_ID, monthly: quote.monthlyPayment, intent });
+    // THE CONVERSION WAITS FOR THE ROW. This used to fire unconditionally, one line
+    // after a fire-and-forget `saveLead`. `LeadSubmitted` maps to a Google Ads
+    // conversion and a Meta `Lead` (lib/analytics.ts), so when the INSERT failed —
+    // RLS, a constraint, a network blip, a paused project, a quota — the visitor
+    // still saw "ההצעה שבנית נשלחה אלינו", Google Ads still counted a conversion,
+    // and Smart Bidding still trained on it. A phantom conversion is worse than a
+    // missing one: it spends real budget chasing an audience that never converted,
+    // and the failure is invisible because saveLead is silent in production by
+    // design (lib/supabase.ts:87).
+    //
+    // The WhatsApp tab and the /thank-you navigation below are UNCHANGED and still
+    // immediate — the visitor waits for nothing. Only the ad platforms wait, and
+    // only for the truth. `saved` is undefined on the paths that never build a lead
+    // row (a plain enquiry), and those fire as before.
+    if (saved) {
+      void saved.then((ok) => {
+        if (ok) void track(evt, { modelId, type: TRACK_ID, monthly: quote.monthlyPayment, intent });
+      });
+    } else {
+      void track(evt, { modelId, type: TRACK_ID, monthly: quote.monthlyPayment, intent });
+    }
 
     const url = buildWhatsAppUrl(
       buildLeadMessage({
@@ -374,7 +410,7 @@ export default function Configurator() {
                         className="btn btn-ghost btn-block"
                         onClick={() => selectModel(m.id, true)}
                       >
-                        {selected ? "נטען בסימולטור ✓" : "בחר והרץ סימולציה"}
+                        {selected ? "נטען בסימולטור ✓" : "בחרו והריצו סימולציה"}
                       </button>
                     </div>
                   </div>
