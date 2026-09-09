@@ -365,3 +365,72 @@ describe("public/ serves assets, not documents", () => {
     expect(odd, "unrecognised file type under the web root").toEqual([]);
   });
 });
+
+// ── llms.txt may not tell a machine something the site denies to a human ─────
+//
+// THE DEFECT THIS CLOSES (audit, 2026-09-09). public/llms.txt described SPYQE as
+// «מהירות מרבית 25 קמ"ש (תקרת הקלנועית בישראל)» — a REGULATORY assertion, that
+// 25 km/h is the Israeli mobility-scooter ceiling. The site tells a person the
+// opposite: components/Specs.tsx renders «12 קמ"ש» and components/AskBrain.tsx
+// answers «מהירות מרבית 12 קמ"ש, מותאם לתקנות הקלנועית בישראל».
+//
+// So the same origin told a buyer 12 is the compliant speed and told an answer
+// engine that 25 is the legal ceiling — in the file that exists to be QUOTED, on
+// the one subject where being wrong is a regulatory problem rather than a
+// marketing one. The parenthetical is gone; 25 stands as what it always was, a
+// manufacturer figure, and MIA FOUR's own 12 km/h — which was missing from the
+// file entirely — is now stated on the product line.
+//
+// This asserts the RELATIONSHIP, not the number: whatever speed the site shows a
+// human is the speed llms.txt must carry, and llms.txt may not claim a regulatory
+// ceiling of its own.
+describe("llms.txt agrees with the site it describes", () => {
+  const llms = readFileSync("public/llms.txt", "utf8");
+  const specs = readFileSync("components/Specs.tsx", "utf8");
+
+  it("carries the same top speed the spec table shows a visitor", () => {
+    const onPage = specs.match(/(\d+)\s*קמ&quot;ש|(\d+)\s*קמ"ש/)?.slice(1).find(Boolean);
+    expect(onPage, "the spec table no longer states a speed").toBeTruthy();
+    expect(
+      llms,
+      `components/Specs.tsx shows ${onPage} קמ"ש and llms.txt does not carry it. An ` +
+        `answer engine quotes this file; a speed it does not hold is a speed it will ` +
+        `take from somewhere else, and the only other number in the file is SPYQE's.`,
+    ).toContain(`${onPage} קמ"ש`);
+  });
+
+  it("claims no regulatory ceiling of its own", () => {
+    // MiaMe may state what a manufacturer published and what the site's own legal
+    // copy says. It may not tell a machine what Israeli law permits — that is the
+    // assertion shape test/commercialTruth.test.ts bans everywhere else, and this
+    // file is the one surface written to be repeated verbatim by a third party.
+    expect(llms, 'llms.txt asserts a legal speed ceiling').not.toMatch(/תקרת הקלנועית/);
+  });
+
+  it("covers the Ministry of Defence eligibility route, and links it", () => {
+    // The owner's stated priority topic. It was absent from this file entirely
+    // while /eligibility carried 1,267 words and seven answers on it — so an engine
+    // asked "האם קלנועית מיה פור מוכרת לזכאי אגף שיקום?" found nothing in the one
+    // file built for that question.
+    expect(llms, "llms.txt never names אגף השיקום").toContain("אגף השיקום");
+    expect(llms, "llms.txt never links /eligibility").toContain("/eligibility");
+    // And it must carry the boundary, not just the topic: quoting the tracks without
+    // the caveat is how a chatbot turns "there are two tracks" into "you qualify".
+    expect(llms, "llms.txt states the tracks without saying who decides").toMatch(
+      /נקבעים על ידי משרד הביטחון בלבד/,
+    );
+  });
+
+  it("quotes no entitlement figure — the same rule the corpus follows", () => {
+    // supabase/migrations/20260909140000_knowledge_subsidy_no_figures.sql removed
+    // every percentage and sum from the retrieval corpus by owner decision. A figure
+    // in llms.txt would reintroduce it through the other machine-readable door.
+    const eligibilityBlock = llms.slice(
+      llms.indexOf("## זכאות ניידות"),
+      llms.indexOf("## דרכי פעולה באתר"),
+    );
+    expect(eligibilityBlock.length, "the eligibility block is missing").toBeGreaterThan(100);
+    expect(eligibilityBlock, "an entitlement percentage is quoted").not.toMatch(/\d+\s*%/);
+    expect(eligibilityBlock, "an entitlement sum is quoted").not.toMatch(/\d[\d,]*\s*₪/);
+  });
+});
