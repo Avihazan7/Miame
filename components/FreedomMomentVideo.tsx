@@ -13,6 +13,7 @@
 
 import { useRef } from "react";
 import { track } from "@/lib/analytics";
+import { PRODUCT_NAME_HE } from "@/lib/content";
 
 export default function FreedomMomentVideo() {
   const tracked = useRef(false);
@@ -32,8 +33,12 @@ export default function FreedomMomentVideo() {
             <h2 className="fm-title" id="freedom-title">
               רגע להרגיש חופש.
             </h2>
+            {/* Same correction as the Cinema block: power, motion and quiet are
+                properties of the VEHICLE, not of the shop that sells it. This one was
+                not in the owner's screenshot — it was found by sweeping for the
+                defect class rather than the single sentence. */}
             <p className="fm-desc">
-              הצצה קצרה לעוצמה, לתנועה ולשקט שמגדירים את MiaMe.
+              הצצה קצרה לעוצמה, לתנועה ולשקט שמגדירים את {PRODUCT_NAME_HE}.
             </p>
           </div>
 

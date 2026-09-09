@@ -22,16 +22,37 @@
 --   the message registry, and the floating button is still on the page. So the row is
 --   corrected to describe the route that exists, and stops naming a specific control.
 --
+-- WHY THE VECTOR IS DROPPED WITH THE TEXT
+--   Retrieval here is vector-first with a Hebrew keyword fallback, so a row whose
+--   body changed while its embedding did not is matched on wording it no longer
+--   carries — 20260831_knowledge_sales_campaign_alignment.sql states the rule in one
+--   line: "a stale vector for a rewritten body is a lie the retriever cannot see."
+--   The first draft of THIS file omitted it, and that omission was not academic:
+--   measured on the MiaMe project 2026-09-09, 41 of 41 rows carry a vector and the
+--   `contact` row's encodes the sentence naming "דברו איתי". Nulling it drops the row
+--   to the keyword fallback until the backfill runs — correct text on the slower path
+--   beats a confident match on text the site no longer shows.
+--   (scripts/knowledge-embed.mjs still says "30 of 30 rows carry no vector", measured
+--   2026-08-31. That was true then; it is not true now. Re-measure, do not quote it.)
+--
 -- REPLAY ORDER: after 20260831_knowledge_sales_campaign_alignment.sql, which last
 -- wrote this row.
 
 update public.knowledge
-set body = $b$יצירת קשר: השארת פרטים בסימולטור ההתאמה באתר, או פנייה ישירה בוואטסאפ. אין סניפים ואין קווי טלפון נוספים — כל פנייה מגיעה לנציג MiaMe.$b$
-where id = 'contact';
+   set body = $b$יצירת קשר: השארת פרטים בסימולטור ההתאמה באתר, או פנייה ישירה בוואטסאפ. אין סניפים ואין קווי טלפון נוספים — כל פנייה מגיעה לנציג MiaMe.$b$,
+       embedding = null,
+       updated_at = now()
+ where id = 'contact';
 
+-- POSTCONDITIONS — absolute, so a partial apply cannot report success.
 do $$
 begin
   if exists (select 1 from public.knowledge where id = 'contact' and body like '%דברו איתי%') then
     raise exception '[one-cta] the contact row still names a button the site does not render';
+  end if;
+  -- The vector must be gone too. Without this, an apply that rewrote the text and
+  -- left the old embedding in place would report success and still mis-retrieve.
+  if exists (select 1 from public.knowledge where id = 'contact' and embedding is not null) then
+    raise exception '[one-cta] the contact row kept a vector built from the old wording';
   end if;
 end $$;

@@ -678,10 +678,11 @@
     {
       "id": "23-knowledge-one-cta",
       "title": "The corpus stops naming a button the page no longer renders",
-      "status": "pending",
+      "status": "applied",
       "migrations": [
         {
-          "file": "20260909_knowledge_one_cta.sql"
+          "file": "20260909_knowledge_one_cta.sql",
+          "ledger": "20260909121209"
         }
       ],
       "risk": "low — one id-scoped update with a post-condition; no schema change",
@@ -698,8 +699,18 @@
         "corpus rows had already been deleted.",
         "",
         "Rewritten rather than deleted: the question still has a true answer — the",
-        "funnel did not go away, only one of its doorways."
-      ]
+        "funnel did not go away, only one of its doorways.",
+        "",
+        "OPEN AFTER THE APPLY — The contact row is the ONLY row in the corpus without a vector (1 of 41), so it",
+        "answers from the Hebrew keyword fallback until the backfill runs. That is the",
+        "correct interim state — right text on the slower path beats a confident match on",
+        "text the site no longer renders — but it is not the end state.",
+        "TO CLOSE: npm run knowledge:embed -- --yes, with EMBED_ADMIN_TOKEN set. It could",
+        "not be run from the 2026-09-09 session: the driver posts to",
+        "https://www.miame.co.il/api/embed and egress to that host is blocked there",
+        "(EGRESS_BLOCKED / HTTP 403 from the agent proxy)."
+      ],
+      "evidence": "ledger name: knowledge_one_cta · applied 2026-09-09T12:12:09Z. Measured live immediately after, on the MiaMe project: the contact row no longer matches '%דברו איתי%' and its embedding is NULL. THE FILE WAS WRONG WHEN THE PHASE WAS CLAIMED and was fixed before the apply: it rewrote body without dropping the vector. Measured 2026-09-09 before applying — 41 of 41 rows carried a vector (scripts/knowledge-embed.mjs still says '30 of 30 carry no vector', measured 2026-08-31, and that is stale) — so the row would have been retrieved on wording the site no longer shows. Both the forward file and the rollback now set embedding=null, and a second postcondition fails the apply if a vector survives."
     }
   ]
 }
