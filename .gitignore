@@ -16,3 +16,16 @@ arch-guardian-summary.md
 # Isolated git worktrees created by Claude Code workflow agents. Transient
 # scaffolding — each one is a full checkout, and none of it belongs in history.
 .claude/worktrees/
+
+# Ad-hoc measurement scratch written into the repo root by audit agents while they
+# drive a local server (each one hardcodes whatever port that run used —
+# _measure2.mjs was committed carrying `http://127.0.0.1:3411`, and rewrote itself
+# to :3414 minutes later). Transient by construction, and useless to anyone else.
+#
+# `_perf.mjs` is deliberately NOT covered: it is the curated, committed perf probe
+# (957e327) and it is the file a new one should be folded into.
+#
+# The lesson this encodes: `git add -A` is not safe while a background agent is
+# writing into the working tree. Two of these were swept into 064ca6c that way.
+_measure*.mjs
+
