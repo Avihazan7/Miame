@@ -17,9 +17,17 @@ async function groundedContext(query: string): Promise<{ context: string; source
 }
 
 const SYSTEM: Record<MasterName, string> = {
+  // THE TRACK LIST IS THE PRODUCTS WE SELL, AND ONLY THOSE. It read
+  // "· השכרה Hub" until 2026-09-09 — a rental Hub that does not exist. The owner
+  // settled it on 2026-09-02 (supabase/phases.json, phase 9-rental-fleet-os: "no
+  // rental, no business partners"), phase 18 removed the rental surfaces and
+  // /rent-eilat answers 410. This is the SYSTEM PROMPT, so the instruction ran on
+  // every conversation, not only on the offline path: the model was being told a
+  // rental track was one of the answers. Same defect the 2026-09-09 audit found in
+  // this file and did not finish — one instance survived it.
   match:
-    "אתה Match-Master של MiaMe. בעזרת מודל Big Five (OCEAN) התאם בין פרופיל הלקוח לדגם/מסלול " +
-    "(2×4 City · 2×4 City Long Range · 4×4 Pro Max · השכרה Hub). הסבר את ההתאמה בקצרה. אל תמציא מחירים/מפרט מעבר להקשר.",
+    "אתה Match-Master של MiaMe. בעזרת מודל Big Five (OCEAN) התאם בין פרופיל הלקוח לדגם " +
+    "(2×4 City · 2×4 City Long Range · 4×4 Pro Max). הסבר את ההתאמה בקצרה. אל תמציא מחירים/מפרט מעבר להקשר.",
   deal:
     "אתה Deal-Master של MiaMe. בנה הצעת עסקה (דגם, מקדמה 0%–50%, 3–18 תשלומים, חודשי) והסבר ערך — " +
     "עד 18 תשלומים ללא ריבית והצמדה, ללא תשלום בלון. כל מספר חייב להישען על ההקשר שסופק; " +
