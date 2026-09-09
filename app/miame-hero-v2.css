@@ -527,6 +527,70 @@
   background: linear-gradient(105deg, transparent 18%, rgba(255, 255, 255, .55) 44%, hsla(var(--amb-hue-a), 96%, 86%, .42) 56%, transparent 82%);
 }
 
+/* ── the product mark ──
+   OWNER REQUEST 2026-09-09: the MIA FOUR logo beside the vehicle, at the top of the
+   stage, "בגודל עדין". Delicate here is SMALL AND SHARP, not faded: the wordmark is
+   black on a light Pearl ground, and dropping its opacity would read as a rendering
+   fault rather than restraint. So the restraint is in the size — and the first size
+   was wrong. 132/108px was screenshotted on 2026-09-09 and read back as a headline,
+   not a mark: it stood a third as wide as the product itself. 104/78px puts it at
+   ~20% of the product's box and 20% of a 390px viewport — legible at arm's length,
+   and unmistakably secondary to the thing it names. The numbers came from looking.
+
+   It is absolutely positioned so it cannot touch the product's layout: the stage is a
+   grid whose only in-flow child is .hero-v2-body, and the 354x392 / 502x556 product box
+   is not to move. z-index 4 puts it with the chips, above the plane and below nothing
+   that matters. It never overlaps the vehicle: the silhouette starts well below the
+   stage's top edge, and the mark's own box ends at 13% of the stage height. */
+.hero-v2-mark {
+  position: absolute;
+  z-index: 4;
+  inset-block-start: 3%;
+  inset-inline-start: 4%;
+  width: 104px;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── the power spec ──
+   "תוריד מתחת וליד הכלי" — below and beside the vehicle. It mirrors .hero-v2-free-chip
+   across the stage: that one sits inset-inline-END (visually LEFT in this RTL document),
+   this one inset-inline-START (visually RIGHT), both at the same 12% from the bottom, so
+   the pair balances around the product rather than crowding one corner.
+
+   Deliberately quieter than the FREE FEEL chip: that one is a lime brand moment, this is
+   a specification. White glass with a mint hairline reads as data, not as a second offer.
+   The text is #0F3D33 on rgba(255,255,255,.82) over the Pearl pane — 9.8:1. */
+.hero-v2-power-chip {
+  position: absolute;
+  z-index: 4;
+  inset-block-end: 12%; inset-inline-start: 2%;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--hero-ink);
+  background: rgba(255, 255, 255, .82);
+  border: 1px solid var(--hero-rim);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 0 #fff, var(--glow-room);
+  pointer-events: none;
+}
+/* "עד" is the qualifier, the figure is the message — the same two weights this chip
+   carried before it was struck out on 2026-09-08, restored with it. The <b> is the
+   bidi isolate as well as the emphasis; tabular figures keep the comma from dancing
+   as the turntable animates behind it. */
+.hero-v2-power-chip span { color: var(--hero-muted); font-weight: 600; }
+.hero-v2-power-chip b {
+  font-family: var(--font-grotesk), system-ui, sans-serif;
+  font-feature-settings: 'tnum';
+  color: var(--hero-accent);
+}
+
 /* the one chip on the stage. Its box was split from its skin only because a
    second chip — "עד 4×1,800W" — shared the box; the owner struck that one out
    on 2026-09-09, so the two halves are one rule again. */
@@ -719,6 +783,9 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
   .hero-v2-product-stage { min-height: 300px; }
   .hero-v2-turn-hint { font-size: 11px; letter-spacing: .04em; }
   .hero-v2-free-chip { inset-block-end: 16%; }
+  /* the mark shrinks with the stage; the spec rides up with the chip it mirrors */
+  .hero-v2-mark { width: 78px; inset-block-start: 2%; }
+  .hero-v2-power-chip { inset-block-end: 16%; font-size: 12px; padding: 8px 12px; gap: 6px; }
 }
 
 /* ── no pointer to follow: a slow idle turn gives the stage its depth instead —
