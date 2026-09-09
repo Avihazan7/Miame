@@ -511,7 +511,7 @@ export default function Hero() {
               aria-hidden="true"
               width={1600}
               height={599}
-              sizes="(max-width: 560px) 78px, 104px"
+              sizes="(max-width: 560px) 68px, 104px"
               quality={90}
               className="hero-v2-mark"
               draggable={false}

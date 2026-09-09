@@ -12,10 +12,19 @@
  * drives the route that exists, so there is nothing to keep in step.
  *
  * WHY IT MATTERS. Retrieval is vector-first with a Hebrew keyword fallback. While
- * every row's embedding is NULL the brain runs entirely on the fallback — which
- * is accurate at 30 rows and quietly stops being accurate as the corpus grows.
- * The failure mode is SILENT: answers get vaguer, nothing turns red. Measured
- * 2026-08-31 on the MiaMe project: 30 of 30 rows carry no vector.
+ * a row's embedding is NULL the brain answers it from the fallback — accurate on a
+ * small corpus and quietly less accurate as it grows. The failure mode is SILENT:
+ * answers get vaguer, nothing turns red.
+ *
+ * MEASURED 2026-09-09 on the MiaMe project: 41 rows, 40 with a vector, 1 without.
+ * The one is `contact`, deliberately: 20260909_knowledge_one_cta.sql rewrote its body
+ * and dropped the vector in the same statement, because a vector built from wording
+ * the site no longer renders is worse than no vector at all. Running this backfill
+ * closes it.
+ *   (This header previously read "30 of 30 rows carry no vector", measured 2026-08-31.
+ *    That was true when written and had been false for days by the time anyone read it
+ *    — the corpus was embedded and grew to 41. A measurement carries its date for
+ *    exactly this reason: re-measure before quoting it.)
  *
  * ENVIRONMENT
  *   MIAME_SITE_URL      default https://www.miame.co.il

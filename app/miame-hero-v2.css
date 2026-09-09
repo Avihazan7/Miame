@@ -783,8 +783,17 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
   .hero-v2-product-stage { min-height: 300px; }
   .hero-v2-turn-hint { font-size: 11px; letter-spacing: .04em; }
   .hero-v2-free-chip { inset-block-end: 16%; }
-  /* the mark shrinks with the stage; the spec rides up with the chip it mirrors */
-  .hero-v2-mark { width: 78px; inset-block-start: 2%; }
+  /* The mark shrinks with the stage; the spec rides up with the chip it mirrors.
+     68/2% RATHER THAN 78/4% BECAUSE THE HANDLEBAR IS THERE. Measured 2026-09-09 by
+     rendering the stage with the mark hidden and counting vehicle pixels (luma < 110)
+     inside the mark's own box: at 320 the clear run flush to the inline-start edge is
+     79px wide while 78+11 = 89px was being asked for, and 3.7% of the wordmark sat on
+     the right grip; at 360 it needed 91px of the 90px available. Both the collision
+     sweep and the eye missed this — the sweep compared the mark against the product
+     <img>'s bounding box, which IS the whole stage, so it reported a false positive
+     and I dismissed the pair. The silhouette is what a reader sees, not the box.
+     68 + 2% clears at every width from 320 up with room to spare. */
+  .hero-v2-mark { width: 68px; inset-block-start: 2%; inset-inline-start: 2%; }
   .hero-v2-power-chip { inset-block-end: 16%; font-size: 12px; padding: 8px 12px; gap: 6px; }
 }
 

@@ -27,7 +27,7 @@
 // It checks that the entity is NAMEABLE — the right name, in the right slot,
 // derived from one source — which is what actually resolves a query to a page.
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import {
   MANUFACTURER_NAME,
   MANUFACTURER_NAME_HE,
@@ -53,16 +53,82 @@ const code = (f: string) =>
 const layout = read("app/layout.tsx");
 const llms = read("public/llms.txt");
 
-describe("the product has one name, and it comes from a real source", () => {
-  it('no surface calls it "MiaMe Four"', () => {
-    // The mutation-provable core. This exact string was live in two places.
-    for (const f of ["app/layout.tsx", "components/Hero.tsx", "lib/content.ts"]) {
-      expect(code(f), `${f} still calls the product "MiaMe Four" — a name from no source`).not.toContain(
-        "MiaMe Four",
-      );
+/** Every .ts/.tsx the site actually serves. The list below used to be three
+ *  hand-written filenames, and that is precisely how the banned name survived:
+ *  app/legal/terms/page.tsx said "מוצרי MiaMe Four" for eight days after the name
+ *  was purged from schema and llms.txt, because nobody added the legal pages to a
+ *  literal array. A rule that matters is swept for, not enumerated. */
+function servedFiles(): string[] {
+  const out: string[] = [];
+  const walk = (dir: string) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const full = `${dir}/${e.name}`;
+      if (e.isDirectory()) {
+        if (e.name === "node_modules" || e.name.startsWith(".")) continue;
+        walk(full);
+      } else if (e.name.endsWith(".ts") || e.name.endsWith(".tsx")) out.push(full);
     }
+  };
+  for (const root of ["app", "components", "lib", "brain"]) walk(root);
+  return out;
+}
+
+describe("the product has one name, and it comes from a real source", () => {
+  it('NO served file calls it "MiaMe Four"', () => {
+    // The mutation-provable core. This exact string was live in two machine-readable
+    // surfaces, purged 2026-09-01 — and then found again on 2026-09-09 in the legal
+    // terms, which the old three-file list did not cover.
+    const offenders = servedFiles().filter((f) => code(f).includes("MiaMe Four"));
+    expect(
+      offenders,
+      `these call the product "MiaMe Four" — the SITE's name welded onto the PRODUCT's, ` +
+        `a name that exists in no source: ${offenders.join(", ")}`,
+    ).toEqual([]);
     // llms.txt is prose end to end: no comments, so nothing to strip.
     expect(read("public/llms.txt"), "llms.txt still calls it \"MiaMe Four\"").not.toContain("MiaMe Four");
+  });
+
+  /**
+   * THE STORE IS NOT THE VEHICLE.
+   *
+   * OWNER, 2026-09-09: "הסירטון על MIA FOUR ולא על MiaMe." MiaMe Ⓜ️ is an online
+   * STORE brand — it markets and sells vehicles built by MIA Dynamics: MIA FOUR
+   * today, SPYQE next. So a sentence may say the shop sells, delivers, answers or
+   * is written to; it may NOT say the shop is what moves, what feels, or what the
+   * film is about. Those belong to the product.
+   *
+   * Two live sentences failed this on 2026-09-09 — the Cinema block the owner
+   * struck out, and a second one in FreedomMomentVideo that no screenshot showed.
+   * The second is the reason this is a swept rule and not a one-line fix.
+   */
+  it("no copy makes the STORE the thing that moves or feels", () => {
+    // Verbs of embodiment: what a VEHICLE does, never what a shop does.
+    const EMBODIES = ["שמובילה את", "שמובילים את", "שמגדירים את", "שמגדיר את", "שמגדירה את"];
+    const bad: string[] = [];
+    for (const f of servedFiles()) {
+      const src = code(f);
+      for (const verb of EMBODIES) {
+        // the site name, straight after the verb, with nothing but spaces between
+        const re = new RegExp(`${verb}\\s+(?:את\\s+)?MiaMe\\b`);
+        if (re.test(src)) bad.push(`${f} — "${verb} MiaMe"`);
+      }
+    }
+    expect(
+      bad,
+      `MiaMe is the store, not the vehicle. Name the product (PRODUCT_NAME_HE) as the ` +
+        `subject instead: ${bad.join(" · ")}`,
+    ).toEqual([]);
+  });
+
+  it("the two video blocks name the product, and derive it", () => {
+    // Both carried the defect; both must now read the name from lib/content.ts
+    // rather than spell it, so a rename cannot half-land.
+    for (const f of ["components/CinematicVideo.tsx", "components/FreedomMomentVideo.tsx"]) {
+      const src = code(f);
+      expect(src, `${f} does not import the product name`).toContain("PRODUCT_NAME_HE");
+      expect(src, `${f} hard-codes the Hebrew product name instead of deriving it`)
+        .not.toMatch(new RegExp(`["'>\\s]${PRODUCT_NAME_HE}[<"'\\s,.]`));
+    }
   });
 
   it("the naming constants are distinct and non-empty", () => {

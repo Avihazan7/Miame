@@ -11,6 +11,7 @@
 
 import { useState } from "react";
 import { track } from "@/lib/analytics";
+import { PRODUCT_NAME_HE } from "@/lib/content";
 
 // The owner's cinema cut. REPLACED rather than added: the page already carries
 // CinematicVideo, FreedomMomentVideo and HowToVideo, and a fourth video block reads
@@ -45,9 +46,16 @@ export default function CinematicVideo() {
             <h2 className="cinema-title" id="cinema-title">
               לא רק כלי. חוויית Free Feel בתנועה.
             </h2>
+            {/* OWNER CORRECTION 2026-09-09: "הסירטון על MIA FOUR ולא על MiaMe."
+                MiaMe is the STORE — the online brand that markets and sells MIA
+                Dynamics vehicles (MIA FOUR today, SPYQE next). The energy, the depth
+                and the free-feel in this film belong to the VEHICLE; naming the shop
+                as the thing that moves is the same category error the repo already
+                paid for once as "MiaMe Four" (see lib/content.ts). Derived from
+                PRODUCT_NAME_HE so the product can be renamed in one place. */}
             <p className="cinema-desc">
-              הצצה לאנרגיה, לעומק ולתחושת החופש שמובילה את MiaMe, מוביליטי חשמלית,
-              יוקרתית וזורמת.
+              הצצה לאנרגיה, לעומק ולתחושת החופש שמובילה את {PRODUCT_NAME_HE}, מוביליטי
+              חשמלית, יוקרתית וזורמת.
             </p>
           </div>
 
@@ -57,12 +65,12 @@ export default function CinematicVideo() {
                 type="button"
                 className="cinema-poster"
                 onClick={startPlayback}
-                aria-label="נגן סרטון MiaMe"
+                aria-label={`נגן סרטון ${PRODUCT_NAME_HE}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={POSTER_MAX}
-                  alt="תצוגת וידאו MiaMe"
+                  alt={`תצוגת וידאו ${PRODUCT_NAME_HE}`}
                   loading="lazy"
                   onError={(event) => {
                     const img = event.currentTarget;

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MANUFACTURER_NAME_HE } from "@/lib/content";
 // Seller identification has to name a channel that answers, so the number is
 // read from the one sales-line constant rather than typed here a second time.
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from "@/lib/whatsapp";
@@ -27,7 +28,8 @@ export default function TermsPage() {
 
       <p>
         תקנון זה חל על השימוש באתר MiaMe.co.il (להלן: "האתר") ועל תהליך הרכישה,
-        ההשכרה והשירות של מוצרי MiaMe Four. האתר מופעל על ידי Leasing.co.il. עצם
+        ההשכרה והשירות של מוצרי {MANUFACTURER_NAME_HE} הנמכרים בו. האתר מופעל על ידי
+        Leasing.co.il. עצם
         השימוש באתר, שליחת פנייה או ביצוע הזמנה מהווים הסכמה לתנאים אלה. אם אינך
         מסכים לתנאים, אין לעשות שימוש באתר.
       </p>
