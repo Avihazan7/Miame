@@ -260,6 +260,16 @@ describe("the snippet names the thing, not only the title", () => {
   // on every result for the domain, and what an answer engine quotes. A title
   // that resolves the entity beside a description that does not is half a fix.
   const meta = layout.slice(layout.indexOf("export const metadata"), layout.indexOf("openGraph:"));
+  /** The same slice with comments stripped. `meta` keeps them because two assertions
+   *  below deliberately read the SOURCE (they check a value is a template literal that
+   *  interpolates a constant, which only the source shows). The "בנה" rule must not:
+   *  the comment above that very description says '…not "בנה"', so a rule that reads
+   *  comments fires on its own explanation — which is exactly the trap this file's
+   *  `code()` helper was written for, and which the broken \b had been hiding. */
+  const metaCode = code("app/layout.tsx").slice(
+    code("app/layout.tsx").indexOf("export const metadata"),
+    code("app/layout.tsx").indexOf("openGraph:"),
+  );
 
   it("the site description names the product and the category", () => {
     const desc = /description:\s*\n?\s*`([^`]+)`/.exec(meta)?.[1] ?? "";
@@ -280,7 +290,16 @@ describe("the snippet names the thing, not only the title", () => {
 
   it("its call to action is plural, like every other one on the site", () => {
     // "בנה" is masculine singular; the site says "בנו" · "צפו" · "גררו".
-    expect(meta, "the description addresses one man").not.toMatch(/\bבנה\b/);
+    //
+    // THIS ASSERTION USED TO READ /\bבנה\b/ AND COULD NEVER FAIL. JavaScript defines
+    // \b on \w = [A-Za-z0-9_], so a Hebrew letter is never a word character and there
+    // is no boundary beside one: /\bבנה\b/.test("בנה") is FALSE — it does not match
+    // even the bare word it names. Found 2026-09-09 by sweeping the repo for \b next
+    // to Hebrew, after the same mistake was caught by mutation in the store/product
+    // rule above. Lookarounds on the Hebrew block are the working form, and both
+    // sides are needed: without the lookbehind this fires inside "נבנה", without the
+    // lookahead inside "בנהל".
+    expect(metaCode, "the description addresses one man").not.toMatch(/(?<![א-ת])בנה(?![א-ת])/);
   });
 });
 
