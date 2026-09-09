@@ -194,6 +194,33 @@ describe("the site sells ONE thing, and offers nothing it does not sell", () => 
       /רשת\s*MiaMe|MiaMe\s*Hub|PARTNER\s+NETWORK|Success\s*Fee|Green\s*Extreme|שותפות|באילת/i.test(code(read(f))),
     );
     expect(hits, `an offer we do not sell is published in: ${hits.join(", ")}`).toEqual([]);
+
+    // …AND THE HUB UNDER ANY OTHER NAME. The clause above names the BRANDED forms
+    // ("רשת MiaMe", "MiaMe Hub"), and on 2026-09-09 three live surfaces were found
+    // offering the same dead product without either of them — they wrote "השכרה Hub":
+    //   brain/masters.ts     the Match-Master SYSTEM PROMPT, on every conversation
+    //   brain/knowledge.ts   the offline FALLBACK row, served when Supabase is down
+    //   app/manifest.ts      the PWA description, a published surface
+    // The owner settled rental out of the business on 2026-09-02 (phases.json,
+    // 9-rental-fleet-os) and phase 18 removed its surfaces; these three survived
+    // because the gate matched the brand, not the offer. An offer is what it DOES.
+    const renting = SOURCES.filter((f) => {
+      const src = code(read(f));
+      // "השכרה"/"להשכיר" next to Hub, or a track list that still carries a rental leg
+      // (?![א-ת]) and NOT \b — for the THIRD time today. JavaScript defines \b on
+      // \w = [A-Za-z0-9_], so there is no word boundary beside a Hebrew letter and
+      // /השכרה\b/ never matches. The first version of this very clause ended in \b
+      // and passed the mutation that put "· השכרה" back with no "Hub" at all. Two
+      // other gates in this repo had the same defect and were fixed hours earlier;
+      // writing it a third time is why the rule is spelled out here rather than
+      // remembered. Hebrew rules need Hebrew terminators.
+      return /(?:השכרה|להשכיר|השכרת)\s*(?:Hub|האב)/i.test(src) || /·\s*(?:השכרה|השכרת)(?![א-ת])/.test(src);
+    });
+    expect(
+      renting,
+      `a rental track is offered in: ${renting.join(", ")} — the business does not rent ` +
+        `(supabase/phases.json, 9-rental-fleet-os)`,
+    ).toEqual([]);
   });
 
   it("no code writes to a table for a product we do not sell", () => {

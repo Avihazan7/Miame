@@ -27,6 +27,14 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "MiaMe.co.il — Free Feel",
     short_name: "MiaMe",
+    // Both sides of this merge found the same bug independently, which is itself
+    // the finding: "והשכרה" offered a rental the business does not run
+    // (supabase/phases.json, 9-rental-fleet-os; middleware.ts 410s /rent-eilat;
+    // public/llms.txt states "MiaMe אינה משכירה"). main's fix removed the rental
+    // and stopped; this one also drops "ניידות חשמלית פרימיום" — the phrase
+    // app/layout.tsx struck from the meta description on 2026-09-01 because it
+    // names neither the product (מיה פור) nor what the thing legally is
+    // (קלנועית) — and names both instead. Guarded by test/salesCampaign.test.ts.
     description:
       "מיה פור · קלנועית חשמלית על 4 גלגלים, מבית Leasing.co.il. בונים הצעת תשלום מותאמת תוך דקה ומקבלים אותה בוואטסאפ.",
     start_url: "/",

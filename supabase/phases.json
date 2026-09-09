@@ -711,6 +711,75 @@
         "(EGRESS_BLOCKED / HTTP 403 from the agent proxy)."
       ],
       "evidence": "ledger name: knowledge_one_cta · applied 2026-09-09T12:12:09Z. Measured live immediately after, on the MiaMe project: the contact row no longer matches '%דברו איתי%' and its embedding is NULL. THE FILE WAS WRONG WHEN THE PHASE WAS CLAIMED and was fixed before the apply: it rewrote body without dropping the vector. Measured 2026-09-09 before applying — 41 of 41 rows carried a vector (scripts/knowledge-embed.mjs still says '30 of 30 carry no vector', measured 2026-08-31, and that is stale) — so the row would have been retrieved on wording the site no longer shows. Both the forward file and the rollback now set embedding=null, and a second postcondition fails the apply if a vector survives."
+    },
+    {
+      "id": "24-subsidy-no-figures",
+      "title": "The corpus stops quoting Ministry of Defence figures",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260909140000_knowledge_subsidy_no_figures.sql",
+          "ledger": "20260909140712"
+        }
+      ],
+      "risk": "low — two id-scoped updates with absolute postconditions; no schema change",
+      "why": [
+        "OWNER DECISION 2026-09-09: \"להסיר מספרים לגמרי\". The brain answers that the",
+        "eligibility tracks exist and that we check them personally, points at the two",
+        "official mod.gov.il pages, and quotes no percentage and no sum.",
+        "",
+        "THE CORPUS DID NOT MATCH THE LEGALLY REVIEWED PAGE. components/Tribute.tsx is",
+        "frozen text; measured 2026-09-09 the corpus said the Ministry RECOGNISES up to",
+        "100%, while the page says the recognised subsidy is up to 90% and the remaining",
+        "tenth is MEU's discretionary gift, \"ניתן לשינוי או להפסקה בכל עת\". The",
+        "bereaved-families row also omitted three material conditions the page states:",
+        "\"קלנועית יחיד\", \"פעם ב־4 שנים\", \"לאלמן/ה\".",
+        "",
+        "A corpus row is quoted to a buyer AS THE ANSWER. On entitlement content the only",
+        "safe failure mode is saying less, so the figures come out rather than being",
+        "restated more carefully — a number the brain does not hold is a number it cannot",
+        "get wrong. THE SITE IS UNCHANGED; this narrows the chat only.",
+        "",
+        "Postconditions are absolute and include the decision itself: the apply fails if",
+        "any digit survives in either row, if a vector survives, if the official page is",
+        "no longer named, or if the answer no longer routes to a human."
+      ],
+      "evidence": "ledger name: knowledge_subsidy_no_figures · applied 2026-09-09T14:07:12Z. Measured live immediately after, on both rows: body ~ '[0-9]' is FALSE, embedding is NULL, the body still names mod.gov.il and still routes to וואטסאפ. Row lengths 526 / 504 — the rows got LONGER while losing every figure: the conditions and the caveats the legally reviewed page states were what was missing, not the numbers."
+    },
+    {
+      "id": "25-spyqe-warranty-unpublished",
+      "title": "SPYQE's unpublished-fields row names all seven, not five",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260909150000_knowledge_spyqe_warranty_unpublished.sql",
+          "ledger": "20260909142713"
+        }
+      ],
+      "risk": "low — one id-scoped update with absolute postconditions; no schema change",
+      "why": [
+        "MEASURED 2026-09-09 on the live 40-row corpus:",
+        "  \"מה האחריות על ספייק\" → warranty:4.27 | service:4.19 | spyqe-register:2.83",
+        "The top two documents are MIA FOUR's warranty (12 months), so a SPYQE warranty",
+        "question was answered out of the other vehicle's — at roughly twice the price.",
+        "",
+        "lib/spyqe.ts names SEVEN deliberately withheld fields: battery voltage, charge",
+        "time, weight, load, motor watts, IP rating and WARRANTY TERM. The",
+        "spyqe-spec-missing row — which exists for exactly this purpose — listed only",
+        "five. אחריות and דירוג IP were never in it, so nothing told the retriever the",
+        "question has no answer and the nearest row carrying \"אחריות\" won.",
+        "",
+        "Measured after, same live rows: spyqe-spec-missing ranks first, warranty second.",
+        "",
+        "⚠ THE MIRROR HALF IS NOT FIXED, deliberately. \"כמה זמן אחריות למיה פור\" still",
+        "reaches a SPYQE row: every SPYQE row carries \"מיה פור\" inside its own disclaimer",
+        "(\"אינו מחיר מיה פור\"), so a MIA FOUR query scores them highly. Naming the product",
+        "inside the warranty row was measured and did NOT fix it — it only made the bare",
+        "\"מה האחריות\" worse. The real fix is in the scorer (a product name inside a",
+        "negation clause should not earn the weight of one inside a claim), which belongs",
+        "in brain/knowledge.ts, not in a row. Recorded rather than half-attempted."
+      ],
+      "evidence": "ledger name: knowledge_spyqe_warranty_unpublished. Measured live immediately after: the row names אחריות and IP, and its embedding is NULL. The gate that now holds it is test/retrievalRanking.test.ts — mutation-proven twice: reverting the row to the five-field list fails with the original message (\"מה האחריות על ספייק\" → warranty, a MIA FOUR row), and deleting the `warranty` row from the fixture — which used to make the whole assertion pass silently, and is how the defect survived — now fails on a fixture-completeness check."
     }
   ]
 }
