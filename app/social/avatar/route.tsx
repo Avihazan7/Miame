@@ -12,6 +12,13 @@ import { BRAND, Monogram } from "@/lib/og-brand";
 // Local, not exported: a Route Handler accepts only GET/POST/runtime/… as
 // exports, and `size`/`contentType` are the opengraph-image convention —
 // exporting them here fails the build. ImageResponse sets the content type.
+
+// Next 15 stopped caching GET Route Handlers by default, which silently turned this
+// from ○ (Static) into ƒ (Dynamic) at the 14 -> 15 upgrade: every crawler hit was
+// re-rendering the PNG through Satori instead of serving it from the build. GET takes
+// no argument and reads no dynamic API, so the output is fixed per deploy — say so.
+export const dynamic = "force-static";
+
 const size = { width: 1080, height: 1080 };
 
 export function GET() {

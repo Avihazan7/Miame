@@ -315,3 +315,71 @@ describe("the launch campaign has one label", () => {
     ).toEqual([]);
   });
 });
+
+// ── no published surface asserts a regulatory exemption ─────────────────────
+//
+// THE DEFECT THIS CLOSES (measured 2026-09-09). public/llms.txt shipped this:
+//
+//   "אין צורך ברישיון נהיגה, ברישוי כלי או בביטוח חובה"
+//
+// No page on this site says that. lib/seo-pages.ts:240 is asked the licence
+// question directly and deliberately declines to answer it — "דרישות הרישוי
+// והשימוש כפופות לחוקי התעבורה והוראות הדין הרלוונטיות" — and
+// components/LegalStatus.tsx makes only the narrow claims it can stand behind:
+// no licence PLATE, no registration FEE, everything subject to the regulations,
+// and an explicit "this is not legal advice".
+//
+// The repo had already reasoned this through. test/corpusFixtureFidelity.test.ts
+// carries `it("makes no claim about a licence, insurance or a minimum age")`,
+// whose comment names the exact trap: "`רישוי` — registration — is a different
+// word from `רישיון`, and only the first is on the page." That gate reads ONE
+// file: the corpus SQL. The claim was published on a different surface, and the
+// gate's file-scoped slice is why nothing caught it — the same shape as the
+// FAQPage-in-layout and brand-in-landing defects this repo has hit before.
+//
+// llms.txt is the worst possible surface for it: robots.txt advertises it as
+// LLM-Content and GPTBot/ClaudeBot/PerplexityBot/Google-Extended are all Allowed,
+// so an answer engine quotes it verbatim and attributes the claim to the seller.
+//
+// WHY PHRASES AND NOT WORDS. The corpus gate can ban the bare word "ביטוח"
+// because it is scoped to one legal-status row. Here the scope is every public
+// surface, and the bare words have honest homes — measured, not assumed:
+//   ביטוח   → lib/marketplace-preview.ts:280,295 · brain/masters.ts:36
+//             (what a lease quote includes; all hedged)
+//   רישיון  → lib/seo-pages.ts:240 (the FAQ QUESTION, answered with a hedge)
+//             brain/knowledge.ts:200 (a synonym map entry)
+// Banning the topic would forbid asking the question. So this bans the
+// ASSERTION SHAPES instead. Adding a phrase here is cheap; widening to a bare
+// word would fire on all four legitimate lines above.
+describe("no published surface asserts a regulatory exemption", () => {
+  // Each entry is a claim the site does not make anywhere a lawyer has seen.
+  const FORBIDDEN = ["רישיון נהיגה", "ביטוח חובה", "גיל מינימלי"];
+
+  it.each(FORBIDDEN)('no public surface claims "%s"', (claim) => {
+    const offenders = SOURCES.filter((rel) => read(rel).includes(claim));
+    expect(
+      offenders,
+      `these surfaces assert "${claim}", which no page on the site states. ` +
+        "Ground the wording in components/LegalStatus.tsx and the approved corpus row " +
+        "(supabase/migrations/20260902_zzknowledge_site_truths.sql), or get the claim onto " +
+        "the visible page first — llms.txt must mirror the site, never lead it.",
+    ).toEqual([]);
+  });
+
+  // The gate above is an absence assertion, and an absence assertion passes just
+  // as happily when it is looking at nothing. Pin that it is really reading the
+  // file the defect shipped in.
+  it("actually scans llms.txt, the surface the claim shipped on", () => {
+    expect(SOURCES).toContain("public/llms.txt");
+    expect(read("public/llms.txt")).toMatch(/מעמד חוקי/);
+  });
+
+  // And pin the positive half: having removed the invented exemption, the line
+  // must still carry the hedge the visible page ends on, or the fix would have
+  // been "say less" rather than "say what the site says".
+  it("llms.txt carries the same not-legal-advice hedge the page does", () => {
+    expect(read("public/llms.txt"), "llms.txt states a legal status with no disclaimer").toContain(
+      "אינו ייעוץ משפטי",
+    );
+  });
+});
