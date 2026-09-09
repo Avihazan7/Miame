@@ -28,6 +28,25 @@ export const hasTikTokPixel = Boolean(TIKTOK_PIXEL_ID);
 /** Any pixel configured → we should render the consent banner + tag scripts. */
 export const marketingEnabled = hasGa4 || hasGoogleAds || hasMetaPixel || hasTikTokPixel;
 
+/**
+ * Vercel Web Analytics — the ONE measurement that is not in `marketingEnabled`,
+ * because it is not marketing and it is not consent-gated. See
+ * components/VercelAnalytics.tsx for why that is defensible and where it is
+ * disclosed.
+ *
+ * The env read lives HERE and not in the component because .eslintrc.json bans
+ * `process.env` under components/** and app/** outright — secrets stay server-
+ * side, and the rule does not try to guess which reads are safe. Every other
+ * measurement flag in this file is derived the same way, so the component gets a
+ * boolean and never sees an environment.
+ *
+ * NEXT_PUBLIC_VERCEL_ENV is set automatically on every Vercel deployment and is
+ * not a secret — it is literally "production" | "preview" | "development". The
+ * gate exists because /_vercel/insights/script.js is served by the PLATFORM:
+ * anywhere else it is a guaranteed 404 in the visitor's console.
+ */
+export const vercelAnalyticsEnabled = process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
+
 type Params = Record<string, unknown>;
 
 interface Gtag {

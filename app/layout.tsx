@@ -23,6 +23,7 @@ import HeroIntro from "@/components/HeroIntro";
 import ScrollTop from "@/components/ScrollTop";
 import StaffToolbar from "@/components/StaffToolbar";
 import MarketingScripts from "@/components/MarketingScripts";
+import VercelAnalytics from "@/components/VercelAnalytics";
 import ConsentBanner from "@/components/ConsentBanner";
 import { PRODUCT_PROPERTIES } from "@/lib/seo/product-jsonld";
 import { MODELS } from "@/lib/models";
@@ -330,6 +331,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <StaffToolbar />
         <ConsentBanner />
         <MarketingScripts />
+        {/* Deliberately OUTSIDE the consent gate that <MarketingScripts /> sits
+            behind — cookieless, aggregate, and the only measurement that exists
+            for a visitor who declines. The full reasoning, and the disclosure it
+            is paired with, are in components/VercelAnalytics.tsx. */}
+        <VercelAnalytics />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
