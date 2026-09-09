@@ -110,7 +110,14 @@ const CORPUS = [
   { id: "spec-charging", source: "MiaMe/Specs", body: "זמן הטעינה של מיה פור: עד 8 שעות במטען סטנדרטי." },
   { id: "legal-status", source: "MiaMe/LegalStatus", body: "מיה פור מסווגת כקלנועית ואינה רכב. כל כלי מזוהה במספר שילדה ייחודי, בלי רישוי ובלי לוחית רישוי; אין אגרת רישוי ואין עלויות רישוי שנתיות. לפי המעמד החוקי של קלנועית ובכפוף לדין, היא אינה חשופה לחלק מהקנסות והדוחות שדו-גלגלי ממונע סופג. תואמת תקן EN17128 ומותאמת לתקנות הקלנועית בישראל. המידע כללי ואינו ייעוץ משפטי; השימוש כפוף לדין, לתקנות הקלנועית ולהוראות הרשויות." },
   { id: "patent", source: "MiaMe/Patents", body: "מספרי הפטנטים של פלטפורמת MIA Dynamics: US 11,878,763 B2, US 12,097,926 B2, IL 280339, IL 285336 — רשומים בארה\"ב ובישראל. טכנולוגיית מזעור ארבעה גלגלים." },
-  { id: "spyqe-spec-missing", source: "MiaMe/Spyqe", body: "עבור SPYQE (ספייק) טרם פורסמו משקל הכלי, עומס מרבי, זמן טעינה, מתח סוללה והספק מנוע בוואט. אין למסור עבורם מספר, ובפרט אין להשתמש בנתוני מיה פור. התשובה הנכונה היא שהנתון יפורסם כשיאומת." },
+  { id: "spyqe-spec-missing", source: "MiaMe/Spyqe", body: "עבור SPYQE (ספייק) טרם פורסמו משקל הכלי, עומס מרבי, זמן טעינה, מתח סוללה, הספק מנוע בוואט, דירוג אטימות IP ותקופת האחריות. אין למסור עבורם מספר, ובפרט אין להשתמש בנתוני מיה פור — גם לא בתקופת האחריות שלה. התשובה הנכונה היא שהנתון יפורסם כשיאומת." },
+  // MIA FOUR'S WARRANTY AND SERVICE ROWS, ADDED 2026-09-09 — and their absence was
+  // the reason this file could not see the defect it is written to catch. The two
+  // rows that WIN a SPYQE warranty question were not in the fixture, so the
+  // competition the gate measures had no competitor. A ranking gate is only as wide
+  // as the corpus it ranks over.
+  { id: "warranty", source: "MiaMe/Service", body: "אחריות וגיבוי של יבואן רשמי MEU · Mayer Electric Utilities, חמישה עשורים בענף הרכב. תקופת האחריות היא שנה (12 חודשים)." },
+  { id: "service", source: "MiaMe/Service", body: "יבואן רשמי MEU · Mayer Electric Utilities; אחריות יבואן רשמי לשנה (12 חודשים), שירות וחלפים מקוריים. מסירה מתואמת בכל אזורי הארץ." },
   { id: "spec-brakes", source: "MiaMe/Specs", body: "בלמים: דיסק הידראולי כפול 140 מ\"מ; מערכת מתלים מלאה קדמית ואחורית, פלטפורמה מוגנת פטנט. צמיגי שטח במידה 14.5X4.8-7 על חישוקי סגסוגת." },
   { id: "spec-speed", source: "MiaMe/Specs", body: "מהירות מרבית 12 קמ\"ש; תקן EN17128, מותאם לתקנות הקלנועית בישראל." },
   { id: "mia-four-what", source: "MiaMe/Models", body: "מיה פור (MIA FOUR, ולפעמים פשוט \"מיה\") היא קלנועית חשמלית על פלטפורמת ארבעה גלגלים מוגנת פטנט, מתוצרת MIA Dynamics (מיה דיינמיקס). היא מסווגת כקלנועית ואינה רכב: אין לה לוחית רישוי ואין אגרות רישוי." },
@@ -176,8 +183,30 @@ describe("a buyer's question reaches the row that answers it", () => {
 
   it("a SPYQE question never ranks a MIA FOUR row first", async () => {
     // The whole point of the SPYQE rows: a different vehicle at roughly half the price.
-    const MIA_FOUR = new Set(["price-4x2", "price-2x4lr", "price-4x4", "delivery", "spec-range", "model-choose"]);
-    for (const q of ["כמה עולה ספייק", "מתי מגיע ספייק", "מה הטווח של ספייק", "ספייק מחיר"]) {
+    // warranty/service joined this set on 2026-09-09. MEASURED on the live corpus
+    // before the fix: "מה האחריות על ספייק" → warranty:4.27 | service:4.19 — a SPYQE
+    // warranty question answered out of MIA FOUR's 12-month term, on a vehicle at
+    // roughly twice the price. lib/spyqe.ts withholds SPYQE's warranty term on
+    // purpose; spyqe-spec-missing now says so, and this is the gate that holds it.
+    const MIA_FOUR = new Set([
+      "price-4x2", "price-2x4lr", "price-4x4", "delivery", "spec-range", "model-choose",
+      "warranty", "service",
+    ]);
+    // EVERY NAMED COMPETITOR MUST BE IN THE FIXTURE. Mutation-measured 2026-09-09:
+    // deleting the `warranty` row from CORPUS makes this whole assertion pass again,
+    // silently — the rule stops testing anything the moment the row it competes with
+    // is gone, which is exactly how the defect survived until today. Naming a row in
+    // MIA_FOUR is therefore also a claim that it is present to compete.
+    const ids = new Set(CORPUS.map((d) => d.id));
+    for (const id of MIA_FOUR) {
+      expect(ids.has(id), `MIA_FOUR names "${id}" but the fixture has no such row — ` +
+        `this assertion is not testing what it claims to`).toBe(true);
+    }
+
+    for (const q of [
+      "כמה עולה ספייק", "מתי מגיע ספייק", "מה הטווח של ספייק", "ספייק מחיר",
+      "מה האחריות על ספייק", "אחריות ספייק", "כמה אחריות יש לספייק",
+    ]) {
       const [top] = await retrieve(q, 3);
       expect(MIA_FOUR.has(top.id), `"${q}" → ${top.id}, a MIA FOUR row`).toBe(false);
     }
