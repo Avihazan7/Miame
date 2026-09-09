@@ -257,3 +257,54 @@ describe("who turns it, and when", () => {
     expect(follow).toContain('"--product-src"');
   });
 });
+
+// ── the optimizer can ask for exactly what the file holds ────────────────────
+//
+// MEASURED 2026-09-09 in Chromium against the running production build. Next's
+// default deviceSizes ladder is [640,750,828,1080,1200,1920,2048,3840] and does
+// NOT contain 1800, which is the turntable frame width. A tablet at 768, 820 or
+// 900 CSS px and DPR 2 needs ~1414-1656 device px, so the browser skipped 1200
+// and asked for the next rung — 1920 — and Next enlarged the 1800px source to
+// fill it:
+//
+//     768x2  →  w=1920   216KB of file carrying 204KB of real pixels
+//     820x2  →  w=1920   same
+//     900x2  →  w=1920   same
+//
+// Every one of those is an iPad in portrait. Adding the rung moved all three to
+// w=1800 — every real pixel, nothing invented — and left phones and desktops
+// exactly where they were (390x3 → 1080, 430x3 → 1200, 1440x2 → 1080).
+//
+// This asserts the RELATIONSHIP, not the number: whatever width the frames are
+// cut to must be a rung the browser can land on, or the same defect returns
+// silently the next time the frames are re-exported.
+describe("the frame width is on the optimizer's ladder", () => {
+  const config = readFileSync("next.config.js", "utf8");
+
+  it("deviceSizes is declared", () => {
+    expect(config, "next.config.js no longer sets deviceSizes").toMatch(/deviceSizes\s*:\s*\[/);
+  });
+
+  it("contains the turntable frame width, so no request has to be upscaled", () => {
+    const ladder = config
+      .match(/deviceSizes\s*:\s*\[([^\]]+)\]/)![1]
+      .split(",")
+      .map((n) => Number(n.trim()))
+      .filter(Number.isFinite);
+    expect(ladder.length).toBeGreaterThan(4);
+    expect(
+      ladder,
+      `deviceSizes ${JSON.stringify(ladder)} has no ${TURNTABLE_W} rung — a viewport that ` +
+        `needs more than the rung below it will be served an ENLARGED ${TURNTABLE_W}px source`,
+    ).toContain(TURNTABLE_W);
+  });
+
+  it("stays sorted, which is what the browser's candidate search assumes", () => {
+    const ladder = config
+      .match(/deviceSizes\s*:\s*\[([^\]]+)\]/)![1]
+      .split(",")
+      .map((n) => Number(n.trim()))
+      .filter(Number.isFinite);
+    expect(ladder).toEqual([...ladder].sort((a, b) => a - b));
+  });
+});

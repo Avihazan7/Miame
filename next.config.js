@@ -74,6 +74,23 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     formats: ['image/avif', 'image/webp'],
+    // 1800 is the width of the hero turntable frames, and it is NOT on Next's
+    // default ladder [640,750,828,1080,1200,1920,2048,3840]. MEASURED 2026-09-09
+    // in Chromium against the running build: a tablet at 768/820/900 CSS px and
+    // DPR 2 needs ~1414-1656 device px, so the browser skipped past 1200 to the
+    // next rung — 1920 — and Next ENLARGED an 1800px source to fill it. 216KB
+    // arrived carrying 204KB worth of real pixels, and every one of those routes
+    // is an iPad in portrait.
+    //
+    // An earlier pass recorded deviceSizes as "tested and rejected — nothing is
+    // enlarged". That conclusion came from measuring 360, 390, 430 and 1440,
+    // which all land on 1080 or 1200 and are genuinely fine; the tablet range
+    // between them was never sampled.
+    //
+    // Adding the rung lets the browser ask for exactly what the file has. It does
+    // not change what phones or desktops receive (verified: 390x3 → 1080,
+    // 430x3 → 1200, 1440x2 → 1080, unchanged).
+    deviceSizes: [640, 750, 828, 1080, 1200, 1800, 1920, 2048, 3840],
     remotePatterns: [{ protocol: 'https', hostname: supabaseHost }]
   },
   async headers() {
