@@ -16,7 +16,12 @@ import {
   buildWhatsAppUrl,
   buildLeadMessage
 } from "@/lib/whatsapp";
-import { saveLead, LeadRecord } from "@/lib/supabase";
+// `import type` is erased at compile time and pulls NOTHING into the bundle;
+// `saveLead` is imported dynamically at its call site below. Together with the
+// same change in lib/analytics.ts this is what actually removes the Supabase SDK
+// from the initial script set — making only one of the two lazy would have left
+// the other one dragging the identical 238KB in.
+import type { LeadRecord } from "@/lib/supabase";
 import { track } from "@/lib/analytics";
 import { getUtm, utmTag } from "@/lib/utm";
 import Image from "next/image";
@@ -222,7 +227,9 @@ export default function Configurator() {
         source: `miame-web · ${intent} · nationwide · ${utmTag(utm)}`,
         ...utm
       };
-      void saveLead(lead);
+      // Loaded on submit, which is the first moment this page needs a database
+      // client at all. `void` keeps the funnel non-blocking exactly as before.
+      void import("@/lib/supabase").then(({ saveLead }) => saveLead(lead));
       // Additively feed the built deal into the U.M.M central brain (tenant +
       // server-side scoring). Best-effort: the WhatsApp + Supabase funnel above
       // already fired, so a brain hiccup never costs us the lead.
