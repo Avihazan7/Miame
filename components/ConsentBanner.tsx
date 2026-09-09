@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { marketingEnabled, readConsent, setConsent } from "@/lib/marketing";
+import Link from "next/link";
 
 export default function ConsentBanner() {
   const [show, setShow] = useState(false);
@@ -31,7 +32,7 @@ export default function ConsentBanner() {
       <p className="consent-text">
         אנחנו משתמשים בעוגיות למדידת ביצועים ולשיפור החוויה. בבחירת "מאשר/ת" תתאפשר
         מדידת פרסום ואנליטיקס. פרטים ב
-        <a href="/legal/privacy">מדיניות הפרטיות</a>.
+        <Link href="/legal/privacy">מדיניות הפרטיות</Link>.
       </p>
       <div className="consent-actions">
         <button type="button" className="btn btn-sm btn-ghost" onClick={() => choose("denied")}>

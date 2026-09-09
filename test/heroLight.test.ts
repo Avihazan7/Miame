@@ -208,11 +208,56 @@ describe("stage — 3D that is inert by default and honest about its gates", () 
     expect(reduce).toContain(".hero-v2-product { animation: none");
   });
 
-  it("the idle turn exists only where there is no pointer to follow", () => {
+  // Added 2026-09-09 on the owner's call — "give the vehicle light, a little
+  // around the wheels". The trap this guards is the one the layer map warns
+  // about: a light that is NOT masked stops being light ON the product and
+  // becomes a glow BEHIND it, which is the contact shadow's job and reads as
+  // fog. And a light that animates puts a second continuously-composited layer
+  // on the element holding the LCP — the exact cost the yaw gate just removed.
+  it("the wheel light falls on the product, adds light, and never moves", () => {
+    const ul = rule(".hero-v2-underlight");
+    // masked to the silhouette by the same URL the <img> already loaded
+    expect(ul).toMatch(/mask-image:\s*var\(--product-src, none\)/);
+    // screen adds light; multiply would darken, which is the shadow's job
+    expect(ul).toContain("mix-blend-mode: screen");
+    // static — no animation, no transform, nothing the compositor re-rasterises
+    expect(ul).not.toMatch(/animation\s*:/);
+    expect(ul).not.toMatch(/transform\s*:/);
+    // EVERY colour comes from the room, like every other highlight on this stage.
+    // Not "at least one" — the first version of this assertion only checked that
+    // the room's hue appeared somewhere, and a mutation that hard-coded one of
+    // the three gradients to rgba(120,220,255,.34) sailed through it. So: count
+    // the colour stops, and require that every one of them is a room variable.
+    const stops = [...ul.matchAll(/\b(?:rgba?|hsla?)\(/g)].length;
+    const roomStops = [...ul.matchAll(/hsla\(var\(--amb-hue-[ab]\)/g)].length;
+    expect(stops, "the wheel light declares no colour at all").toBeGreaterThanOrEqual(3);
+    expect(roomStops, `${stops - roomStops} colour stop(s) in .hero-v2-underlight are not the room's light`).toBe(stops);
+    expect(ul).not.toMatch(/#[0-9a-f]{3,8}\b/i);
+    // it may not paint before Hero.tsx has written the mask, or it would flash
+    // as a full rectangle over the stage
+    expect(hero).toContain('.hero-v2-product-stage[data-material="ready"] .hero-v2-underlight { opacity: 1; }');
+    expect(ul).toMatch(/opacity:\s*0/);
+    // and it is gone where masks are not supported, exactly like the gloss
+    expect(hero).toMatch(/@supports not \(\(mask-image: none\) or \(-webkit-mask-image: none\)\) \{\s*\.hero-v2-underlight \{ display: none; \}/);
+    // it is inside the product node, before the gloss
+    expect(tsx.indexOf('className="hero-v2-underlight"')).toBeGreaterThan(0);
+    expect(tsx.indexOf('className="hero-v2-underlight"')).toBeLessThan(tsx.indexOf('className="hero-v2-gloss"'));
+  });
+
+  it("the idle turn exists only where there is no pointer to follow, and only until the real one can run", () => {
     const hoverNone = hero.slice(hero.indexOf("@media (hover: none)"));
     expect(hoverNone).toContain(".hero-v2-product { animation: hero-yaw");
     // and not outside it: on a fine pointer the tilt owns the transform.
     expect(rule(".hero-v2-product")).not.toContain("animation:");
+    // THE GATE. A continuously-animated fractional rotateY makes the compositor
+    // resample the layer holding the LCP on every frame, forever: measured
+    // 2026-09-08 at 390×844 DPR3 over three alternating repeats (within-group
+    // spread 0.3%), turning it off raised the product's mean gradient magnitude
+    // 16.104 → 19.452 (+20.8%) and its p99 edge contrast 127.4 → 179.1 (+40.6%).
+    // The stage does the same thing for real once its six angles have loaded, so
+    // the fake yaw may only cover the window BEFORE that — hence the
+    // :not([data-spin]) qualifier, which Hero.tsx sets when the turntable arms.
+    expect(hoverNone).toContain(".hero-v2-product-stage:not([data-spin]) .hero-v2-product { animation: hero-yaw");
   });
 });
 
@@ -239,10 +284,51 @@ describe("the priority image fetches for the slot the grid gives it", () => {
     expect(tag).toContain("(max-width: 1120px) 48vw");
   });
 
+  // Added 2026-09-08. On a phone the product box was capped BELOW the stage that
+  // holds it — 300px inside 354px — so the browser downscaled the rendition it had
+  // already fetched: 1080 real pixels squeezed into 900 device pixels, a 1.20
+  // ratio, which the encode measurements showed is where ~29% of the source's edge
+  // energy goes. Filling the stage instead puts 1080 onto 1062 (ratio 1.02): the
+  // same bytes, no resampling, and a vehicle 18% larger. So the cap is DERIVED
+  // from the stage's own width, never typed — if .wrap's padding changes, this
+  // moves with it or fails.
+  it("the product fills the box the stage gives it, so the fetched rendition is not downscaled", () => {
+    const pad = ultra.match(/\.wrap\{[^}]*padding-inline:\s*clamp\((\d+)px/)?.[1];
+    expect(pad, ".wrap's padding-inline clamp is not where this test thinks it is").toBeTruthy();
+    // 390px is the reference phone the Hero's mobile branch is measured on; at that
+    // width 4vw = 15.6px, so the clamp floor wins on both sides.
+    const stage = 390 - 2 * Number(pad);
+    expect(stage).toBe(354);
+    const mobile = hero.slice(hero.indexOf("@media (max-width: 900px)"));
+    const cap = Number(mobile.match(/\.hero-v2-body\s*\{\s*width:\s*min\(100%,\s*(\d+)px\)/)?.[1]);
+    expect(cap, ".hero-v2-body declares no mobile width cap").toBeTruthy();
+    expect(cap, `the product is capped at ${cap}px inside a ${stage}px stage — the browser ` +
+      "will downscale the rendition it already paid for").toBeGreaterThanOrEqual(stage);
+  });
+
   it("is the LCP: priority, high fetch priority, and a quality that keeps the cut-out's edge", () => {
     expect(tag).toMatch(/\bpriority\b/);
     expect(tag).toContain('fetchPriority="high"');
     const q = Number(tag.match(/quality=\{(\d+)\}/)?.[1]);
-    expect(q, "quality is unset — the default 75 rings on the product's edges").toBeGreaterThanOrEqual(85);
+    // A RATCHET: this floor only ever climbs. Raised 85 -> 92 on 2026-09-09,
+    // after measuring the AVIF ladder on ALL SIX frames at w=1080, each against
+    // its own source in CIELAB, counting pixels with a visible colour shift
+    // (delta-chroma > 2). The LCP is a cut-out against white, which is exactly
+    // where AVIF fringes.
+    //
+    // Measured TWICE that day, because the Next 15 upgrade landed between them
+    // and the encoder is not the same one:
+    //   next@14.2.35 — q90 2.17% / 79.9 KB · q92 1.76% / 84.4 KB · q95 1.83% ·
+    //                  q98 1.65% · q100 1.70%.  q92 was the knee.
+    //   next@15.5.25 — q90 0.64% / 41.6 KB · q92 0.66% / 43.5 KB · q95 0.62% ·
+    //                  q98 0.59% · q100 0.56%.
+    // Next 15 re-tuned its AVIF encoder: at the SAME quality number it ships
+    // roughly half the bytes AND a third of the colour error. The first read of
+    // that (bytes fell 47%) looked like a silent quality cut and was wrong --
+    // measuring it is what showed the curve had moved down, not the quality.
+    // The practical consequence: on 15 the knob barely matters (q90 -> q100 buys
+    // 0.64% -> 0.56%), so 92 is kept because a ratchet does not descend, not
+    // because the extra 1.9 KB is doing work.
+    expect(q, "quality is unset — the default 75 rings on the product's edges").toBeGreaterThanOrEqual(92);
   });
 });

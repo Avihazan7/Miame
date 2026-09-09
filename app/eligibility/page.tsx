@@ -5,6 +5,7 @@ import FloatingWa from "@/components/FloatingWa";
 import Tribute from "@/components/Tribute";
 import LegalStatus from "@/components/LegalStatus";
 import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
+import { OG_IMAGES } from "@/lib/seo/og";
 
 // Dedicated conversion route for the defence-forces eligibility funnel. Reuses the
 // existing Tribute + LegalStatus sections; legal-safe wording, no automatic claims.
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   description:
     "בדיקת התאמה וזכאות לנכי צה\"ל, נפגעי פעולות איבה ומשפחות שכולות. הזכאות, ההיקף והתנאים כפופים לאישור הגורם המוסמך ולדין.",
   alternates: { canonical: "/eligibility" },
-  openGraph: {
+  openGraph: { images: OG_IMAGES,
     title: "MiaMe לזכאי כוחות הביטחון · בדיקת התאמה וזכאות",
     description: "ניידות חשמלית פרימיום לזכאי משרד הביטחון, בדיקת התאמה אישית, בכפוף לאישור.",
     url: "/eligibility",

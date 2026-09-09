@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 // Seller identification has to name a channel that answers, so the number is
 // read from the one sales-line constant rather than typed here a second time.
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from "@/lib/whatsapp";
+import Link from "next/link";
+import { OG_IMAGES } from "@/lib/seo/og";
 
 const UPDATED = "4 ביולי 2026";
 
@@ -12,14 +14,14 @@ export const metadata: Metadata = {
   title: "תקנון ותנאי שימוש",
   description: DESC,
   alternates: { canonical: "/legal/terms" },
-  openGraph: { title: "תקנון ותנאי שימוש · MiaMe", description: DESC, url: "/legal/terms", type: "article" },
+  openGraph: { images: OG_IMAGES, title: "תקנון ותנאי שימוש · MiaMe", description: DESC, url: "/legal/terms", type: "article" },
   robots: { index: true, follow: true }
 };
 
 export default function TermsPage() {
   return (
     <main id="main" className="legal">
-      <a href="/" className="legal-back">← חזרה לדף הבית</a>
+      <Link href="/" className="legal-back">← חזרה לדף הבית</Link>
       <h1>תקנון ותנאי שימוש</h1>
       <p className="legal-meta">גרסה 1.0 · עודכן: {UPDATED}</p>
 
@@ -96,7 +98,7 @@ export default function TermsPage() {
 
       <h2>9. פרטיות</h2>
       <p>
-        עיבוד המידע האישי נעשה בהתאם ל<a href="/legal/privacy">מדיניות הפרטיות</a>
+        עיבוד המידע האישי נעשה בהתאם ל<Link href="/legal/privacy">מדיניות הפרטיות</Link>
         {" "}של האתר, המהווה חלק בלתי נפרד מתקנון זה.
       </p>
 

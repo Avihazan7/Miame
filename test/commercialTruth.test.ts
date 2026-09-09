@@ -21,7 +21,7 @@ import { join, resolve } from "node:path";
 import { MODELS, getModel } from "@/lib/models";
 import { TRACKS } from "@/lib/finance";
 import { WARRANTY_MONTHS, WARRANTY_TERM } from "@/lib/content";
-import { TRUST_SIGNALS } from "@/lib/deal-buzz";
+import { TRUST_SIGNALS, LAUNCH_OFFER } from "@/lib/deal-buzz";
 import { HOME_FAQ } from "@/lib/home-faq";
 
 const ROOT = process.cwd();
@@ -175,8 +175,23 @@ describe("the site sells ONE thing, and offers nothing it does not sell", () => 
   });
 
   it("no surface offers a rental, a fleet, or a partnership", () => {
+    // THE HEBREW HALF, ADDED 2026-09-09. This gate already scanned brain/masters.ts —
+    // publicSources() walks brain/ — and it still missed the live offer sitting there:
+    // the concierge system prompt told the model to help the visitor choose
+    // "רכישה, זכאות כוחות הביטחון, השכרה באילת או שותפות". Every term in the pattern
+    // above is English or a brand name, so the Hebrew wording sailed through. The
+    // corpus rows for both products were deleted by
+    // supabase/migrations/20260902_knowledge_zzzzzzz_sell_one_thing.sql, which even
+    // RAISES if a row still offers one — so the model was being instructed to sell
+    // something it had no grounding for, which is the definition of the hallucination
+    // condition, and /partners and /rent-eilat both answer 410 (middleware.ts:25).
+    //
+    // "השכרה" alone is NOT bannable and is deliberately absent: it is legitimate in
+    // app/legal/terms (rental and service of the product), app/manifest.ts, and the
+    // fleet language in lib/seo-pages.ts. The two terms below measure zero across
+    // every published surface, so they are precise rather than broad.
     const hits = SOURCES.filter((f) =>
-      /רשת\s*MiaMe|MiaMe\s*Hub|PARTNER\s+NETWORK|Success\s*Fee|Green\s*Extreme/i.test(code(read(f))),
+      /רשת\s*MiaMe|MiaMe\s*Hub|PARTNER\s+NETWORK|Success\s*Fee|Green\s*Extreme|שותפות|באילת/i.test(code(read(f))),
     );
     expect(hits, `an offer we do not sell is published in: ${hits.join(", ")}`).toEqual([]);
   });
@@ -256,5 +271,130 @@ describe("no price renders with a stray separator before the currency sign", () 
       }
     }
     expect(hits, `malformed price:\n${hits.join("\n")}`).toEqual([]);
+  });
+});
+
+// ── the footnote marker and its resolution travel together ──────────────────
+//
+// Added 2026-09-08, when the launch strip's two paragraphs were deleted for
+// saying what the page already said. `.hero-v2-legal` is the next line that
+// LOOKS like the same kind of excess — eleven words, small type — and it is the
+// one that must not go: it is the sole resolution of the `*` in the Hero's
+// "עד 18 תשלומים ללא ריבית והצמדה*", and with the strip's disclaimer retired it
+// is now the only disclosure above the simulator. Cutting it would leave a
+// dangling footnote marker AND a real disclosure gap. Nothing in test/ asserted
+// it existed; now something does.
+describe("a payments asterisk in the Hero resolves in the Hero", () => {
+  const hero = code(read("components/Hero.tsx"));
+
+  it("is reading the Hero this test thinks it is", () => {
+    expect(hero, "components/Hero.tsx renders no payments claim — this guard is now blind").toMatch(/תשלומים/);
+  });
+
+  it("carries its own conditions line whenever it stars a payments claim", () => {
+    if (!/תשלומים[^*\n]*\*/.test(hero)) return; // no marker, nothing to resolve
+    expect(
+      hero,
+      'components/Hero.tsx marks a payments claim with "*" but no longer resolves it. ' +
+        'The Hero\'s legal line is the only thing that does, and after the launch strip\'s ' +
+        "disclaimer was retired it is the page's only disclosure above the simulator — " +
+        "restore it, or drop the asterisk it belongs to.",
+    ).toContain("בכפוף לאישור עסקה");
+    expect(hero, "the same line is what promises stock is not guaranteed").toContain("זמינות מלאי");
+  });
+});
+
+// ── the campaign label is written once ──────────────────────────────────────
+//
+// "מבצע השקה" renders twice on the home page — the launch strip's badge and the
+// DealBuzz section kicker — and until 2026-09-08 the second was a hard-typed
+// literal. Two copies of a promotional label agree on the day they are written
+// and disagree on the day the campaign is renamed, which is this file's whole
+// subject. An absence assertion, per the doctrine at the top: the literal must
+// not be in the components at all.
+describe("the launch campaign has one label", () => {
+  const LABEL = LAUNCH_OFFER.kicker;
+
+  it("is a label worth guarding", () => {
+    expect(LABEL.length).toBeGreaterThan(3);
+  });
+
+  it("is never re-typed in a component — every render reads LAUNCH_OFFER.kicker", () => {
+    const offenders = publicSources()
+      .filter((rel) => rel.startsWith("components/") || rel.startsWith("app/"))
+      .filter((rel) => code(read(rel)).includes(LABEL));
+    expect(
+      offenders,
+      `these files type "${LABEL}" instead of reading LAUNCH_OFFER.kicker from ` +
+        "lib/deal-buzz.ts. Rename the campaign once and they keep the old name.",
+    ).toEqual([]);
+  });
+});
+
+// ── no published surface asserts a regulatory exemption ─────────────────────
+//
+// THE DEFECT THIS CLOSES (measured 2026-09-09). public/llms.txt shipped this:
+//
+//   "אין צורך ברישיון נהיגה, ברישוי כלי או בביטוח חובה"
+//
+// No page on this site says that. lib/seo-pages.ts:240 is asked the licence
+// question directly and deliberately declines to answer it — "דרישות הרישוי
+// והשימוש כפופות לחוקי התעבורה והוראות הדין הרלוונטיות" — and
+// components/LegalStatus.tsx makes only the narrow claims it can stand behind:
+// no licence PLATE, no registration FEE, everything subject to the regulations,
+// and an explicit "this is not legal advice".
+//
+// The repo had already reasoned this through. test/corpusFixtureFidelity.test.ts
+// carries `it("makes no claim about a licence, insurance or a minimum age")`,
+// whose comment names the exact trap: "`רישוי` — registration — is a different
+// word from `רישיון`, and only the first is on the page." That gate reads ONE
+// file: the corpus SQL. The claim was published on a different surface, and the
+// gate's file-scoped slice is why nothing caught it — the same shape as the
+// FAQPage-in-layout and brand-in-landing defects this repo has hit before.
+//
+// llms.txt is the worst possible surface for it: robots.txt advertises it as
+// LLM-Content and GPTBot/ClaudeBot/PerplexityBot/Google-Extended are all Allowed,
+// so an answer engine quotes it verbatim and attributes the claim to the seller.
+//
+// WHY PHRASES AND NOT WORDS. The corpus gate can ban the bare word "ביטוח"
+// because it is scoped to one legal-status row. Here the scope is every public
+// surface, and the bare words have honest homes — measured, not assumed:
+//   ביטוח   → lib/marketplace-preview.ts:280,295 · brain/masters.ts:36
+//             (what a lease quote includes; all hedged)
+//   רישיון  → lib/seo-pages.ts:240 (the FAQ QUESTION, answered with a hedge)
+//             brain/knowledge.ts:200 (a synonym map entry)
+// Banning the topic would forbid asking the question. So this bans the
+// ASSERTION SHAPES instead. Adding a phrase here is cheap; widening to a bare
+// word would fire on all four legitimate lines above.
+describe("no published surface asserts a regulatory exemption", () => {
+  // Each entry is a claim the site does not make anywhere a lawyer has seen.
+  const FORBIDDEN = ["רישיון נהיגה", "ביטוח חובה", "גיל מינימלי"];
+
+  it.each(FORBIDDEN)('no public surface claims "%s"', (claim) => {
+    const offenders = SOURCES.filter((rel) => read(rel).includes(claim));
+    expect(
+      offenders,
+      `these surfaces assert "${claim}", which no page on the site states. ` +
+        "Ground the wording in components/LegalStatus.tsx and the approved corpus row " +
+        "(supabase/migrations/20260902_zzknowledge_site_truths.sql), or get the claim onto " +
+        "the visible page first — llms.txt must mirror the site, never lead it.",
+    ).toEqual([]);
+  });
+
+  // The gate above is an absence assertion, and an absence assertion passes just
+  // as happily when it is looking at nothing. Pin that it is really reading the
+  // file the defect shipped in.
+  it("actually scans llms.txt, the surface the claim shipped on", () => {
+    expect(SOURCES).toContain("public/llms.txt");
+    expect(read("public/llms.txt")).toMatch(/מעמד חוקי/);
+  });
+
+  // And pin the positive half: having removed the invented exemption, the line
+  // must still carry the hedge the visible page ends on, or the fix would have
+  // been "say less" rather than "say what the site says".
+  it("llms.txt carries the same not-legal-advice hedge the page does", () => {
+    expect(read("public/llms.txt"), "llms.txt states a legal status with no disclaimer").toContain(
+      "אינו ייעוץ משפטי",
+    );
   });
 });

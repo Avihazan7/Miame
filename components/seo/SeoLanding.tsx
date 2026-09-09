@@ -36,7 +36,6 @@ function jsonLd(page: SeoPage) {
               currency: "ILS",
               availability: "https://schema.org/InStock",
               url,
-              brand: "MiaMe",
             }),
           ]),
       {

@@ -90,15 +90,25 @@ describe("the base image is the hero angle, and the only priority image", () => 
 
   it("declares the manifest's first frame and the frame box", () => {
     expect(base).toContain(`src="${TURNTABLE_FRAMES[0].src}"`);
-    expect(base).toContain(`width={${TURNTABLE_W}}`);
-    expect(base).toContain(`height={${TURNTABLE_H}}`);
+    // Either the constant or the literal it resolves to. The literal was what
+    // shipped until 2026-09-09, and it is exactly how the box drifts: Hero.tsx
+    // already imported TURNTABLE_W and TURNTABLE_H and then typed 1800 and 1994
+    // underneath them, so a re-cut changed the files and left the declaration
+    // behind. Reading the constant is the fix; this accepts both so the assertion
+    // is about the VALUE reaching next/image, not about how it was spelled.
+    expect(base, "width is neither TURNTABLE_W nor its value").toMatch(
+      new RegExp(`width=\\{(TURNTABLE_W|${TURNTABLE_W})\\}`),
+    );
+    expect(base, "height is neither TURNTABLE_H nor its value").toMatch(
+      new RegExp(`height=\\{(TURNTABLE_H|${TURNTABLE_H})\\}`),
+    );
     expect(base).toMatch(/\bpriority\b/);
     expect(base).toContain('fetchPriority="high"');
   });
 
   it("the other angles mount only after the LCP, at low priority, hidden from assistive tech", () => {
-    expect(code).toMatch(/\{spin && TURNTABLE_FRAMES\.map\(/);
-    const overlay = tsx.match(/\{spin && TURNTABLE_FRAMES\.map\([\s\S]*?\/>\s*\)\)\}/)?.[0] ?? "";
+    expect(code).toMatch(/\{mounted && TURNTABLE_FRAMES\.map\(/);
+    const overlay = tsx.match(/\{mounted && TURNTABLE_FRAMES\.map\([\s\S]*?\/>\s*\)\)\}/)?.[0] ?? "";
     expect(overlay).not.toBe("");
     expect(overlay).not.toMatch(/\bpriority\b/);
     expect(overlay).toContain('fetchPriority="low"');
@@ -113,18 +123,24 @@ describe("the base image is the hero angle, and the only priority image", () => 
     expect(code).toMatch(/img\.addEventListener\("load", arm/);
   });
 
-  it("every angle is DECODED before the stage says it can turn", () => {
-    // The first build armed the spin on an idle callback and guarded each step
-    // with "is this frame loaded yet" — so an early drag simply did not move.
-    // Decoding all five up front removes both the guard and the stall: by the
-    // time a control exists, every angle is a swap away.
-    const at = code.indexOf("const arm = ");
-    expect(at, "the arming block is gone").toBeGreaterThan(0);
-    const arm = code.slice(at, code.indexOf("if (img.complete", at));
-    expect(arm).toContain("TURNTABLE_FRAMES.slice(1).map");
-    expect(arm).toContain("decode?.()");
-    expect(arm).toMatch(/Promise\.all\([\s\S]*?\)\.then\(\(\) => \{ if \(!cancelled\) setSpin\(true\); \}\)/);
-    expect(code, "a step is still gated on a per-frame loaded set").not.toContain("loaded.current");
+  it("readiness comes from the overlays' OWN load — never from a warmed side URL", () => {
+    // SHIPPED BUG, 2026-09-08: the stage went EMPTY in production. The turntable
+    // was armed by `new Image(); im.src = "/mia-four-360-2.webp"`, but next/image
+    // requests `/_next/image?url=%2Fmia-four-360-2.webp&w=750&q=90` — a different
+    // URL and a different cache entry. The controls appeared with no bytes behind
+    // them, the first turn hid the base (correct: the frames are cut-outs), and
+    // the overlay had nothing to show. A preload of a URL nobody requests is not
+    // a preload. The only signal that an angle can be shown is its own `load`.
+    expect(code, "a hand-rolled preload is back — it warms the wrong URL").not.toMatch(/new window\.Image\(\)/);
+    expect(code).toContain("const spin = loaded.size === TURNTABLE_FRAMES.length");
+    expect(code).toMatch(/onLoad=\{\(\) => markLoaded\(i\)\}/);
+  });
+
+  it("nothing can be shown, or hidden for, an angle that has not painted", () => {
+    // Both halves of the empty stage: the overlay only becomes visible once it
+    // has loaded, AND the base only hides once the incoming angle has loaded.
+    expect(code).toMatch(/data-active=\{i === frame && loaded\.has\(i\) \? "true" : undefined\}/);
+    expect(code).toMatch(/data-covered=\{frame !== 0 && loaded\.has\(frame\) \? "true" : undefined\}/);
   });
 });
 
@@ -156,7 +172,7 @@ describe("the swap is a cut — never two angles at once", () => {
     const covered = rule('.hero-v2-product-img[data-covered="true"]');
     expect(covered).toMatch(/visibility:\s*hidden/);
     expect(covered, "the base lingers behind a delay — that is the trail").not.toMatch(/transition|opacity/);
-    expect(tsx).toMatch(/data-covered=\{frame !== 0 \? "true" : undefined\}/);
+    expect(tsx).toMatch(/data-covered=\{frame !== 0 && loaded\.has\(frame\) \? "true" : undefined\}/);
   });
 
   it("the LCP itself is never given opacity or a transition", () => {
@@ -249,5 +265,56 @@ describe("who turns it, and when", () => {
     expect(follow).toMatch(/currentSrc/);
     expect(follow).toMatch(/img\.complete/);
     expect(follow).toContain('"--product-src"');
+  });
+});
+
+// ── the optimizer can ask for exactly what the file holds ────────────────────
+//
+// MEASURED 2026-09-09 in Chromium against the running production build. Next's
+// default deviceSizes ladder is [640,750,828,1080,1200,1920,2048,3840] and does
+// NOT contain 1800, which is the turntable frame width. A tablet at 768, 820 or
+// 900 CSS px and DPR 2 needs ~1414-1656 device px, so the browser skipped 1200
+// and asked for the next rung — 1920 — and Next enlarged the 1800px source to
+// fill it:
+//
+//     768x2  →  w=1920   216KB of file carrying 204KB of real pixels
+//     820x2  →  w=1920   same
+//     900x2  →  w=1920   same
+//
+// Every one of those is an iPad in portrait. Adding the rung moved all three to
+// w=1800 — every real pixel, nothing invented — and left phones and desktops
+// exactly where they were (390x3 → 1080, 430x3 → 1200, 1440x2 → 1080).
+//
+// This asserts the RELATIONSHIP, not the number: whatever width the frames are
+// cut to must be a rung the browser can land on, or the same defect returns
+// silently the next time the frames are re-exported.
+describe("the frame width is on the optimizer's ladder", () => {
+  const config = readFileSync("next.config.js", "utf8");
+
+  it("deviceSizes is declared", () => {
+    expect(config, "next.config.js no longer sets deviceSizes").toMatch(/deviceSizes\s*:\s*\[/);
+  });
+
+  it("contains the turntable frame width, so no request has to be upscaled", () => {
+    const ladder = config
+      .match(/deviceSizes\s*:\s*\[([^\]]+)\]/)![1]
+      .split(",")
+      .map((n) => Number(n.trim()))
+      .filter(Number.isFinite);
+    expect(ladder.length).toBeGreaterThan(4);
+    expect(
+      ladder,
+      `deviceSizes ${JSON.stringify(ladder)} has no ${TURNTABLE_W} rung — a viewport that ` +
+        `needs more than the rung below it will be served an ENLARGED ${TURNTABLE_W}px source`,
+    ).toContain(TURNTABLE_W);
+  });
+
+  it("stays sorted, which is what the browser's candidate search assumes", () => {
+    const ladder = config
+      .match(/deviceSizes\s*:\s*\[([^\]]+)\]/)![1]
+      .split(",")
+      .map((n) => Number(n.trim()))
+      .filter(Number.isFinite);
+    expect(ladder).toEqual([...ladder].sort((a, b) => a - b));
   });
 });

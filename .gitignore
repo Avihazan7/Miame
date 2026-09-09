@@ -12,3 +12,7 @@ next-env.d.ts
 # Architecture Guardian run artifacts
 arch-guardian-report.json
 arch-guardian-summary.md
+
+# Isolated git worktrees created by Claude Code workflow agents. Transient
+# scaffolding — each one is a full checkout, and none of it belongs in history.
+.claude/worktrees/

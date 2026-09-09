@@ -16,6 +16,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { HUB_DESTINATIONS, channelFor } from "@/lib/social-campaign";
 import WaCta from "@/components/WaCta";
+import { OG_IMAGES } from "@/lib/seo/og";
 
 export const metadata: Metadata = {
   title: "MiaMe · הקישורים",
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
   // A hub travels by being pasted, so it needs its own share card. Without one it
   // inherits the root layout's — announcing the homepage's title AND og:url, so the
   // preview describes a different page than the one being opened.
-  openGraph: {
+  openGraph: { images: OG_IMAGES,
     title: "MiaMe · מיה פור",
     description: "ניידות חשמלית פרימיום במחיר חכם. הצעת תשלום מותאמת תוך דקה.",
     url: "/link",
@@ -33,14 +34,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LinkHubPage({
+// `searchParams` is a Promise from Next 15 on, so this page awaits it. It is the
+// only page in the tree that reads one — every other route resolves its content
+// from lib/seo-pages.ts at build time.
+export default async function LinkHubPage({
   searchParams,
 }: {
-  searchParams?: { utm_source?: string };
+  searchParams?: Promise<{ utm_source?: string }>;
 }) {
   // The only thing the network changes. Unknown or absent source falls back to the
   // neutral copy rather than guessing — a wrong greeting is worse than none.
-  const channel = channelFor(searchParams?.utm_source);
+  const channel = channelFor((await searchParams)?.utm_source);
 
   return (
     <main id="main" className="block" style={{ minHeight: "80vh", display: "grid", placeItems: "center" }}>

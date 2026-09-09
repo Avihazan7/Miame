@@ -35,6 +35,15 @@ export interface SeoPage {
    *  ratio that contradicts the file shifts the entire page when the image decodes —
    *  all four heroes shipped as 720×540 while none of the files is 4:3 (audit 31.08.26). */
   hero: { image: string; alt: string; w: number; h: number };
+  /** The SOCIAL card image, when the hero is the wrong shape for one.
+   *  MEASURED 2026-09-09: /mia-four shipped its hero — 1800×1994, ratio 0.90,
+   *  a PORTRAIT turntable render — as its `og:image` under
+   *  `twitter:card=summary_large_image`, which lays out at roughly 1.91:1. The
+   *  hero is correct on the page (it is the LCP element and portrait is right
+   *  there) and wrong in the card, so the two roles need two fields rather than
+   *  one compromise. Unset ⇒ the hero is used, which is fine for the three pages
+   *  whose heroes are already 1.50. */
+  ogImage?: { image: string; alt: string; w: number; h: number };
   sections: SeoSection[];
   specs?: { k: string; v: string }[];
   faq: SeoFaq[];
@@ -117,11 +126,27 @@ export const SEO_PAGES: SeoPage[] = [
     description:
       "כל מה שצריך לדעת על מיה פור (MIA FOUR): פלטפורמת 4 גלגלים מוגנת פטנט, סוללת ליתיום נשלפת 60V, עד 4 מנועים, שלושה דגמים והחל מ-19,900 ₪. בנו הצעת תשלום תוך דקה.",
     lede: "מיה פור היא קלנועית חשמלית פרימיום על פלטפורמת ארבעה גלגלים מוגנת פטנט, יציבה, נשלטת וחכמה. כאן ריכזנו את כל המידע: הדגמים, הסוללה, הטווח, האחריות ומסלולי התשלום, כדי שתוכלו לבחור נכון ולהתקדם לעסקה במיידי.",
+    // The hub hero is the SAME angle the homepage opens on — one of the owner's
+    // six 4K turntable renders (lib/turntable.ts, frame 0). It replaces the older
+    // studio still on 2026-09-08: a visitor arriving here from search should meet
+    // the vehicle they just saw, at 1,683px of silhouette instead of 1,431, and
+    // the two surfaces should not disagree about what MIA FOUR looks like.
     hero: {
-      image: "/mia-four-x6-studio.webp",
-      w: 1400,
-      h: 1498,
-      alt: "מיה פור X6, קלנועית חשמלית פרימיום על 4 גלגלים, צילום סטודיו"
+      image: "/mia-four-360-1.webp",
+      w: 2599,
+      h: 2879,
+      alt: "מיה פור, קלנועית חשמלית פרימיום על 4 גלגלים, צילום סטודיו"
+    },
+    // The hero above stays portrait, because on the page it is right. The card
+    // gets the landscape studio frame instead — 2400×1350, ratio 1.78, close to
+    // the 1.91 a large-image card lays out at. The comment below already settles
+    // the model question for this hub: the X4 is a legitimate representative of
+    // the platform this page is about.
+    ogImage: {
+      image: "/mia-four-x4-arena.webp",
+      w: 2400,
+      h: 1350,
+      alt: "מיה פור 4×4 Pro Max, קלנועית חשמלית על 4 גלגלים, צילום סטודיו"
     },
     // The MIA FOUR hub: the X4 is a legitimate representative of the platform this
     // page is about, and the viewer's own title names which model it is showing.

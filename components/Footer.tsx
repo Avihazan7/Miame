@@ -1,5 +1,6 @@
 import MiaMark from "./MiaMark";
 import LexIcon from "@/components/LexIcon";
+import Link from "next/link";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -26,10 +27,10 @@ export default function Footer() {
           </a>{" "}
         </div>
         <nav className="foot-links" aria-label="עמודי מידע">
-          <a href="/mia-four">מיה פור</a>
-          <a href="/klnoit-4-galgalim">קלנועית 4 גלגלים</a>
-          <a href="/klnoit-mitkapelet">קלנועית מתקפלת</a>
-          <a href="/klnoit-shetach">קלנועית שטח</a>
+          <Link href="/mia-four">מיה פור</Link>
+          <Link href="/klnoit-4-galgalim">קלנועית 4 גלגלים</Link>
+          <Link href="/klnoit-mitkapelet">קלנועית מתקפלת</Link>
+          <Link href="/klnoit-shetach">קלנועית שטח</Link>
           {/* The footer is this site's reachability floor: it renders on every content
               page and nothing in it is hidden at any width — unlike the header's nav
               links, which carry `hide-m` and vanish under 720px. Both routes below are
@@ -43,9 +44,9 @@ export default function Footer() {
               a defect. Guarded by test/routeReachability.test.ts. */}
         </nav>
         <nav className="foot-links" aria-label="מידע משפטי">
-          <a href="/legal/terms">תקנון ותנאי שימוש</a>
-          <a href="/legal/privacy">מדיניות פרטיות</a>
-          <a href="/legal/accessibility">הצהרת נגישות</a>
+          <Link href="/legal/terms">תקנון ותנאי שימוש</Link>
+          <Link href="/legal/privacy">מדיניות פרטיות</Link>
+          <Link href="/legal/accessibility">הצהרת נגישות</Link>
         </nav>
         <p className="foot-legal">
           המחירים, התשלומים החודשיים ותנאי המימון המוצגים באתר הם הערכה ראשונית

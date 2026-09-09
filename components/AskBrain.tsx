@@ -160,7 +160,12 @@ export default function AskBrain() {
             </span>
           </div>
 
-          <div className="chat3d-body">
+          {/* role="log" is the correct role for an append-only transcript, and it is
+              what makes an arriving answer reachable: focus stays in the input, the
+              answer is appended here, and without a live region a screen-reader user
+              gets silence. Configurator.tsx already does this for the recalculated
+              monthly payment — the pattern existed and was simply not applied here. */}
+          <div className="chat3d-body" role="log" aria-live="polite" aria-relevant="additions text">
             {msgs.map((m, i) => (
               <div key={i} className={m.role === "user" ? "bub user" : "bub bot"}>
                 <div className="bub-txt">{m.text}</div>
@@ -169,7 +174,10 @@ export default function AskBrain() {
             ))}
             {busy && (
               <div className="bub bot">
-                <div className="typing">
+                {/* The three dots are decoration with no text; a reader announced
+                    nothing at all while the answer was being composed. */}
+                <span className="sr-only" role="status">מנסח תשובה…</span>
+                <div className="typing" aria-hidden="true">
                   <span />
                   <span />
                   <span />

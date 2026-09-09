@@ -41,11 +41,19 @@ const SECURITY_HEADERS = [
       "default-src 'self'",
       // 'wasm-unsafe-eval' permits WebAssembly compilation ONLY (three.js/@react-three
       // decoders for the lazy 3D product viewer) — it does NOT enable JS eval().
-      "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://connect.facebook.net https://vercel.live",
+      // analytics.tiktok.com is here because components/MarketingScripts.tsx ships a
+      // TikTok pixel and this policy blocked it. The failure mode was the bad one:
+      // the banner would appear, the visitor would consent, the code would report the
+      // pixel active — and the browser would refuse the script, so zero events would
+      // reach TikTok. A CSP violation shows only in the browser console: not in a log,
+      // not in the Guardian, not in CI. That is exactly the gap the pixel was added to
+      // close ("TikTok was the one paid channel with a live profile and no way to
+      // measure it", lib/marketing.ts:14-16).
+      "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://connect.facebook.net https://analytics.tiktok.com https://vercel.live",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://www.facebook.com https://connect.facebook.net https://vercel.live wss://*.pusher.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://www.facebook.com https://connect.facebook.net https://analytics.tiktok.com https://vercel.live wss://*.pusher.com",
       "frame-src https://www.youtube-nocookie.com https://vercel.live",
       "media-src 'self' blob: https://*.supabase.co",
       "worker-src 'self' blob:",
@@ -66,6 +74,23 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     formats: ['image/avif', 'image/webp'],
+    // 1800 is the width of the hero turntable frames, and it is NOT on Next's
+    // default ladder [640,750,828,1080,1200,1920,2048,3840]. MEASURED 2026-09-09
+    // in Chromium against the running build: a tablet at 768/820/900 CSS px and
+    // DPR 2 needs ~1414-1656 device px, so the browser skipped past 1200 to the
+    // next rung — 1920 — and Next ENLARGED an 1800px source to fill it. 216KB
+    // arrived carrying 204KB worth of real pixels, and every one of those routes
+    // is an iPad in portrait.
+    //
+    // An earlier pass recorded deviceSizes as "tested and rejected — nothing is
+    // enlarged". That conclusion came from measuring 360, 390, 430 and 1440,
+    // which all land on 1080 or 1200 and are genuinely fine; the tablet range
+    // between them was never sampled.
+    //
+    // Adding the rung lets the browser ask for exactly what the file has. It does
+    // not change what phones or desktops receive (verified: 390x3 → 1080,
+    // 430x3 → 1200, 1440x2 → 1080, unchanged).
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 2599, 3840],
     remotePatterns: [{ protocol: 'https', hostname: supabaseHost }]
   },
   async headers() {

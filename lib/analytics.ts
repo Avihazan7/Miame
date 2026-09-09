@@ -1,4 +1,3 @@
-import { supabase } from "./supabase";
 import { getUtm } from "./utm";
 import { adsConversion, ADS_LEAD_LABEL, ADS_WHATSAPP_LABEL, ga4Event, metaEvent } from "./marketing";
 
@@ -35,6 +34,24 @@ export async function track(
   forwardToPixels(event, enriched);
 
   try {
+    // DYNAMIC, and this is the whole point. MEASURED 2026-09-09 on a fresh build:
+    // a static `import { supabase } from "./supabase"` here put the entire
+    // @supabase/supabase-js SDK — 238KB raw / 61.5KB gz, as chunks 445 and
+    // 44530001 — into the INITIAL script set of / and of all four SEO landing
+    // pages, because `track` is statically imported by 13 client components
+    // including the LCP component (Hero) and the sticky header. The page never
+    // uses it: what shipped was a realtime websocket client, a PKCE auth client,
+    // a storage client and a Buffer shim, parsed and executed during hydration on
+    // a site that has no login. `createClient()` also ran at module scope, so
+    // every load booted GoTrue with persistSession/detectSessionInUrl/
+    // autoRefreshToken all true — reading localStorage, parsing the URL for an
+    // auth fragment and arming a refresh timer, inside the hydration window,
+    // competing with the LCP image preload.
+    //
+    // `track` was already async, so nothing above this line changes. Webpack now
+    // splits those chunks out of the initial graph and fetches them on the first
+    // tracked interaction. Guarded by test/bundleBudget.test.ts.
+    const { supabase } = await import("./supabase");
     if (!supabase) return;
     await supabase.from("events").insert({ event_name: event, payload: enriched });
   } catch {

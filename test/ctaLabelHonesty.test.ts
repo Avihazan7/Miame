@@ -86,3 +86,11 @@ describe("a label that says WhatsApp opens WhatsApp", () => {
     });
   }
 });
+
+// The launch strip used to live in this file's blind spot — a <button> whose
+// handler scrolled to #sim while a sibling <p> promised "בדיקת התאמה בוואטסאפ".
+// A gate was added for it on 2026-09-08; on 2026-09-09 the owner deleted the
+// strip entirely and components/LaunchOfferStrip.tsx with it, so the gate is
+// gone too rather than left reading a file that is not there. The defect it
+// guarded cannot recur in a component that no longer exists, and the scan above
+// still covers every <a href="#…"> on the site.

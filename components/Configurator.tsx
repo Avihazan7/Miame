@@ -16,11 +16,17 @@ import {
   buildWhatsAppUrl,
   buildLeadMessage
 } from "@/lib/whatsapp";
-import { saveLead, LeadRecord } from "@/lib/supabase";
+// `import type` is erased at compile time and pulls NOTHING into the bundle;
+// `saveLead` is imported dynamically at its call site below. Together with the
+// same change in lib/analytics.ts this is what actually removes the Supabase SDK
+// from the initial script set — making only one of the two lazy would have left
+// the other one dragging the identical 238KB in.
+import type { LeadRecord } from "@/lib/supabase";
 import { track } from "@/lib/analytics";
 import { getUtm, utmTag } from "@/lib/utm";
 import Image from "next/image";
 import WaIcon from "./WaIcon";
+import Link from "next/link";
 
 /* count-up animation, strict-mode safe (cancelable rAF, continues from last shown value) */
 function useCountUp(target: number, duration = 520): number {
@@ -160,7 +166,18 @@ export default function Configurator() {
     track("ModelSelected", { modelId: id });
     emitSignal("view_specs"); // viewing a model's specs → central Big Five nudge
     if (scroll && typeof document !== "undefined") {
-      document.getElementById("sim")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      // An explicit `behavior` in ScrollIntoViewOptions takes precedence over the
+      // computed scroll-behavior property (CSSOM-View), so the
+      // `scroll-behavior:auto!important` reset inside the reduced-motion block in
+      // app/globals.css does NOT reach this call — it only neutralises the
+      // `html{scroll-behavior:smooth}` declaration. Read the preference here, or a
+      // visitor who asked the OS to stop motion gets an animated scroll across most
+      // of a long page. app/legal/accessibility states that the site honours it.
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.getElementById("sim")?.scrollIntoView({
+        behavior: reduce ? "auto" : "smooth",
+        block: "start",
+      });
     }
   }
 
@@ -210,7 +227,9 @@ export default function Configurator() {
         source: `miame-web · ${intent} · nationwide · ${utmTag(utm)}`,
         ...utm
       };
-      void saveLead(lead);
+      // Loaded on submit, which is the first moment this page needs a database
+      // client at all. `void` keeps the funnel non-blocking exactly as before.
+      void import("@/lib/supabase").then(({ saveLead }) => saveLead(lead));
       // Additively feed the built deal into the U.M.M central brain (tenant +
       // server-side scoring). Best-effort: the WhatsApp + Supabase funnel above
       // already fired, so a brain hiccup never costs us the lead.
@@ -563,7 +582,7 @@ export default function Configurator() {
                 </div>
                 <p className="lead-consent">
                   בלחיצה על שליחה אני מאשר/ת יצירת קשר טלפוני ובוואטסאפ בנוגע לפנייתי, בהתאם ל
-                  <a href="/legal/privacy">מדיניות הפרטיות</a>.
+                  <Link href="/legal/privacy">מדיניות הפרטיות</Link>.
                 </p>
                 <p className="disclaimer">
                   הסימולטור להמחשה בלבד. עד {MAX_MONTHS} תשלומים ללא ריבית והצמדה בכפוף לאישור עסקה, זמינות מלאי ותנאי החברה/היבואן. האתר אינו מהווה התחייבות לאישור מימון.

@@ -11,7 +11,7 @@ import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import LexIcon from "@/components/LexIcon";
 import { track } from "@/lib/analytics";
 import WaIcon from "./WaIcon";
-import { DEAL_BUZZ_CARDS, BUZZ_DISCLAIMER, type BuzzItem } from "@/lib/deal-buzz";
+import { DEAL_BUZZ_CARDS, BUZZ_DISCLAIMER, LAUNCH_OFFER, type BuzzItem } from "@/lib/deal-buzz";
 
 export default function DealBuzz() {
   function onCta(item: BuzzItem) {
@@ -22,7 +22,18 @@ export default function DealBuzz() {
       return;
     }
     if (typeof document !== "undefined") {
-      document.getElementById("sim")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      // An explicit `behavior` in ScrollIntoViewOptions takes precedence over the
+      // computed scroll-behavior property (CSSOM-View), so the
+      // `scroll-behavior:auto!important` reset inside the reduced-motion block in
+      // app/globals.css does NOT reach this call — it only neutralises the
+      // `html{scroll-behavior:smooth}` declaration. Read the preference here, or a
+      // visitor who asked the OS to stop motion gets an animated scroll across most
+      // of a long page. app/legal/accessibility states that the site honours it.
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.getElementById("sim")?.scrollIntoView({
+        behavior: reduce ? "auto" : "smooth",
+        block: "start",
+      });
     }
   }
 
@@ -30,7 +41,7 @@ export default function DealBuzz() {
     <section className="block buzz-sec" id="deal-buzz">
       <div className="wrap">
         <div className="sec-head">
-          <div className="sec-kicker">מבצע השקה</div>
+          <div className="sec-kicker">{LAUNCH_OFFER.kicker}</div>
           <h2 className="sec-title">מוכנים להתקדם? בחרו את הצעד הבא</h2>
           <p className="sec-desc">
             בלי לחץ ובלי הפתעות, בוחרים איך נוח לכם להתקדם, ואנחנו איתכם בוואטסאפ.

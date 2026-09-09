@@ -2,6 +2,7 @@ import Image from "next/image";
 import WaCta from "@/components/WaCta";
 import LexIcon from "@/components/LexIcon";
 import { getModel } from "@/lib/models";
+import Link from "next/link";
 
 /**
  * Ministry of Defence eligibility — the second conversion path on the site, and
@@ -149,7 +150,7 @@ export default function Tribute({
               </p>
               {deepLink && (
                 <p className="tribute-more">
-                  <a href="/eligibility">כל הפרטים על הזכאות והמסלול המלא ←</a>
+                  <Link href="/eligibility">כל הפרטים על הזכאות והמסלול המלא ←</Link>
                 </p>
               )}
             </div>

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 // Privacy enquiries have to reach a line that answers, so the number is read
 // from the one sales-line constant rather than typed here a second time.
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from "@/lib/whatsapp";
+import Link from "next/link";
+import { OG_IMAGES } from "@/lib/seo/og";
 
 const UPDATED = "4 ביולי 2026";
 
@@ -12,14 +14,14 @@ export const metadata: Metadata = {
   title: "מדיניות פרטיות",
   description: DESC,
   alternates: { canonical: "/legal/privacy" },
-  openGraph: { title: "מדיניות פרטיות · MiaMe", description: DESC, url: "/legal/privacy", type: "article" },
+  openGraph: { images: OG_IMAGES, title: "מדיניות פרטיות · MiaMe", description: DESC, url: "/legal/privacy", type: "article" },
   robots: { index: true, follow: true }
 };
 
 export default function PrivacyPage() {
   return (
     <main id="main" className="legal">
-      <a href="/" className="legal-back">← חזרה לדף הבית</a>
+      <Link href="/" className="legal-back">← חזרה לדף הבית</Link>
       <h1>מדיניות פרטיות</h1>
       <p className="legal-meta">גרסה 1.0 · עודכן: {UPDATED}</p>
 
@@ -69,9 +71,11 @@ export default function PrivacyPage() {
 
       <h2>5. עוגיות והסכמה</h2>
       <p>
-        פיקסלים שיווקיים ואנליטיקס נטענים רק לאחר קבלת הסכמתך בבאנר ההסכמה (Consent
-        Mode). באפשרותך לבחור "רק הכרחי" ולסרב למדידה שיווקית, וכן לנהל עוגיות
-        בהגדרות הדפדפן. סירוב לא ימנע ממך לפנות אלינו או לרכוש.
+        פיקסלים שיווקיים ואנליטיקס נטענים במצב חסום כברירת מחדל (Consent Mode):
+        עד לאישורך הם אינם מודדים, אינם שומרים עוגיות שיווקיות ואינם מעבירים נתוני
+        פרסום. עצם טעינת הסקריפט מעבירה לספק את כתובת ה-IP ואת כתובת הדף, וניתן
+        למנוע גם זאת בחסימת סקריפטים או עוגיות צד-שלישי בהגדרות הדפדפן. באפשרותך
+        לבחור "רק הכרחי" ולסרב למדידה שיווקית. סירוב לא ימנע ממך לפנות אלינו או לרכוש.
       </p>
 
       <h2>6. אבטחת מידע ושמירתו</h2>

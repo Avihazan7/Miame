@@ -79,8 +79,16 @@ export const metadata: Metadata = {
     default: `${PRODUCT_NAME_HE} · ${PRODUCT_CATEGORY_HE} חשמלית 4 גלגלים | MiaMe`,
     template: "%s | MiaMe",
   },
+  // THE SNIPPET NAMES THE THING TOO. The title was fixed on 2026-09-01 and the H1
+  // on the same day; the description — the two lines Google prints under that
+  // title, and the passage an answer engine quotes — was not re-read, and still
+  // opened on "ניידות חשמלית פרימיום": the exact phrase the H1 comment above
+  // calls one nobody searches. It named neither the product (מיה פור) nor what
+  // the thing legally IS (קלנועית), on the one string that appears beside every
+  // result for the domain. Both are now first, and the imperative is plural, like
+  // every other call to action on the site ("בנו" · "צפו" · "גררו"), not "בנה".
   description:
-    "ניידות חשמלית פרימיום במחיר חכם. בנה הצעת תשלום מותאמת תוך דקה וקבל אותה ישירות בוואטסאפ. מבית Leasing.co.il.",
+    `${PRODUCT_NAME_HE} · ${PRODUCT_CATEGORY_HE} חשמלית פרימיום על 4 גלגלים. בנו הצעת תשלום מותאמת תוך דקה וקבלו אותה ישירות בוואטסאפ. מבית Leasing.co.il.`,
   applicationName: "MiaMe",
   // "רכב חשמלי" was removed, and not for SEO: the site's own legal page states
   // that MIA FOUR is classified as a קלנועית and is NOT a vehicle. A keyword that
@@ -104,9 +112,9 @@ export const metadata: Metadata = {
   // so we let the files drive the <head> links and keep this object focused on the
   // rest of the metadata.
   openGraph: {
-    title: "MiaMe · החופש שלך על ארבעה גלגלים",
+    title: `${PRODUCT_NAME_HE} · ${PRODUCT_CATEGORY_HE} חשמלית | MiaMe`,
     description:
-      "ניידות חשמלית פרימיום במחיר חכם. הצעת תשלום מותאמת תוך דקה, ישירות לוואטסאפ.",
+      `${PRODUCT_NAME_HE} · ${PRODUCT_CATEGORY_HE} חשמלית פרימיום על 4 גלגלים. הצעת תשלום מותאמת תוך דקה, ישירות לוואטסאפ.`,
     url: SITE_URL,
     siteName: "MiaMe",
     locale: "he_IL",
@@ -175,6 +183,14 @@ const HOME_PRODUCTS = MODELS.map((m) => ({
   additionalProperty: PRODUCT_PROPERTIES
 }));
 
+/** The commercial graph, rendered by app/page.tsx rather than by this layout.
+ *  Exported as a finished string so the page does not have to re-import SITE_URL,
+ *  MODELS and the SPYQE builder just to rebuild something that already exists. */
+export const HOME_PRODUCTS_JSONLD = JSON.stringify({
+  "@context": "https://schema.org",
+  "@graph": [...HOME_PRODUCTS, spyqeProductJsonLd(SITE_URL)],
+});
+
 const JSON_LD = {
   "@context": "https://schema.org",
   "@graph": [
@@ -193,7 +209,7 @@ const JSON_LD = {
       name: "MiaMe",
       url: SITE_URL,
       logo: SITE_URL + "/mia-four-logo.webp",
-      description: "ניידות חשמלית פרימיום במחיר חכם, מבית Leasing.co.il.",
+      description: `${PRODUCT_NAME_HE} · ${PRODUCT_CATEGORY_HE} חשמלית פרימיום, מבית Leasing.co.il.`,
       // `sameAs` — the machine-readable assertion that this business and the
       // accounts listed are ONE entity. It carries the BRAND's profiles and only
       // those: the owner's personal accounts stay unlinked and unnamed in public,
@@ -215,10 +231,16 @@ const JSON_LD = {
         availableLanguage: ["he"]
       }
     },
-    ...HOME_PRODUCTS,
-    // SPYQE is a PRE-ORDER, not stock, and it carries its own properties — the
-    // shared PRODUCT_PROPERTIES list quotes a MIA FOUR motor rating.
-    spyqeProductJsonLd(SITE_URL),
+    // NOTE — and the four Product nodes are gone from here too, for the reason
+    // the FAQPage note below already states in full. MEASURED 2026-09-09: this
+    // graph put four Product+Offer nodes, each `InStock` with a price, on ALL
+    // thirteen routes — including /legal/privacy, /legal/terms and
+    // /legal/accessibility, which are `index: true` and render no product at
+    // all, plus /thank-you and /marketplace-preview. An Offer is a commercial
+    // assertion about the page it stands on; a privacy policy that declares four
+    // priced, in-stock products is the same content/markup mismatch that cost
+    // the FAQPage its rich result, in a shape that touches money. They now ship
+    // from app/page.tsx, beside the models the page actually renders.
     // NOTE — there is deliberately NO LocalBusiness node here.
     // MiaMe sells and delivers nationwide; it does not publish a storefront.
     // The previous node published a named physical storefront and its street

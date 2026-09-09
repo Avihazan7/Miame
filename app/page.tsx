@@ -6,6 +6,7 @@ import Features from "@/components/Features";
 import Specs from "@/components/Specs";
 import Engineering from "@/components/Engineering";
 import Patents from "@/components/Patents";
+import FirstAndUnique from "@/components/FirstAndUnique";
 import LegalStatus from "@/components/LegalStatus";
 import Configurator from "@/components/Configurator";
 import AskBrain from "@/components/AskBrain";
@@ -16,20 +17,19 @@ import Importer from "@/components/Importer";
 import Footer from "@/components/Footer";
 import FloatingWa from "@/components/FloatingWa";
 import StickyCta from "@/components/StickyCta";
-import LaunchOfferStrip from "@/components/LaunchOfferStrip";
 import TrustSignalBar from "@/components/TrustSignalBar";
 import DealBuzz from "@/components/DealBuzz";
 import CinematicVideo from "@/components/CinematicVideo";
 import FreedomMomentVideo from "@/components/FreedomMomentVideo";
 import FaqHome from "@/components/FaqHome";
 import { HOME_FAQ_JSONLD } from "@/lib/home-faq";
+import { HOME_PRODUCTS_JSONLD } from "@/app/layout";
 import DynamicsGallery from "@/components/DynamicsGallery";
 
 export default function Page() {
   return (
     <>
       <Header />
-      <LaunchOfferStrip />
       {/* P1 — Ultra Master Rhythm: the homepage reads as EIGHT movements, not
           twenty separate beats. Each `.movement` groups its sub-blocks over one
           continuous aurora so the eye counts a single section, not a stack. The
@@ -69,6 +69,7 @@ export default function Page() {
           <Specs />
           <Engineering />
           <Patents />
+          <FirstAndUnique />
           <CinematicVideo />
         </section>
 
@@ -98,6 +99,15 @@ export default function Page() {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: HOME_FAQ_JSONLD }}
+        />
+        {/* The four Product+Offer nodes ship from HERE for the same reason the
+            FAQPage does: an Offer is a commercial claim about the page it stands
+            on, and the root layout injects into all thirteen routes. Standing on
+            /legal/privacy, they declared four priced, in-stock products on a page
+            that renders none. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: HOME_PRODUCTS_JSONLD }}
         />
         <FaqHome />
       </main>

@@ -18,10 +18,19 @@ export const dynamic = "force-dynamic";
 // the explicit status='published' filter below enforce the same visibility twice.
 // lib/supabase.ts ships public-by-design defaults, so this works with zero env.
 
+// `params` is a Promise from Next 15 on, so this handler awaits it. Two places in
+// the tree carry that change and this is one; the other is app/link/page.tsx and
+// its `searchParams`. Nothing here calls cookies()/headers()/draftMode(), so the
+// rest of the Next 15 async-request-API migration is genuinely inert in this repo
+// — but "inert" was checked against pages and layouts only, and both real hits
+// were in the two places that scan did not cover. The build found them; a grep
+// did not.
 export async function GET(
   _request: Request,
-  { params }: { params: { vehicleId: string } }
+  { params }: { params: Promise<{ vehicleId: string }> }
 ) {
+  const { vehicleId } = await params;
+
   if (!supabase) {
     // No client (env explicitly blanked) — fail soft so the page renders
     // without media instead of surfacing a 500 to the visitor.
@@ -34,7 +43,7 @@ export async function GET(
   const { data, error } = await supabase
     .from("vehicle_media_assets")
     .select("*")
-    .eq("vehicle_id", params.vehicleId)
+    .eq("vehicle_id", vehicleId)
     .eq("status", "published")
     .order("is_primary", { ascending: false })
     .order("sort_order", { ascending: true })

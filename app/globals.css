@@ -103,8 +103,16 @@ svg{display:block}
 .btn:hover{transform:translateY(-2px)}
 .btn:hover::after{opacity:1;background-position:-50% 0}
 .btn:active{transform:translateY(1px) scale(.992)}
-/* crisp, accessible focus halo that rides over the 3D shadow */
-.btn:focus-visible{outline:none;
+/* The ring is DECORATION; the outline is the indicator. Measured 2026-09-09:
+   the old halo set `outline:none` and relied on --glow-teal, which the token file
+   itself marks "dark only" — on this light page it measures 1.69:1 on white and
+   1.62:1 on the cream halo, against the 3:1 WCAG 2.1 SC 1.4.11 requires. Nothing in
+   the ring reached 3:1, so keyboard focus was invisible on every button outside the
+   Hero. --ink-teal measures 6.39:1 on white, 6.14:1 on cream, 4.74:1 on the lime CTA
+   and 3.22:1 on the WhatsApp green — its worst neighbour still passes.
+   axe-core does not compute focus-ring contrast, which is why 11 clean routes never
+   caught this. */
+.btn:focus-visible{outline:3px solid var(--ink-teal);outline-offset:3px;
   box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--glow-teal), 0 0 0 8px rgba(24,224,189,.28), 0 14px 30px rgba(15,107,94,.34)}
 
 .btn-primary{color:#fff;background:linear-gradient(180deg,var(--glow-teal),var(--ink-teal) 55%,var(--mint-zero-ink));
@@ -131,9 +139,9 @@ svg{display:block}
 .btn-sm{padding:11px 19px;font-size:14.5px}
 .btn-sm::before{height:46%}
 .btn-block{width:100%}
-/* crystalline focus halo shared by every secondary control — same polish, accessible */
+/* Same correction as .btn above: the halo stays, the outline is what is seen. */
 .btn-testride:focus-visible,
-.mp:focus-visible{outline:none;
+.mp:focus-visible{outline:3px solid var(--ink-teal);outline-offset:3px;
   box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--azure), 0 0 0 7px rgba(12,229,221,.26)}
 .cta-stack{display:flex;flex-direction:column;gap:10px;margin-top:2px}
 
@@ -142,7 +150,7 @@ svg{display:block}
   backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);
   border-bottom:1px solid rgba(230,238,246,.7)}
 .nav{display:flex;align-items:center;justify-content:space-between;height:74px;gap:12px}
-.brand{display:flex;align-items:center;gap:12px;line-height:1}
+.brand{display:flex;align-items:center;gap:12px;line-height:1;min-height:44px}
 .brand-mark{display:inline-flex;color:var(--cyan);
   filter:drop-shadow(0 5px 13px rgba(12,229,221,.5));animation:markPulse 5s ease-in-out infinite}
 .brand-mark svg{width:38px;height:38px}
@@ -332,7 +340,7 @@ svg{display:block}
 .lead-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 @media(max-width:520px){.lead-row{grid-template-columns:1fr}}
 .inp{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#fff;border-radius:12px;
-  padding:13px 15px;font-size:15px;font-family:inherit;outline:none;transition:border .16s ease}
+  padding:13px 15px;font-size:16px;font-family:inherit;outline:none;transition:border .16s ease}
 .inp::placeholder{color:#7e93b8}
 .inp:focus{border-color:var(--sky);background:rgba(255,255,255,.1)}
 .inp-error{border-color:#ff7a7a;background:rgba(255,90,90,.08)}
@@ -468,10 +476,21 @@ svg{display:block}
 .res-save strong{font-size:16px;font-weight:900}
 
 /* sticky mobile cta */
+/* The bar and the Hero say the same two things. Measured 2026-09-08 at 390x844:
+   the Hero's primary CTA sat at y=785..837 and the bar covers 768..844 - the
+   button the page is built around was BEHIND the bar at rest, from first paint,
+   on every phone. So the bar waits its turn: StickyCta watches #hero-cta and
+   hides while the Hero's own actions are on screen. translateY, not display -
+   the return has to be a slide, and `visibility` (delayed until the slide ends)
+   is what takes it out of the tab order while it is away. */
 .sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;gap:10px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);border-top:1px solid var(--line);box-shadow:0 -8px 30px rgba(11,20,40,.08)}
 .sticky-wa{flex:none;width:52px;height:52px;border-radius:14px;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(37,211,102,.3)}
 .sticky-wa svg{color:#fff}
 .sticky-main{flex:1;padding:15px}
+.sticky-cta{transition:transform .28s ease,opacity .28s ease,visibility 0s}
+.sticky-cta[data-hidden="true"]{transform:translateY(calc(100% + 24px));opacity:0;visibility:hidden;pointer-events:none;
+  transition:transform .28s ease,opacity .28s ease,visibility 0s linear .28s}
+@media(prefers-reduced-motion:reduce){.sticky-cta,.sticky-cta[data-hidden="true"]{transition:none}}
 @media(max-width:720px){
   .sticky-cta{display:flex}
   /* clear the sticky bar so it never covers the last content */
@@ -594,12 +613,16 @@ svg{display:block}
 @keyframes typing{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
 .chat3d-chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 18px 4px}
 .chat3d-chip{font-size:13px;font-weight:600;color:var(--azure-deep);background:var(--tint);
-  border:1px solid rgba(10,132,255,.2);border-radius:999px;padding:8px 13px;transition:background .16s,transform .16s}
+  border:1px solid rgba(10,132,255,.2);border-radius:999px;padding:8px 13px;transition:background .16s,transform .16s;
+  display:inline-flex;align-items:center;min-height:44px}
 .chat3d-chip:hover:not(:disabled){background:#fff;transform:translateY(-1px)}
 .chat3d-chip:disabled{opacity:.5;cursor:default}
 .chat3d-input{display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--line);background:rgba(255,255,255,.7)}
-.chat3d-input input{flex:1;border:1px solid var(--line);border-radius:999px;padding:13px 18px;font-size:15px;font-family:inherit;background:#fff;outline:none}
+.chat3d-input input{flex:1;border:1px solid var(--line);border-radius:999px;padding:13px 18px;font-size:16px;font-family:inherit;background:#fff;outline:none}
 .chat3d-input input:focus{border-color:rgba(10,132,255,.5);box-shadow:0 0 0 4px rgba(10,132,255,.12)}
+/* The rule above is a soft :focus tint, not an indicator — a 12%-alpha shadow over
+   white cannot reach 3:1. The chat box is the only other text input on the site. */
+.chat3d-input input:focus-visible{outline:2px solid var(--ink-teal);outline-offset:1px}
 .chat3d-send{width:46px;height:46px;flex:0 0 46px;border-radius:50%;color:#fff;font-size:20px;font-weight:800;border:none;cursor:pointer;
   background:linear-gradient(180deg,var(--glow-teal),var(--ink-teal) 55%,var(--mint-zero-ink));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 0 var(--mint-zero-ink),0 10px 20px rgba(15,107,94,.4);transition:transform .15s,box-shadow .2s}
@@ -638,7 +661,7 @@ svg{display:block}
 .elig-tag{font-size:11px;font-weight:700;color:var(--azure-deep);background:var(--mist);border-radius:20px;padding:3px 9px;white-space:nowrap}
 .elig-body{font-size:14.5px;line-height:1.6;color:#33405a;margin:0 0 10px}
 .elig-body b{color:var(--azure-deep)}
-.elig-link{font-size:13px;font-weight:700;color:var(--azure-deep)}
+.elig-link{font-size:13px;font-weight:700;color:var(--azure-deep);display:inline-flex;align-items:center;min-height:28px}
 .tribute-calc{max-width:440px;margin:18px auto 0;background:linear-gradient(180deg,#0a3164,#114a92);border-radius:18px;padding:16px 18px;color:#fff;box-shadow:0 16px 34px rgba(11,20,40,.22)}
 .tc-head{font-size:12.5px;font-weight:800;color:#7fd0ff;text-align:center;margin-bottom:9px}
 .tc-row{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:7px 0}
@@ -653,7 +676,7 @@ svg{display:block}
 .tribute-cta{margin:18px auto 0;max-width:440px}
 .tribute-cta-note{margin:9px 0 0;text-align:center;font-size:12.5px;color:var(--ink-muted)}
 .tribute-more{margin:12px 0 0;text-align:center;font-size:var(--type-small);font-weight:800}
-.tribute-more a{color:var(--ink-teal);text-decoration:underline;text-underline-offset:3px}
+.tribute-more a{color:var(--ink-teal);text-decoration:underline;text-underline-offset:3px;display:inline-flex;align-items:center;min-height:28px}
 .tribute-disclaimer{margin:14px auto 0;max-width:720px;font-size:11.5px;line-height:1.6;color:var(--ink-muted);text-align:center}
 
 /* מסירה ארצית — a compact promise strip. Replaced the coverage illustration,
@@ -692,7 +715,11 @@ svg{display:block}
 
 /* accessibility focus */
 :focus-visible{outline:2px solid var(--ink-teal);outline-offset:2px}
-.inp:focus-visible{outline:2px solid var(--sky);outline-offset:0}
+/* --sky resolves to --glow-ice #9DDCF0, which the token file documents as "on Abyss
+   12.53:1" — a DARK-background colour. On the white lead-form input it measures
+   1.51:1, so the focus ring on the form that captures every lead was invisible.
+   --ink-teal is 6.39:1 there. */
+.inp:focus-visible{outline:2px solid var(--ink-teal);outline-offset:0}
 .rng:focus-visible{outline:2px solid var(--ink-teal);outline-offset:4px}
 
 @media (prefers-reduced-motion: reduce){
@@ -1331,7 +1358,7 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 
 /* ── Legal / policy pages (תקנון · פרטיות · נגישות) ── */
 .legal{max-width:820px;margin:0 auto;padding:96px 22px 64px}
-.legal-back{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--ink-teal);font-weight:600;margin-bottom:18px}
+.legal-back{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--ink-teal);font-weight:600;margin-bottom:18px;min-height:44px}
 .legal h1{font-size:clamp(26px,5vw,38px);line-height:1.15;color:var(--ink);margin:0 0 6px;font-weight:800}
 .legal .legal-meta{font-size:13px;color:var(--slate,#5b6b85);margin:0 0 28px}
 .legal h2{font-size:clamp(18px,3vw,22px);color:var(--ink);margin:34px 0 10px;font-weight:700}
@@ -1342,13 +1369,13 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 
 /* Footer legal links row */
 .foot-links{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;margin:16px 0 4px}
-.foot-links a{font-size:13.5px;color:var(--slate,#5b6b85);font-weight:600}
+.foot-links a{font-size:13.5px;color:var(--slate,#5b6b85);font-weight:600;display:inline-flex;align-items:center;min-height:28px}
 .foot-links a:hover{color:var(--teal)}
 
 /* ── SEO landing pages (mia-four · קלנועית 4 גלגלים / מתקפלת / שטח) ── */
 .seo{padding:34px 0 72px}
 .seo-crumbs{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13.5px;color:var(--slate);margin-bottom:22px}
-.seo-crumbs a{color:var(--ink-teal);font-weight:600}
+.seo-crumbs a{color:var(--ink-teal);font-weight:600;display:inline-flex;align-items:center;justify-content:center;min-height:28px;min-width:28px}
 .seo-crumbs span[aria-hidden]{opacity:.5}
 .seo-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:center;margin-bottom:30px}
 .seo-hero h1{font-size:clamp(28px,4.6vw,44px);font-weight:900;letter-spacing:-1.1px;line-height:1.12;color:var(--ink);margin:8px 0 0;text-wrap:balance}
@@ -1406,7 +1433,7 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 .seo-related{max-width:760px;margin-top:40px}
 .seo-related h2{font-size:19px;color:var(--ink);font-weight:800;margin-bottom:12px}
 .seo-related ul{list-style:none;display:flex;flex-direction:column;gap:8px;padding:0}
-.seo-related a{color:var(--ink-teal);font-weight:600;font-size:16px}
+.seo-related a{color:var(--ink-teal);font-weight:600;font-size:16px;display:inline-flex;align-items:center;min-height:28px}
 .seo-related a:hover{text-decoration:underline}
 
 .seo-final{max-width:760px;margin-top:48px;background:var(--mist,#f2f7fd);border:1px solid var(--line);border-radius:var(--r-lg);padding:30px 26px;text-align:center}
@@ -1425,19 +1452,6 @@ a,button,.btn,.mp,input{touch-action:manipulation}
    Deal Buzz layer · honest urgency (מבצע השקה · trust · next-step nudges)
    No fake countdowns / stock counters / "N watching" — see lib/deal-buzz.ts
    ════════════════════════════════════════════════════════════════════ */
-
-/* ── launch offer strip (top of storefront) ── */
-.launch-strip{background:linear-gradient(180deg,#ecfdff,#d6f7fe);border-bottom:1px solid rgba(12,229,221,.28);padding:10px 0 9px}
-.launch-strip-inner{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px}
-.launch-badge{display:inline-flex;align-items:center;gap:8px;background:var(--grad-teal-text);color:#fff;
-  font-weight:800;font-size:13px;letter-spacing:.2px;border-radius:999px;padding:6px 14px;white-space:nowrap;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 6px 16px rgba(19,182,223,.28)}
-.launch-dot{width:7px;height:7px;border-radius:50%;background:#fff;animation:launchPulse 2.4s ease-in-out infinite}
-@keyframes launchPulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.7)}70%{box-shadow:0 0 0 7px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
-.launch-text{margin:0;font-size:14.5px;font-weight:600;color:#0a4b63;text-align:center}
-.launch-cta{flex:none}
-.launch-disc{max-width:820px;margin:7px auto 0;padding:0 22px;font-size:11px;line-height:1.5;color:#5b7180;text-align:center}
-@media(max-width:560px){.launch-text{font-size:13.5px;flex:1 1 100%}}
 
 /* ── trust signal bar (before fatigue) ── */
 .trustbar{background:rgba(255,255,255,.72);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -1465,7 +1479,7 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 .buzz-disc{max-width:760px;margin:22px auto 0;font-size:12px;line-height:1.6;color:var(--slate);text-align:center}
 
 /* ── lead consent line (inside the dark simulator result panel) ── */
-.lead-consent{font-size:11.5px;color:#9fb4d6;margin-top:12px;margin-bottom:0;text-align:center;line-height:1.5}
+.lead-consent{font-size:12.5px;color:#9fb4d6;margin-top:12px;margin-bottom:0;text-align:center;line-height:1.5}
 .lead-consent a{color:#bcd8ff;text-decoration:underline;font-weight:600}
 
 /* ── thank-you: next-step timeline ── */
@@ -1520,19 +1534,11 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 /* ── נאנו · gloss on the remaining icon tiles + deal-buzz chrome ── */
 .status-ic{box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 6px 14px rgba(19,182,223,.18)}
 .trust-ic{box-shadow:inset 0 1px 0 rgba(255,255,255,.6), var(--shadow-sm)}
-.launch-strip{box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
 .seo-hero-img{box-shadow:inset 0 1px 0 rgba(255,255,255,.5), var(--shadow-md)}
-
-/* ── נאנו · one restrained ✦ sparkle glint on the launch badge (premium anchor) ── */
-.launch-badge{position:relative}
-.launch-badge::after{content:"✦";position:absolute;top:-3px;inset-inline-end:7px;font-size:9px;color:#eafbff;
-  pointer-events:none;z-index:2;line-height:1;text-shadow:0 0 8px rgba(12,229,221,.95),0 0 3px #fff;
-  animation:spk 3.6s ease-in-out infinite}
 
 /* keep the detailing calm for reduced-motion visitors */
 @media (prefers-reduced-motion: reduce){
   .status-card::after,.buzz-card::after,.seo-spec::after{display:none}
-  .launch-badge::after{animation:none;opacity:.7}
 }
 
 /* ════════════════════════════════════════════════════════════════════

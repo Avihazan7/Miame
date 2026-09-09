@@ -106,10 +106,13 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), 0 4px 0 #119a48, 0 18px 34px rgba(37, 211, 102, .5);
 }
 
+/* This is the rule that actually shipped — it loads after globals.css and wins.
+   See the measurement note in app/globals.css beside .btn:focus-visible. */
 .btn:focus-visible,
 .btn-testride:focus-visible,
 .mp:focus-visible{
-  outline:none;
+  outline:3px solid var(--ink-teal);
+  outline-offset:3px;
   box-shadow:0 0 0 2px #fff,0 0 0 4px var(--mint),0 0 0 8px rgba(255,248,235,.75),0 16px 34px rgba(17,205,174,.30);
 }
 
@@ -179,6 +182,13 @@
   height:9px;
   background:linear-gradient(90deg,#c7f7ea,#fff3d9);
 }
+/* The touch target lives HERE, not in globals.css, and that is the whole point.
+   It was written in globals.css first — and lost: globals loads before this file
+   (app/layout.tsx), and the `background` SHORTHAND above resets background-clip to
+   border-box. The 18px of padding was therefore PAINTED, so both simulator sliders
+   rendered as 45px pills on every phone instead of a 9px track with an invisible
+   45px hit area. Declaring it after the shorthand is what makes it real. */
+@media(pointer:coarse){.rng{box-sizing:content-box;padding-block:18px;background-clip:content-box}}
 .rng::-webkit-slider-thumb{
   width:28px;height:28px;
   box-shadow:0 4px 12px rgba(7,140,123,.26),0 0 0 3px var(--mint) inset,0 0 0 8px rgba(255,248,235,.72);
@@ -363,7 +373,7 @@
   padding:0 26px;border-radius:15px;line-height:1;text-align:center;white-space:nowrap;
   will-change:transform,box-shadow;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .btn-block{width:100%}
-.btn-sm{min-height:42px;padding-inline:16px;font-size:14px}
+.btn-sm{min-height:44px;padding-inline:16px;font-size:14px}
 .cta-stack{display:grid;gap:12px}
 .cta-stack .btn{width:100%}
 
@@ -723,6 +733,7 @@ body{text-rendering:optimizeLegibility;-webkit-font-smoothing:auto;
 .p360-controls{position:absolute;inset:auto clamp(12px,3vw,20px) clamp(12px,3vw,20px) auto;z-index:3}
 .p360-btn{
   cursor:pointer;padding:9px 18px;border-radius:999px;font-weight:900;font-size:13.5px;
+  display:inline-flex;align-items:center;justify-content:center;min-height:44px;
   color:#eafff8;background:rgba(5,7,13,.55);border:1px solid rgba(87,224,180,.35);
   backdrop-filter:blur(6px);transition:border-color .18s ease, background .18s ease;
 }
@@ -952,3 +963,60 @@ body::before{
 .brand-mark{filter:drop-shadow(0 4px 10px rgba(24,224,189,.34))}
 .foot-mark{filter:drop-shadow(0 5px 13px rgba(24,224,189,.32))}
 @media(max-width:430px){ .logo{font-size:25px} }
+
+/* ============================================================================
+   FIRST AND UNIQUE — the 4×4 Pro Max statement band
+   ----------------------------------------------------------------------------
+   The third dark shell on this page, and deliberately not a new visual system.
+   .cinema-shell and .fm-shell above already answer "how does a dark block sit on
+   the Pearl page": a large radius, a mint hairline, a deep gradient, and a 16:9
+   frame inside it. This band borrows that answer and sits directly above
+   CinematicVideo so the two form one dark passage instead of two islands.
+   ========================================================================== */
+.first-shell{
+  position:relative;overflow:hidden;border-radius:34px;padding:clamp(24px,4vw,46px);
+  background:
+    radial-gradient(66% 50% at 16% 6%,rgba(87,224,180,.18),transparent 72%),
+    radial-gradient(52% 42% at 88% 100%,rgba(110,231,243,.10),transparent 72%),
+    linear-gradient(180deg,#0E2747 0%,var(--bg-abyss) 68%,#05070D 100%);
+  border:1px solid rgba(87,224,180,.22);
+  box-shadow:0 30px 90px rgba(5,7,13,.28),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.first-copy{max-width:760px;margin:0 auto 24px;text-align:center}
+.first-kicker{
+  display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:0 16px;
+  border-radius:999px;font-weight:900;color:#79E8C5;letter-spacing:.06em;
+  background:rgba(87,224,180,.10);border:1px solid rgba(87,224,180,.24);
+}
+.first-title{
+  margin:16px 0 0;color:#fff;font-size:clamp(30px,5vw,58px);line-height:1.06;
+  letter-spacing:-.04em;
+}
+.first-desc{
+  max-width:660px;margin:14px auto 0;color:rgba(255,255,255,.74);line-height:1.75;
+  font-size:clamp(16px,1.6vw,19px);
+}
+/* The frame reserves its box before the bytes arrive: aspect-ratio plus the
+   width/height on next/image means no reflow when the photograph decodes. */
+.first-frame{
+  position:relative;width:min(100%,980px);margin:0 auto;aspect-ratio:16/9;
+  border-radius:26px;overflow:hidden;background:#05070D;
+  border:1px solid rgba(87,224,180,.24);
+  box-shadow:0 26px 70px rgba(0,0,0,.34),0 0 0 1px rgba(255,255,255,.05);
+}
+.first-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.first-specs{
+  display:flex;justify-content:center;gap:10px;flex-wrap:wrap;
+  margin:26px auto 0;padding:0;list-style:none;max-width:760px;
+}
+.first-spec{
+  padding:9px 15px;border-radius:999px;font-weight:700;font-size:14px;
+  color:rgba(255,255,255,.86);
+  background:rgba(255,255,255,.06);border:1px solid rgba(87,224,180,.20);
+}
+@media(max-width:620px){
+  .first-shell{border-radius:26px;padding:22px 16px}
+  .first-frame{border-radius:20px}
+  .first-specs{gap:8px;margin-top:20px}
+  .first-spec{font-size:13px;padding:8px 13px}
+}

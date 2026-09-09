@@ -83,7 +83,10 @@ describe("one fetch — the mask is the image the <img> already loaded", () => {
     // every other angle comes from lib/turntable.ts. A second literal mention is a
     // hand-built mask URL.
     expect(tsx.match(/mia-four-360-1\.webp/g)?.length).toBe(1);
-    expect(tsx, "a frame path is typed in the component instead of read from the manifest").not.toMatch(/mia-four-360-[2-6]/);
+    // `code` and not `tsx`: a path NAMED in a comment (the empty-stage post-mortem
+    // quotes the URL that was warmed by mistake) is prose. What must not exist is
+    // a typed path in the code, where it would bypass lib/turntable.ts.
+    expect(code, "a frame path is typed in the component instead of read from the manifest").not.toMatch(/mia-four-360-[2-6]/);
     expect(code, "the variable is written on the stage, never on <html>").not.toMatch(/documentElement\.style/);
   });
 

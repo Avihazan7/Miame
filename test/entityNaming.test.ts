@@ -143,6 +143,62 @@ describe("the H1 names what is being sold", () => {
   });
 });
 
+describe("the snippet names the thing, not only the title", () => {
+  // The title and the H1 were both fixed on 2026-09-01. The DESCRIPTION was not
+  // re-read, and until 2026-09-08 it opened on "ניידות חשמלית פרימיום" — the very
+  // phrase the H1 comment calls one nobody searches — while naming neither the
+  // product nor the category. That string is what Google prints under the title
+  // on every result for the domain, and what an answer engine quotes. A title
+  // that resolves the entity beside a description that does not is half a fix.
+  const meta = layout.slice(layout.indexOf("export const metadata"), layout.indexOf("openGraph:"));
+
+  it("the site description names the product and the category", () => {
+    const desc = /description:\s*\n?\s*`([^`]+)`/.exec(meta)?.[1] ?? "";
+    expect(desc, "the site description is no longer a template literal").not.toBe("");
+    expect(desc, "the description does not name the product").toContain("${PRODUCT_NAME_HE}");
+    expect(desc, "the description does not say what the product is").toContain("${PRODUCT_CATEGORY_HE}");
+  });
+
+  it("no public description opens on the phrase nobody searches", () => {
+    // Not a ban on the words — a ban on LEADING with them where the product and
+    // the category are what a person typed.
+    for (const [file, src] of [["app/layout.tsx", layout], ["lib/seo-pages.ts", read("lib/seo-pages.ts")]] as const) {
+      for (const m of src.matchAll(/description:\s*\n?\s*["`']([^"`']+)["`']/g)) {
+        expect(m[1].startsWith("ניידות חשמלית"), `${file}: a description opens on "ניידות חשמלית"`).toBe(false);
+      }
+    }
+  });
+
+  it("its call to action is plural, like every other one on the site", () => {
+    // "בנה" is masculine singular; the site says "בנו" · "צפו" · "גררו".
+    expect(meta, "the description addresses one man").not.toMatch(/\bבנה\b/);
+  });
+});
+
+describe("llms.txt opens with the entity, and answers what it is asked", () => {
+  // An answer engine reads the first lines of llms.txt as the definition of the
+  // site. Until 2026-09-08 they were "MiaMe — החופש שלך על ארבעה גלגלים" and a
+  // blockquote opening on "ניידות חשמלית פרימיום": a poem and a phrase nobody
+  // searches, on the two lines that decide how the entity is resolved.
+  const head = llms.slice(0, llms.indexOf("## מוצר"));
+
+  it("the heading and the summary both name the product and the category", () => {
+    expect(head).toContain(PRODUCT_NAME_HE);
+    expect(head).toContain(PRODUCT_NAME);
+    expect(head).toContain(PRODUCT_CATEGORY_HE);
+    expect(head.startsWith("# " + PRODUCT_NAME_HE), "the H1 of llms.txt does not open on the product").toBe(true);
+  });
+
+  it("carries the two facts a buyer asks before price: is it a vehicle, and is it covered", () => {
+    // The site's own legal page is explicit that MIA FOUR is a קלנועית and NOT a
+    // רכב — the single most-asked question, and the one an answer engine is most
+    // likely to get wrong from a competitor's page.
+    expect(llms, "llms.txt does not state the legal status").toMatch(/מעמד חוקי/);
+    expect(llms).toMatch(/אינה רכב/);
+    expect(llms, "llms.txt does not state the warranty term").toMatch(/אחריות ושירות \d+ חודשים/);
+  });
+});
+
 describe("the schema resolves the entity instead of inventing one", () => {
   const product = layout.slice(layout.indexOf('"@type": "Product"'), layout.indexOf("additionalProperty"));
 

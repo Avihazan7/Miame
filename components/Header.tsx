@@ -6,6 +6,7 @@ import { WA_CTA, waHref } from "@/lib/wa-cta";
 import LexIcon from "@/components/LexIcon";
 import WaIcon from "./WaIcon";
 import MiaMark from "./MiaMark";
+import Link from "next/link";
 
 export default function Header() {
   // The header used to hand-roll its own "פרטים על הדגמים" message while
@@ -26,7 +27,10 @@ export default function Header() {
   function toTop(e: React.MouseEvent<HTMLAnchorElement>) {
     // Logo always goes home. If we're already on the home page, scroll to the
     // very top in place (no half-way landing, no #-anchor pull); otherwise let
-    // the browser navigate to "/".
+    // the router navigate to "/". This still holds now that the brand is a
+    // <Link>: Link calls this handler FIRST and then returns early on
+    // `e.defaultPrevented`, so preventDefault() suppresses the navigation
+    // exactly as it suppressed the browser's.
     if (window.location.pathname === "/") {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
@@ -39,7 +43,7 @@ export default function Header() {
   return (
     <header className="site-header" id="top">
       <div className="wrap nav">
-        <a className="brand" href="/" onClick={toTop} aria-label="MiaMe · Free Feel, דף הבית">
+        <Link className="brand" href="/" onClick={toTop} aria-label="MiaMe · Free Feel, דף הבית">
           <span className="brand-mark">
             <MiaMark size={38} title="MiaMe" />
           </span>
@@ -51,11 +55,11 @@ export default function Header() {
               <LexIcon name="butterfly" /> Free&nbsp;Feel
             </span>
           </span>
-        </a>
+        </Link>
         <nav className="nav-cta">
-          <a href="/#features" className="nav-link hide-m">יכולות</a>
-          <a href="/#models" className="nav-link hide-m">דגמים</a>
-          <a href="/#sim" className="nav-link hide-m">סימולטור</a>
+          <Link href="/#features" className="nav-link hide-m">יכולות</Link>
+          <Link href="/#models" className="nav-link hide-m">דגמים</Link>
+          <Link href="/#sim" className="nav-link hide-m">סימולטור</Link>
           <a
             href={waUrl}
             target="_blank"
