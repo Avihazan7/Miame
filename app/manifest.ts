@@ -7,7 +7,9 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "MiaMe.co.il — Free Feel",
     short_name: "MiaMe",
-    description: "MiaMe, ניידות חשמלית פרימיום, MIA FOUR, קנייה, ליסינג והשכרה.",
+    // "והשכרה" was here too — the PWA description is a published surface and it
+    // offered a rental the business does not run (phases.json, 9-rental-fleet-os).
+    description: "MiaMe, ניידות חשמלית פרימיום, MIA FOUR, קנייה ומסלולי תשלום.",
     start_url: "/",
     display: "standalone",
     background_color: "#04121F",

@@ -51,7 +51,11 @@ export const FALLBACK: KnowledgeDoc[] = [
   { id: "service", source: "MiaMe/Service", text: `אחריות יבואן רשמי ${WARRANTY_MONTHS} חודשים · MEU · Mayer Electric Utilities. שירות וחלפים מקוריים, ומסירה מתואמת בכל אזורי הארץ.` },
   // ── Methodology (the unique architecture) ───────────────────────────────────
   { id: "method-arch", source: "MiaMe/Brain", text: 'ארכיטקטורת המוח: Ultra (אורקסטרציה) → Masters (החלטות איכות, Sonnet) → Max (פעולות מהירות, Haiku) → Guardian (ציות ובטיחות דטרמיניסטיים). דוקטרינה: RAG על פני fine-tuning, מקור-אמת יחיד.' },
-  { id: "method-bigfive", source: "MiaMe/Brain", text: 'התאמת Big Five Deal: מודל OCEAN ממפה את פרופיל הלקוח לדגם ולמסלול (2×4 City · 2×4 City LR · 4×4 Pro Max · השכרה Hub). ההתאמה מוסברת, לא קופסה שחורה.' },
+  // Same correction as brain/masters.ts: the track list named "השכרה Hub", a rental
+  // that the owner settled out of the business on 2026-09-02. This row is only served
+  // when Supabase is unreachable — but that is exactly when there is no live corpus to
+  // contradict it, so a dead offer here is worse than one anywhere else.
+  { id: "method-bigfive", source: "MiaMe/Brain", text: 'התאמת Big Five Deal: מודל OCEAN ממפה את פרופיל הלקוח לדגם ולמסלול (2×4 City · 2×4 City LR · 4×4 Pro Max). ההתאמה מוסברת, לא קופסה שחורה.' },
   { id: "method-gametheory", source: "MiaMe/Brain", text: 'שער תורת-משחקים: הצעות נבחנות לאופטימליות פארטו — אין ביצוע אוטומטי להצעה שאינה Pareto-efficient, כדי שכל עסקה תהיה win-win ללקוח ולמערכת.' },
   { id: "method-enrichment", source: "MiaMe/Brain", text: 'העשרה אינסטרומנטלית (Feuerstein): המערכת לומדת ומשתפרת מכל אינטראקציה (Perceive → Reason → Act → Learn → Deliver), ומעשירה את בסיס הידע באופן מתודולוגי ומתמשך.' },
   // ── The sales campaign ──────────────────────────────────────────────────────
