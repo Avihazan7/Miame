@@ -157,9 +157,12 @@ describe("contrast — computed against the white ground", () => {
     const limeMid = primary.match(/(#[0-9A-F]{6}) 48%/i)?.[1];
     expect(limeMid, "the lime gradient's mid stop is not where this test expects it").toBeTruthy();
     expect(contrast(inkOnEnergy, limeMid!)).toBeGreaterThanOrEqual(4.5);
-    const chip = rule(".hero-v2-free-chip");
-    expect(chip).toContain("var(--mint-zero-ink)");
-    expect(chip).toContain("var(--mint-zero)");
+    // The FREE FEEL chip that used to be checked here was deleted on 2026-09-09
+    // ("לא צריך אותם מיותרים" — it sat across the product's wheels). --mint-zero is
+    // still the pair's second half and still has to be legible under --mint-zero-ink
+    // wherever it IS used, so the token pair keeps its assertion even though the one
+    // element that consumed it is gone. See test/heroMarkAndSpec.ts for the guard
+    // that the chip stays deleted.
     expect(contrast(inkOnEnergy, hexOf("var(--mint-zero)"))).toBeGreaterThanOrEqual(4.5);
   });
 

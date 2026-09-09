@@ -553,65 +553,18 @@
   user-select: none;
 }
 
-/* ── the power spec ──
-   "תוריד מתחת וליד הכלי" — below and beside the vehicle. It mirrors .hero-v2-free-chip
-   across the stage: that one sits inset-inline-END (visually LEFT in this RTL document),
-   this one inset-inline-START (visually RIGHT), both at the same 12% from the bottom, so
-   the pair balances around the product rather than crowding one corner.
-
-   Deliberately quieter than the FREE FEEL chip: that one is a lime brand moment, this is
-   a specification. White glass with a mint hairline reads as data, not as a second offer.
-   The text is #0F3D33 on rgba(255,255,255,.82) over the Pearl pane — 9.8:1. */
-.hero-v2-power-chip {
-  position: absolute;
-  z-index: 4;
-  inset-block-end: 12%; inset-inline-start: 2%;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 9px 15px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--hero-ink);
-  background: rgba(255, 255, 255, .82);
-  border: 1px solid var(--hero-rim);
-  backdrop-filter: blur(8px);
-  box-shadow: inset 0 1px 0 #fff, var(--glow-room);
-  pointer-events: none;
-}
-/* "עד" is the qualifier, the figure is the message — the same two weights this chip
-   carried before it was struck out on 2026-09-08, restored with it. The <b> is the
-   bidi isolate as well as the emphasis; tabular figures keep the comma from dancing
-   as the turntable animates behind it. */
-.hero-v2-power-chip span { color: var(--hero-muted); font-weight: 600; }
-.hero-v2-power-chip b {
-  font-family: var(--font-grotesk), system-ui, sans-serif;
-  font-feature-settings: 'tnum';
-  color: var(--hero-accent);
-}
-
-/* the one chip on the stage. Its box was split from its skin only because a
-   second chip — "עד 4×1,800W" — shared the box; the owner struck that one out
-   on 2026-09-09, so the two halves are one rule again. */
-.hero-v2-free-chip {
-  position: absolute;
-  z-index: 4;
-  inset-block-end: 12%; inset-inline-end: 2%;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 9px 15px;
-  border-radius: 999px;
-  font-family: var(--font-grotesk), system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: .12em;
-  color: var(--mint-zero-ink);
-  background: linear-gradient(180deg, #C9FF8F, var(--mint-zero));
-  backdrop-filter: blur(8px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), 0 10px 24px rgba(165, 243, 90, .28);
-}
+/* ── the two chips are gone ──
+   OWNER DECISION 2026-09-09: "לא צריך אותם מיותרים". `.hero-v2-free-chip`
+   (FREE FEEL) and `.hero-v2-power-chip` ("עד 4×1,800W") were absolutely positioned
+   over the stage at inset-block-end 12% / 16%, which put them across the wheels of
+   a product image the same owner had just asked to make larger and cleaner. Moving
+   them below the stage was tried first and measured clean at 360/390/1440 — and
+   was still the wrong answer: it pushed a spec chip below the fold on a phone,
+   where it earned nothing. The spec it carried is not lost — components/Specs.tsx
+   states 1,800W in the table, and lib/models.ts still carries the highlight the
+   model cards render.
+   Both rules, both mobile overrides and the POWER_SPEC derivation in Hero.tsx are
+   deleted rather than commented out; git holds the previous shape. */
 
 /* ── the choreography ──
    ENTRANCE rides the site's intro gate (app/layout.tsx INTRO_GATE sets
@@ -713,7 +666,6 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
 /* ── lexicon icons ── */
 .lex-icon { flex: 0 0 auto; width: 1.05em; height: 1.05em; vertical-align: -0.14em; color: currentColor; }
 .hero-v2-finance .lex-icon { color: var(--hero-accent); }
-.hero-v2-free-chip .lex-icon { width: 1.15em; height: 1.15em; }
 
 /* ── scroll cue ── */
 .hero-v2-scroll-cue {
@@ -782,7 +734,6 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
   .hero-v2-primary, .hero-v2-secondary { width: 100%; }
   .hero-v2-product-stage { min-height: 300px; }
   .hero-v2-turn-hint { font-size: 11px; letter-spacing: .04em; }
-  .hero-v2-free-chip { inset-block-end: 16%; }
   /* The mark shrinks with the stage; the spec rides up with the chip it mirrors.
      68/2% RATHER THAN 78/4% BECAUSE THE HANDLEBAR IS THERE. Measured 2026-09-09 by
      rendering the stage with the mark hidden and counting vehicle pixels (luma < 110)
@@ -794,7 +745,6 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
      and I dismissed the pair. The silhouette is what a reader sees, not the box.
      68 + 2% clears at every width from 320 up with room to spare. */
   .hero-v2-mark { width: 68px; inset-block-start: 2%; inset-inline-start: 2%; }
-  .hero-v2-power-chip { inset-block-end: 16%; font-size: 12px; padding: 8px 12px; gap: 6px; }
 }
 
 /* ── no pointer to follow: a slow idle turn gives the stage its depth instead —
