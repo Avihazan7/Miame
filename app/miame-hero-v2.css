@@ -416,7 +416,7 @@
   position: relative;
   isolation: isolate;
   backface-visibility: hidden;
-  transform: perspective(1400px) translateZ(var(--lift, 0px)) rotateX(var(--tilt-y)) rotateY(var(--tilt-x));
+  transform: perspective(1400px) translateZ(var(--lift, 0px)) rotateX(var(--tilt-y)) rotateY(var(--tilt-x)) scale(var(--zoom-hero, 1));
   transition: transform .45s cubic-bezier(.2, .7, .2, 1);
   /* the crystalline rim: a room-lit hairline traced along the cut-out's alpha
      edge — the only way to rim a still without a second mask, and a kernel small
@@ -814,8 +814,13 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
   .hero-v2-product-stage:not([data-spin]) .hero-v2-product { animation: hero-yaw 18s ease-in-out infinite; }
 }
 @keyframes hero-yaw {
-  0%, 100% { transform: perspective(1400px) rotateY(-3.5deg); }
-  50% { transform: perspective(1400px) rotateY(3.5deg); }
+  /* The zoom is repeated in BOTH stops on purpose: a keyframe writes the whole
+     `transform`, so a scale declared only on the rule is dropped for the entire
+     duration of the animation. Omitting it here would have shrunk the vehicle by
+     13% on every touch device — the exact devices most of this traffic uses —
+     and only while the fake yaw runs, which is the hardest kind of bug to see. */
+  0%, 100% { transform: perspective(1400px) rotateY(-3.5deg) scale(var(--zoom-hero, 1)); }
+  50% { transform: perspective(1400px) rotateY(3.5deg) scale(var(--zoom-hero, 1)); }
 }
 
 /* ── motion respect ── */
@@ -833,7 +838,11 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
      front of a still pane — occlusion and the contact shadow carry the depth
      without a single moving pixel. Hero.tsx also never writes the tilt or the
      parallax for this visitor, so this is belt and braces, not the only guard. */
-  .hero-v2-product { transform: none; }
+  /* `transform: none` would also drop the zoom, so a visitor who asked for less
+     motion would get a SMALLER vehicle than everyone else — a size change is not
+     a motion, and reduced-motion is not reduced-product. The tilt, the lift and
+     the parallax are what go; the magnification stays. */
+  .hero-v2-product { transform: scale(var(--zoom-hero, 1)); }
   .hero-v2-rig, .hero-v2-plane, .hero-v2-ground, .hero-v2-far { translate: none; }
   .hero-v2-sheen { display: none; }
   .hero-v2-gloss { display: none; }

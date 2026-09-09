@@ -48,7 +48,7 @@ export default function Tribute({
         </div>
 
         <div className="tribute-wrap">
-          <div className="tribute-media">
+          <div className="tribute-media depth-4d">
             <div className="tribute-badge">
               <span className="tb-pre">עד</span>
               100%<small>סבסוד*</small>

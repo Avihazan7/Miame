@@ -259,7 +259,27 @@ describe("reduced motion is total", () => {
   it("parks the parallax and hides the sweep", () => {
     expect(reduce).toMatch(/\.hero-v2-rig,\s*\.hero-v2-plane,\s*\.hero-v2-ground,\s*\.hero-v2-far\s*\{\s*translate:\s*none/);
     expect(reduce).toMatch(/\.hero-v2-gloss\s*\{\s*display:\s*none/);
-    expect(reduce).toMatch(/\.hero-v2-product\s*\{\s*transform:\s*none/);
+    // WAS: /\.hero-v2-product\s*\{\s*transform:\s*none/ — a literal match on the
+    // implementation rather than on the rule. The rule is "no tilt, no turn, no
+    // parallax", and `transform: none` happened to express it until the product
+    // gained a magnification (--zoom-hero, app/globals.css). `none` would have
+    // dropped that too, so a visitor who asked for less motion would have been
+    // served a SMALLER vehicle than everyone else: a size is not a motion, and
+    // reduced-motion is not reduced-product.
+    //
+    // This asserts the intent instead, and is STRICTER than the string it
+    // replaces: whatever the declaration is, it may not contain a rotation, a
+    // perspective, a translation or a skew. A future edit that reintroduces the
+    // tilt fails here — and so does one that expresses the tilt some other way,
+    // which the literal would have waved through.
+    const productReduced = reduce.match(/\.hero-v2-product\s*\{\s*transform:\s*([^;}]+)/)?.[1] ?? "";
+    expect(productReduced, "reduced motion leaves .hero-v2-product with no transform rule").not.toBe("");
+    expect(
+      productReduced,
+      `reduced motion still applies a motion transform: "${productReduced}". Only a ` +
+        `static scale belongs here — rotate/perspective/translate/skew ARE the tilt, ` +
+        `the turn and the parallax this block exists to switch off.`,
+    ).not.toMatch(/rotate|perspective|translate|skew|matrix/);
   });
 
   it("Hero.tsx returns before the mask, the glint and the bus subscription", () => {

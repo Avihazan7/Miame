@@ -306,7 +306,7 @@ export default function Configurator() {
                   key={m.id}
                   className={selected ? "card sel" : "card"}
                 >
-                  <div className="card-stage">
+                  <div className="card-stage depth-4d">
                     {best && <span className="card-badge best">הכי מבוקש</span>}
                     {!best && i === 2 && <span className="card-badge">פרימיום</span>}
                     {/* One photograph, three cards. The file is the 4×4 Pro Max —
@@ -329,11 +329,26 @@ export default function Configurator() {
                         from the heading directly under it. Describing the platform —
                         true of all three cards, asserting nothing about which model
                         this one is — is the only version that is not wrong somewhere. */}
+                    {/* quality=90 (Next defaults to 75) and an explicit `sizes`.
+                        Both were missing, and on THIS subject that is not a
+                        rounding error: a near-black vehicle on white is where
+                        WebP at 75 manufactures banding along the tyre shoulders
+                        and the shock springs. Without `sizes`, Next assumes the
+                        image fills the viewport and hands a phone a candidate
+                        several times the ~300px the card can ever show.
+                        The file itself was re-cut on 2026-09-09 from the 3840×3840
+                        master in assets-archive (see the note in lib/turntable.ts
+                        about where those came from): 774×860 → 1200×1333, which is
+                        real detail off the render, not an enlargement. At 774 it
+                        was also BELOW Google's 1200px product-image guidance while
+                        serving as the site's Product schema image. */}
                     <Image
                       src="/mia-four-x4-hero.webp"
                       alt="קלנועית MIA FOUR, צילום סטודיו של פלטפורמת ארבעת הגלגלים"
-                      width={774}
-                      height={860}
+                      width={1200}
+                      height={1333}
+                      quality={90}
+                      sizes="(max-width: 880px) 300px, (max-width: 1120px) 30vw, 330px"
                       className="card-veh"
                     />
                   </div>
@@ -474,8 +489,8 @@ export default function Configurator() {
               <Image
                 src="/mia-four-x4-hero.webp"
                 alt="MIA FOUR קלנועית חשמלית ארבעה גלגלים"
-                width={774}
-                height={860}
+                width={1200}
+                height={1333}
                 className="res-product"
               />
               {/* 1600×599 shipped whole into a box that is `min(178px,48%)` wide —
