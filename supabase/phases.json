@@ -745,6 +745,41 @@
         "no longer named, or if the answer no longer routes to a human."
       ],
       "evidence": "ledger name: knowledge_subsidy_no_figures · applied 2026-09-09T14:07:12Z. Measured live immediately after, on both rows: body ~ '[0-9]' is FALSE, embedding is NULL, the body still names mod.gov.il and still routes to וואטסאפ. Row lengths 526 / 504 — the rows got LONGER while losing every figure: the conditions and the caveats the legally reviewed page states were what was missing, not the numbers."
+    },
+    {
+      "id": "25-spyqe-warranty-unpublished",
+      "title": "SPYQE's unpublished-fields row names all seven, not five",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260909150000_knowledge_spyqe_warranty_unpublished.sql",
+          "ledger": "20260909142713"
+        }
+      ],
+      "risk": "low — one id-scoped update with absolute postconditions; no schema change",
+      "why": [
+        "MEASURED 2026-09-09 on the live 40-row corpus:",
+        "  \"מה האחריות על ספייק\" → warranty:4.27 | service:4.19 | spyqe-register:2.83",
+        "The top two documents are MIA FOUR's warranty (12 months), so a SPYQE warranty",
+        "question was answered out of the other vehicle's — at roughly twice the price.",
+        "",
+        "lib/spyqe.ts names SEVEN deliberately withheld fields: battery voltage, charge",
+        "time, weight, load, motor watts, IP rating and WARRANTY TERM. The",
+        "spyqe-spec-missing row — which exists for exactly this purpose — listed only",
+        "five. אחריות and דירוג IP were never in it, so nothing told the retriever the",
+        "question has no answer and the nearest row carrying \"אחריות\" won.",
+        "",
+        "Measured after, same live rows: spyqe-spec-missing ranks first, warranty second.",
+        "",
+        "⚠ THE MIRROR HALF IS NOT FIXED, deliberately. \"כמה זמן אחריות למיה פור\" still",
+        "reaches a SPYQE row: every SPYQE row carries \"מיה פור\" inside its own disclaimer",
+        "(\"אינו מחיר מיה פור\"), so a MIA FOUR query scores them highly. Naming the product",
+        "inside the warranty row was measured and did NOT fix it — it only made the bare",
+        "\"מה האחריות\" worse. The real fix is in the scorer (a product name inside a",
+        "negation clause should not earn the weight of one inside a claim), which belongs",
+        "in brain/knowledge.ts, not in a row. Recorded rather than half-attempted."
+      ],
+      "evidence": "ledger name: knowledge_spyqe_warranty_unpublished. Measured live immediately after: the row names אחריות and IP, and its embedding is NULL. The gate that now holds it is test/retrievalRanking.test.ts — mutation-proven twice: reverting the row to the five-field list fails with the original message (\"מה האחריות על ספייק\" → warranty, a MIA FOUR row), and deleting the `warranty` row from the fixture — which used to make the whole assertion pass silently, and is how the defect survived — now fails on a fixture-completeness check."
     }
   ]
 }
