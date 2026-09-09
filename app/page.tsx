@@ -6,6 +6,7 @@ import Features from "@/components/Features";
 import Specs from "@/components/Specs";
 import Engineering from "@/components/Engineering";
 import Patents from "@/components/Patents";
+import FirstAndUnique from "@/components/FirstAndUnique";
 import LegalStatus from "@/components/LegalStatus";
 import Configurator from "@/components/Configurator";
 import AskBrain from "@/components/AskBrain";
@@ -67,6 +68,7 @@ export default function Page() {
           <Specs />
           <Engineering />
           <Patents />
+          <FirstAndUnique />
           <CinematicVideo />
         </section>
 

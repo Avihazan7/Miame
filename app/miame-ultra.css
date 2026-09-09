@@ -963,3 +963,60 @@ body::before{
 .brand-mark{filter:drop-shadow(0 4px 10px rgba(24,224,189,.34))}
 .foot-mark{filter:drop-shadow(0 5px 13px rgba(24,224,189,.32))}
 @media(max-width:430px){ .logo{font-size:25px} }
+
+/* ============================================================================
+   FIRST AND UNIQUE — the 4×4 Pro Max statement band
+   ----------------------------------------------------------------------------
+   The third dark shell on this page, and deliberately not a new visual system.
+   .cinema-shell and .fm-shell above already answer "how does a dark block sit on
+   the Pearl page": a large radius, a mint hairline, a deep gradient, and a 16:9
+   frame inside it. This band borrows that answer and sits directly above
+   CinematicVideo so the two form one dark passage instead of two islands.
+   ========================================================================== */
+.first-shell{
+  position:relative;overflow:hidden;border-radius:34px;padding:clamp(24px,4vw,46px);
+  background:
+    radial-gradient(66% 50% at 16% 6%,rgba(87,224,180,.18),transparent 72%),
+    radial-gradient(52% 42% at 88% 100%,rgba(110,231,243,.10),transparent 72%),
+    linear-gradient(180deg,#0E2747 0%,var(--bg-abyss) 68%,#05070D 100%);
+  border:1px solid rgba(87,224,180,.22);
+  box-shadow:0 30px 90px rgba(5,7,13,.28),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.first-copy{max-width:760px;margin:0 auto 24px;text-align:center}
+.first-kicker{
+  display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:0 16px;
+  border-radius:999px;font-weight:900;color:#79E8C5;letter-spacing:.06em;
+  background:rgba(87,224,180,.10);border:1px solid rgba(87,224,180,.24);
+}
+.first-title{
+  margin:16px 0 0;color:#fff;font-size:clamp(30px,5vw,58px);line-height:1.06;
+  letter-spacing:-.04em;
+}
+.first-desc{
+  max-width:660px;margin:14px auto 0;color:rgba(255,255,255,.74);line-height:1.75;
+  font-size:clamp(16px,1.6vw,19px);
+}
+/* The frame reserves its box before the bytes arrive: aspect-ratio plus the
+   width/height on next/image means no reflow when the photograph decodes. */
+.first-frame{
+  position:relative;width:min(100%,980px);margin:0 auto;aspect-ratio:16/9;
+  border-radius:26px;overflow:hidden;background:#05070D;
+  border:1px solid rgba(87,224,180,.24);
+  box-shadow:0 26px 70px rgba(0,0,0,.34),0 0 0 1px rgba(255,255,255,.05);
+}
+.first-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.first-specs{
+  display:flex;justify-content:center;gap:10px;flex-wrap:wrap;
+  margin:26px auto 0;padding:0;list-style:none;max-width:760px;
+}
+.first-spec{
+  padding:9px 15px;border-radius:999px;font-weight:700;font-size:14px;
+  color:rgba(255,255,255,.86);
+  background:rgba(255,255,255,.06);border:1px solid rgba(87,224,180,.20);
+}
+@media(max-width:620px){
+  .first-shell{border-radius:26px;padding:22px 16px}
+  .first-frame{border-radius:20px}
+  .first-specs{gap:8px;margin-top:20px}
+  .first-spec{font-size:13px;padding:8px 13px}
+}
