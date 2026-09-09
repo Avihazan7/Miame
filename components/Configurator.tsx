@@ -38,6 +38,19 @@ function useCountUp(target: number, duration = 520): number {
     const from = displayRef.current;
     const to = target;
     if (from === to) return;
+    // A number counting up IS motion, and this hook had no gate. Every other
+    // animation on the site is behind `prefers-reduced-motion` — the intro, the
+    // aurora, the scroll progress, the turntable — and this one ran for everyone.
+    // For a visitor who asked for less motion it is also the most disruptive kind:
+    // it is not decoration in a corner, it is the price they are trying to read.
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    ) {
+      displayRef.current = to;
+      setDisplay(to);
+      return;
+    }
     const start = performance.now();
     const step = (now: number) => {
       const p = Math.min((now - start) / duration, 1);
@@ -546,10 +559,27 @@ export default function Configurator() {
               <div className="res-model">
                 <bdi dir="ltr">{model.name}</bdi>
               </div>
-              <div className="res-monthly" aria-live="polite" aria-atomic="true">
-                <span className="cur">₪</span>
-                <span className="num">{animatedMonthly.toLocaleString("he-IL")}</span>
-                <span className="per">לחודש · {months} תשלומים</span>
+              {/* THE LIVE REGION READS THE SETTLED NUMBER, NOT THE ANIMATION.
+                  `animatedMonthly` comes from a requestAnimationFrame count-up that
+                  calls setState on EVERY frame — about 31 of them per 520ms run. It
+                  was rendered directly inside aria-live="polite", so one nudge of one
+                  slider queued roughly thirty announcements of a number that was still
+                  moving, and a drag queued hundreds. A screen-reader user could not
+                  hear the result at all, only the counting.
+                  That matters more here than on most sites: this one sells mobility
+                  aids, so screen-reader users are a larger share of its buyers than
+                  average, and the simulator is the page's whole purpose.
+                  The visible number keeps its animation and is now hidden from the
+                  accessibility tree; a single sr-only sentence carries the SETTLED
+                  figure — quote.monthlyPayment, which changes once per interaction —
+                  and it is the only thing announced. */}
+              <div className="res-monthly">
+                <span className="cur" aria-hidden="true">₪</span>
+                <span className="num" aria-hidden="true">{animatedMonthly.toLocaleString("he-IL")}</span>
+                <span className="per" aria-hidden="true">לחודש · {months} תשלומים</span>
+                <span className="sr-only" aria-live="polite" aria-atomic="true">
+                  {`תשלום חודשי משוער ${quote.monthlyPayment.toLocaleString("he-IL")} ₪ ל-${months} תשלומים`}
+                </span>
               </div>
 
               <div className="res-badges">
