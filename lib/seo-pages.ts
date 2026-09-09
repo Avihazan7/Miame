@@ -35,6 +35,15 @@ export interface SeoPage {
    *  ratio that contradicts the file shifts the entire page when the image decodes —
    *  all four heroes shipped as 720×540 while none of the files is 4:3 (audit 31.08.26). */
   hero: { image: string; alt: string; w: number; h: number };
+  /** The SOCIAL card image, when the hero is the wrong shape for one.
+   *  MEASURED 2026-09-09: /mia-four shipped its hero — 1800×1994, ratio 0.90,
+   *  a PORTRAIT turntable render — as its `og:image` under
+   *  `twitter:card=summary_large_image`, which lays out at roughly 1.91:1. The
+   *  hero is correct on the page (it is the LCP element and portrait is right
+   *  there) and wrong in the card, so the two roles need two fields rather than
+   *  one compromise. Unset ⇒ the hero is used, which is fine for the three pages
+   *  whose heroes are already 1.50. */
+  ogImage?: { image: string; alt: string; w: number; h: number };
   sections: SeoSection[];
   specs?: { k: string; v: string }[];
   faq: SeoFaq[];
@@ -127,6 +136,17 @@ export const SEO_PAGES: SeoPage[] = [
       w: 1800,
       h: 1994,
       alt: "מיה פור, קלנועית חשמלית פרימיום על 4 גלגלים, צילום סטודיו"
+    },
+    // The hero above stays portrait, because on the page it is right. The card
+    // gets the landscape studio frame instead — 2400×1350, ratio 1.78, close to
+    // the 1.91 a large-image card lays out at. The comment below already settles
+    // the model question for this hub: the X4 is a legitimate representative of
+    // the platform this page is about.
+    ogImage: {
+      image: "/mia-four-x4-arena.webp",
+      w: 2400,
+      h: 1350,
+      alt: "מיה פור 4×4 Pro Max, קלנועית חשמלית על 4 גלגלים, צילום סטודיו"
     },
     // The MIA FOUR hub: the X4 is a legitimate representative of the platform this
     // page is about, and the viewer's own title names which model it is showing.

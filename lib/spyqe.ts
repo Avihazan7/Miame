@@ -1,3 +1,5 @@
+import { PRODUCT_NAME } from "@/lib/content";
+
 /**
  * lib/spyqe.ts — the single source of truth for MIA SPYQE.
  *
@@ -151,7 +153,7 @@ export function spyqeProductJsonLd(siteUrl: string) {
       `${SPYQE.full} — הדגם השני על פלטפורמת MIA Dynamics. ` +
       `מנוע BLDC כפול, מהירות מרבית 25 קמ״ש, טווח עד 50 ק״מ לסוללה, תקן EN17128. ` +
       `נמכר בהזמנה מוקדמת לקראת המשלוח הראשון לישראל.`,
-    brand: { "@type": "Brand", name: "MiaMe" },
+    brand: { "@type": "Brand", name: PRODUCT_NAME },
     offers: {
       "@type": "Offer",
       priceCurrency: "ILS",

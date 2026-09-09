@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description: page.description,
     url: `/${page.slug}`,
     type: "article",
-    images: [{ url: page.hero.image, alt: page.hero.alt }]
+    images: [{ url: (page.ogImage ?? page.hero).image, alt: (page.ogImage ?? page.hero).alt }]
   },
   robots: { index: true, follow: true }
 };

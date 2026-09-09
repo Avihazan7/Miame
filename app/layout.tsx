@@ -183,6 +183,14 @@ const HOME_PRODUCTS = MODELS.map((m) => ({
   additionalProperty: PRODUCT_PROPERTIES
 }));
 
+/** The commercial graph, rendered by app/page.tsx rather than by this layout.
+ *  Exported as a finished string so the page does not have to re-import SITE_URL,
+ *  MODELS and the SPYQE builder just to rebuild something that already exists. */
+export const HOME_PRODUCTS_JSONLD = JSON.stringify({
+  "@context": "https://schema.org",
+  "@graph": [...HOME_PRODUCTS, spyqeProductJsonLd(SITE_URL)],
+});
+
 const JSON_LD = {
   "@context": "https://schema.org",
   "@graph": [
@@ -223,10 +231,16 @@ const JSON_LD = {
         availableLanguage: ["he"]
       }
     },
-    ...HOME_PRODUCTS,
-    // SPYQE is a PRE-ORDER, not stock, and it carries its own properties — the
-    // shared PRODUCT_PROPERTIES list quotes a MIA FOUR motor rating.
-    spyqeProductJsonLd(SITE_URL),
+    // NOTE — and the four Product nodes are gone from here too, for the reason
+    // the FAQPage note below already states in full. MEASURED 2026-09-09: this
+    // graph put four Product+Offer nodes, each `InStock` with a price, on ALL
+    // thirteen routes — including /legal/privacy, /legal/terms and
+    // /legal/accessibility, which are `index: true` and render no product at
+    // all, plus /thank-you and /marketplace-preview. An Offer is a commercial
+    // assertion about the page it stands on; a privacy policy that declares four
+    // priced, in-stock products is the same content/markup mismatch that cost
+    // the FAQPage its rich result, in a shape that touches money. They now ship
+    // from app/page.tsx, beside the models the page actually renders.
     // NOTE — there is deliberately NO LocalBusiness node here.
     // MiaMe sells and delivers nationwide; it does not publish a storefront.
     // The previous node published a named physical storefront and its street

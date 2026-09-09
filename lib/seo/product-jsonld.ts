@@ -1,3 +1,4 @@
+import { PRODUCT_NAME } from "@/lib/content";
 // lib/seo/product-jsonld.ts — Product/Offer structured data for the MIA FOUR
 // product pages. Grounded and launch-cautious: single Offer, no aggregateRating,
 // no reviews, no absolute availability promises. Consumers pass real, importer-
@@ -39,7 +40,13 @@ export function buildProductJsonLd(input: ProductJsonLdInput) {
     "@type": "Product",
     "@id": `${input.url}#product`,
     name: input.name,
-    brand: { "@type": "Brand", name: input.brand ?? "MiaMe" },
+    // The default was "MiaMe", which is the SELLER, not the brand — app/layout.tsx
+    // corrected exactly this on the root Product and left the correction unmade in
+    // the three other places that publish one. Saying MiaMe is the brand tells every
+    // engine that the manufacturer's reputation belongs to the shop, and it splits
+    // this site's own entity graph: the homepage claimed MIA FOUR while all four SEO
+    // landing pages claimed MiaMe for the same physical product.
+    brand: { "@type": "Brand", name: input.brand ?? PRODUCT_NAME },
     ...(input.model ? { model: input.model } : {}),
     description: input.description,
     image: input.image,

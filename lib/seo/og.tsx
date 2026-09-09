@@ -67,3 +67,28 @@ export function renderOgCard({
     { ...OG_SIZE }
   );
 }
+
+// ── the shared Open Graph IMAGE reference, for routes that override openGraph ──
+//
+// MEASURED 2026-09-09 on the built output: seven routes declared their own
+// `openGraph` object and emitted ZERO `og:image` while still emitting
+// `twitter:card=summary_large_image` — /legal/privacy, /legal/terms and
+// /legal/accessibility (all `index: true`), plus /thank-you,
+// /marketplace-preview, /eligibility and /link. A large-image card with no image
+// is not a neutral fallback: X and most scrapers render an empty frame, so every
+// share of the three indexed legal pages produced a blank card.
+//
+// The cause is Next's metadata merge, which replaces one TOP-LEVEL key at a time.
+// A route that declares `openGraph: { title, description, url, type }` replaces
+// the parent's WHOLE openGraph object and takes the inherited image with it. The
+// trap is invisible in review, because the object you wrote looks complete.
+//
+// Spread OG_IMAGES into any route that overrides openGraph.
+export const OG_IMAGES = [
+  {
+    url: "/opengraph-image",
+    width: OG_SIZE.width,
+    height: OG_SIZE.height,
+    alt: "MiaMe · מיה פור, קלנועית חשמלית על 4 גלגלים",
+  },
+];

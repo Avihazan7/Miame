@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 // read from the one sales-line constant rather than typed here a second time.
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from "@/lib/whatsapp";
 import Link from "next/link";
+import { OG_IMAGES } from "@/lib/seo/og";
 
 const UPDATED = "4 ביולי 2026";
 
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   title: "תקנון ותנאי שימוש",
   description: DESC,
   alternates: { canonical: "/legal/terms" },
-  openGraph: { title: "תקנון ותנאי שימוש · MiaMe", description: DESC, url: "/legal/terms", type: "article" },
+  openGraph: { images: OG_IMAGES, title: "תקנון ותנאי שימוש · MiaMe", description: DESC, url: "/legal/terms", type: "article" },
   robots: { index: true, follow: true }
 };
 
