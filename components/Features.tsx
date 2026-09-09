@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { PRODUCT_NAME_HE } from "@/lib/content";
 function Ic({ d }: { d: string }) {
   return (
     <div className="feat-ic">
@@ -67,9 +68,21 @@ export default function Features() {
 
         <div className="sec-head">
           <div className="sec-kicker">הנדסה</div>
-          <h2 className="sec-title">בנוי לשטח, חכם לעיר</h2>
+          {/* OWNER 2026-09-09, his sentence: "פלטפורמת מיה פור הייחודית מוגנת פטנטים
+              חדשנית ופורצת דרכים טכנולוגיים והנדסאים לניידות חווייתית עוצמתית נוחה
+              וייחודית בעולם." Split across the heading/description pair the section
+              already has, so every word of it survives in the slot that fits it.
+              One grammatical correction: "פורצת דרכים … והנדסאים" → "פורצת דרך
+              טכנולוגית והנדסית" — הנדסאי is a job title (an engineering technician),
+              not the adjective for engineering, and the plural did not agree.
+              The patent claim is grounded, not decorative: US 11,878,763 B2 ·
+              US 12,097,926 B2 · IL 280339 · IL 285336 (see the patents block). */}
+          <h2 className="sec-title">
+            פלטפורמת {PRODUCT_NAME_HE} הייחודית · מוגנת פטנטים
+          </h2>
           <p className="sec-desc">
-            פלטפורמה מוגנת פטנט, מנועים עוצמתיים וסוללה נשלפת. הכל בכלי אחד.
+            חדשנית ופורצת דרך טכנולוגית והנדסית · לניידות חווייתית, עוצמתית, נוחה
+            וייחודית בעולם.
           </p>
         </div>
 

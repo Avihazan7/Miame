@@ -120,6 +120,49 @@ describe("the product has one name, and it comes from a real source", () => {
     ).toEqual([]);
   });
 
+  /**
+   * …AND THE STORE IS NOT WHAT WAS BORN.
+   *
+   * The other half of the same error, and the reason this rule got a second clause:
+   * the About paragraph opened "MiaMe.co.il נולדה מתוך אמונה פשוטה" until the owner
+   * struck it on 2026-09-09 — "במקום MiaMe.co.il לרשום מיה פור". The first clause
+   * above only catches the shop AFTER the verb; here the shop is the SUBJECT, before
+   * it. A belief gives rise to a product, and a shop is what brings it to you.
+   */
+  it("no copy makes the STORE the thing that was born", () => {
+    // Birth/origin predicates, with the site name as their subject.
+    const BORN = ["נולדה", "נולד", "קמה", "קם לחיים"];
+    const bad: string[] = [];
+    for (const f of servedFiles()) {
+      const src = code(f);
+      for (const verb of BORN) {
+        // MiaMe (optionally .co.il, optionally closing a tag) then the verb.
+        //
+        // The terminator is (?![א-ת]) and NOT \b, and that distinction is the whole
+        // rule: JavaScript defines \b on \w = [A-Za-z0-9_], so after a Hebrew letter
+        // there is no word boundary at all and `${verb}\b` NEVER matches. The first
+        // version of this gate ended in \b, passed its own suite, and passed the
+        // mutation that restored the exact sentence the owner had struck — a gate
+        // that cannot fire, reporting green. Caught only because the mutation was
+        // actually run. Hebrew rules need Hebrew terminators.
+        const re = new RegExp(`MiaMe(?:\\.co\\.il)?\\s*(?:</\\w+>)?\\s+${verb}(?![א-ת])`);
+        if (re.test(src)) bad.push(`${f} — "MiaMe … ${verb}"`);
+      }
+    }
+    expect(
+      bad,
+      `MiaMe is the store — it was not born out of a belief, the product was. ` +
+        `Name PRODUCT_NAME_HE as the subject: ${bad.join(" · ")}`,
+    ).toEqual([]);
+  });
+
+  it("the About paragraph opens on the product, derived", () => {
+    const src = code("components/About.tsx");
+    expect(src, "About.tsx does not import the product name").toContain("PRODUCT_NAME_HE");
+    expect(src, "About.tsx spells the product name instead of deriving it")
+      .not.toMatch(new RegExp(`>${PRODUCT_NAME_HE}<`));
+  });
+
   it("the two video blocks name the product, and derive it", () => {
     // Both carried the defect; both must now read the name from lib/content.ts
     // rather than spell it, so a rename cannot half-land.

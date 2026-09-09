@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { MODELS, getModel } from "@/lib/models";
 import { setAmbienceTilt } from "@/lib/ambience";
 import { hueShiftFor, AMBIENCE_BASE_TILT } from "@/lib/model-ambience";
-import { WARRANTY_MONTHS } from "@/lib/content";
+import { PRODUCT_NAME_HE, WARRANTY_MONTHS } from "@/lib/content";
 import {
   CustomerType,
   TRACKS,
@@ -287,7 +287,10 @@ export default function Configurator() {
         <div className="wrap">
           <div className="sec-head">
             <div className="sec-kicker">שלושה דגמים · פלטפורמה אחת</div>
-            <h2 className="sec-title">בחרו את הדגם שלכם</h2>
+            {/* OWNER 2026-09-09: "בחרו את המיה פור שלך" — the buyer is not choosing
+                an abstract "model", they are choosing THEIR MIA FOUR. His wording,
+                kept verbatim including the singular "שלך". */}
+            <h2 className="sec-title">בחרו את ה{PRODUCT_NAME_HE} שלך</h2>
             <p className="sec-desc">
               כל דגם על אותה פלטפורמת ארבעה גלגלים מוגנת פטנט, עם אותה אחריות יבואן רשמי.
               לחצו על דגם כדי לטעון אותו בסימולטור ולקבל תשלום חודשי משוער מיידית.
@@ -372,7 +375,10 @@ export default function Configurator() {
         <div className="wrap">
           <div className="sec-head">
             <div className="sec-kicker">סימולטור תשלומים</div>
-            <h2 className="sec-title">בנו את העסקה שלכם</h2>
+            {/* OWNER 2026-09-09: "מיה פור בעסקה מותאמת אישית" — in place of
+                "בנו את העסקה שלכם". The product leads the sentence, and the promise
+                is the personalisation, not the assembly work. */}
+            <h2 className="sec-title">{PRODUCT_NAME_HE} בעסקה מותאמת אישית</h2>
             <p className="sec-desc">
               מסלול אחד, ברור: בוחרים דגם, קובעים מקדמה, ופורסים עד {MAX_MONTHS} תשלומים ללא ריבית והצמדה.
             </p>
