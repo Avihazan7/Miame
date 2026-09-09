@@ -1,28 +1,15 @@
 "use client";
 
-import { track } from "@/lib/analytics";
-import { buildCampaignWhatsAppUrl } from "@/lib/whatsapp";
-import { WA_CTA, waHref } from "@/lib/wa-cta";
 import LexIcon from "@/components/LexIcon";
-import WaIcon from "./WaIcon";
 import MiaMark from "./MiaMark";
 import Link from "next/link";
 
 export default function Header() {
-  // The header used to hand-roll its own "פרטים על הדגמים" message while
-  // WA_CTA.models — the registry entry that says the same thing — sat unused.
-  // Two vocabularies for one funnel is precisely what the registry exists to
-  // prevent, so the header reads from it and the entry is no longer dead.
-  const waUrl = waHref("models");
-
-  function onWaClick(e: React.MouseEvent<HTMLAnchorElement>) {
-    void track("WhatsAppClicked", { placement: "header", intent: WA_CTA.models.intent });
-    // waUrl is built while rendering — on the server too — so the campaign this
-    // visitor arrived on, which lives only in this browser, cannot be inside it.
-    // Rebuild the href here, before the browser follows the link, so a paid lead
-    // is identifiable by the human reading WhatsApp.
-    e.currentTarget.href = buildCampaignWhatsAppUrl(WA_CTA.models.message);
-  }
+  // OWNER DECISION 2026-09-09: the header's WhatsApp button ("דברו איתי") was
+  // removed. The page now offers ONE call to action — "בדיקת התאמה" in the sticky
+  // bar — instead of a WhatsApp button at the top, a second one in the bar and the
+  // floating one in between. WA_CTA.models is consequently unused by this file;
+  // it is still the registry entry other surfaces read, so it stays in lib/wa-cta.
 
   function toTop(e: React.MouseEvent<HTMLAnchorElement>) {
     // Logo always goes home. If we're already on the home page, scroll to the
@@ -60,17 +47,6 @@ export default function Header() {
           <Link href="/#features" className="nav-link hide-m">יכולות</Link>
           <Link href="/#models" className="nav-link hide-m">דגמים</Link>
           <Link href="/#sim" className="nav-link hide-m">סימולטור</Link>
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener"
-            className="btn btn-wa btn-sm"
-            data-wa="models"
-            onClick={onWaClick}
-          >
-            <WaIcon size={18} />
-            דברו איתי
-          </a>
         </nav>
       </div>
     </header>

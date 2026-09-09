@@ -1,16 +1,16 @@
 "use client";
 
-// components/StickyCta.tsx — the mobile sticky bar.
+// components/StickyCta.tsx — the mobile sticky bar, and the page's ONE call to action.
 //
-// Same story as FloatingWa: a hand-rolled message and no analytics on one of the
-// two CTAs that follow the visitor down every screen. Both now come from
-// WA_CTA.hero, and the click is reported and campaign-tagged.
+// OWNER DECISION 2026-09-09: the bar carried a WhatsApp button beside the main CTA,
+// the header carried a second one, and FloatingWa a third. The owner struck the top
+// and bottom ones out and asked for a single centred "בדיקת התאמה". So this bar is
+// now one button, full width — no icon, no second destination, nothing to choose
+// between. The WhatsApp funnel itself is untouched: lib/wa-cta still holds the
+// registry, and the Configurator still hands the finished quote to WhatsApp, which
+// is where the lead actually converts.
 
 import { useEffect, useState } from "react";
-import { track } from "@/lib/analytics";
-import { buildCampaignWhatsAppUrl } from "@/lib/whatsapp";
-import { WA_CTA, waHref } from "@/lib/wa-cta";
-import WaIcon from "./WaIcon";
 
 export default function StickyCta() {
   // The bar and the Hero say the same two things, and the bar was saying them ON
@@ -43,22 +43,6 @@ export default function StickyCta() {
 
   return (
     <div className="sticky-cta" data-hidden={hidden ? "true" : undefined}>
-      <a
-        href={waHref("hero")}
-        target="_blank"
-        rel="noopener"
-        className="sticky-wa"
-        aria-label="דברו איתנו בוואטסאפ"
-        data-wa="hero"
-        onClick={(e) => {
-          void track("WhatsAppClicked", { placement: "sticky-bar", intent: WA_CTA.hero.intent });
-          // Server-rendered href → no campaign in it. Rebuild it on the click so
-          // the message the rep opens names the campaign that paid for the lead.
-          e.currentTarget.href = buildCampaignWhatsAppUrl(WA_CTA.hero.message);
-        }}
-      >
-        <WaIcon size={24} />
-      </a>
       <a href="#sim" className="btn btn-primary sticky-main">
         בדיקת התאמה
       </a>
