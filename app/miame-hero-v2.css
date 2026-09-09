@@ -704,7 +704,16 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
   .hero-v2-body { width: min(100%, 354px); margin-inline: auto; }
 }
 @media (max-width: 560px) {
-  .hero-v2-grid { padding-block: 14px 28px; gap: 10px; }
+  /* MEASURED 2026-09-09 in Chromium at 360, 390 and 430: the scroll cue overlapped
+     the legal disclaimer by 35-38px on every phone width. The cue is absolutely
+     positioned against .hero-v2 and occupies 18px to 66px measured up from the
+     section's bottom edge (bottom:18px + height:48px), while this bottom padding
+     was 28px — so the last in-flow element, .hero-v2-legal ("בכפוף לאישור עסקה,
+     זמינות מלאי ותנאי החברה/היבואן"), ended INSIDE the cue's box and was covered by
+     its translucent white circle and backdrop blur. 74px clears the cue's 66px with
+     8px to spare. The cue is decoration; the disclaimer is the sentence that
+     qualifies every price on the screen, and it does not get to be the one obscured. */
+  .hero-v2-grid { padding-block: 14px 74px; gap: 10px; }
   .hero-v2-actions { display: grid; grid-template-columns: 1fr; width: 100%; }
   .hero-v2-primary, .hero-v2-secondary { width: 100%; }
   .hero-v2-product-stage { min-height: 300px; }

@@ -255,3 +255,56 @@ describe("keyboard focus is actually visible", () => {
     expect(body, `${sel} draws no outline`).toMatch(/outline\s*:\s*\d+px\s+solid\s+var\(--ink-teal\)/);
   });
 });
+
+// ── the scroll cue does not sit on the disclaimer ────────────────────────────
+//
+// MEASURED 2026-09-09 in Chromium at 360, 390 and 430: the hero's scroll cue
+// overlapped .hero-v2-legal — "בכפוף לאישור עסקה, זמינות מלאי ותנאי החברה/היבואן",
+// the sentence that qualifies every price on the screen — by 35 to 38px on every
+// phone width, covering it with a translucent white circle and a backdrop blur.
+//
+// The cue is positioned against .hero-v2 and occupies `bottom` to `bottom+height`
+// measured up from the section's bottom edge, while the last IN-FLOW element ends
+// at the grid's bottom padding. When that padding is smaller than the cue's reach,
+// the two collide — and nothing in the markup says so, because one is absolutely
+// positioned and the other is not. This computes the same collision from the CSS,
+// so it fails on a padding change as well as on a cue change.
+//
+// ALSO A NOTE ON HOW THIS WAS NEARLY MISSED TWICE: the audit's own verifier
+// confirmed it by reasoning from the stylesheet without running a browser, and
+// the first browser check aimed at .hero-v2-finance — the wrong element — and
+// came back clean. The element that actually collides is .hero-v2-legal.
+describe("the hero scroll cue clears the legal disclaimer", () => {
+  const hero = read("app/miame-hero-v2.css");
+
+  /** First numeric value of `prop` inside the rule for `selector`. */
+  function ruleValue(css: string, selector: string, prop: string, from = 0): number | null {
+    const i = css.indexOf(selector, from);
+    if (i < 0) return null;
+    const body = css.slice(i, css.indexOf("}", i));
+    const m = body.match(new RegExp(`${prop}\\s*:\\s*([^;}]+)`));
+    if (!m) return null;
+    const n = m[1].trim().match(/(-?[\d.]+)px/);
+    return n ? Number(n[1]) : null;
+  }
+
+  it("the grid's bottom padding exceeds the cue's reach on a phone", () => {
+    const bottom = ruleValue(hero, ".hero-v2-scroll-cue", "bottom")!;
+    const height = ruleValue(hero, ".hero-v2-scroll-cue", "height")!;
+    expect(bottom, "cue bottom offset not found").toBeGreaterThan(0);
+    expect(height, "cue height not found").toBeGreaterThan(0);
+    const reach = bottom + height; // how far up from the section edge the cue extends
+
+    // the ≤560 override is the one that governs a phone
+    const at560 = hero.indexOf("@media (max-width: 560px)");
+    expect(at560, "the 560px block is gone").toBeGreaterThan(-1);
+    const padding = hero.slice(at560).match(/\.hero-v2-grid\s*\{[^}]*padding-block:\s*[\d.]+px\s+([\d.]+)px/);
+    expect(padding, "no bottom padding on .hero-v2-grid at ≤560").toBeTruthy();
+
+    expect(
+      Number(padding![1]),
+      `the grid reserves ${padding![1]}px below its last line but the cue reaches ${reach}px — ` +
+        "the disclaimer ends inside the cue and is covered by it",
+    ).toBeGreaterThan(reach);
+  });
+});
