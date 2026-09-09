@@ -172,16 +172,44 @@ const HOME_PRODUCTS = MODELS.map((m) => ({
     // — the difference between a name and an identified entity.
     url: MANUFACTURER_URL,
   },
+  // The seller's own stable identifier for this variant. lib/models.ts already
+  // holds it and it is what the WhatsApp payload, the lead row and the simulator
+  // all key on, so it is the real SKU in every sense but the name. Without any
+  // identifier the three nodes are, to a merchant parser, three anonymous
+  // products that differ only by price.
+  sku: m.id,
+  productID: m.id,
   offers: {
     "@type": "Offer",
     priceCurrency: "ILS",
     price: m.price,
     availability: "https://schema.org/InStock",
-    url: SITE_URL,
+    // WAS `SITE_URL` — the bare root, identical on all three. An Offer's url is
+    // "where this offer can be acted on", and pointing three different priced
+    // offers at one page gives a parser no way to tell them apart, and a visitor
+    // arriving from a rich result no way to land on the one they clicked. #models
+    // is the section that renders all three cards, and the simulator opens from it.
+    url: `${SITE_URL}/#models`,
+    // Stated, because Google reads an ABSENT itemCondition as unknown rather than
+    // as new — and "new" is the whole legal distinction this site draws between a
+    // קלנועית with zero previous owners and a used one.
+    itemCondition: "https://schema.org/NewCondition",
     seller: { "@id": `${SITE_URL}/#organization` }
   },
   additionalProperty: PRODUCT_PROPERTIES
 }));
+
+// NOTE — deliberately NOT added: priceValidUntil, hasMerchantReturnPolicy and
+// shippingDetails. Google recommends all three, and all three are COMMITMENTS.
+// app/legal/terms/page.tsx says only that cancellation follows חוק הגנת הצרכן
+// "בניכוי דמי ביטול כמותר בדין" — a statutory reference with no number in it —
+// and a MerchantReturnPolicy node needs merchantReturnDays and returnFees as
+// literal values. Encoding a figure the site never states would publish a
+// contractual promise nobody wrote, in the one format a machine reads as
+// authoritative. priceValidUntil is the same shape of problem in a date: an
+// invented one either expires and makes Google drop the price, or promises a
+// price is held until a day nobody agreed to. They belong here the moment the
+// owner states real terms on the page — and not one commit earlier.
 
 /** The commercial graph, rendered by app/page.tsx rather than by this layout.
  *  Exported as a finished string so the page does not have to re-import SITE_URL,
