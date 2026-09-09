@@ -155,15 +155,36 @@ describe("one message registry, no dead entries and no competing copies", () => 
   });
 
   it("the site-wide CTAs report themselves like every other one", () => {
+    // OWNER DECISION 2026-09-09: components/StickyCta.tsx and components/Header.tsx
+    // came OFF this list because they no longer open WhatsApp at all. The header's
+    // "דברו איתי" button and the WhatsApp button inside the sticky bar were removed —
+    // the page now offers one centred "בדיקת התאמה", and the fixed bottom-left
+    // FloatingWa is the only WhatsApp control left. A file with no WhatsApp link
+    // cannot report a WhatsApp click, and demanding the string would only invite
+    // someone to satisfy it with a dead call.
+    //
+    // Nothing is unguarded by their removal: the next test scans EVERY file for
+    // waHref( / buildWhatsAppUrl( / buildCampaignWhatsAppUrl( / wa.me and fails on any
+    // that lacks track(). If either file regains a WhatsApp entry point, that is where
+    // it is caught — by what the file DOES, not by a name on a list.
     for (const f of [
       "components/WaCta.tsx",
       "components/FloatingWa.tsx",
-      "components/StickyCta.tsx",
-      "components/Header.tsx",
       "components/AskBrain.tsx",
     ]) {
       expect(read(f), `${f} opens WhatsApp without firing an event`).toContain('track("WhatsAppClicked"');
     }
+  });
+
+  // And the removal itself is now the invariant: one WhatsApp control on the page.
+  it("the header and the sticky bar hold no WhatsApp entry point", () => {
+    const opensWhatsApp = /\bwaHref\(|buildWhatsAppUrl\(|buildCampaignWhatsAppUrl\(|https:\/\/wa\.me/;
+    for (const f of ["components/Header.tsx", "components/StickyCta.tsx"]) {
+      expect(opensWhatsApp.test(read(f)), `${f} opens WhatsApp again — the owner asked for one control`).toBe(false);
+    }
+    // …and the one that survives is the fixed floating button.
+    expect(opensWhatsApp.test(read("components/FloatingWa.tsx"))).toBe(true);
+    expect(read("app/globals.css")).toMatch(/\.wa-float\{position:fixed/);
   });
 
   it("no WhatsApp entry point is unmeasured except the ones named here", () => {

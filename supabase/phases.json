@@ -674,6 +674,32 @@
         "by the Hebrew keyword top-up — the path every measurement above was taken on — but not",
         "by vector similarity."
       ]
+    },
+    {
+      "id": "23-knowledge-one-cta",
+      "title": "The corpus stops naming a button the page no longer renders",
+      "status": "pending",
+      "migrations": [
+        {
+          "file": "20260909_knowledge_one_cta.sql"
+        }
+      ],
+      "risk": "low — one id-scoped update with a post-condition; no schema change",
+      "why": [
+        "OWNER DECISION 2026-09-09: the page offers ONE call to action. The header's",
+        "WhatsApp button and the one inside the mobile sticky bar were removed; the",
+        "fixed bottom-left floating button is the only WhatsApp control left.",
+        "",
+        "The live `contact` row still answers \"how do I reach you\" with",
+        "  \"וואטסאפ ישיר באתר (כפתור \\\"דברו איתי\\\")\"",
+        "which now sends a visitor looking for a control that is not on the page. Same",
+        "defect class the 2026-09-09 audit found in brain/masters.ts, where the",
+        "concierge was still instructed to offer a rental and a partnership whose",
+        "corpus rows had already been deleted.",
+        "",
+        "Rewritten rather than deleted: the question still has a true answer — the",
+        "funnel did not go away, only one of its doorways."
+      ]
     }
   ]
 }

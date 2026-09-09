@@ -484,8 +484,10 @@ svg{display:block}
    the return has to be a slide, and `visibility` (delayed until the slide ends)
    is what takes it out of the tab order while it is away. */
 .sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;gap:10px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);border-top:1px solid var(--line);box-shadow:0 -8px 30px rgba(11,20,40,.08)}
-.sticky-wa{flex:none;width:52px;height:52px;border-radius:14px;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(37,211,102,.3)}
-.sticky-wa svg{color:#fff}
+/* One button, full width. The bar carried .sticky-wa beside this until
+   2026-09-09; the owner removed it, so nothing shares the row and `flex:1`
+   spans it. .btn-wa is NOT dead — app/thank-you and components/seo/SeoCta
+   still render it. */
 .sticky-main{flex:1;padding:15px}
 .sticky-cta{transition:transform .28s ease,opacity .28s ease,visibility 0s}
 .sticky-cta[data-hidden="true"]{transform:translateY(calc(100% + 24px));opacity:0;visibility:hidden;pointer-events:none;

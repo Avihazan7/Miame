@@ -20,6 +20,7 @@ import LexIcon from "@/components/LexIcon";
 import { track } from "@/lib/analytics";
 import { onAmbienceTilt } from "@/lib/ambience";
 import { WARRANTY_TERM } from "@/lib/content";
+import { getModel } from "@/lib/models";
 import {
   TURNTABLE_FRAMES,
   TURNTABLE_H,
@@ -40,6 +41,21 @@ const TILT_PITCH_DEG = 5;
  *  `sizes` string through HERO_SIZES; test/heroTurntable.test.ts holds the two equal. */
 const HERO_FRAME = TURNTABLE_FRAMES[0];
 const HERO_SIZES = "(max-width: 900px) 92vw, (max-width: 1120px) 48vw, 520px";
+
+/** "4×1,800W", assembled from the 4×4 Pro Max highlight in lib/models.ts. The
+ *  highlight reads "4 מנועים · 1,800W"; the hero wants the compact form, so the two
+ *  numbers are PULLED from it rather than retyped. A spec change in the manifest
+ *  therefore reaches the hero, and cannot leave a stale figure behind — the same
+ *  single-source rule test/commercialTruth.test.ts enforces elsewhere.
+ *
+ *  The Hebrew "עד" is NOT part of this string, and that is a bidi requirement rather
+ *  than a style choice: see the chip's markup below. */
+const POWER_SPEC = (() => {
+  const h = getModel("4x4").highlights.find((x) => /W\b/.test(x)) ?? "";
+  const motors = h.match(/(\d+)\s*מנוע/)?.[1];
+  const watts = h.match(/([\d,]+)W/)?.[1];
+  return motors && watts ? `${motors}×${watts}W` : h;
+})();
 
 export default function Hero() {
   const stageRef = useRef<HTMLDivElement>(null);
@@ -482,8 +498,53 @@ export default function Hero() {
               </div>
             </div>
 
+            {/* The product mark, at the top of the stage and beside the vehicle.
+                OWNER REQUEST 2026-09-09: "MIA FOUR הלוגו ליד הכלי למעלה בגודל עדין".
+                Delicate is the brief, so it is SMALL AND SHARP rather than faded — a
+                washed-out logo reads as a rendering accident, not restraint. It is
+                decorative in the accessibility tree: the h1 directly below already
+                reads "מיה פור - קלנועית - MIA FOUR", and a second announcement of the
+                same name is noise to a screen reader. */}
+            <Image
+              src="/mia-four-logo.webp"
+              alt=""
+              aria-hidden="true"
+              width={1600}
+              height={599}
+              sizes="(max-width: 560px) 78px, 104px"
+              quality={90}
+              className="hero-v2-mark"
+              draggable={false}
+            />
+
             <div className="hero-v2-free-chip">
               <LexIcon name="butterfly" /> FREE FEEL
+            </div>
+
+            {/* The power spec, below and beside the vehicle, mirroring the FREE FEEL
+                chip on the opposite corner. OWNER REQUEST 2026-09-09: "ה w 1800 × 4
+                מנועים תוריד מתחת וליד הכלי". The number is READ from lib/models.ts —
+                the 4×4 Pro Max highlight — so a spec change there cannot leave a stale
+                figure on the hero.
+
+                THE ISOLATE WRAPS THE LATIN RUN ONLY, and the split is load-bearing.
+                Two ways of writing this were measured at 390×844 and 1440×900 on
+                2026-09-09, screenshot and read back:
+                  <bdi dir="ltr">עד 4×1,800W</bdi>  →  renders "1,800×4 עדW"
+                  <span>עד</span><b dir="ltr">4×1,800W</b>  →  renders "4×1,800W עד"
+                The first is not a styling accident. UAX#9 W7 promotes a European
+                number to L only when the strong type found searching BACKWARD is L;
+                with "עד" inside the isolate that search hits Hebrew, the digits stay
+                EN, and rule N1 then resolves the "×" between two EN runs to R — which
+                reverses the operands and strands the W. Excluding the Hebrew makes the
+                isolate's start-of-sequence L, W7 fires, and the whole run is plain LTR.
+                Also measured: dir="ltr" on the POSITIONED element flips its own logical
+                properties, so inset-inline-start resolved LEFT and the chip landed on
+                top of .hero-v2-free-chip. Direction belongs to the text run, never to
+                the box. */}
+            <div className="hero-v2-power-chip">
+              <span>עד</span>
+              <b dir="ltr">{POWER_SPEC}</b>
             </div>
 
             {/* The turntable's visible handles. A finger cannot find "drag to
