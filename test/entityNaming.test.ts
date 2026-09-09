@@ -120,6 +120,49 @@ describe("the product has one name, and it comes from a real source", () => {
     ).toEqual([]);
   });
 
+  /**
+   * …AND THE STORE IS NOT WHAT WAS BORN.
+   *
+   * The other half of the same error, and the reason this rule got a second clause:
+   * the About paragraph opened "MiaMe.co.il נולדה מתוך אמונה פשוטה" until the owner
+   * struck it on 2026-09-09 — "במקום MiaMe.co.il לרשום מיה פור". The first clause
+   * above only catches the shop AFTER the verb; here the shop is the SUBJECT, before
+   * it. A belief gives rise to a product, and a shop is what brings it to you.
+   */
+  it("no copy makes the STORE the thing that was born", () => {
+    // Birth/origin predicates, with the site name as their subject.
+    const BORN = ["נולדה", "נולד", "קמה", "קם לחיים"];
+    const bad: string[] = [];
+    for (const f of servedFiles()) {
+      const src = code(f);
+      for (const verb of BORN) {
+        // MiaMe (optionally .co.il, optionally closing a tag) then the verb.
+        //
+        // The terminator is (?![א-ת]) and NOT \b, and that distinction is the whole
+        // rule: JavaScript defines \b on \w = [A-Za-z0-9_], so after a Hebrew letter
+        // there is no word boundary at all and `${verb}\b` NEVER matches. The first
+        // version of this gate ended in \b, passed its own suite, and passed the
+        // mutation that restored the exact sentence the owner had struck — a gate
+        // that cannot fire, reporting green. Caught only because the mutation was
+        // actually run. Hebrew rules need Hebrew terminators.
+        const re = new RegExp(`MiaMe(?:\\.co\\.il)?\\s*(?:</\\w+>)?\\s+${verb}(?![א-ת])`);
+        if (re.test(src)) bad.push(`${f} — "MiaMe … ${verb}"`);
+      }
+    }
+    expect(
+      bad,
+      `MiaMe is the store — it was not born out of a belief, the product was. ` +
+        `Name PRODUCT_NAME_HE as the subject: ${bad.join(" · ")}`,
+    ).toEqual([]);
+  });
+
+  it("the About paragraph opens on the product, derived", () => {
+    const src = code("components/About.tsx");
+    expect(src, "About.tsx does not import the product name").toContain("PRODUCT_NAME_HE");
+    expect(src, "About.tsx spells the product name instead of deriving it")
+      .not.toMatch(new RegExp(`>${PRODUCT_NAME_HE}<`));
+  });
+
   it("the two video blocks name the product, and derive it", () => {
     // Both carried the defect; both must now read the name from lib/content.ts
     // rather than spell it, so a rename cannot half-land.
@@ -217,6 +260,16 @@ describe("the snippet names the thing, not only the title", () => {
   // on every result for the domain, and what an answer engine quotes. A title
   // that resolves the entity beside a description that does not is half a fix.
   const meta = layout.slice(layout.indexOf("export const metadata"), layout.indexOf("openGraph:"));
+  /** The same slice with comments stripped. `meta` keeps them because two assertions
+   *  below deliberately read the SOURCE (they check a value is a template literal that
+   *  interpolates a constant, which only the source shows). The "בנה" rule must not:
+   *  the comment above that very description says '…not "בנה"', so a rule that reads
+   *  comments fires on its own explanation — which is exactly the trap this file's
+   *  `code()` helper was written for, and which the broken \b had been hiding. */
+  const metaCode = code("app/layout.tsx").slice(
+    code("app/layout.tsx").indexOf("export const metadata"),
+    code("app/layout.tsx").indexOf("openGraph:"),
+  );
 
   it("the site description names the product and the category", () => {
     const desc = /description:\s*\n?\s*`([^`]+)`/.exec(meta)?.[1] ?? "";
@@ -237,7 +290,16 @@ describe("the snippet names the thing, not only the title", () => {
 
   it("its call to action is plural, like every other one on the site", () => {
     // "בנה" is masculine singular; the site says "בנו" · "צפו" · "גררו".
-    expect(meta, "the description addresses one man").not.toMatch(/\bבנה\b/);
+    //
+    // THIS ASSERTION USED TO READ /\bבנה\b/ AND COULD NEVER FAIL. JavaScript defines
+    // \b on \w = [A-Za-z0-9_], so a Hebrew letter is never a word character and there
+    // is no boundary beside one: /\bבנה\b/.test("בנה") is FALSE — it does not match
+    // even the bare word it names. Found 2026-09-09 by sweeping the repo for \b next
+    // to Hebrew, after the same mistake was caught by mutation in the store/product
+    // rule above. Lookarounds on the Hebrew block are the working form, and both
+    // sides are needed: without the lookbehind this fires inside "נבנה", without the
+    // lookahead inside "בנהל".
+    expect(metaCode, "the description addresses one man").not.toMatch(/(?<![א-ת])בנה(?![א-ת])/);
   });
 });
 
