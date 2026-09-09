@@ -103,8 +103,16 @@ svg{display:block}
 .btn:hover{transform:translateY(-2px)}
 .btn:hover::after{opacity:1;background-position:-50% 0}
 .btn:active{transform:translateY(1px) scale(.992)}
-/* crisp, accessible focus halo that rides over the 3D shadow */
-.btn:focus-visible{outline:none;
+/* The ring is DECORATION; the outline is the indicator. Measured 2026-09-09:
+   the old halo set `outline:none` and relied on --glow-teal, which the token file
+   itself marks "dark only" — on this light page it measures 1.69:1 on white and
+   1.62:1 on the cream halo, against the 3:1 WCAG 2.1 SC 1.4.11 requires. Nothing in
+   the ring reached 3:1, so keyboard focus was invisible on every button outside the
+   Hero. --ink-teal measures 6.39:1 on white, 6.14:1 on cream, 4.74:1 on the lime CTA
+   and 3.22:1 on the WhatsApp green — its worst neighbour still passes.
+   axe-core does not compute focus-ring contrast, which is why 11 clean routes never
+   caught this. */
+.btn:focus-visible{outline:3px solid var(--ink-teal);outline-offset:3px;
   box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--glow-teal), 0 0 0 8px rgba(24,224,189,.28), 0 14px 30px rgba(15,107,94,.34)}
 
 .btn-primary{color:#fff;background:linear-gradient(180deg,var(--glow-teal),var(--ink-teal) 55%,var(--mint-zero-ink));
@@ -131,9 +139,9 @@ svg{display:block}
 .btn-sm{padding:11px 19px;font-size:14.5px}
 .btn-sm::before{height:46%}
 .btn-block{width:100%}
-/* crystalline focus halo shared by every secondary control — same polish, accessible */
+/* Same correction as .btn above: the halo stays, the outline is what is seen. */
 .btn-testride:focus-visible,
-.mp:focus-visible{outline:none;
+.mp:focus-visible{outline:3px solid var(--ink-teal);outline-offset:3px;
   box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--azure), 0 0 0 7px rgba(12,229,221,.26)}
 .cta-stack{display:flex;flex-direction:column;gap:10px;margin-top:2px}
 
@@ -287,7 +295,6 @@ svg{display:block}
 .rng::-webkit-slider-thumb:active{transform:scale(1.12)}
 .rng::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid var(--azure);box-shadow:0 1px 4px rgba(11,30,80,.28)}
 .rng:disabled{opacity:.55;cursor:not-allowed}
-@media(pointer:coarse){.rng{box-sizing:content-box;padding-block:18px;background-clip:content-box}}
 .model-pick{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
 .mp{flex:1;min-width:92px;border:1px solid var(--line);border-radius:13px;padding:11px 8px;text-align:center;transition:all .16s ease;background:#fff}
 .mp.on{border-color:var(--azure);background:var(--tint)}
@@ -333,7 +340,7 @@ svg{display:block}
 .lead-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 @media(max-width:520px){.lead-row{grid-template-columns:1fr}}
 .inp{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#fff;border-radius:12px;
-  padding:13px 15px;font-size:15px;font-family:inherit;outline:none;transition:border .16s ease}
+  padding:13px 15px;font-size:16px;font-family:inherit;outline:none;transition:border .16s ease}
 .inp::placeholder{color:#7e93b8}
 .inp:focus{border-color:var(--sky);background:rgba(255,255,255,.1)}
 .inp-error{border-color:#ff7a7a;background:rgba(255,90,90,.08)}
@@ -611,8 +618,11 @@ svg{display:block}
 .chat3d-chip:hover:not(:disabled){background:#fff;transform:translateY(-1px)}
 .chat3d-chip:disabled{opacity:.5;cursor:default}
 .chat3d-input{display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--line);background:rgba(255,255,255,.7)}
-.chat3d-input input{flex:1;border:1px solid var(--line);border-radius:999px;padding:13px 18px;font-size:15px;font-family:inherit;background:#fff;outline:none}
+.chat3d-input input{flex:1;border:1px solid var(--line);border-radius:999px;padding:13px 18px;font-size:16px;font-family:inherit;background:#fff;outline:none}
 .chat3d-input input:focus{border-color:rgba(10,132,255,.5);box-shadow:0 0 0 4px rgba(10,132,255,.12)}
+/* The rule above is a soft :focus tint, not an indicator — a 12%-alpha shadow over
+   white cannot reach 3:1. The chat box is the only other text input on the site. */
+.chat3d-input input:focus-visible{outline:2px solid var(--ink-teal);outline-offset:1px}
 .chat3d-send{width:46px;height:46px;flex:0 0 46px;border-radius:50%;color:#fff;font-size:20px;font-weight:800;border:none;cursor:pointer;
   background:linear-gradient(180deg,var(--glow-teal),var(--ink-teal) 55%,var(--mint-zero-ink));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 0 var(--mint-zero-ink),0 10px 20px rgba(15,107,94,.4);transition:transform .15s,box-shadow .2s}
@@ -705,7 +715,11 @@ svg{display:block}
 
 /* accessibility focus */
 :focus-visible{outline:2px solid var(--ink-teal);outline-offset:2px}
-.inp:focus-visible{outline:2px solid var(--sky);outline-offset:0}
+/* --sky resolves to --glow-ice #9DDCF0, which the token file documents as "on Abyss
+   12.53:1" — a DARK-background colour. On the white lead-form input it measures
+   1.51:1, so the focus ring on the form that captures every lead was invisible.
+   --ink-teal is 6.39:1 there. */
+.inp:focus-visible{outline:2px solid var(--ink-teal);outline-offset:0}
 .rng:focus-visible{outline:2px solid var(--ink-teal);outline-offset:4px}
 
 @media (prefers-reduced-motion: reduce){

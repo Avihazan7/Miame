@@ -161,7 +161,18 @@ export default function Configurator() {
     track("ModelSelected", { modelId: id });
     emitSignal("view_specs"); // viewing a model's specs → central Big Five nudge
     if (scroll && typeof document !== "undefined") {
-      document.getElementById("sim")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      // An explicit `behavior` in ScrollIntoViewOptions takes precedence over the
+      // computed scroll-behavior property (CSSOM-View), so the
+      // `scroll-behavior:auto!important` reset inside the reduced-motion block in
+      // app/globals.css does NOT reach this call — it only neutralises the
+      // `html{scroll-behavior:smooth}` declaration. Read the preference here, or a
+      // visitor who asked the OS to stop motion gets an animated scroll across most
+      // of a long page. app/legal/accessibility states that the site honours it.
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.getElementById("sim")?.scrollIntoView({
+        behavior: reduce ? "auto" : "smooth",
+        block: "start",
+      });
     }
   }
 

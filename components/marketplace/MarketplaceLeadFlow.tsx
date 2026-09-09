@@ -193,6 +193,11 @@ function Field({
   onChange: (v: string) => void;
 }) {
   const id = `mp-${field.name}`;
+  // The asterisk is typography and is explicitly removed from the accessibility
+  // tree, so it cannot be the only "required" signal — the error message literally
+  // tells the visitor to fill "the fields marked with an asterisk", a glyph their
+  // software was told to ignore. The programmatic state rides on the control itself
+  // (aria-required below); the glyph stays purely visual.
   const req = field.required ? (
     <span className="mp-req" aria-hidden="true">
       *
@@ -234,6 +239,8 @@ function Field({
         <select
           id={id}
           className="mp-control"
+          required={field.required}
+          aria-required={field.required || undefined}
           value={value}
           onChange={(e) => onChange(e.target.value)}
         >
@@ -258,6 +265,8 @@ function Field({
         id={id}
         className="mp-control"
         type={field.type}
+        required={field.required}
+        aria-required={field.required || undefined}
         inputMode={field.type === "tel" ? "tel" : undefined}
         placeholder={field.placeholder}
         value={value}

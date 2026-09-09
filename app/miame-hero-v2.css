@@ -595,6 +595,15 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
    A second in-flow row under the image box (the stage is a grid, so it simply
    stacks); hidden until Hero.tsx has the frames. Physical order is prev · hint ·
    next in LTR glyphs, which is also what a RTL reader expects of a dial. */
+/* `hidden={!spin}` on this element does NOT hide it: Tailwind preflight ships
+   `[hidden]:where(:not([hidden=until-found])){display:none}`, and :where() contributes
+   zero specificity — so that rule is (0,1,0), identical to `.hero-v2-turn`, and this
+   file loads later. Source order won, the attribute lost, and two 44px arrow buttons
+   plus the hint sat in the tab order from first paint doing nothing, because step()
+   has no loaded frame to advance to. Gate it on the same state attribute the rest of
+   the stage uses, so one mechanism decides instead of two fighting. */
+.hero-v2-product-stage:not([data-spin]) .hero-v2-turn { display: none; }
+
 .hero-v2-turn {
   position: relative;
   z-index: 5;

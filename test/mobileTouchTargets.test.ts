@@ -104,13 +104,42 @@ describe("a thumb can hit every control", () => {
     // The track is 9px, so the ELEMENT was 9px and the 28px thumb overflowed it.
     // Padding on the content box grows the target without moving a painted pixel;
     // it is scoped to pointer:coarse because a mouse does not need the room.
-    const coarse = globals.match(/@media\(pointer:coarse\)\{([\s\S]*?)\}\}/);
+    const coarse = ultra.match(/@media\(pointer:coarse\)\{([\s\S]*?)\}\}/);
     expect(coarse, "no coarse-pointer block for .rng").toBeTruthy();
     expect(coarse![1]).toContain(".rng");
     expect(coarse![1]).toMatch(/box-sizing\s*:\s*content-box/);
     expect(coarse![1]).toMatch(/background-clip\s*:\s*content-box/);
     const pad = Number(coarse![1].match(/padding-block\s*:\s*([\d.]+)px/)![1]);
     expect(px(ultra, ".rng", "height") + pad * 2).toBeGreaterThanOrEqual(BUTTON);
+  });
+
+  // AND IT HAS TO WIN. The first version of this gate asserted only that
+  // `background-clip:content-box` was PRESENT — in app/globals.css, where it had no
+  // effect at all. globals.css loads before miame-ultra.css (app/layout.tsx:14-16),
+  // and miame-ultra's `.rng{background:linear-gradient(...)}` is a SHORTHAND, which
+  // resets background-clip to border-box. So the declaration existed, the test was
+  // green, and both sliders painted as 45px pills on every phone. A declaration that
+  // is overridden is not a fix, and "it is in the file" is not "it applies".
+  it("the padding stays invisible — background-clip is declared AFTER the last background shorthand", () => {
+    // Concatenated in the order app/layout.tsx imports them.
+    const cascade = globals + "\n" + ultra;
+    const shorthand = [...cascade.matchAll(/\.rng\s*\{[^}]*?\bbackground\s*:/g)].map((m) => m.index!);
+    const clip = [...cascade.matchAll(/\.rng\s*\{[^}]*?background-clip\s*:\s*content-box/g)].map((m) => m.index!);
+    expect(shorthand.length, "no .rng background shorthand found — has the slider been restyled?").toBeGreaterThan(0);
+    expect(clip.length, "nothing re-declares background-clip after the shorthand").toBeGreaterThan(0);
+    expect(
+      Math.max(...clip),
+      "background-clip:content-box is declared BEFORE the last `background:` shorthand for .rng, " +
+        "so the shorthand resets it to border-box and the touch padding gets painted as a 45px pill",
+    ).toBeGreaterThan(Math.max(...shorthand));
+  });
+
+  // iOS Safari zooms the viewport when a focused control is under 16px. Both text
+  // inputs on the site were 15px at every breakpoint, so every tap on the lead form
+  // and on the chat box jolted the page.
+  it("text inputs are at least 16px, so iOS does not zoom on focus", () => {
+    expect(px(globals, ".inp", "font-size")).toBeGreaterThanOrEqual(16);
+    expect(px(globals, ".chat3d-input input", "font-size")).toBeGreaterThanOrEqual(16);
   });
 
   it("no interactive text is set below 12px", () => {
@@ -154,5 +183,75 @@ describe("the mobile bar waits for the Hero to finish", () => {
     const reduce = globals.match(/@media\(prefers-reduced-motion:reduce\)\{([^}]*\.sticky-cta[^}]*)\}/);
     expect(reduce, "the bar's transition is not covered by reduced motion").toBeTruthy();
     expect(reduce![1]).toMatch(/transition\s*:\s*none/);
+  });
+});
+
+// ── the focus indicator is visible, measured and not assumed ────────────────
+//
+// MEASURED 2026-09-09. Every `.btn`, `.btn-testride` and `.mp` on the site set
+// `outline:none` and relied on a box-shadow halo built from --glow-teal. The token
+// file marks that colour "dark only" (styles/tokens.miame.css:14) and on this light
+// page the whole ring measured under 2:1 — 1.69:1 on white, 1.62:1 on the cream halo
+// — against the 3:1 that WCAG 2.1 SC 1.4.11 requires. The lead form's own input ring
+// was worse: --sky resolves to --glow-ice #9DDCF0, documented "on Abyss 12.53:1", and
+// on a white input it measures 1.51:1.
+//
+// So keyboard focus was invisible on the sticky-bar CTA, both simulator submit
+// buttons, the model picker, the consent banner, every WaCta and the lead form.
+//
+// WHY THIS TEST AND NOT scripts/a11y-audit.mjs: axe-core does not compute focus-ring
+// contrast. It reported ZERO violations across 11 routes while all of the above was
+// true, and that clean report was quoted as evidence more than once. A gate that
+// cannot see a failure is not covering it.
+describe("keyboard focus is actually visible", () => {
+  const tokens = read("styles/tokens.miame.css");
+
+  /** sRGB relative luminance, WCAG 2.x. */
+  function lum(hex: string): number {
+    const v = hex.replace("#", "");
+    const ch = [0, 2, 4].map((i) => parseInt(v.substr(i, 2), 16) / 255);
+    const f = (c: number) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+    const [r, g, b] = ch.map(f);
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  }
+  const ratio = (a: string, b: string) =>
+    (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
+
+  /** Resolve a token to its literal hex, following one level of var() aliasing. */
+  function token(name: string): string {
+    const direct = tokens.match(new RegExp(`--${name}\\s*:\\s*(#[0-9A-Fa-f]{6})`));
+    if (direct) return direct[1];
+    const alias = (globals + tokens).match(new RegExp(`--${name}\\s*:\\s*var\\(--([\\w-]+)\\)`));
+    if (alias) return token(alias[1]);
+    throw new Error(`token --${name} does not resolve to a hex`);
+  }
+
+  const INK = "ink-teal";
+  // Every ground a focus ring can land on, taken from the palette it actually sits on.
+  const GROUNDS: Array<[string, string]> = [
+    ["white card", "#FFFFFF"],
+    ["cream halo", "#FFFAF0"],
+    ["pearl page", "#FDFBF6"],
+    ["lime CTA", "#A5F35A"],
+    ["whatsapp green", "#25D366"],
+  ];
+
+  it.each(GROUNDS)("the focus colour clears 3:1 on %s", (_name, ground) => {
+    expect(ratio(token(INK), ground)).toBeGreaterThanOrEqual(3);
+  });
+
+  // The colour being right is worthless if the rule still says outline:none. These are
+  // the four rules that decide whether a ring is drawn at all.
+  it.each([
+    ["app/globals.css", ".btn:focus-visible"],
+    ["app/globals.css", ".inp:focus-visible"],
+    ["app/miame-ultra.css", ".btn:focus-visible"],
+  ])("%s %s draws an outline rather than removing it", (file, sel) => {
+    const css = file.endsWith("globals.css") ? globals : ultra;
+    const i = css.indexOf(sel);
+    expect(i, `${sel} not found in ${file}`).toBeGreaterThan(-1);
+    const body = css.slice(i, css.indexOf("}", i));
+    expect(body, `${sel} still sets outline:none`).not.toMatch(/outline\s*:\s*none/);
+    expect(body, `${sel} draws no outline`).toMatch(/outline\s*:\s*\d+px\s+solid\s+var\(--ink-teal\)/);
   });
 });

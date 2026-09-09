@@ -106,10 +106,13 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), 0 4px 0 #119a48, 0 18px 34px rgba(37, 211, 102, .5);
 }
 
+/* This is the rule that actually shipped — it loads after globals.css and wins.
+   See the measurement note in app/globals.css beside .btn:focus-visible. */
 .btn:focus-visible,
 .btn-testride:focus-visible,
 .mp:focus-visible{
-  outline:none;
+  outline:3px solid var(--ink-teal);
+  outline-offset:3px;
   box-shadow:0 0 0 2px #fff,0 0 0 4px var(--mint),0 0 0 8px rgba(255,248,235,.75),0 16px 34px rgba(17,205,174,.30);
 }
 
@@ -179,6 +182,13 @@
   height:9px;
   background:linear-gradient(90deg,#c7f7ea,#fff3d9);
 }
+/* The touch target lives HERE, not in globals.css, and that is the whole point.
+   It was written in globals.css first — and lost: globals loads before this file
+   (app/layout.tsx), and the `background` SHORTHAND above resets background-clip to
+   border-box. The 18px of padding was therefore PAINTED, so both simulator sliders
+   rendered as 45px pills on every phone instead of a 9px track with an invisible
+   45px hit area. Declaring it after the shorthand is what makes it real. */
+@media(pointer:coarse){.rng{box-sizing:content-box;padding-block:18px;background-clip:content-box}}
 .rng::-webkit-slider-thumb{
   width:28px;height:28px;
   box-shadow:0 4px 12px rgba(7,140,123,.26),0 0 0 3px var(--mint) inset,0 0 0 8px rgba(255,248,235,.72);
