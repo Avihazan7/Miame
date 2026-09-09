@@ -90,8 +90,18 @@ describe("the base image is the hero angle, and the only priority image", () => 
 
   it("declares the manifest's first frame and the frame box", () => {
     expect(base).toContain(`src="${TURNTABLE_FRAMES[0].src}"`);
-    expect(base).toContain(`width={${TURNTABLE_W}}`);
-    expect(base).toContain(`height={${TURNTABLE_H}}`);
+    // Either the constant or the literal it resolves to. The literal was what
+    // shipped until 2026-09-09, and it is exactly how the box drifts: Hero.tsx
+    // already imported TURNTABLE_W and TURNTABLE_H and then typed 1800 and 1994
+    // underneath them, so a re-cut changed the files and left the declaration
+    // behind. Reading the constant is the fix; this accepts both so the assertion
+    // is about the VALUE reaching next/image, not about how it was spelled.
+    expect(base, "width is neither TURNTABLE_W nor its value").toMatch(
+      new RegExp(`width=\\{(TURNTABLE_W|${TURNTABLE_W})\\}`),
+    );
+    expect(base, "height is neither TURNTABLE_H nor its value").toMatch(
+      new RegExp(`height=\\{(TURNTABLE_H|${TURNTABLE_H})\\}`),
+    );
     expect(base).toMatch(/\bpriority\b/);
     expect(base).toContain('fetchPriority="high"');
   });

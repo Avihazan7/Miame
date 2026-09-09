@@ -9,7 +9,16 @@
  * in yaw order, never a mesh. Every frame was cut with ONE crop from the shared
  * canvas (no per-frame scaling — the renderer's camera is the alignment), the
  * alpha haze under 8% was cleaned, and the result was resampled premultiplied
- * to 1800×1994. Frame 1 alone had been rendered ~10% closer than its mirror
+ * to the frame box below.
+ *
+ * RE-CUT 2026-09-09 at native resolution, 1800×1994 → 2599×2879. The framing did
+ * not change: the crop, the normalisation and the scale are identical, and the
+ * vehicle occupies the same fraction of every frame it did before (79.7 / 91.0 /
+ * 81.6 / 83.1 / 90.9 / 84.6 percent, matching the previous cut to a tenth). Only
+ * the pixel count changed. The reason is in scripts/turntable-recut.mjs: at 1800
+ * the source could not fill any srcSet candidate above it, so a tablet at DPR 2
+ * was served an ENLARGED image (216KB carrying 204KB of detail) and a 900px
+ * viewport at DPR 3 was served w=3840 — 498KB carrying the same 204KB. Frame 1 alone had been rendered ~10% closer than its mirror
  * twin (frame 6): it was scaled by 0.901 about the bottom-centre of its
  * silhouette and landed on the twin's baseline, so the turntable does not
  * "breathe" when it passes the hero angle. The 4K originals live losslessly in
@@ -19,7 +28,9 @@
  * RIGHT. Dragging right, ArrowRight and the idle spin all step +1.
  *
  * test/heroTurntable.test.ts holds every file to this box and every yaw to the
- * sixty-degree lattice, so a re-export that drifts fails by number.
+ * sixty-degree lattice, so a re-export that drifts fails by number — and it also
+ * holds TURNTABLE_W to next.config.js's deviceSizes ladder, because a frame width
+ * the optimizer cannot land on exactly is a frame width it enlarges.
  */
 
 export interface TurntableFrame {
@@ -32,8 +43,8 @@ export interface TurntableFrame {
 }
 
 /** The shared frame box — declared once, asserted against every file header. */
-export const TURNTABLE_W = 1800;
-export const TURNTABLE_H = 1994;
+export const TURNTABLE_W = 2599;
+export const TURNTABLE_H = 2879;
 
 /** Pointer travel per frame step when dragging, in CSS px. */
 export const TURNTABLE_STEP_PX = 56;

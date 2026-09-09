@@ -90,7 +90,7 @@ const nextConfig = {
     // Adding the rung lets the browser ask for exactly what the file has. It does
     // not change what phones or desktops receive (verified: 390x3 → 1080,
     // 430x3 → 1200, 1440x2 → 1080, unchanged).
-    deviceSizes: [640, 750, 828, 1080, 1200, 1800, 1920, 2048, 3840],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 2599, 3840],
     remotePatterns: [{ protocol: 'https', hostname: supabaseHost }]
   },
   async headers() {

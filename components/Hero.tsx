@@ -418,7 +418,7 @@ export default function Hero() {
 
               <div className="hero-v2-rig">
                 <div className="hero-v2-product">
-                  {/* The hero angle, at the frame box's full detail (1800×1994 —
+                  {/* The hero angle, at the frame box's full detail (TURNTABLE_W×H —
                       test/imageLayout.test.ts holds width/height to the header;
                       test/heroTurntable.test.ts holds them to lib/turntable.ts).
                       `sizes` is the slot the grid actually gives: 92vw stacked,
@@ -436,8 +436,8 @@ export default function Hero() {
                   <Image
                     src="/mia-four-360-1.webp"
                     alt="MIA FOUR, קלנועית חשמלית פרימיום על ארבעה גלגלים"
-                    width={1800}
-                    height={1994}
+                    width={TURNTABLE_W}
+                    height={TURNTABLE_H}
                     priority
                     fetchPriority="high"
                     quality={92}

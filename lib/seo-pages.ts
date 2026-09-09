@@ -133,8 +133,8 @@ export const SEO_PAGES: SeoPage[] = [
     // the two surfaces should not disagree about what MIA FOUR looks like.
     hero: {
       image: "/mia-four-360-1.webp",
-      w: 1800,
-      h: 1994,
+      w: 2599,
+      h: 2879,
       alt: "מיה פור, קלנועית חשמלית פרימיום על 4 גלגלים, צילום סטודיו"
     },
     // The hero above stays portrait, because on the page it is right. The card
