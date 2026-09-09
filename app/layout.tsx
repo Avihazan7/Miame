@@ -262,11 +262,23 @@ const JSON_LD = {
 };
 
 export const viewport: Viewport = {
-  // Ultra Color P Master: Pearl on light, Abyss on dark (= manifest theme_color).
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FDFBF6" },
-    { media: "(prefers-color-scheme: dark)", color: "#04121F" }
-  ],
+  // ONE COLOUR, BECAUSE THE SITE HAS ONE THEME (measured 2026-09-09).
+  //
+  // This declared Pearl (#FDFBF6) for light and Abyss (#04121F) for dark. Neither
+  // was what the browser painted. There is not a single `prefers-color-scheme` rule
+  // in app/globals.css, app/miame-ultra.css, app/miame-hero-v2.css or
+  // styles/tokens.miame.css — grep returns zero — and app/globals.css:917 pins
+  // `:root{color-scheme:light}`. The page is `html{background:var(--snow)}`
+  // (globals.css:66) = #ffffff, always, on every device. So the dark entry drew a
+  // near-black browser bar directly above a white page for every visitor whose
+  // phone is in dark mode, which is most of them; and the light entry was off by a
+  // shade from the white it sat above.
+  //
+  // The NIGHT DRIVE half of styles/tokens.miame.css is not deleted — it is the
+  // declared vocabulary for the dark sections the design uses deliberately. But a
+  // token palette is not a theme: when a real `prefers-color-scheme` implementation
+  // ships, the second entry comes back with it, in the same change.
+  themeColor: "#FFFFFF",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover"

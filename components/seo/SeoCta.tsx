@@ -32,8 +32,14 @@ export default function SeoCta({ topic }: { topic: string }) {
 
   return (
     <div className="seo-cta">
+      {/* "בנו", not "בנה". This was the last singular imperative on the site, and it
+          sat two lines above "דברו איתנו בוואטסאפ" in the same component — the two
+          buttons of one CTA pair addressing the visitor in two different forms. The
+          plural is the site-wide standard (בנו · צפו · גררו · דברו) and app/layout.tsx
+          records the description being fixed to it on 2026-09-01; these four landing
+          pages were not re-read then. Guarded by test/ctaLabelHonesty.test.ts. */}
       <Link href="/#sim" className="btn btn-primary">
-        בנה הצעת תשלום תוך דקה
+        בנו הצעת תשלום תוך דקה
       </Link>
       <button type="button" onClick={openWa} className="btn btn-wa">
         <WaIcon size={18} />

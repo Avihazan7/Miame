@@ -16,7 +16,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { HUB_DESTINATIONS, channelFor } from "@/lib/social-campaign";
 import WaCta from "@/components/WaCta";
-import { OG_IMAGES } from "@/lib/seo/og";
+import { OG_BASE } from "@/lib/seo/og";
 
 export const metadata: Metadata = {
   title: "MiaMe · הקישורים",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   // A hub travels by being pasted, so it needs its own share card. Without one it
   // inherits the root layout's — announcing the homepage's title AND og:url, so the
   // preview describes a different page than the one being opened.
-  openGraph: { images: OG_IMAGES,
+  openGraph: { ...OG_BASE,
     title: "MiaMe · מיה פור",
     description: "ניידות חשמלית פרימיום במחיר חכם. הצעת תשלום מותאמת תוך דקה.",
     url: "/link",

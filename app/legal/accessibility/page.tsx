@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 // contact, which is exactly the promise a stale second copy of the number breaks.
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL, buildWhatsAppUrl } from "@/lib/whatsapp";
 import Link from "next/link";
-import { OG_IMAGES } from "@/lib/seo/og";
+import { OG_BASE } from "@/lib/seo/og";
 
 const UPDATED = "4 ביולי 2026";
 
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "הצהרת נגישות",
   description: DESC,
   alternates: { canonical: "/legal/accessibility" },
-  openGraph: { images: OG_IMAGES, title: "הצהרת נגישות · MiaMe", description: DESC, url: "/legal/accessibility", type: "article" },
+  openGraph: { ...OG_BASE, title: "הצהרת נגישות · MiaMe", description: DESC, url: "/legal/accessibility", type: "article" },
   robots: { index: true, follow: true }
 };
 

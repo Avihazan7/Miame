@@ -84,6 +84,22 @@ export function renderOgCard({
 // trap is invisible in review, because the object you wrote looks complete.
 //
 // Spread OG_IMAGES into any route that overrides openGraph.
+//
+// ── and the SAME TRAP, still open on the other two keys (measured 2026-09-09) ──
+//
+// The fix above closed `og:image` and stopped there. Next replaces the whole
+// `openGraph` object, so `og:site_name` and `og:locale` — declared once in
+// app/layout.tsx and nowhere else — were ALSO dropped by every route that
+// overrides it. Measured on the built HTML: 2 of 12 routes carried og:site_name
+// and og:locale; the other 10, including all four Hebrew landing pages and
+// /eligibility, carried neither. og:locale=he_IL is how a scraper knows the card
+// is Hebrew and RTL, and og:site_name is the small-caps brand line above the
+// title in a Facebook/WhatsApp/LinkedIn preview — the only place a share of a
+// legal page says who published it.
+//
+// OG_BASE carries all three. Spread THAT, not OG_IMAGES, into any route that
+// overrides openGraph; OG_IMAGES stays exported because it is the images value
+// itself, and a route with a genuinely different image still wants the rest.
 export const OG_IMAGES = [
   {
     url: "/opengraph-image",
@@ -92,3 +108,20 @@ export const OG_IMAGES = [
     alt: "MiaMe · מיה פור, קלנועית חשמלית על 4 גלגלים",
   },
 ];
+
+/** The keys every route must re-declare because Next's metadata merge replaces the
+ *  whole `openGraph` object rather than merging into it. Spread first, then add the
+ *  route's own title/description/url:
+ *
+ *      openGraph: { ...OG_BASE, title, description, url: "/x", type: "article" }
+ *
+ *  Guarded by test/socialCards.test.ts. */
+export const OG_CHROME = {
+  siteName: "MiaMe",
+  locale: "he_IL",
+} as const;
+
+export const OG_BASE = {
+  ...OG_CHROME,
+  images: OG_IMAGES,
+} as const;
