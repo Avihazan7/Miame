@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 // Seller identification has to name a channel that answers, so the number is
 // read from the one sales-line constant rather than typed here a second time.
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from "@/lib/whatsapp";
+import Link from "next/link";
 
 const UPDATED = "4 ביולי 2026";
 
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <main id="main" className="legal">
-      <a href="/" className="legal-back">← חזרה לדף הבית</a>
+      <Link href="/" className="legal-back">← חזרה לדף הבית</Link>
       <h1>תקנון ותנאי שימוש</h1>
       <p className="legal-meta">גרסה 1.0 · עודכן: {UPDATED}</p>
 
@@ -96,7 +97,7 @@ export default function TermsPage() {
 
       <h2>9. פרטיות</h2>
       <p>
-        עיבוד המידע האישי נעשה בהתאם ל<a href="/legal/privacy">מדיניות הפרטיות</a>
+        עיבוד המידע האישי נעשה בהתאם ל<Link href="/legal/privacy">מדיניות הפרטיות</Link>
         {" "}של האתר, המהווה חלק בלתי נפרד מתקנון זה.
       </p>
 

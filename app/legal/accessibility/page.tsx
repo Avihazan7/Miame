@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 // sales-line constant. This page is legally required to publish a REACHABLE
 // contact, which is exactly the promise a stale second copy of the number breaks.
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL, buildWhatsAppUrl } from "@/lib/whatsapp";
+import Link from "next/link";
 
 const UPDATED = "4 ביולי 2026";
 
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 export default function AccessibilityPage() {
   return (
     <main id="main" className="legal">
-      <a href="/" className="legal-back">← חזרה לדף הבית</a>
+      <Link href="/" className="legal-back">← חזרה לדף הבית</Link>
       <h1>הצהרת נגישות</h1>
       <p className="legal-meta">גרסה 1.0 · עודכן: {UPDATED}</p>
 

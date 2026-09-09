@@ -21,6 +21,7 @@ import { track } from "@/lib/analytics";
 import { getUtm, utmTag } from "@/lib/utm";
 import Image from "next/image";
 import WaIcon from "./WaIcon";
+import Link from "next/link";
 
 /* count-up animation, strict-mode safe (cancelable rAF, continues from last shown value) */
 function useCountUp(target: number, duration = 520): number {
@@ -563,7 +564,7 @@ export default function Configurator() {
                 </div>
                 <p className="lead-consent">
                   בלחיצה על שליחה אני מאשר/ת יצירת קשר טלפוני ובוואטסאפ בנוגע לפנייתי, בהתאם ל
-                  <a href="/legal/privacy">מדיניות הפרטיות</a>.
+                  <Link href="/legal/privacy">מדיניות הפרטיות</Link>.
                 </p>
                 <p className="disclaimer">
                   הסימולטור להמחשה בלבד. עד {MAX_MONTHS} תשלומים ללא ריבית והצמדה בכפוף לאישור עסקה, זמינות מלאי ותנאי החברה/היבואן. האתר אינו מהווה התחייבות לאישור מימון.

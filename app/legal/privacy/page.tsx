@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 // Privacy enquiries have to reach a line that answers, so the number is read
 // from the one sales-line constant rather than typed here a second time.
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from "@/lib/whatsapp";
+import Link from "next/link";
 
 const UPDATED = "4 ביולי 2026";
 
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <main id="main" className="legal">
-      <a href="/" className="legal-back">← חזרה לדף הבית</a>
+      <Link href="/" className="legal-back">← חזרה לדף הבית</Link>
       <h1>מדיניות פרטיות</h1>
       <p className="legal-meta">גרסה 1.0 · עודכן: {UPDATED}</p>
 
