@@ -298,3 +298,70 @@ describe("the SPYQE Offer says which of its two prices is which", () => {
     expect(ld.offers.price).toBeLessThan(ld.offers.priceSpecification.price);
   });
 });
+
+// ── the web root is not a filing cabinet ─────────────────────────────────────
+//
+// THE DEFECT THIS CLOSES (audit, 2026-09-09). `public/models/README.md` — 120 lines
+// of internal engineering documentation — was served at
+// https://www.miame.co.il/models/README.md with a 200, crawlable and indexable.
+// Everything under public/ IS the web root; there is no "private" corner of it.
+//
+// What it published: the name of a service-role environment variable
+// (SUPABASE_SERVICE_ROLE_KEY) and of a public one, the migration filename that
+// registers the media row, the internal script paths, which CSP directive blocks a
+// third-party model host and how that failure is silent, and a frank note that the
+// committed GLB is a procedural placeholder rather than the vehicle. None of it is
+// a secret — and all of it is a map, published to anyone who asks, of where this
+// site's soft spots are. It was also thin, off-brand, English-language content on a
+// Hebrew commercial domain, which is the SEO half of the same mistake.
+//
+// It moved to docs/models/README.md, which Next does not serve. This asserts the
+// rule rather than the one file: public/ holds assets a visitor's browser requests,
+// and nothing else. robots.txt and llms.txt are the deliberate exceptions — both
+// are addressed to crawlers by design and both are named here rather than pattern-
+// matched, so adding a third is a decision.
+describe("public/ serves assets, not documents", () => {
+  const ALLOWED_TEXT = new Set(["public/robots.txt", "public/llms.txt"]);
+  const ASSET = /\.(webp|png|jpe?g|svg|ico|gif|avif|mp4|webm|glb|gltf|woff2?|ttf|otf|pdf|xml|json|txt)$/i;
+
+  function walk(dir: string, acc: string[] = []): string[] {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const p = `${dir}/${e.name}`;
+      if (e.isDirectory()) walk(p, acc);
+      else acc.push(p);
+    }
+    return acc;
+  }
+
+  const files = walk("public");
+
+  it("the scan is alive", () => {
+    expect(files.length, "nothing found under public/ — the walk is broken").toBeGreaterThan(20);
+  });
+
+  it("publishes no markdown, source or config file", () => {
+    const leaked = files.filter(
+      (f) => /\.(md|mdx|ts|tsx|js|mjs|cjs|sql|yml|yaml|env|sh|lock)$/i.test(f),
+    );
+    expect(
+      leaked,
+      "these are served at the domain root and are indexable. Internal notes, source " +
+        "and config belong in docs/ or beside the code — public/ is the web root, and " +
+        "a file there is a published page whether or not anything links to it.",
+    ).toEqual([]);
+  });
+
+  it("publishes no text file that is not a deliberate crawler surface", () => {
+    const unexpected = files.filter((f) => f.endsWith(".txt") && !ALLOWED_TEXT.has(f));
+    expect(
+      unexpected,
+      "a .txt in public/ is served to crawlers. If it is meant to be — like robots.txt " +
+        "and llms.txt — add it to ALLOWED_TEXT here, deliberately.",
+    ).toEqual([]);
+  });
+
+  it("every remaining file is an asset a browser would actually request", () => {
+    const odd = files.filter((f) => !ASSET.test(f));
+    expect(odd, "unrecognised file type under the web root").toEqual([]);
+  });
+});

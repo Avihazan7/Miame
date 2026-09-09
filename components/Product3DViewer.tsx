@@ -41,7 +41,7 @@ export default function Product3DViewer({ glbUrl, title = "MIA FOUR · 3D" }: { 
       // the GLB is 2,508 drawn triangles across 7 untextured PBR materials (12.3 KB), so
       // fragment cost, not geometry, dominates, and a mostly-transparent canvas is cheap.
       // 2 buys native rendering on every Retina-class display; beyond that the limit is
-      // the ASSET, not the canvas — see public/models/README.md.
+      // the ASSET, not the canvas — see docs/models/README.md.
       dpr={[1, 2]}
       camera={{ position: [4.5, 2.2, 5.5], fov: 38 }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
