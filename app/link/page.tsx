@@ -33,14 +33,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LinkHubPage({
+// `searchParams` is a Promise from Next 15 on, so this page awaits it. It is the
+// only page in the tree that reads one — every other route resolves its content
+// from lib/seo-pages.ts at build time.
+export default async function LinkHubPage({
   searchParams,
 }: {
-  searchParams?: { utm_source?: string };
+  searchParams?: Promise<{ utm_source?: string }>;
 }) {
   // The only thing the network changes. Unknown or absent source falls back to the
   // neutral copy rather than guessing — a wrong greeting is worse than none.
-  const channel = channelFor(searchParams?.utm_source);
+  const channel = channelFor((await searchParams)?.utm_source);
 
   return (
     <main id="main" className="block" style={{ minHeight: "80vh", display: "grid", placeItems: "center" }}>

@@ -312,12 +312,23 @@ describe("the priority image fetches for the slot the grid gives it", () => {
     const q = Number(tag.match(/quality=\{(\d+)\}/)?.[1]);
     // A RATCHET: this floor only ever climbs. Raised 85 -> 92 on 2026-09-09,
     // after measuring the AVIF ladder on ALL SIX frames at w=1080, each against
-    // its own source in CIELAB. The share of pixels carrying a visible colour
-    // shift (delta-chroma > 2) ran: q90 2.17% | q92 1.76% | q95 1.83% |
-    // q98 1.65% | q100 1.70%. q92 is the knee -- 19% less colour error for 5.6%
-    // more bytes -- and every rung above it pays 3-4x for a difference that sits
-    // inside the frame-to-frame spread (which is +/-1 point). The LCP is a
-    // cut-out against white, which is exactly where AVIF fringes.
+    // its own source in CIELAB, counting pixels with a visible colour shift
+    // (delta-chroma > 2). The LCP is a cut-out against white, which is exactly
+    // where AVIF fringes.
+    //
+    // Measured TWICE that day, because the Next 15 upgrade landed between them
+    // and the encoder is not the same one:
+    //   next@14.2.35 — q90 2.17% / 79.9 KB · q92 1.76% / 84.4 KB · q95 1.83% ·
+    //                  q98 1.65% · q100 1.70%.  q92 was the knee.
+    //   next@15.5.25 — q90 0.64% / 41.6 KB · q92 0.66% / 43.5 KB · q95 0.62% ·
+    //                  q98 0.59% · q100 0.56%.
+    // Next 15 re-tuned its AVIF encoder: at the SAME quality number it ships
+    // roughly half the bytes AND a third of the colour error. The first read of
+    // that (bytes fell 47%) looked like a silent quality cut and was wrong --
+    // measuring it is what showed the curve had moved down, not the quality.
+    // The practical consequence: on 15 the knob barely matters (q90 -> q100 buys
+    // 0.64% -> 0.56%), so 92 is kept because a ratchet does not descend, not
+    // because the extra 1.9 KB is doing work.
     expect(q, "quality is unset — the default 75 rings on the product's edges").toBeGreaterThanOrEqual(92);
   });
 });
