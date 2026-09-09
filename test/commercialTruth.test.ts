@@ -175,8 +175,23 @@ describe("the site sells ONE thing, and offers nothing it does not sell", () => 
   });
 
   it("no surface offers a rental, a fleet, or a partnership", () => {
+    // THE HEBREW HALF, ADDED 2026-09-09. This gate already scanned brain/masters.ts —
+    // publicSources() walks brain/ — and it still missed the live offer sitting there:
+    // the concierge system prompt told the model to help the visitor choose
+    // "רכישה, זכאות כוחות הביטחון, השכרה באילת או שותפות". Every term in the pattern
+    // above is English or a brand name, so the Hebrew wording sailed through. The
+    // corpus rows for both products were deleted by
+    // supabase/migrations/20260902_knowledge_zzzzzzz_sell_one_thing.sql, which even
+    // RAISES if a row still offers one — so the model was being instructed to sell
+    // something it had no grounding for, which is the definition of the hallucination
+    // condition, and /partners and /rent-eilat both answer 410 (middleware.ts:25).
+    //
+    // "השכרה" alone is NOT bannable and is deliberately absent: it is legitimate in
+    // app/legal/terms (rental and service of the product), app/manifest.ts, and the
+    // fleet language in lib/seo-pages.ts. The two terms below measure zero across
+    // every published surface, so they are precise rather than broad.
     const hits = SOURCES.filter((f) =>
-      /רשת\s*MiaMe|MiaMe\s*Hub|PARTNER\s+NETWORK|Success\s*Fee|Green\s*Extreme/i.test(code(read(f))),
+      /רשת\s*MiaMe|MiaMe\s*Hub|PARTNER\s+NETWORK|Success\s*Fee|Green\s*Extreme|שותפות|באילת/i.test(code(read(f))),
     );
     expect(hits, `an offer we do not sell is published in: ${hits.join(", ")}`).toEqual([]);
   });

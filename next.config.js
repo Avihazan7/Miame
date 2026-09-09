@@ -41,11 +41,19 @@ const SECURITY_HEADERS = [
       "default-src 'self'",
       // 'wasm-unsafe-eval' permits WebAssembly compilation ONLY (three.js/@react-three
       // decoders for the lazy 3D product viewer) — it does NOT enable JS eval().
-      "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://connect.facebook.net https://vercel.live",
+      // analytics.tiktok.com is here because components/MarketingScripts.tsx ships a
+      // TikTok pixel and this policy blocked it. The failure mode was the bad one:
+      // the banner would appear, the visitor would consent, the code would report the
+      // pixel active — and the browser would refuse the script, so zero events would
+      // reach TikTok. A CSP violation shows only in the browser console: not in a log,
+      // not in the Guardian, not in CI. That is exactly the gap the pixel was added to
+      // close ("TikTok was the one paid channel with a live profile and no way to
+      // measure it", lib/marketing.ts:14-16).
+      "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://connect.facebook.net https://analytics.tiktok.com https://vercel.live",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://www.facebook.com https://connect.facebook.net https://vercel.live wss://*.pusher.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://www.facebook.com https://connect.facebook.net https://analytics.tiktok.com https://vercel.live wss://*.pusher.com",
       "frame-src https://www.youtube-nocookie.com https://vercel.live",
       "media-src 'self' blob: https://*.supabase.co",
       "worker-src 'self' blob:",
