@@ -44,8 +44,19 @@ export const marketingEnabled = hasGa4 || hasGoogleAds || hasMetaPixel || hasTik
  * not a secret — it is literally "production" | "preview" | "development". The
  * gate exists because /_vercel/insights/script.js is served by the PLATFORM:
  * anywhere else it is a guaranteed 404 in the visitor's console.
+ *
+ * ⚠ ANY Vercel environment, not just production — and the first draft got this
+ * wrong. It read `=== "production"`, which is a stricter test than the reason for
+ * the gate supports: the endpoint exists on PREVIEW deployments too. The practical
+ * cost was the part that mattered: with Web Analytics freshly enabled, the owner
+ * opens the dashboard on "All environments" to check that it works, and the
+ * preview build — the only one carrying this code until the PR merges — reports
+ * nothing. The dashboard would have read 0 and looked broken, for as long as it
+ * took to notice why. Vercel already separates environments in its own filters, so
+ * reporting from preview costs nothing and makes the change verifiable before it
+ * ships. A local `npm run dev` still sends nothing: the variable is unset there.
  */
-export const vercelAnalyticsEnabled = process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
+export const vercelAnalyticsEnabled = Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV);
 
 type Params = Record<string, unknown>;
 

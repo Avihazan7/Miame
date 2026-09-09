@@ -673,7 +673,13 @@ svg{display:block}
   border-radius:24px;padding:clamp(16px,2.4vw,26px) clamp(10px,2vw,20px);min-height:0}
 .tribute-media img{width:100%;height:auto;max-width:min(100%,450px);aspect-ratio:900/880;
   filter:drop-shadow(0 30px 48px rgba(11,20,40,.24))}
-.tribute-badge{position:absolute;top:12px;inset-inline-start:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(96px,9vw,132px);height:clamp(96px,9vw,132px);border-radius:50%;background:linear-gradient(150deg,var(--glow-teal),var(--ink-teal) 72%);color:#fff;font-weight:900;font-size:clamp(26px,2.6vw,34px);line-height:1;border:3px solid rgba(255,255,255,.92);box-shadow:0 16px 34px rgba(15,107,94,.42),0 0 0 6px rgba(24,224,189,.16);text-align:center;z-index:2}
+.tribute-badge{position:absolute;top:12px;inset-inline-start:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(96px,9vw,132px);height:clamp(96px,9vw,132px);border-radius:50%;background:linear-gradient(150deg,var(--glow-teal) -25%,var(--ink-teal) 42%);color:#fff;font-weight:900;font-size:clamp(26px,2.6vw,34px);line-height:1;border:3px solid rgba(255,255,255,.92);box-shadow:0 16px 34px rgba(15,107,94,.42),0 0 0 6px rgba(24,224,189,.16);text-align:center;z-index:2}
+ /* THE GRADIENT WAS UNDER THE LEGAL HEDGE. White type sat on the --glow-teal end
+    at 1.69:1, and the word it made hardest to read is "עד" — the qualifier that
+    turns "100%" from a promise into a ceiling. components/Tribute.tsx calls that
+    wording legally reviewed and frozen; a hedge nobody can read is a hedge that is
+    not really there. The stops moved (not the colours) so the teal now runs off the
+    edge and every glyph sits on --ink-teal, where white measures 6.39:1. */
 .tribute-badge .tb-pre{font-size:clamp(11px,1.05vw,13px);font-weight:800;opacity:.95;margin-bottom:1px}
 .tribute-badge small{font-size:clamp(11px,1.05vw,13px);font-weight:800;margin-top:3px;letter-spacing:.5px}
 .elig-card{background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 10px 26px rgba(11,20,40,.06);margin-bottom:14px}
@@ -930,7 +936,16 @@ svg{display:block}
    ════════════════════════════════════════════════════════════════════ */
 
 /* ─── POLISH · ליטוש: יישור, חיתוך-עוגן מתחת לכותרת דביקה, חדות ─────── */
-html{scroll-padding-top:92px}
+html{scroll-padding-top:92px;scroll-padding-bottom:96px}
+/* scroll-padding-BOTTOM, for WCAG 2.2 §2.4.11 (Focus Not Obscured). `.sticky-cta`
+   is `position:fixed; bottom:0` and is the primary call to action on mobile, so it
+   sits ON TOP of the page at every scroll position — roughly 74px plus
+   env(safe-area-inset-bottom). Without this, tabbing to a control near the bottom
+   of the viewport scrolls it exactly to the edge and the bar covers it: the focus
+   ring is correct, visible to the DOM, and hidden from the person using it. 96px
+   clears the bar and its safe-area padding with room to spare. The top value has
+   been here for the fixed header since launch; the bottom one was never added when
+   the bar arrived. */
 ::selection{background:rgba(12,229,221,.26);color:var(--ink)}
 ::-moz-selection{background:rgba(12,229,221,.26);color:var(--ink)}
 :root{accent-color:var(--azure);color-scheme:light}
@@ -1391,7 +1406,13 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 /* Footer legal links row */
 .foot-links{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;margin:16px 0 4px}
 .foot-links a{font-size:13.5px;color:var(--slate,#5b6b85);font-weight:600;display:inline-flex;align-items:center;min-height:28px}
-.foot-links a:hover{color:var(--teal)}
+.foot-links a:hover{color:var(--ink-teal)}
+/* WAS var(--teal) — an alias of --glow-teal, measured 1.69:1 on white against the
+   4.5:1 text minimum. styles/tokens.miame.css annotates --glow-teal "dark only"
+   in the token block itself, so this was a documented rule being broken, not a
+   judgement call. --ink-teal is the token the same file designates for text on
+   light and measures 6.39:1. The irony worth recording: one of the links this
+   made unreadable on hover is "הצהרת נגישות". */
 
 /* ── SEO landing pages (mia-four · קלנועית 4 גלגלים / מתקפלת / שטח) ── */
 .seo{padding:34px 0 72px}
@@ -1449,7 +1470,11 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 .seo-faq summary::after{content:"+";color:var(--teal);font-size:22px;font-weight:400;line-height:1}
 .seo-faq details[open] summary::after{content:"–"}
 .seo-faq details p{margin:0 0 16px;color:#22314f;line-height:1.7;font-size:15.5px}
-.seo-faq summary:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:6px}
+.seo-faq summary:focus-visible{outline:2px solid var(--ink-teal);outline-offset:3px;border-radius:6px}
+/* A FOCUS RING IS A UI COMPONENT, so WCAG 1.4.11 asks 3:1 against what surrounds
+   it — and var(--teal) gave 1.69:1 on the white card. A keyboard user could not
+   see where they were. This accordion is also what /eligibility renders its seven
+   answers in, which makes it the worst page on the site to lose the ring on. */
 
 .seo-related{max-width:760px;margin-top:40px}
 .seo-related h2{font-size:19px;color:var(--ink);font-weight:800;margin-bottom:12px}

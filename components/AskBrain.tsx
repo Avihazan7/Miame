@@ -66,7 +66,31 @@ const FAQ: { keys: string[]; a: string }[] = [
   // and nothing else. They were not stale copy — they were three answers the brain
   // gave a buyer about products that do not exist, which is worse than silence.
   { keys: ["שירות", "תחזוק", "אחריות", "חלפים"], a: "יבואן רשמי MEU · Mayer Electric Utilities. אחריות יבואן רשמי, שירות וחלפים מקוריים, ומסירה מתואמת בכל אזורי הארץ." },
-  { keys: ["סבסוד", "נכה", 'צה"ל', "ביטחון", "שכול"], a: 'כוחות הביטחון: נכי צה"ל עד 100% מוכר לסבסוד; משפחות שכולות עד 17,988 ₪ + מענק הוקרה MEU 10%, בכפוף לאישור משרד הביטחון.' },
+  // NO FIGURES. This row used to read: 'כוחות הביטחון: נכי צה"ל עד 100% מוכר
+  // לסבסוד; משפחות שכולות עד 17,988 ₪ + מענק הוקרה MEU 10%, בכפוף לאישור משרד
+  // הביטחון.' — word for word the sentence the owner ordered removed on 2026-09-09.
+  //
+  // supabase/migrations/20260909140000_knowledge_subsidy_no_figures.sql carries that
+  // decision in full: "להסיר מספרים לגמרי", because the corpus was telling a
+  // disabled veteran that the Ministry of Defence RECOGNISES the full price, while
+  // the legally reviewed text in components/Tribute.tsx says it recognises up to
+  // 90% and the remaining tenth is a discretionary importer gift that "ניתן לשינוי
+  // או להפסקה בכל עת". The migration fixed the RETRIEVAL CORPUS. It did not fix
+  // this file — and this is the OTHER path the brain answers from, the one that
+  // fires when retrieval returns nothing or the provider is down. So the exact
+  // sentence that was withdrawn for a compliance reason was still being handed to
+  // the visitor, on the failure path, where nobody was looking.
+  //
+  // The migration's own reasoning applies unchanged here: "on entitlement content
+  // the only safe failure mode is saying less" — a figure the brain does not hold
+  // is a figure it cannot get wrong. The tracks are named, the personal check is
+  // offered, and the two official mod.gov.il pages are where the real numbers live.
+  // The SITE is untouched: Tribute.tsx keeps its reviewed figures. This narrows
+  // what the CHAT says, and only that.
+  {
+    keys: ["סבסוד", "נכה", 'צה"ל', "ביטחון", "שכול", "זכאות", "שיקום", "ניידות"],
+    a: 'לזכאי כוחות הביטחון יש שני מסלולים נפרדים: אגף השיקום לנכי צה"ל וכוחות הביטחון, ואגף משפחות והנצחה לבני משפחות שכולות. הזכאות והיקף המימון נקבעים על ידי משרד הביטחון בלבד, ואישור עקרוני נדרש לפני הרכישה. נשמח לבדוק התאמה אישית בוואטסאפ, בלי התחייבות. כל הפרטים בעמוד הזכאות באתר.',
+  },
   { keys: ["מימון", "תשלום", "ריבית", "מקדמה", "תשלומים"], a: `מסלולי תשלום ב-0% ריבית (בכפוף לאישור): עד ${TRACKS.private.months.max} תשלומים ללא ריבית והצמדה. בנו הצעה בסימולטור תוך דקה.` }
 ];
 
