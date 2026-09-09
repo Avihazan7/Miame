@@ -87,41 +87,10 @@ describe("a label that says WhatsApp opens WhatsApp", () => {
   }
 });
 
-// ── the case the fragment scan structurally cannot see ──────────────────────
-//
-// The scan above proves the promise false for `<a href="#…">` because a fragment
-// href IS a scroll, categorically. A `<button onClick={…}>` needs the call graph,
-// so the SCOPE note declines to guess — and on 2026-09-08 the launch strip was
-// living in exactly that blind spot: a <button> whose handler is
-// `getElementById("sim")?.scrollIntoView(...)`, with "בדיקת התאמה בוואטסאפ"
-// promised in a sibling <p>. The paragraph is gone, and this keeps it gone.
-//
-// One file, one settled question: if LaunchOfferStrip scrolls and imports no
-// WhatsApp builder, then nothing it renders may say "בוואטסאפ". That needs no
-// call graph — the file's own two facts decide it.
-describe("the launch strip promises only what its button does", () => {
-  const FILE = "components/LaunchOfferStrip.tsx";
-  const src = readFileSync(FILE, "utf8");
-
-  it("is still the file this test thinks it is (a renamed component must not pass silently)", () => {
-    expect(src.length, `${FILE} is empty or missing — this guard would approve anything`).toBeGreaterThan(200);
-    expect(src, `${FILE} no longer renders a control`).toMatch(/<button[\s>]/);
-  });
-
-  it("scrolls, so it does not say WhatsApp", () => {
-    const scrolls = src.includes('getElementById("sim")');
-    const opensWhatsApp = /buildWhatsAppUrl|buildCampaignWhatsAppUrl|waHref/.test(src);
-    if (!scrolls || opensWhatsApp) return; // it really does open WhatsApp: nothing to prove
-    const rendered = src
-      .replace(/\{?\/\*[\s\S]*?\*\/\}?/g, " ")
-      .split("\n")
-      .filter((l) => !l.trimStart().startsWith("//"))
-      .join("\n");
-    expect(
-      rendered.includes(PROMISE),
-      `${FILE} renders "${PROMISE}" but its only control calls ` +
-        `getElementById("sim").scrollIntoView() and the file imports no WhatsApp builder. ` +
-        `Either drop the word or give the control a real wa.me destination.`,
-    ).toBe(false);
-  });
-});
+// The launch strip used to live in this file's blind spot — a <button> whose
+// handler scrolled to #sim while a sibling <p> promised "בדיקת התאמה בוואטסאפ".
+// A gate was added for it on 2026-09-08; on 2026-09-09 the owner deleted the
+// strip entirely and components/LaunchOfferStrip.tsx with it, so the gate is
+// gone too rather than left reading a file that is not there. The defect it
+// guarded cannot recur in a component that no longer exists, and the scan above
+// still covers every <a href="#…"> on the site.

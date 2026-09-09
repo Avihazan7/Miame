@@ -349,12 +349,18 @@ export default function Hero() {
               actions, and the legal line. A page with no H1 forfeits its search
               anchor, which is not a design decision — so this line is the floor,
               not a leftover. */}
-          {/* Hebrew only, and one separator. With the Latin name inside it the line
-              wrapped mid-phrase and the bidi algorithm stranded a "·" at the end
-              of the second line — measured at 1440px. "MIA FOUR" still reaches a
-              crawler from the Product schema, the image alt and the secondary
-              CTA; it does not need to break the one heading. */}
-          <h1 className="hero-v2-title">מיה פור · קלנועית חשמלית</h1>
+          {/* The owner dictated this line on 2026-09-09, word for word, under the
+              product: name, category, Latin name. It carries all three tokens an
+              answer engine needs to resolve the entity, which the Hebrew-only
+              version left to the Product schema alone.
+              THE BIDI TRAP, and why the spaces here are not ordinary ones: the
+              Hebrew-only H1 exists because an earlier version with "MIA FOUR" in
+              it wrapped mid-phrase and the bidi algorithm stranded a lone "·" at
+              the end of line 2 at 1440px. A separator can only strand if a line
+              is allowed to BREAK AFTER it, so each "-" is bound to the token that
+              follows it with a non-breaking space. A break can now happen before
+              a separator and never after one, at any width. */}
+          <h1 className="hero-v2-title">מיה פור -&nbsp;קלנועית -&nbsp;MIA FOUR</h1>
 
           <p className="hero-v2-finance">
             <LexIcon name="check" /> עד 18 תשלומים ללא ריבית והצמדה*
@@ -434,7 +440,7 @@ export default function Hero() {
                     height={1994}
                     priority
                     fetchPriority="high"
-                    quality={90}
+                    quality={92}
                     sizes="(max-width: 900px) 92vw, (max-width: 1120px) 48vw, 520px"
                     draggable={false}
                     className="hero-v2-product-img"
@@ -453,7 +459,7 @@ export default function Hero() {
                       aria-hidden="true"
                       width={TURNTABLE_W}
                       height={TURNTABLE_H}
-                      quality={90}
+                      quality={92}
                       sizes={HERO_SIZES}
                       fetchPriority="low"
                       draggable={false}
@@ -463,6 +469,12 @@ export default function Hero() {
                       onLoad={() => markLoaded(i)}
                     />
                   ))}
+                  {/* the room's light pooling low on the vehicle, at the wheels
+                      and the undercarriage — masked to the silhouette by the
+                      SAME machinery as the gloss, so it falls on the product and
+                      never on the floor behind it. Static: a gradient costs
+                      nothing per frame, and the sweep above is the moving one. */}
+                  <span className="hero-v2-underlight" aria-hidden="true" />
                   <span className="hero-v2-gloss" aria-hidden="true">
                     <span className="hero-v2-gloss-band" />
                   </span>
@@ -470,9 +482,6 @@ export default function Hero() {
               </div>
             </div>
 
-            <div className="hero-v2-power-chip">
-              <span>עד</span><b dir="ltr">4×1,800W</b>
-            </div>
             <div className="hero-v2-free-chip">
               <LexIcon name="butterfly" /> FREE FEEL
             </div>

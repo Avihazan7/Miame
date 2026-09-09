@@ -16,7 +16,6 @@ import Importer from "@/components/Importer";
 import Footer from "@/components/Footer";
 import FloatingWa from "@/components/FloatingWa";
 import StickyCta from "@/components/StickyCta";
-import LaunchOfferStrip from "@/components/LaunchOfferStrip";
 import TrustSignalBar from "@/components/TrustSignalBar";
 import DealBuzz from "@/components/DealBuzz";
 import CinematicVideo from "@/components/CinematicVideo";
@@ -29,7 +28,6 @@ export default function Page() {
   return (
     <>
       <Header />
-      <LaunchOfferStrip />
       {/* P1 — Ultra Master Rhythm: the homepage reads as EIGHT movements, not
           twenty separate beats. Each `.movement` groups its sub-blocks over one
           continuous aurora so the eye counts a single section, not a stack. The

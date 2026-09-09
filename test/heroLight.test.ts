@@ -208,6 +208,42 @@ describe("stage — 3D that is inert by default and honest about its gates", () 
     expect(reduce).toContain(".hero-v2-product { animation: none");
   });
 
+  // Added 2026-09-09 on the owner's call — "give the vehicle light, a little
+  // around the wheels". The trap this guards is the one the layer map warns
+  // about: a light that is NOT masked stops being light ON the product and
+  // becomes a glow BEHIND it, which is the contact shadow's job and reads as
+  // fog. And a light that animates puts a second continuously-composited layer
+  // on the element holding the LCP — the exact cost the yaw gate just removed.
+  it("the wheel light falls on the product, adds light, and never moves", () => {
+    const ul = rule(".hero-v2-underlight");
+    // masked to the silhouette by the same URL the <img> already loaded
+    expect(ul).toMatch(/mask-image:\s*var\(--product-src, none\)/);
+    // screen adds light; multiply would darken, which is the shadow's job
+    expect(ul).toContain("mix-blend-mode: screen");
+    // static — no animation, no transform, nothing the compositor re-rasterises
+    expect(ul).not.toMatch(/animation\s*:/);
+    expect(ul).not.toMatch(/transform\s*:/);
+    // EVERY colour comes from the room, like every other highlight on this stage.
+    // Not "at least one" — the first version of this assertion only checked that
+    // the room's hue appeared somewhere, and a mutation that hard-coded one of
+    // the three gradients to rgba(120,220,255,.34) sailed through it. So: count
+    // the colour stops, and require that every one of them is a room variable.
+    const stops = [...ul.matchAll(/\b(?:rgba?|hsla?)\(/g)].length;
+    const roomStops = [...ul.matchAll(/hsla\(var\(--amb-hue-[ab]\)/g)].length;
+    expect(stops, "the wheel light declares no colour at all").toBeGreaterThanOrEqual(3);
+    expect(roomStops, `${stops - roomStops} colour stop(s) in .hero-v2-underlight are not the room's light`).toBe(stops);
+    expect(ul).not.toMatch(/#[0-9a-f]{3,8}\b/i);
+    // it may not paint before Hero.tsx has written the mask, or it would flash
+    // as a full rectangle over the stage
+    expect(hero).toContain('.hero-v2-product-stage[data-material="ready"] .hero-v2-underlight { opacity: 1; }');
+    expect(ul).toMatch(/opacity:\s*0/);
+    // and it is gone where masks are not supported, exactly like the gloss
+    expect(hero).toMatch(/@supports not \(\(mask-image: none\) or \(-webkit-mask-image: none\)\) \{\s*\.hero-v2-underlight \{ display: none; \}/);
+    // it is inside the product node, before the gloss
+    expect(tsx.indexOf('className="hero-v2-underlight"')).toBeGreaterThan(0);
+    expect(tsx.indexOf('className="hero-v2-underlight"')).toBeLessThan(tsx.indexOf('className="hero-v2-gloss"'));
+  });
+
   it("the idle turn exists only where there is no pointer to follow, and only until the real one can run", () => {
     const hoverNone = hero.slice(hero.indexOf("@media (hover: none)"));
     expect(hoverNone).toContain(".hero-v2-product { animation: hero-yaw");
@@ -274,6 +310,14 @@ describe("the priority image fetches for the slot the grid gives it", () => {
     expect(tag).toMatch(/\bpriority\b/);
     expect(tag).toContain('fetchPriority="high"');
     const q = Number(tag.match(/quality=\{(\d+)\}/)?.[1]);
-    expect(q, "quality is unset — the default 75 rings on the product's edges").toBeGreaterThanOrEqual(85);
+    // A RATCHET: this floor only ever climbs. Raised 85 -> 92 on 2026-09-09,
+    // after measuring the AVIF ladder on ALL SIX frames at w=1080, each against
+    // its own source in CIELAB. The share of pixels carrying a visible colour
+    // shift (delta-chroma > 2) ran: q90 2.17% | q92 1.76% | q95 1.83% |
+    // q98 1.65% | q100 1.70%. q92 is the knee -- 19% less colour error for 5.6%
+    // more bytes -- and every rung above it pays 3-4x for a difference that sits
+    // inside the frame-to-frame spread (which is +/-1 point). The LCP is a
+    // cut-out against white, which is exactly where AVIF fringes.
+    expect(q, "quality is unset — the default 75 rings on the product's edges").toBeGreaterThanOrEqual(92);
   });
 });

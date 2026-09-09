@@ -35,10 +35,15 @@ export interface TrustSignal {
   label: string;
 }
 
-// ── Launch offer (top strip) ────────────────────────────────────────────────
-// "מבצע השקה" is a real launch promotion. The label is read by BOTH renders —
-// the strip's badge and the DealBuzz section kicker — so a renamed campaign
-// cannot half-land.
+// ── Launch offer ────────────────────────────────────────────────────────────
+// "מבצע השקה" is a real launch promotion, and this is now the ONE place its
+// label is written: the DealBuzz section kicker reads it, and nothing else may
+// re-type it (test/commercialTruth.test.ts enforces that).
+//
+// The top-of-page strip that used to carry it was deleted on 2026-09-09, on the
+// owner's call — struck out on a live screenshot along with the power chip, so
+// the product itself leads the screen with nothing above it but the header.
+// `cta` went with the strip: it was that button's label and had no other reader.
 //
 // `text` and `title` were retired on 2026-09-08. `title` had never had a render
 // site at all; `text` was the strip's paragraph, and every fact in it was
@@ -50,7 +55,6 @@ export interface TrustSignal {
 // around it, so both are gone rather than kept for the guard's sake.
 export const LAUNCH_OFFER = {
   kicker: "מבצע השקה",
-  cta: "לבדיקת התאמה מהירה",
 } as const;
 
 // ── Trust signals (compact bar, before fatigue) ─────────────────────────────

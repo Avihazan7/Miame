@@ -477,6 +477,46 @@
 @supports not ((mask-image: none) or (-webkit-mask-image: none)) {
   .hero-v2-gloss { display: none; }
 }
+
+/* UNDERLIGHT — the room's light pooling low on the vehicle, at the wheels and
+   the undercarriage, on the owner's call (2026-09-09: "give the vehicle light,
+   a little around the wheels").
+   Masked to the silhouette by the same --product-src the gloss uses, so it
+   falls ON the product and never on the floor behind it — that distinction is
+   the whole point: .hero-v2-ground is the SHADOW the vehicle casts down, this
+   is the LIGHT thrown back up at it. Two soft pools sit where the wheels are
+   across all six angles (they wander between roughly 22% and 78% of the width),
+   over one wide low wash; nothing above 55% of the height is touched, so the
+   seat and the mast keep the studio's own lighting.
+   `screen`, not `multiply`: this adds light. Static, so it costs one paint and
+   nothing per frame — the sweep above is the only moving highlight. */
+.hero-v2-underlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .4s ease;
+  mix-blend-mode: screen;
+  -webkit-mask-image: var(--product-src, none);
+  mask-image: var(--product-src, none);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  /* Tuned by rendering four intensities on the same held frame and looking at
+     each: the first pass reached the seat and the mast, which is more than "a
+     little around the wheels". These pools sit lower (88%) and tighter (20%),
+     and the wash dies at 34% of the box — the deck, the forks and the tyres
+     take the light, the seat and the mast keep the studio's own black. */
+  background:
+    radial-gradient(30% 20% at 25% 88%, hsla(var(--amb-hue-a), 96%, 72%, calc(.34 * var(--amb-intensity))), transparent 70%),
+    radial-gradient(30% 20% at 75% 88%, hsla(var(--amb-hue-a), 96%, 72%, calc(.34 * var(--amb-intensity))), transparent 70%),
+    linear-gradient(0deg, hsla(var(--amb-hue-b), 92%, 74%, calc(.18 * var(--amb-intensity))) 2%, transparent 34%);
+}
+.hero-v2-product-stage[data-material="ready"] .hero-v2-underlight { opacity: 1; }
+@supports not ((mask-image: none) or (-webkit-mask-image: none)) {
+  .hero-v2-underlight { display: none; }
+}
 /* the sweep itself — a soft band, white specular in the middle, the room's hue
    on its trailing edge; parked off the left edge at rest (fully masked out) */
 .hero-v2-gloss-band {
@@ -487,34 +527,25 @@
   background: linear-gradient(105deg, transparent 18%, rgba(255, 255, 255, .55) 44%, hsla(var(--amb-hue-a), 96%, 86%, .42) 56%, transparent 82%);
 }
 
-.hero-v2-power-chip,
+/* the one chip on the stage. Its box was split from its skin only because a
+   second chip — "עד 4×1,800W" — shared the box; the owner struck that one out
+   on 2026-09-09, so the two halves are one rule again. */
 .hero-v2-free-chip {
   position: absolute;
   z-index: 4;
+  inset-block-end: 12%; inset-inline-end: 2%;
   display: inline-flex;
   align-items: center;
   gap: 7px;
   padding: 9px 15px;
   border-radius: 999px;
+  font-family: var(--font-grotesk), system-ui, sans-serif;
   font-size: 13px;
   font-weight: 800;
-  backdrop-filter: blur(8px);
-}
-.hero-v2-power-chip {
-  inset-block-start: 12%; inset-inline-start: 2%;
-  color: var(--hero-ink);
-  background: rgba(255, 255, 255, .82);
-  border: 1px solid var(--hero-rim);
-  box-shadow: inset 0 1px 0 #fff, var(--glow-room);
-}
-.hero-v2-power-chip span { color: var(--hero-muted); font-weight: 600; }
-.hero-v2-power-chip b { font-family: var(--font-grotesk), system-ui, sans-serif; font-feature-settings: 'tnum'; color: var(--hero-accent); }
-.hero-v2-free-chip {
-  inset-block-end: 12%; inset-inline-end: 2%;
-  font-family: var(--font-grotesk), system-ui, sans-serif;
   letter-spacing: .12em;
   color: var(--mint-zero-ink);
   background: linear-gradient(180deg, #C9FF8F, var(--mint-zero));
+  backdrop-filter: blur(8px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), 0 10px 24px rgba(165, 243, 90, .28);
 }
 
@@ -669,7 +700,6 @@ html.intro-quick .hero-v2-rig { animation: hero-emerge-quick 650ms cubic-bezier(
   .hero-v2-primary, .hero-v2-secondary { width: 100%; }
   .hero-v2-product-stage { min-height: 300px; }
   .hero-v2-turn-hint { font-size: 11px; letter-spacing: .04em; }
-  .hero-v2-power-chip { inset-block-start: 7%; }
   .hero-v2-free-chip { inset-block-end: 16%; }
 }
 

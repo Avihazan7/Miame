@@ -18,7 +18,6 @@ import {
 // Everything a visitor can read from the buzz layer, concatenated.
 const allBuzzCopy = [
   LAUNCH_OFFER.kicker,
-  LAUNCH_OFFER.cta,
   BUZZ_DISCLAIMER,
   ...TRUST_SIGNALS.map((s) => s.label),
   ...DEAL_BUZZ_CARDS.flatMap((c) => [c.title, c.text, c.cta, c.waMessage ?? ""]),
