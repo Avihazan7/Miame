@@ -166,6 +166,19 @@ export function setConsent(state: "granted" | "denied"): void {
     // banner reports success. Caught by the review bot on PR #159; it was right.
     const t = ttq();
     if (t) (state === "granted" ? t.enableCookie : t.disableCookie)?.();
+
+    // ATTRIBUTION FOLLOWS THE ANSWER, IN BOTH DIRECTIONS. lib/utm.ts captures the
+    // landing campaign into memory on every visit and writes it to the device only
+    // once consent exists, so this is where a "granted" turns that memory into
+    // storage — otherwise a visitor who lands on an ad and then accepts would have
+    // been persisted nothing, purely because the two events happen in that order.
+    // A "denied" clears anything a previous grant left behind: withdrawal has to
+    // remove what the grant stored, or it is not a withdrawal.
+    if (state === "granted") {
+      void import("@/lib/utm").then((m) => m.persistUtm());
+    } else if (typeof window !== "undefined") {
+      window.localStorage.removeItem("miame_utm");
+    }
   } catch {
     /* marketing never throws */
   }
