@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import Link from "next/link";
 import Image from "next/image";
 import type { SeoPage } from "@/lib/seo-pages";
@@ -7,7 +8,6 @@ import Product360Stage from "@/components/Product360Stage";
 import HowToVideo from "@/components/HowToVideo";
 import SeoCta from "./SeoCta";
 
-const SITE_URL = "https://www.miame.co.il";
 
 // Product + FAQPage + BreadcrumbList structured data, derived from the same content
 // model that renders the page (single source of truth — the schema can never drift

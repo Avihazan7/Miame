@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 /**
  * BreadcrumbList for the hand-built routes.
  *
@@ -10,7 +11,6 @@
  * from app/layout.tsx on every route; duplicating any of them here would put two
  * conflicting descriptions of the same entity on one page.
  */
-const SITE_URL = "https://www.miame.co.il";
 
 export default function BreadcrumbJsonLd({ name, path }: { name: string; path: string }) {
   const url = `${SITE_URL}${path}`;

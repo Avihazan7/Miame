@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SEO_PAGES } from "@/lib/seo-pages";
+import { SITE_URL, canonicalUrl } from "@/lib/site";
 
 // app/sitemap.ts — the sitemap is GENERATED, not typed.
 //
@@ -25,7 +26,6 @@ import { SEO_PAGES } from "@/lib/seo-pages";
 // a signal it learns to distrust and then ignores for the whole domain. A
 // fabricated timestamp is worse than an absent one. changefreq/priority are kept
 // because they cost nothing and other crawlers still read them.
-const SITE_URL = "https://www.miame.co.il";
 
 /** Indexable routes that are written by hand (everything that is not a SEO_PAGES entry). */
 const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number }[] = [
@@ -48,7 +48,13 @@ export function sitemapPaths(): string[] {
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...STATIC_ROUTES.map((r) => ({
-      url: SITE_URL + r.path,
+      // canonicalUrl, not concatenation. `SITE_URL + "/"` submitted the homepage as
+      // `https://www.miame.co.il/` while every other surface on the site — canonical,
+      // og:url, the WebSite node's url — declared it as `https://www.miame.co.il`.
+      // RFC 3986 §6.2.3 makes the two equivalent so nothing 404'd, but a sitemap
+      // exists to submit the CANONICAL spelling, and Search Console reports the
+      // difference rather than normalising it.
+      url: canonicalUrl(r.path),
       changeFrequency: r.changeFrequency,
       priority: r.priority,
     })),

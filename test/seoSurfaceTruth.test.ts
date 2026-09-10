@@ -94,19 +94,32 @@ describe("a landing page publishes its own price or no price at all", () => {
   });
 });
 
-describe("the three hardcoded origins cannot drift apart", () => {
-  // lib/home-faq.ts adds a THIRD copy of "https://www.miame.co.il" beside the ones in
-  // app/layout.tsx and components/seo/SeoLanding.tsx, and there is no shared module to
-  // hold it. That matches the repo's precedent, so it is not worth a refactor here —
-  // but three copies with nothing comparing them is how an @id ends up pointing at a
-  // host the page is not served from, which silently voids the rich result.
-  it("layout, the home FAQ and the SEO landing all name the same site", () => {
-    const origins = ["app/layout.tsx", "lib/home-faq.ts", "components/seo/SeoLanding.tsx"].map(
-      (f) => [f, (readFileSync(f, "utf8").match(/https:\/\/www\.[a-z0-9.-]+\.co\.il/) || [])[0]],
-    );
-    const found = origins.map(([, o]) => o);
-    expect(found.every(Boolean), `no origin found in: ${origins.filter(([, o]) => !o).map(([f]) => f).join(", ")}`).toBe(true);
-    expect(new Set(found).size, `origins disagree: ${JSON.stringify(origins)}`).toBe(1);
+describe("the origin surfaces read it, they do not restate it", () => {
+  // WHAT THIS REPLACED, AND WHY. Until 2026-09-10 this block asserted that the three
+  // hardcoded copies of "https://www.miame.co.il" AGREED with each other, and its
+  // comment said so out loud: "there is no shared module to hold it. That matches the
+  // repo's precedent, so it is not worth a refactor here."
+  //
+  // Two things were wrong with that. There were SIX copies, not three — app/sitemap.ts,
+  // app/eligibility/page.tsx and components/seo/BreadcrumbJsonLd.tsx were never in the
+  // list — and the three it did watch were the three that happened to agree. The three
+  // it did not watch included the one that had already drifted: app/sitemap.ts built
+  // URLs by concatenation, so it submitted the homepage to Google as
+  // `https://www.miame.co.il/` while every canonical tag on the site said
+  // `https://www.miame.co.il`.
+  //
+  // A test that compares copies can only ever catch the copies it knows about. The
+  // origin now lives once, in lib/site.ts, and test/siteOriginSingleSource.test.ts
+  // enforces that — which is strictly stronger, because it needs no list. What is
+  // left here is the half that file cannot see: that these particular SEO surfaces
+  // still get their origin from the shared module rather than from a local of their
+  // own under a different name.
+  it("layout, the home FAQ and the SEO landing import the origin", () => {
+    for (const f of ["app/layout.tsx", "lib/home-faq.ts", "components/seo/SeoLanding.tsx"]) {
+      expect(readFileSync(f, "utf8"), `${f} no longer reads the shared origin`).toMatch(
+        /import\s*\{[^}]*\bSITE_URL\b[^}]*\}\s*from\s*"@\/lib\/site"/,
+      );
+    }
   });
 });
 

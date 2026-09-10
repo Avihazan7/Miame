@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 // lib/home-faq.ts — the homepage FAQ, single source of truth for BOTH the visible
 // <FaqHome> accordion and the FAQPage JSON-LD (they can never drift; the verify
 // gate asserts the schema answers appear verbatim in the visible HTML).
@@ -40,7 +41,6 @@ export function buildHomeFaqJsonLd(id: string) {
   };
 }
 
-const SITE_URL = "https://www.miame.co.il";
 
 /**
  * The homepage FAQPage document, ready to embed as one <script> payload.

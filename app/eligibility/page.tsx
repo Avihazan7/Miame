@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -15,7 +16,6 @@ import {
   eligibilityFaqJsonLd,
 } from "@/lib/eligibility";
 
-const SITE_URL = "https://www.miame.co.il";
 
 // The defence-forces eligibility route. See lib/eligibility.ts for the content and
 // for the rule the copy is written under (it never claims an entitlement only the

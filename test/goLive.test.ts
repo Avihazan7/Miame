@@ -11,6 +11,7 @@ import sitemap from "@/app/sitemap";
 import { GET as healthGet } from "@/app/api/health/route";
 import { GET as leadGet } from "@/app/api/lead/route";
 import { GET as dealGet } from "@/app/api/deal/route";
+import { canonicalUrl } from "@/lib/site";
 
 const read = (rel: string) => readFileSync(resolve(process.cwd(), rel), "utf8");
 
@@ -68,7 +69,12 @@ describe("sitemap + robots are consistent", () => {
       "/legal/privacy",
       "/legal/accessibility",
     ]) {
-      expect(urls, `sitemap missing ${path}`).toContain(`https://www.miame.co.il${path}`);
+      // canonicalUrl, not `origin + path`. Concatenation is what made the sitemap
+      // submit the homepage as `…co.il/` while its canonical tag said `…co.il`, and
+      // this assertion — written the same way — is what agreed with the bug and so
+      // could never catch it. Asserting through the helper makes the test express
+      // the invariant instead of re-stating one of the two spellings.
+      expect(urls, `sitemap missing ${path}`).toContain(canonicalUrl(path));
     }
   });
 
