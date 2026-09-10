@@ -611,7 +611,29 @@ export default function Configurator() {
               </div>
 
               {/* lead */}
-              <div className="lead">
+              {/* A real <form>, and the reason is measured, not stylistic. Until
+                  2026-09-10 this was a <div> holding two inputs and two onClick
+                  buttons, so pressing Enter in the phone field did NOTHING —
+                  confirmed in a real mobile Chromium: no request, no new tab, no
+                  state change. On a phone that is the "אישור" key on the keyboard
+                  the visitor just used to type their number, and this site's buyer
+                  is typically 58+ and finishing the form one-handed. The single most
+                  valuable keystroke on the site was inert.
+                  `noValidate`: no field declares `required`/`pattern`, so the browser
+                  has nothing to say — and openDeal already renders a specific Hebrew
+                  message through `role="alert"`. Declaring it keeps a future native
+                  bubble from competing with that announcement.
+                  The buttons now declare `type` EXPLICITLY. Inside a form an untyped
+                  <button> defaults to submit, which would have made "דברו איתי
+                  בוואטסאפ" fire the deal path too. */}
+              <form
+                className="lead"
+                noValidate
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  openDeal("אישור עסקה", "LeadSubmitted");
+                }}
+              >
                 {/* Honeypot: hidden from humans and AT; bots that fill every field trip it */}
                 <input
                   type="text"
@@ -653,14 +675,15 @@ export default function Configurator() {
                   </div>
                 )}
                 <div className="cta-stack">
-                  <button
-                    className="btn btn-primary btn-block"
-                    onClick={() => openDeal("אישור עסקה", "LeadSubmitted")}
-                  >
+                  {/* First submit button in DOM order = the one Enter triggers.
+                      That is deliberately the primary CTA. No onClick: with both,
+                      a click would fire openDeal twice. */}
+                  <button className="btn btn-primary btn-block" type="submit">
                     בדיקת התאמה בוואטסאפ
                   </button>
                   <button
                     className="btn btn-light btn-block"
+                    type="button"
                     onClick={() => openDeal("שיחה", "WhatsAppClicked")}
                   >
                     <WaIcon size={20} />
@@ -686,7 +709,7 @@ export default function Configurator() {
                     ציון עסקה {score.grade} · {score.score}/100
                   </div>
                 )}
-              </div>
+              </form>
             </div>
           </div>
         </div>
