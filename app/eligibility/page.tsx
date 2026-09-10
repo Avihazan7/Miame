@@ -50,7 +50,14 @@ import {
 // the phrase is removed rather than expanded. Restoring it is an owner decision
 // that needs the correct authority named with it.
 export const metadata: Metadata = {
-  title: "קלנועית במימון משרד הביטחון · זכאות אגף השיקום",
+  // NAMES BOTH DEPARTMENTS, and until 2026-09-10 none of these three did. The
+  // description below, ELIGIBILITY_LEDE and the first section all say the page covers
+  // two separate tracks — אגף השיקום for disabled veterans, אגף משפחות והנצחה for
+  // bereaved families — and that page says, in its own words, that applying to the
+  // wrong one costs time. A bereaved family member arriving from a SERP snippet that
+  // named their department landed on a title and an H1 announcing the other one, and
+  // had every reason to leave. 55 characters, inside the Hebrew truncation window.
+  title: "קלנועית במימון משרד הביטחון · אגף השיקום ומשפחות והנצחה",
   description:
     "מיה פור, קלנועית חשמלית על 4 גלגלים, לזכאי ניידות של משרד הביטחון: אגף השיקום לנכי צה\"ל וכוחות הביטחון, ואגף משפחות והנצחה לבני משפחות שכולות. הזכאות והיקף המימון נקבעים על ידי משרד הביטחון בלבד.",
   alternates: { canonical: "/eligibility" },
@@ -62,7 +69,7 @@ export const metadata: Metadata = {
     // one was generated, deployed, reachable at 200 — and referenced by nothing.
     // Omitting `images` lets the file convention win, which is what it is for.
     ...OG_CHROME,
-    title: "קלנועית במימון משרד הביטחון · מיה פור לזכאי אגף השיקום",
+    title: "קלנועית במימון משרד הביטחון · מיה פור לזכאי שני האגפים",
     description:
       "שני מסלולי הניידות של משרד הביטחון, מה נדרש לפני הרכישה, ומה MiaMe כן ולא עושה בדרך. בכפוף לאישור האגף.",
     url: "/eligibility",
@@ -90,7 +97,7 @@ export default function EligibilityPage() {
             <span>קלנועית במימון משרד הביטחון</span>
           </nav>
           <h1 className="sec-title" style={{ textAlign: "start", maxWidth: 820 }}>
-            קלנועית במימון משרד הביטחון · ניידות לזכאי אגף השיקום
+            קלנועית במימון משרד הביטחון · ניידות לזכאי אגף השיקום ואגף משפחות והנצחה
           </h1>
           <p className="seo-lede" style={{ maxWidth: 760 }}>
             {ELIGIBILITY_LEDE}

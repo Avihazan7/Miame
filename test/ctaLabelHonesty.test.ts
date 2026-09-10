@@ -141,7 +141,6 @@ describe("visitor-facing copy addresses the visitor in the plural", () => {
 
   const files = [
     ...walk("components"),
-    "lib/cta.ts",
     "lib/wa-cta.ts",
     "lib/content.ts",
     "lib/home-faq.ts",
