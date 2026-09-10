@@ -10,16 +10,39 @@ import { NextResponse } from "next/server";
 
 const buckets = new Map<string, { count: number; resetAt: number }>();
 
-/** The visitor's IP as seen through the Vercel proxy (platform-set headers). */
+/**
+ * The visitor's IP, from the ONE header the platform sets and a client cannot.
+ *
+ * THE FALLBACK CHAIN WAS THE BUG. This used to read x-vercel-forwarded-for, then
+ * x-real-ip, then x-forwarded-for. The last two are ordinary request headers: anyone
+ * can send them, and whatever they send becomes the rate limiter's bucket key — so
+ * the limiter was keyed on a value the attacker chooses. MEASURED against a
+ * production build on 2026-09-10, /api/lead at its 5-per-minute ceiling:
+ *
+ *     no header, 8 requests   →  503 503 503 503 503 429 429 429   (limiter works)
+ *     rotating x-forwarded-for →  503 503 503 503 503 503 503 503   (limiter gone)
+ *
+ * SCOPE, STATED PRECISELY so this is not read as more or less than it is: on Vercel
+ * x-vercel-forwarded-for is always present, so the `||` short-circuited and the
+ * spoofable branches never ran — the live deployment was not open this way. What was
+ * wrong is that the guarantee rested entirely on an unstated platform assumption, and
+ * the code failed OPEN the moment it did not hold: a preview behind another proxy, a
+ * self-hosted run, a future platform change. A guard whose correctness depends on a
+ * header being present should say so, not infer it.
+ *
+ * When the trusted header is absent, every such request shares ONE bucket. That is
+ * the honest behaviour: if callers cannot be told apart, the only sound limit is an
+ * aggregate one. It is also the fail-closed direction, and it costs nothing in dev —
+ * every bucket already has an env kill-switch (`maxEnv`, and `max <= 0` disables it).
+ */
 export function clientIp(req: Request): string {
-  const h = req.headers;
-  return (
-    h.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() ||
-    h.get("x-real-ip")?.trim() ||
-    h.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    "unknown"
-  );
+  return req.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() || UNIDENTIFIED_CLIENT;
 }
+
+/** The shared bucket key for requests that arrive without the platform header.
+ *  Exported so the test can assert the aggregate behaviour by name rather than by
+ *  reproducing the string. */
+export const UNIDENTIFIED_CLIENT = "unidentified";
 
 /**
  * Fixed-window limiter. Returns true when the request is within budget.
