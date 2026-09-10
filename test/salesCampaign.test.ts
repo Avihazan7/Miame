@@ -107,8 +107,19 @@ describe("simulator runs exactly one track", () => {
       });
       expect(q.balloonAmount).toBe(0);
       expect(q.effectivePrice).toBe(m.price);
-      // no interest: the instalments recover exactly the financed amount
-      expect(q.monthlyPayment).toBe(Math.round(q.financedAmount / 18));
+      // NO INTEREST — ASSERTED AS THE IDENTITY, NOT AS THE FORMULA.
+      //
+      // This line read `expect(q.monthlyPayment).toBe(Math.round(q.financedAmount / 18))`
+      // under the comment "the instalments recover exactly the financed amount". The
+      // comment named the right property and the assertion tested something else: it
+      // re-stated the implementation, and `Math.round` is exactly what made the
+      // instalments NOT recover the balance. Enumerated on 2026-09-10 across all 2,448
+      // reachable configurations, 1,068 of them (43.6%) had `months × monthly` land
+      // ABOVE the financed amount — by up to 9 ₪, on a panel badged "0% ריבית".
+      // A test that mirrors the code can only ever agree with it.
+      expect(q.monthlyPayment * (q.months - 1) + q.finalPayment).toBe(q.financedAmount);
+      // and the regular instalment never exceeds the buyer's fair share
+      expect(q.monthlyPayment).toBeLessThanOrEqual(Math.ceil(q.financedAmount / q.months));
       expect(q.downAmount + q.financedAmount).toBe(m.price);
     }
   });

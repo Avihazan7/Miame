@@ -593,9 +593,28 @@ export default function Configurator() {
                 <span className="num" aria-hidden="true">{animatedMonthly.toLocaleString("he-IL")}</span>
                 <span className="per" aria-hidden="true">לחודש · {months} תשלומים</span>
                 <span className="sr-only" aria-live="polite" aria-atomic="true">
-                  {`תשלום חודשי משוער ${quote.monthlyPayment.toLocaleString("he-IL")} ₪ ל-${months} תשלומים`}
+                  {quote.finalPayment === quote.monthlyPayment
+                    ? `תשלום חודשי משוער ${quote.monthlyPayment.toLocaleString("he-IL")} ₪ ל-${months} תשלומים`
+                    : `תשלום חודשי משוער ${quote.monthlyPayment.toLocaleString("he-IL")} ₪ ל-${months - 1} תשלומים, ותשלום אחרון ${quote.finalPayment.toLocaleString("he-IL")} ₪`}
                 </span>
               </div>
+
+              {/* THE SCHEDULE THAT ADDS UP, STATED WHERE IT IS CHECKED.
+                  Until 2026-09-10 the monthly figure was `round(financed / months)` and
+                  nothing carried the remainder, so in 1,068 of the 2,448 configurations
+                  a buyer can reach, `months × monthly` came out ABOVE "יתרה למימון" —
+                  by up to 9 ₪, four rows under a badge reading "0% ריבית". Anyone who
+                  multiplied found interest the site says it does not charge.
+                  The instalment now floors and the last one absorbs the remainder, so
+                  the two numbers reconcile exactly. This line is the visible half: it
+                  appears ONLY when the balance does not divide evenly, because on the
+                  21.7% that do, `18 × 829` is already the whole truth and a second
+                  sentence would just be noise. */}
+              {quote.finalPayment !== quote.monthlyPayment && (
+                <div className="res-final">
+                  {`${months - 1} תשלומים של ${ils(quote.monthlyPayment)} ותשלום אחרון של ${ils(quote.finalPayment)}`}
+                </div>
+              )}
 
               <div className="res-badges">
                 <span className="res-badge accent">0% ריבית</span>

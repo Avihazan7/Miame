@@ -154,11 +154,22 @@ export function buildLeadMessage(input: LeadMessageInput): string {
     `מקדמה: ${quote.downPct}% (${ils(quote.downAmount)})`
   );
 
-  lines.push(
-    `תקופה: ${quote.months} תשלומים`,
-    `תשלום חודשי משוער: ${ils(quote.monthlyPayment)}`,
-    ""
-  );
+  // THE REP AND THE BUYER READ THE SAME SCHEDULE. The message quoted only the regular
+  // instalment, so a buyer who multiplied it by the term reached a total that did not
+  // match the balance the panel had just shown them — the same arithmetic gap the
+  // simulator itself carried until 2026-09-10. The final instalment absorbs the
+  // remainder, and it is named here exactly as the panel names it. Added only when the
+  // balance does not divide evenly; otherwise the single line is already complete.
+  lines.push(`תקופה: ${quote.months} תשלומים`);
+  if (quote.finalPayment === quote.monthlyPayment) {
+    lines.push(`תשלום חודשי משוער: ${ils(quote.monthlyPayment)}`);
+  } else {
+    lines.push(
+      `תשלום חודשי משוער: ${ils(quote.monthlyPayment)} × ${quote.months - 1}`,
+      `תשלום אחרון: ${ils(quote.finalPayment)}`
+    );
+  }
+  lines.push("");
 
   if (input.fullName) lines.push(`שם: ${input.fullName}`);
   if (input.phone) lines.push(`טלפון: ${input.phone}`);
