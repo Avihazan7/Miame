@@ -47,19 +47,78 @@ function sources(dir: string, acc: string[] = []): string[] {
 const ALL = [...sources("app"), ...sources("lib"), ...sources("components"), ...sources("brain")];
 const read = (f: string) => code(readFileSync(f, "utf8"));
 
-describe("no surface promises a cost the terms do not back", () => {
-  it("nothing declares delivery free", () => {
-    // "עלינו" / "חינם" / "ללא עלות" beside delivery. `ללא עלות` is deliberately NOT
-    // banned outright — components/Tribute.tsx uses it for the MoD worksheet's bottom
-    // line, where the frozen disclaimer backs it in the same block — so the pattern
-    // requires a delivery word nearby.
-    const NEARBY = /(משלוח|מסירה|הובלה)[^.]{0,80}(עלינו|חינם|ללא עלות)|(עלינו|חינם|ללא עלות)[^.]{0,80}(משלוח|מסירה|הובלה)/;
-    const hits = ALL.filter((f) => NEARBY.test(read(f)));
+describe("the delivery promise is backed by the document that binds", () => {
+  // THE RULE INVERTED ON 2026-09-10, AND THAT IS THE POINT. The first version of this
+  // block banned the free-delivery claim outright, because at the time NOTHING backed
+  // it. Then the owner stated the term: delivery and handover are included. A gate
+  // whose job is truth must follow the truth — so what is enforced now is not silence
+  // but SOURCING. The defect was never the claim; it was a claim with no document
+  // behind it and six places it could have been written.
+  const TERMS = readFileSync("app/legal/terms/page.tsx", "utf8");
+  const CONTENT = readFileSync("lib/content.ts", "utf8");
+
+  it("lib/content.ts is the one place the fact is written", () => {
+    expect(CONTENT).toMatch(/export const DELIVERY_INCLUDED\b/);
+    expect(CONTENT).toMatch(/export const DELIVERY_INCLUDED_NOTE\b/);
+  });
+
+  it("the binding document states it, and reads it from the constant", () => {
+    // Not "the terms mention delivery" — §5 always did that, about TIMING. The clause
+    // must render the shared sentence, so the contract cannot drift from the page.
+    expect(TERMS).toMatch(/DELIVERY_INCLUDED_NOTE/);
+    expect(TERMS).toMatch(/from "@\/lib\/content"/);
+  });
+
+  it("every surface that claims free delivery derives it, never writes it flat", () => {
+    // A file may say "עלינו"/"חינם"/"כלולה במחיר" next to a delivery word only if it
+    // also reads DELIVERY_INCLUDED (or the note). Writing the promise as a bare string
+    // is exactly how it came to outlive its source last time.
+    const CLAIM = /(משלוח|מסירה|הובלה)[^.]{0,80}(עלינו|חינם|ללא עלות|כלול)|(עלינו|חינם|ללא עלות|כלול)[^.]{0,80}(משלוח|מסירה|הובלה)/;
+    const flat = ALL.filter((f) => f !== "lib/content.ts")
+      .filter((f) => CLAIM.test(read(f)))
+      .filter((f) => !/DELIVERY_INCLUDED/.test(read(f)));
     expect(
-      hits,
-      `delivery is promised free in: ${hits.join(", ")} — app/legal/terms §5 covers ` +
-        `delivery timing and says nothing about price, so nothing backs this`,
+      flat,
+      `delivery is promised free without reading lib/content.ts in: ${flat.join(", ")}`,
     ).toEqual([]);
+  });
+
+  it("every 'מסירה בכל הארץ' row derives the cost, none is silent about it", () => {
+    // FOUND BY READING THE RENDERED PAGE (2026-09-10). Three surfaces were updated and
+    // a FOURTH was missed — the assurance list inside components/Configurator.tsx,
+    // directly above the lead form. It escaped the search that found the others
+    // precisely because it made no cost claim: it was SILENT about price, on the panel
+    // that quotes the monthly payment. Silence next to three surfaces that now say
+    // "כלולה במחיר" reads as a different answer, so the row is in scope either way.
+    // PROXIMITY, NOT FILE PRESENCE — and that distinction was proven, not assumed.
+    // The first version asked only whether the FILE mentioned DELIVERY_INCLUDED
+    // anywhere. Mutation-testing it showed the hole immediately: reverting the row to
+    // its flat string left the `import { … DELIVERY_INCLUDED }` line untouched, the
+    // file still "mentioned" the constant, and the gate stayed green on the exact
+    // regression it exists to catch. The row has to derive, so the row is the window.
+    const WINDOW = 200;
+    const silent: string[] = [];
+    for (const f of ALL) {
+      const src = read(f);
+      for (const m of src.matchAll(/מסירה בכל הארץ/g)) {
+        const around = src.slice(m.index ?? 0, (m.index ?? 0) + WINDOW);
+        if (!/DELIVERY_INCLUDED/.test(around)) silent.push(f);
+      }
+    }
+    expect(
+      [...new Set(silent)],
+      `a nationwide-delivery row states no cost and derives no constant in: ${[...new Set(silent)].join(", ")}`,
+    ).toEqual([]);
+  });
+
+  it("the Offer's shipping node and the copy are driven by the same switch", () => {
+    // A zero shipping rate in JSON-LD is a commitment a machine reads as authoritative.
+    // It must not be able to outlive the sentence a human reads.
+    const LAYOUT = read("app/layout.tsx");
+    if (/shippingDetails/.test(LAYOUT)) {
+      expect(LAYOUT).toMatch(/DELIVERY_INCLUDED\s*\n?\s*\?/);
+      expect(LAYOUT).toMatch(/shippingRate/);
+    }
   });
 });
 

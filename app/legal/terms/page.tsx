@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { MANUFACTURER_NAME_HE } from "@/lib/content";
+import { MANUFACTURER_NAME_HE, DELIVERY_INCLUDED_NOTE } from "@/lib/content";
 // Seller identification has to name a channel that answers, so the number is
 // read from the one sales-line constant rather than typed here a second time.
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from "@/lib/whatsapp";
 import Link from "next/link";
 import { OG_BASE } from "@/lib/seo/og";
 
-const UPDATED = "4 ביולי 2026";
+const UPDATED = "10 בספטמבר 2026";
 
 const DESC =
   "תקנון האתר ותנאי הרכישה, המקדמות, הביטולים, המסירה, האחריות והשירות של MiaMe. הצעות התשלום באתר הן הערכה ואינן מחייבות.";
@@ -24,7 +24,7 @@ export default function TermsPage() {
     <main id="main" className="legal">
       <Link href="/" className="legal-back">← חזרה לדף הבית</Link>
       <h1>תקנון ותנאי שימוש</h1>
-      <p className="legal-meta">גרסה 1.0 · עודכן: {UPDATED}</p>
+      <p className="legal-meta">גרסה 1.1 · עודכן: {UPDATED}</p>
 
       <p>
         {/* "ההשכרה" stood here until 2026-09-10. MiaMe does not rent: the owner
@@ -83,9 +83,16 @@ export default function TermsPage() {
 
       <h2>5. מסירה ואספקה</h2>
       <p>
-        מועדי אספקה ומסירה הם הערכה וכפופים לזמינות מלאי. תיאום מסירה, נסיעת מבחן
-        ומקום איסוף יבוצעו מול נציג. באחריות הרוכש לוודא התאמת המוצר לצרכיו ולדין
-        החל על השימוש בו.
+        {/* THE COST HALF, ADDED 2026-09-10 BY OWNER DECISION. Until then this clause
+            covered delivery TIMING only, while components/Features.tsx told the buyer
+            "משלוח … עלינו" — an absolute cost promise the binding document did not
+            back by a single word. A promise the terms cannot answer for is the one a
+            buyer complains about. The sentence is rendered from DELIVERY_INCLUDED_NOTE
+            in lib/content.ts, the same constant the delivery section and the Offer's
+            shippingDetails read, so the page and the contract cannot drift apart. */}
+        {DELIVERY_INCLUDED_NOTE}. מועדי אספקה ומסירה הם הערכה וכפופים לזמינות מלאי.
+        תיאום מסירה, נסיעת מבחן ומקום איסוף יבוצעו מול נציג. באחריות הרוכש לוודא
+        התאמת המוצר לצרכיו ולדין החל על השימוש בו.
       </p>
 
       <h2>6. אחריות ושירות</h2>

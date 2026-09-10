@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { PRODUCT_NAME_HE } from "@/lib/content";
+import { PRODUCT_NAME_HE, DELIVERY_INCLUDED } from "@/lib/content";
 function Ic({ d }: { d: string }) {
   return (
     <div className="feat-ic">
@@ -61,22 +61,27 @@ export default function Features() {
           <span className="deliver-banner">
             <TruckIcon />
             <span>
-              {/* "עלינו." until 2026-09-10 — an absolute cost promise with no source
-                  anywhere: not app/legal/terms (the only binding document, whose §5
-                  covers delivery TIMING and says nothing about price), not
-                  components/Service.tsx (the dedicated delivery section, which says
-                  "מסירה בכל הארץ · מתואמת אתכם מראש מול נציג"), not public/llms.txt,
-                  not the brain corpus, and not lib/content.ts. It was the one
-                  unqualified cost claim on a site where every other figure carries a
-                  caveat, and a buyer in the periphery who read it and was then charged
-                  for transport has exactly the consumer-protection complaint the rest
-                  of this codebase is written to avoid.
-                  The wording now matches every other delivery surface verbatim. If
-                  delivery IS included, it belongs back here WITH a source — a constant
-                  in lib/content.ts read by this banner, by Service.tsx and by §5 of the
-                  terms — which is also what would let the Offer schema carry a real
-                  `shippingDetails` instead of omitting it. */}
-              משלוח <b>MIA FOUR</b> עד אליכם, <span className="db-free">בתיאום מראש.</span>
+              {/* "עלינו" IS the claim, and it is now backed. It shipped for a while
+                  with no source anywhere — not app/legal/terms (whose §5 covered
+                  delivery TIMING and never price), not Service.tsx, not llms.txt, not
+                  any module — and was pulled on 2026-09-10 for exactly that reason.
+                  Owner decision the same day: delivery and handover ARE included. So it
+                  is back, sourced from lib/content.ts, stated in §5 of the binding
+                  document, and encoded in the Offer's shippingDetails.
+                  Rendered under `DELIVERY_INCLUDED` rather than written flat: if the
+                  commercial fact ever changes, this sentence disappears with the
+                  schema node and the clause, instead of outliving them. */}
+              {DELIVERY_INCLUDED ? (
+                <>
+                  משלוח ומסירה של <b>MIA FOUR</b> עד אליכם,{" "}
+                  <span className="db-free">עלינו.</span>
+                </>
+              ) : (
+                <>
+                  משלוח ומסירה של <b>MIA FOUR</b> עד אליכם,{" "}
+                  <span className="db-free">בתיאום מראש.</span>
+                </>
+              )}
             </span>
           </span>
         </div>

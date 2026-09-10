@@ -9,6 +9,7 @@ import {
   PRODUCT_CATEGORY_HE,
   PRODUCT_NAME,
   PRODUCT_NAME_HE,
+  DELIVERY_INCLUDED
 } from "@/lib/content";
 import { SALES_PHONE_E164 } from "@/lib/whatsapp";
 import { Heebo, Suez_One, Space_Grotesk } from "next/font/google";
@@ -195,22 +196,44 @@ const HOME_PRODUCTS = MODELS.map((m) => ({
     // as new — and "new" is the whole legal distinction this site draws between a
     // קלנועית with zero previous owners and a used one.
     itemCondition: "https://schema.org/NewCondition",
-    seller: { "@id": `${SITE_URL}/#organization` }
+    seller: { "@id": `${SITE_URL}/#organization` },
+    // SHIPPING, ADDED 2026-09-10 — the condition the note below set has been met.
+    // The owner stated the term and app/legal/terms §5 now carries it in the binding
+    // document, so this node encodes a commitment the site actually made rather than
+    // one invented for a rich result. Rendered from DELIVERY_INCLUDED, so it vanishes
+    // with the copy and the clause if the commercial fact ever changes.
+    // `shippingRate: 0` is the whole point: it is the machine-readable form of
+    // "עלינו". IL-wide, matching "בכל אזור בארץ" on every human surface.
+    ...(DELIVERY_INCLUDED
+      ? {
+          shippingDetails: {
+            "@type": "OfferShippingDetails",
+            shippingRate: { "@type": "MonetaryAmount", value: 0, currency: "ILS" },
+            shippingDestination: {
+              "@type": "DefinedRegion",
+              addressCountry: "IL"
+            }
+          }
+        }
+      : {})
   },
   additionalProperty: PRODUCT_PROPERTIES
 }));
 
-// NOTE — deliberately NOT added: priceValidUntil, hasMerchantReturnPolicy and
-// shippingDetails. Google recommends all three, and all three are COMMITMENTS.
-// app/legal/terms/page.tsx says only that cancellation follows חוק הגנת הצרכן
-// "בניכוי דמי ביטול כמותר בדין" — a statutory reference with no number in it —
-// and a MerchantReturnPolicy node needs merchantReturnDays and returnFees as
-// literal values. Encoding a figure the site never states would publish a
-// contractual promise nobody wrote, in the one format a machine reads as
-// authoritative. priceValidUntil is the same shape of problem in a date: an
-// invented one either expires and makes Google drop the price, or promises a
-// price is held until a day nobody agreed to. They belong here the moment the
-// owner states real terms on the page — and not one commit earlier.
+// NOTE — still deliberately NOT added: priceValidUntil and hasMerchantReturnPolicy.
+// Google recommends them and both are COMMITMENTS. app/legal/terms/page.tsx says only
+// that cancellation follows חוק הגנת הצרכן "בניכוי דמי ביטול כמותר בדין" — a statutory
+// reference with no number in it — and a MerchantReturnPolicy node needs
+// merchantReturnDays and returnFees as literal values. Encoding a figure the site never
+// states would publish a contractual promise nobody wrote, in the one format a machine
+// reads as authoritative. priceValidUntil is the same shape of problem in a date: an
+// invented one either expires and makes Google drop the price, or promises a price is
+// held until a day nobody agreed to.
+//
+// shippingDetails LEFT this list on 2026-09-10, and the reason is the rule, not an
+// exception to it: the owner stated the delivery term, §5 of the terms now carries it,
+// and lib/content.ts holds it once. That is what "the moment the owner states real
+// terms on the page" meant. The other two are still waiting for the same thing.
 
 /** The commercial graph, rendered by app/page.tsx rather than by this layout.
  *  Exported as a finished string so the page does not have to re-import SITE_URL,

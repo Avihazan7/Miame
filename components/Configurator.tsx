@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { MODELS, getModel } from "@/lib/models";
 import { setAmbienceTilt } from "@/lib/ambience";
 import { hueShiftFor, AMBIENCE_BASE_TILT } from "@/lib/model-ambience";
-import { PRODUCT_NAME_HE, WARRANTY_MONTHS } from "@/lib/content";
+import { PRODUCT_NAME_HE, WARRANTY_MONTHS, DELIVERY_INCLUDED } from "@/lib/content";
 import {
   CustomerType,
   TRACKS,
@@ -92,7 +92,17 @@ const SIM_ASSURANCES: { k: string; v: string }[] = [
   { k: "אחריות יבואן רשמי", v: `MEU · שירות וחלפים מקוריים, ${WARRANTY_MONTHS} חודשים` },
   { k: "פלטפורמה מוגנת פטנט", v: "ארבעה גלגלים, מתלים עצמאיים, בלימה הידראולית כפולה" },
   { k: "תקן EN17128", v: "מותאמת לתקנות הקלנועית בישראל, בלי רישוי ובלי אגרות" },
-  { k: "מסירה בכל הארץ", v: "מתואמת אתכם מראש מול נציג" },
+  // FOUND BY READING THE RENDERED PAGE, NOT THE SOURCE (2026-09-10). The delivery
+  // promise was updated in components/Service.tsx and in the hero banner, and this
+  // fourth copy — inside the simulator, directly above the lead form, on the screen
+  // where the buyer decides — still said only "מתואמת אתכם מראש מול נציג". It was
+  // invisible to the search that found the others because it never carried the cost
+  // claim at all: it was silent about price, which is its own kind of wrong on the
+  // panel that quotes the monthly payment.
+  {
+    k: "מסירה בכל הארץ",
+    v: DELIVERY_INCLUDED ? "כלולה במחיר · מתואמת אתכם מראש" : "מתואמת אתכם מראש מול נציג",
+  },
 ];
 
 /** Stable, anonymous per-visitor id (charset matches the brain's ref validation). */
