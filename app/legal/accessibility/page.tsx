@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 // contact, which is exactly the promise a stale second copy of the number breaks.
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL, buildWhatsAppUrl } from "@/lib/whatsapp";
 import Link from "next/link";
-import { OG_IMAGES } from "@/lib/seo/og";
+import { OG_BASE } from "@/lib/seo/og";
 
-const UPDATED = "4 ביולי 2026";
+const UPDATED = "9 בספטמבר 2026";
 
 const DESC =
   "הצהרת הנגישות של אתר MiaMe: מחויבות לנגישות דיגיטלית לפי תקן ישראלי 5568 ורמה AA, אמצעי הנגישות הקיימים ודרכי פנייה לרכז הנגישות.";
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "הצהרת נגישות",
   description: DESC,
   alternates: { canonical: "/legal/accessibility" },
-  openGraph: { images: OG_IMAGES, title: "הצהרת נגישות · MiaMe", description: DESC, url: "/legal/accessibility", type: "article" },
+  openGraph: { ...OG_BASE, title: "הצהרת נגישות · MiaMe", description: DESC, url: "/legal/accessibility", type: "article" },
   robots: { index: true, follow: true }
 };
 
@@ -24,7 +24,7 @@ export default function AccessibilityPage() {
     <main id="main" className="legal">
       <Link href="/" className="legal-back">← חזרה לדף הבית</Link>
       <h1>הצהרת נגישות</h1>
-      <p className="legal-meta">גרסה 1.0 · עודכן: {UPDATED}</p>
+      <p className="legal-meta">גרסה 1.1 · עודכן: {UPDATED}</p>
 
       <p>
         MiaMe (מבית Leasing.co.il) רואה חשיבות עליונה במתן שירות שוויוני ונגיש לכלל
@@ -38,16 +38,24 @@ export default function AccessibilityPage() {
         <li>מבנה עמוד סמנטי ותמיכה מלאה בעברית וכיווניות RTL.</li>
         <li>ניווט מלא באמצעות מקלדת וסימון פוקוס ברור על רכיבים אינטראקטיביים.</li>
         <li>טקסט חלופי (alt) לתמונות ותוויות (labels) לשדות הטופס.</li>
-        <li>ניגודיות צבעים תקינה בין טקסט לרקע.</li>
+        <li>ניגודיות צבעים נבדקת מול הדרישה של ת&quot;י 5568 ומתוקנת כשנמצא פער.</li>
         <li>כיבוד העדפת "צמצום תנועה" (prefers-reduced-motion) והשבתת אנימציות.</li>
         <li>עיצוב רספונסיבי המותאם למובייל ולהגדלת טקסט.</li>
       </ul>
 
-      <h2>הסתייגות</h2>
+      <h2>הסתייגות · מגבלות ידועות</h2>
       <p>
-        למרות מאמצינו להנגיש כל רכיב באתר, ייתכן ויימצאו חלקים שטרם הונגשו במלואם.
+        למרות מאמצינו להנגיש כל רכיב באתר, ייתכן שיימצאו חלקים שטרם הונגשו במלואם.
         אנו ממשיכים לשפר את נגישות האתר באופן שוטף. אם נתקלת בקושי, נשמח שתעדכן
         אותנו ונפעל לתקן בהקדם.
+      </p>
+      <p>
+        <b>מגבלה שידועה לנו נכון למועד עדכון ההצהרה:</b> סרטון הווידאו בדף הבית
+        (&quot;רגע להרגיש חופש&quot;) מוגש ללא כתוביות וללא תמליל. זהו פער מול
+        דרישת הכתוביות לתוכן מוקלט, ואנו פועלים להשלימו. עד אז — כל המידע המסחרי,
+        המפרט, תנאי התשלום ופרטי הזכאות מופיעים כטקסט מלא בעמודי האתר, ואינם
+        תלויים בסרטון כדי להיות מובנים. נשמח לספק את תוכן הסרטון גם בכתב לכל מי
+        שיפנה אלינו בערוצים שלמטה.
       </p>
 
       <h2>רכז הנגישות</h2>
@@ -75,6 +83,8 @@ export default function AccessibilityPage() {
           וואטסאפ:{" "}
           <a
             href={buildWhatsAppUrl("היי MiaMe, אני פונה בנושא נגישות האתר ואשמח לעזרת רכז הנגישות")}
+            target="_blank"
+            rel="noopener"
           >
             {SALES_PHONE_DISPLAY}
           </a>

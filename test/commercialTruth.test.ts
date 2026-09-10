@@ -186,10 +186,25 @@ describe("the site sells ONE thing, and offers nothing it does not sell", () => 
     // something it had no grounding for, which is the definition of the hallucination
     // condition, and /partners and /rent-eilat both answer 410 (middleware.ts:25).
     //
-    // "השכרה" alone is NOT bannable and is deliberately absent: it is legitimate in
-    // app/legal/terms (rental and service of the product), app/manifest.ts, and the
-    // fleet language in lib/seo-pages.ts. The two terms below measure zero across
-    // every published surface, so they are precise rather than broad.
+    // "השכרה" alone is NOT bannable and is deliberately absent — but the ORIGINAL
+    // version of this comment got the reason wrong, and the error cost a live defect.
+    // It read: "it is legitimate in app/legal/terms (rental and service of the
+    // product), app/manifest.ts, and the fleet language in lib/seo-pages.ts."
+    // Two of those three were false. app/manifest.ts had "והשכרה" REMOVED as a defect
+    // — its own comment says it "offered a rental the business does not run" — and
+    // app/legal/terms carried "תהליך הרכישה, ההשכרה והשירות של מוצרי מיה דיינמיקס"
+    // until 2026-09-10, in the one document that binds, while public/llms.txt told
+    // answer engines "MiaMe אינה משכירה". A named whitelist entry is why nobody
+    // looked: the file was cleared by assertion, not by reading it.
+    //
+    // The line that IS correct is WHOSE rental it is. lib/seo-pages.ts writes
+    // "עסקים שמפעילים צי השכרה" — that describes a BUYER who runs a rental fleet, and
+    // is a legitimate B2B segment. app/legal/terms wrote about MiaMe's own process,
+    // which is an OFFER. First person is banned; third person is not. The clause
+    // after this one applies that rule to the legal pages, where everything written
+    // is first-person by construction.
+    // The two terms below measure zero across every published surface, so they are
+    // precise rather than broad.
     const hits = SOURCES.filter((f) =>
       /רשת\s*MiaMe|MiaMe\s*Hub|PARTNER\s+NETWORK|Success\s*Fee|Green\s*Extreme|שותפות|באילת/i.test(code(read(f))),
     );
@@ -220,6 +235,30 @@ describe("the site sells ONE thing, and offers nothing it does not sell", () => 
       renting,
       `a rental track is offered in: ${renting.join(", ")} — the business does not rent ` +
         `(supabase/phases.json, 9-rental-fleet-os)`,
+    ).toEqual([]);
+
+    // THE LEGAL PAGES, THE ONE PLACE A STALE OFFER BINDS. Everything under
+    // app/legal/ is written in the first person — it describes what MiaMe does, not
+    // what a customer does — so there is no legitimate reading of a rental verb
+    // there, and no whitelist is needed to tell the two apart. That is exactly why
+    // this is a separate clause from the two above rather than a wider regex on
+    // SOURCES: broadening those would have fired on lib/seo-pages.ts, whose
+    // "עסקים שמפעילים צי השכרה" describes a BUYER operating a rental fleet.
+    //
+    // Prefixed forms matter. "ההשכרה" is what actually shipped, and any pattern
+    // anchored on a bare word start would miss it — as would \b, which JavaScript
+    // defines on [A-Za-z0-9_] and which therefore never matches beside a Hebrew
+    // letter. This scans for the stem anywhere, which in a first-person document is
+    // the correct bluntness.
+    const legalPages = readdirSync("app/legal", { withFileTypes: true })
+      .filter((e) => e.isDirectory())
+      .map((e) => `app/legal/${e.name}/page.tsx`);
+    expect(legalPages.length, "app/legal has no pages — this gate guards nothing").toBeGreaterThanOrEqual(3);
+    const legalRenting = legalPages.filter((f) => /השכרה|להשכיר|השכרת|משכירה/.test(code(read(f))));
+    expect(
+      legalRenting,
+      `the binding legal text still describes a rental MiaMe does not operate: ${legalRenting.join(", ")} ` +
+        `— public/llms.txt tells answer engines "MiaMe אינה משכירה"`,
     ).toEqual([]);
   });
 

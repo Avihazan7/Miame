@@ -3,18 +3,18 @@ import type { Metadata } from "next";
 // from the one sales-line constant rather than typed here a second time.
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from "@/lib/whatsapp";
 import Link from "next/link";
-import { OG_IMAGES } from "@/lib/seo/og";
+import { OG_BASE } from "@/lib/seo/og";
 
 const UPDATED = "4 ביולי 2026";
 
 const DESC =
-  "כיצד MiaMe אוספת, משתמשת ומגנה על המידע האישי שלך: פרטי לידים, וואטסאפ, עוגיות, פיקסלים שיווקיים וזכויותיך לפי חוק הגנת הפרטיות.";
+  "כיצד MiaMe אוספת, משתמשת ומגנה על המידע האישי שלך: פרטי לידים, וואטסאפ, עוגיות, פיקסלים שיווקיים, מדידת תנועה מצטברת וזכויותיך לפי חוק הגנת הפרטיות.";
 
 export const metadata: Metadata = {
   title: "מדיניות פרטיות",
   description: DESC,
   alternates: { canonical: "/legal/privacy" },
-  openGraph: { images: OG_IMAGES, title: "מדיניות פרטיות · MiaMe", description: DESC, url: "/legal/privacy", type: "article" },
+  openGraph: { ...OG_BASE, title: "מדיניות פרטיות · MiaMe", description: DESC, url: "/legal/privacy", type: "article" },
   robots: { index: true, follow: true }
 };
 
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
         </li>
         <li>
           <b>עוגיות ופיקסלים:</b> בכפוף להסכמתך, אנו עשויים לעשות שימוש ב-Google
-          Analytics 4, Google Ads ו-Meta Pixel למדידת ביצועים ושיווק.
+          Analytics 4, Google Ads, Meta Pixel ו-TikTok Pixel למדידת ביצועים ושיווק.
         </li>
       </ul>
 
@@ -76,6 +76,16 @@ export default function PrivacyPage() {
         פרסום. עצם טעינת הסקריפט מעבירה לספק את כתובת ה-IP ואת כתובת הדף, וניתן
         למנוע גם זאת בחסימת סקריפטים או עוגיות צד-שלישי בהגדרות הדפדפן. באפשרותך
         לבחור "רק הכרחי" ולסרב למדידה שיווקית. סירוב לא ימנע ממך לפנות אלינו או לרכוש.
+      </p>
+      <p>
+        בנוסף, האתר עושה שימוש ב-<b>Vercel Web Analytics</b> — מדידת תנועה מצטברת
+        של ספק האחסון שלנו — והיא פועלת <b>גם ללא הסכמה</b>. הסיבה שהיא נבדלת
+        מהפיקסלים שלמעלה: היא אינה שומרת עוגיה, אינה כותבת דבר לאחסון המקומי של
+        הדפדפן ואינה קוראת ממנו; היא סופרת צפיות בעמודים ברמה מצטברת בלבד, והמזהה
+        שלה נגזר בצד השרת ומתחלף מדי יום. היא אינה מזהה אותך אישית, אינה עוקבת
+        אחריך בין אתרים ואינה משמשת לפרסום. חובת ההסכמה בדין חלה על שמירה או
+        קריאה של מידע במכשיר שלך, ופעולות אלה אינן מתבצעות כאן. אנו מציינים זאת
+        במפורש ולא משאירים זאת מובלע.
       </p>
 
       <h2>6. אבטחת מידע ושמירתו</h2>

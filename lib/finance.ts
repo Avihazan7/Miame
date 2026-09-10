@@ -82,7 +82,18 @@ export interface Quote {
   balloonAmount: number;
   financedAmount: number;
   months: number;
+  /** The regular instalment — paid `months - 1` times. */
   monthlyPayment: number;
+  /**
+   * The last instalment, which absorbs the remainder so the schedule sums EXACTLY.
+   *
+   * Equals `monthlyPayment` when the balance divides evenly; otherwise it is higher by
+   * `financedAmount % months`, i.e. at most `months - 1` shekels.
+   *
+   * INVARIANT, and the whole reason this field exists:
+   *   monthlyPayment * (months - 1) + finalPayment === financedAmount
+   */
+  finalPayment: number;
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -123,7 +134,30 @@ export function computeQuote(input: QuoteInput): Quote {
   }
   const balloonAmount = Math.round(effectivePrice * (balloonPct / 100));
   const financedAmount = Math.max(effectivePrice - downAmount - balloonAmount, 0);
-  const monthlyPayment = months > 0 ? Math.round(financedAmount / months) : 0;
+
+  // FLOOR, NOT ROUND — AND A FINAL INSTALMENT THAT CLOSES THE GAP.
+  //
+  // `Math.round(financedAmount / months)` was the whole schedule, and it did not add
+  // up. ENUMERATED over the entire reachable private-track space on 2026-09-10 —
+  // 3 prices × 51 down-payment steps × 16 terms = 2,448 configurations:
+  //
+  //     exact  (months × monthly === financed) :   531  (21.7%)
+  //     OVER   (the buyer pays MORE)           : 1,068  (43.6%)
+  //     under                                  :   849  (34.7%)
+  //     worst OVER: 19,900 ₪ · 1% down · 18 months → financed 19,701, monthly 1,095,
+  //                 18 × 1,095 = 19,710 — nine shekels of nothing.
+  //
+  // The panel shows "יתרה למימון" and "× N תשלומים" four rows apart, under a heading
+  // that says "0% ריבית · ללא הצמדה". In 43.6% of what a buyer can drag the sliders
+  // to, multiplying the two contradicted that heading in the direction that reads as
+  // hidden interest. "משוער" disclosed it; it did not make it true.
+  //
+  // Flooring makes every REGULAR instalment at most the buyer's fair share, and the
+  // final one carries the remainder — which is how an instalment plan is actually
+  // written. The identity below is exact for every configuration, by construction,
+  // and test/simulatorPricing.test.ts enumerates all 2,448 to prove it.
+  const monthlyPayment = months > 0 ? Math.floor(financedAmount / months) : 0;
+  const finalPayment = months > 0 ? financedAmount - monthlyPayment * (months - 1) : 0;
 
   return {
     basePrice: input.basePrice,
@@ -135,7 +169,8 @@ export function computeQuote(input: QuoteInput): Quote {
     balloonAmount,
     financedAmount,
     months,
-    monthlyPayment
+    monthlyPayment,
+    finalPayment
   };
 }
 

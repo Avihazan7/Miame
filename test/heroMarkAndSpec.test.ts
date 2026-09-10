@@ -151,53 +151,43 @@ describe("the product mark — 'הלוגו ליד הכלי למעלה בגודל
   });
 });
 
-describe("the power spec — 'ה w 1800 × 4 מנועים תוריד מתחת וליד הכלי'", () => {
-  it("reads its figure from lib/models.ts and never retypes it", () => {
-    const highlight = getModel("4x4").highlights.find((h) => /W\b/.test(h)) ?? "";
-    expect(highlight, "the 4×4 manifest lost its power highlight").toMatch(/1,800W/);
-    expect(code, "the hero must derive the figure, not restate it").toContain('getModel("4x4")');
-    // The literal must NOT appear in Hero.tsx: if it did, a manifest change would
-    // leave a stale number on the most-seen surface on the site.
+describe("the two stage chips are GONE, and must stay gone", () => {
+  // OWNER DECISION 2026-09-09: "לא צריך אותם מיותרים". This block replaces four
+  // assertions that guarded `.hero-v2-power-chip` — the bidi isolate, the mirrored
+  // insets, the derived figure and the quieter styling. They were correct guards on
+  // a chip that no longer exists, so they are removed rather than left to fail; what
+  // replaces them is the guard that the deletion holds.
+  //
+  // WHY THE CHIPS WENT. Both were `position:absolute` over the stage at
+  // inset-block-end 12% (16% on mobile), which put them across the wheels of a
+  // product image the same owner had just asked to render larger and cleaner
+  // (--zoom-hero 1.13). Relocating them below the stage was tried first and measured
+  // clean at 360/390/1440 — and was still wrong: it parked a spec chip at y=838 on an
+  // 844px viewport, below the fold, where it earned nothing.
+  //
+  // THE SPEC IS NOT LOST. components/Specs.tsx states 1,800W in the spec table and
+  // lib/models.ts still carries the highlight the model cards render, so removing the
+  // chip removed a duplicate, not a fact — which is exactly what "מיותרים" means.
+  //
+  // The mark (MIA FOUR wordmark) is untouched and its block above still guards it.
+  it("neither chip is rendered", () => {
+    expect(code, "hero-v2-free-chip is back on the stage").not.toContain("hero-v2-free-chip");
+    expect(code, "hero-v2-power-chip is back on the stage").not.toContain("hero-v2-power-chip");
+    expect(code, "the chip row is back").not.toContain("hero-v2-chips");
+  });
+
+  it("no rule styles a chip that nothing renders", () => {
+    // Dead CSS for a deleted element is how a component comes back by accident: the
+    // next person finds a styled class and assumes the markup is missing by mistake.
+    const declarative = css.replace(/\/\*[\s\S]*?\*\//g, " ");
+    expect(declarative).not.toContain(".hero-v2-free-chip");
+    expect(declarative).not.toContain(".hero-v2-power-chip");
+    expect(declarative).not.toContain(".hero-v2-chips");
+  });
+
+  it("the wattage is not retyped anywhere in the hero", () => {
+    // The old guard's real point, kept: Hero.tsx must never hard-code the figure.
+    // It now holds it in a stronger form, because the hero states no wattage at all.
     expect(code.includes("1,800W"), "Hero.tsx hard-codes the wattage").toBe(false);
-  });
-
-  it("sits BELOW the vehicle and mirrors FREE FEEL across the stage", () => {
-    // "מתחת וליד הכלי". Before 2026-09-08 this chip lived at inset-block-START;
-    // the owner asked for it below. It must also take the opposite inline edge
-    // from the FREE FEEL chip, or the two stack in one corner.
-    expect(decl(".hero-v2-power-chip", "inset-block-end")).toBeTruthy();
-    expect(decl(".hero-v2-power-chip", "inset-block-start")).toBe(null);
-    expect(decl(".hero-v2-power-chip", "inset-inline-start")).toBeTruthy();
-    expect(decl(".hero-v2-free-chip", "inset-inline-end")).toBeTruthy();
-    expect(decl(".hero-v2-power-chip", "inset-inline-end")).toBe(null);
-    expect(decl(".hero-v2-free-chip", "inset-inline-start")).toBe(null);
-  });
-
-  it("puts the bidi isolate on the Latin run ONLY — never around the Hebrew", () => {
-    // The defect: <bdi dir="ltr">עד 4×1,800W</bdi> renders "1,800×4 עדW".
-    // With Hebrew inside the isolate, UAX#9 W7 cannot promote the digits to L,
-    // and N1 resolves the "×" between two EN runs to R.
-    const chip = code.slice(code.indexOf('className="hero-v2-power-chip"'));
-    const body = chip.slice(0, chip.indexOf("</div>"));
-    const isolate = body.match(/<(b|bdi|span)\s+dir="ltr"\s*>([\s\S]*?)<\/\1>/);
-    expect(isolate, "the figure carries no LTR isolate at all").toBeTruthy();
-    const inside = isolate![2];
-    expect(/[֐-׿]/.test(inside), `Hebrew inside the isolate: ${JSON.stringify(inside)}`).toBe(false);
-    expect(inside).toContain("POWER_SPEC");
-    // …and the Hebrew qualifier is still on the chip, outside that isolate.
-    expect(/[֐-׿]/.test(body.replace(isolate![0], "")), "the qualifier went missing").toBe(true);
-  });
-
-  it("never puts dir on the positioned box itself", () => {
-    // dir on the element flips ITS OWN logical properties: inset-inline-start
-    // resolved LEFT and the chip landed on top of .hero-v2-free-chip.
-    const open = code.slice(code.indexOf('<div className="hero-v2-power-chip"'));
-    expect(open.slice(0, open.indexOf(">")).includes("dir=")).toBe(false);
-  });
-
-  it("is quieter than the FREE FEEL chip — a specification, not a second offer", () => {
-    expect(decl(".hero-v2-power-chip", "background")).toMatch(/rgba\(255,\s*255,\s*255/);
-    expect(decl(".hero-v2-free-chip", "background")).toMatch(/gradient/);
-    expect(decl(".hero-v2-power-chip", "pointer-events")).toBe("none");
   });
 });

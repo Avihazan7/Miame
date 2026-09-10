@@ -94,3 +94,95 @@ describe("a label that says WhatsApp opens WhatsApp", () => {
 // gone too rather than left reading a file that is not there. The defect it
 // guarded cannot recur in a component that no longer exists, and the scan above
 // still covers every <a href="#…"> on the site.
+
+// ── one voice, and specifically ONE GRAMMATICAL PERSON ────────────────────────
+//
+// THE DEFECT THIS CLOSES (audit, 2026-09-09). components/seo/SeoCta.tsx rendered
+// "בנה הצעת תשלום תוך דקה" — masculine singular — two lines above "דברו איתנו
+// בוואטסאפ", plural, in the SAME CTA pair. It shipped on all four keyword landing
+// pages, which are the site's only organic entry points.
+//
+// The site standardised on the plural imperative (בנו · צפו · גררו · דברו), and
+// app/layout.tsx records the meta description being corrected to it on 2026-09-01
+// with the reason written out. The four landing pages were not re-read that day, so
+// the one remaining singular sat on exactly the pages a stranger arrives on.
+//
+// It is a real defect and not a stylistic quibble: the plural is also how Hebrew
+// addresses someone without assuming their gender, and this site sells mobility
+// scooters — a large part of its audience is women, and part of it is buying on
+// behalf of a parent. A masculine-singular imperative addresses none of them.
+//
+// The word list is short and literal on purpose. A general "no singular imperative"
+// scan cannot be written safely in Hebrew: מבנה, נבנה and גרור-as-an-instruction are
+// all legitimate and all match a naive pattern. Add a word here when a real one is
+// found, not speculatively.
+describe("visitor-facing copy addresses the visitor in the plural", () => {
+  // THE LIST IS SHORT BECAUSE HEBREW IS UNPOINTED, and two words earned their way
+  // off it while this guard was being written:
+  //   "מלא"  fired on "מסמך מלא" (lib/eligibility.ts) — an adjective, "a complete
+  //          document", not "fill in".
+  //   "לחץ"  fired on "בלי לחץ ובלי הפתעות" (components/DealBuzz.tsx) — a noun,
+  //          "without pressure", not "click".
+  // Same letters, different part of speech, and nothing in an unpointed string tells
+  // them apart. Only add a word whose singular-imperative reading is its ONLY
+  // reading — a guard that cries wolf gets suppressed, and then it guards nothing.
+  //   "בחר"  was MISSING, and the gate shipped green while
+  //          components/Configurator.tsx rendered "בחר והרץ סימולציה" on all three
+  //          model cards — under an h2 that already reads "בחרו את המיה פור שלך".
+  //          A guard is only as good as its list, and the list is the part that has
+  //          to be revisited when a finding lands. Verified before adding: "בחר"
+  //          with Hebrew lookarounds matches exactly ONE place in the whole tree,
+  //          that button. The noun is בחירה and the plural is בחרו, so neither
+  //          collides.
+  const SINGULAR = ["בנה", "צפה", "בדוק", "גלה", "הצטרף", "בחר", "הרץ"];
+  // Hebrew has no word boundary \b can see (the repo already paid for that once:
+  // commit bdb91d2). Anchor on "not preceded/followed by a Hebrew letter" instead.
+  const RE = new RegExp(`(?<![א-ת])(${SINGULAR.join("|")})(?![א-ת])`, "g");
+
+  const files = [
+    ...walk("components"),
+    "lib/wa-cta.ts",
+    "lib/content.ts",
+    "lib/home-faq.ts",
+    "lib/eligibility.ts",
+    "lib/seo-pages.ts",
+  ].filter((f) => f.endsWith(".ts") || f.endsWith(".tsx"));
+
+  it("the scan is alive", () => {
+    expect(files.length, "no source files found to scan").toBeGreaterThan(20);
+    expect(RE.test("בנה הצעה"), "the pattern matches nothing — it is broken").toBe(true);
+    RE.lastIndex = 0;
+    expect(RE.test("מבנה העמוד"), "the pattern matches מבנה — the lookaround is broken").toBe(false);
+    RE.lastIndex = 0;
+    expect(RE.test("נבנה עליו"), "the pattern matches נבנה — the lookaround is broken").toBe(false);
+    RE.lastIndex = 0;
+  });
+
+  for (const file of files) {
+    it(`${file} uses no masculine-singular imperative`, () => {
+      // Comments are exempt: the notes above and elsewhere must be able to quote the
+      // word that was removed, or the reason for the removal is lost.
+      const src = readFileSync(file, "utf8")
+        .replace(/\/\*[\s\S]*?\*\//g, " ")
+        .split("\n")
+        .filter((l) => !l.trim().startsWith("//") && !l.trim().startsWith("*"))
+        .join("\n");
+      const hits = [...src.matchAll(RE)].map((m) => m[1]);
+      expect(
+        [...new Set(hits)],
+        `${file} addresses the visitor in the masculine singular. The site standard ` +
+          `is the plural imperative (בנו · צפו · דברו) — it is consistent, and it is ` +
+          `how Hebrew addresses a reader without assuming their gender.`,
+      ).toEqual([]);
+    });
+  }
+});
+
+function walk(dir: string, acc: string[] = []): string[] {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const p = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) walk(p, acc);
+    else acc.push(p);
+  }
+  return acc;
+}

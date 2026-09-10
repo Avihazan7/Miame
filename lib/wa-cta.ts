@@ -83,7 +83,17 @@ export const WA_CTA = {
   },
   eligibility: {
     intent: "order",
-    label: "בדיקת זכאות ורכישה דרך MiaMe",
+    // "בדיקת זכאות … דרך MiaMe" until 2026-09-10. A button is the text most visitors
+    // read and fewest read around, and that one offered the DEPARTMENT'S act as our
+    // service — in the same word app/eligibility uses two paragraphs earlier to
+    // describe what משרד הביטחון does, on a page that states outright "אנחנו לא
+    // קובעים זכאות, לא מאשרים אותה". A זכאי who pressed it expected us to check their
+    // entitlement and got a sales conversation.
+    // "התאמה" is the site's own existing word for what we actually do — it is the
+    // simulator's primary CTA — and it draws the line in the right place: we check
+    // fit, the department checks entitlement. The prefilled message is the VISITOR
+    // speaking about their own intent, so it keeps "זכאות" and is unchanged.
+    label: "בדיקת התאמה ורכישה דרך MiaMe",
     message: "היי, אשמח לבדוק זכאות לרכישת מיה פור דרך משרד הביטחון 🇮🇱",
   },
   order: {

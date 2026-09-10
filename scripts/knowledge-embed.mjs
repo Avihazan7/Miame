@@ -16,15 +16,29 @@
  * small corpus and quietly less accurate as it grows. The failure mode is SILENT:
  * answers get vaguer, nothing turns red.
  *
- * MEASURED 2026-09-09 on the MiaMe project: 41 rows, 40 with a vector, 1 without.
- * The one is `contact`, deliberately: 20260909_knowledge_one_cta.sql rewrote its body
- * and dropped the vector in the same statement, because a vector built from wording
- * the site no longer renders is worse than no vector at all. Running this backfill
- * closes it.
- *   (This header previously read "30 of 30 rows carry no vector", measured 2026-08-31.
- *    That was true when written and had been false for days by the time anyone read it
- *    — the corpus was embedded and grew to 41. A measurement carries its date for
- *    exactly this reason: re-measure before quoting it.)
+ * MEASURED 2026-09-10 on the MiaMe project: 41 rows, 41 with a vector, 0 without —
+ * after the backfill below was run. Before it: 4 without.
+ *
+ * THE FOUR, AND WHY THEY ARE THE SHAPE OF THE PROBLEM. They were `contact`,
+ * `subsidy-bereaved`, `subsidy-disabled` and `spyqe-spec-missing` — exactly the rows
+ * rewritten by the last three phases to land (23-knowledge-one-cta ·
+ * 24-subsidy-no-figures · 25-spyqe-warranty-unpublished). Each phase rewrote a body
+ * and dropped that row's vector in the same statement, which is RIGHT: a vector built
+ * from wording the site no longer renders is worse than no vector at all. And then
+ * nobody ran the backfill. Two of the four were the Ministry of Defence subsidy rows,
+ * so the most sensitive content on the site sat invisible to the vector path.
+ *
+ * A PHASE THAT REWRITES A BODY IS HALF AN OPERATION. The other half is this script.
+ * Since 2026-09-10 the workflow that drives it (.github/workflows/knowledge-embed.yml)
+ * also runs a read-only GET daily and FAILS while any row is pending, so the second
+ * half can no longer be forgotten silently. The run itself is still manual, because
+ * it spends money and writes with the service role.
+ *
+ *   (This header has now been wrong twice. It once read "30 of 30 rows carry no
+ *    vector" (2026-08-31) and then "40 with a vector, 1 without" (2026-09-09) — the
+ *    second was already off by three when it was read. A measurement carries its date
+ *    for exactly this reason: re-measure before quoting it. The daily gate exists
+ *    because a comment cannot.)
  *
  * ENVIRONMENT
  *   MIAME_SITE_URL      default https://www.miame.co.il

@@ -33,15 +33,24 @@ export default function Footer() {
           <Link href="/klnoit-shetach">קלנועית שטח</Link>
           {/* The footer is this site's reachability floor: it renders on every content
               page and nothing in it is hidden at any width — unlike the header's nav
-              links, which carry `hide-m` and vanish under 720px. Both routes below are
-              an indexable page in the sitemap that no visitor could click on a phone:
-              its only anchor was that hidden header link. Served, submitted, unreachable.
+              links, which carry `hide-m` and vanish under 720px.
 
-              /rent-eilat is NOT here on purpose. It is unpromoted by owner decision
-              (84e6ec5, which pulled the rental fork out of the Free Feel block because
-              it competed with the buy decision), and it is absent from the sitemap —
-              so "served on a direct URL, not promoted" is the chosen third state, not
-              a defect. Guarded by test/routeReachability.test.ts. */}
+              /eligibility ADDED 2026-09-09. It was the owner's stated priority topic
+              and it had exactly ONE inbound link in the whole tree: the deep-link at
+              the bottom of <Tribute deepLink /> on the homepage, in the sixth of nine
+              movements. From all four keyword landing pages and all three legal pages
+              it was unreachable, and /legal/privacy — which sells nothing — carried
+              eleven inbound links to its one. test/routeReachability.test.ts passed
+              throughout, correctly: its rule is that ONE unhidden anchor exists, which
+              is the floor for "can a visitor get there", not a link profile.
+
+              The anchor text is the query, not the page's internal name. "מסלולי
+              זכאות" told neither a visitor nor a crawler which authority or which
+              vehicle this is about.
+
+              /rent-eilat is NOT here: it was removed by owner decision on 2026-09-02
+              and middleware.ts answers 410 for it. */}
+          <Link href="/eligibility">קלנועית במימון משרד הביטחון</Link>
         </nav>
         <nav className="foot-links" aria-label="מידע משפטי">
           <Link href="/legal/terms">תקנון ותנאי שימוש</Link>

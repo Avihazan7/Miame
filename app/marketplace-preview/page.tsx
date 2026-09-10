@@ -5,7 +5,7 @@ import SpatialHeroSlot from "@/components/marketplace/SpatialHeroSlot";
 import HowItWorksFlow from "@/components/marketplace/HowItWorksFlow";
 import MarketplaceLeadFlow from "@/components/marketplace/MarketplaceLeadFlow";
 import LeasingTermsExplainer from "@/components/marketplace/LeasingTermsExplainer";
-import { OG_IMAGES } from "@/lib/seo/og";
+import { OG_BASE } from "@/lib/seo/og";
 
 // M30.1 — demo-safe marketplace preview. A standalone, NON-INDEXED surface that showcases
 // the calm lead flow, the agentic skeleton, and the spatial-ready hero slot WITHOUT any
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   // the homepage's title and og:url — a share card that promises the product
   // page and opens a demo. The "דמו" label belongs in the card too, so nobody
   // forwards this as the live marketplace. Next fills the X card from here.
-  openGraph: { images: OG_IMAGES,
+  openGraph: { ...OG_BASE,
     title: "תצוגת מרקטפלייס (דמו) · MiaMe",
     description: "תצוגה מקדימה שקטה של זרימת ההתאמה. דמו בלבד — לא נשלחת פנייה.",
     url: "/marketplace-preview",

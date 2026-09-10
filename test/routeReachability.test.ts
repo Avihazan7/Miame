@@ -30,6 +30,7 @@
 // on every commit without a build. They are meant to be read together.
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
+import { sitemapPaths } from "@/app/sitemap";
 import { dirname, join, resolve } from "node:path";
 
 const CSS_FILES = [
@@ -197,9 +198,11 @@ const isIndexable = (file: string) =>
  * click. That is what /partners was: in the sitemap, canonical, its own OG image, and
  * one anchor in the whole tree — in the header, carrying `hide-m`, gone under 720px.
  */
-const SITEMAP = readFileSync("public/sitemap.xml", "utf8");
-const isPromoted = (route: string) =>
-  new RegExp(`<loc>[^<]*${route.replace(/\//g, "\\/")}(?:/)?</loc>`).test(SITEMAP);
+// The sitemap is GENERATED (app/sitemap.ts), so this reads the same function Next
+// serves rather than parsing a file that could drift from it. Was: a regex over
+// public/sitemap.xml, which is now deleted.
+const SITEMAP_PATHS = new Set(sitemapPaths());
+const isPromoted = (route: string) => SITEMAP_PATHS.has(route);
 
 describe("every indexable route is reachable at every viewport", () => {
   const hidden = hiddenClassSets();
@@ -242,7 +245,7 @@ describe("every indexable route is reachable at every viewport", () => {
     const contradictory = all.filter(({ route, file }) => isPromoted(route) && !isIndexable(file));
     expect(
       contradictory.map((c) => c.route),
-      "these routes are in public/sitemap.xml and declare robots:{index:false}",
+      "these routes are produced by app/sitemap.ts and declare robots:{index:false}",
     ).toEqual([]);
   });
 
@@ -259,12 +262,12 @@ describe("every indexable route is reachable at every viewport", () => {
 
       expect(
         isPromoted(route),
-        `${route} is submitted in public/sitemap.xml but no visitor ` +
+        `${route} is submitted by app/sitemap.ts but no visitor ` +
           `can click their way to it. ${detail}` +
           `Fix it one of two ways: give it an anchor no stylesheet hides — the site-wide ` +
           `footer (components/Footer.tsx) is where secondary routes belong, since the ` +
           `header's nav links carry \`hide-m\` and vanish under 720px — or, if it is ` +
-          `genuinely not for the public, take it out of public/sitemap.xml — a page that ` +
+          `genuinely not for the public, take it out of app/sitemap.ts — a page that ` +
           `answers on a direct URL without being promoted is a deliberate state this ` +
           `site uses (see the note on isPromoted above), and it is fine. Asking search ` +
           `engines to rank a page nobody can click is not.`,

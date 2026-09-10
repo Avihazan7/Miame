@@ -82,6 +82,34 @@ export const IMPORTER_NAME = "MEU · Mayer Electric Utilities";
  */
 export const MIA_FOUR_DELIVERY_DAYS = 3;
 
+/**
+ * DELIVERY AND HANDOVER ARE INCLUDED IN THE PRICE. Owner decision, 2026-09-10.
+ *
+ * This constant exists because the claim shipped once WITHOUT it and that was the
+ * defect. components/Features.tsx rendered "משלוח MIA FOUR עד אליכם, עלינו." — an
+ * absolute cost promise — while app/legal/terms §5 covered delivery TIMING and said
+ * nothing about price, components/Service.tsx said only "מתואמת אתכם מראש",
+ * public/llms.txt said nothing, and no module held the fact. A buyer in the periphery
+ * who read "עלינו" and was then charged for transport had a consumer-protection
+ * complaint the site could not answer from its own documents.
+ *
+ * So the claim is back, and it is one fact in one place. Every surface that states it
+ * reads it from here, the binding document states it in §5, and the Offer's
+ * `shippingDetails` encodes a rate of 0 — which app/layout.tsx had explicitly refused
+ * to publish until "the owner states real terms on the page", because a shipping node
+ * is a COMMITMENT and a machine reads it as authoritative. That condition is now met.
+ *
+ * `DELIVERY_INCLUDED` is the boolean the schema branches on. Flipping it to false must
+ * remove the shipping node and the copy together — which is exactly what a single
+ * source buys, and what six separate wordings could never guarantee.
+ */
+export const DELIVERY_INCLUDED = true;
+
+/** The canonical sentence. Used where a full clause is needed (terms, llms.txt, the
+ *  delivery section); the hero banner renders its own short form of the same fact. */
+export const DELIVERY_INCLUDED_NOTE =
+  "המשלוח והמסירה כלולים במחיר, בכל אזור בארץ, במסירה מתואמת מראש";
+
 /** The manufacturer brand behind MIA FOUR. */
 export const MANUFACTURER_NAME = "MIA Dynamics";
 

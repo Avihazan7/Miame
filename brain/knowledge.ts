@@ -44,7 +44,7 @@ export const FALLBACK: KnowledgeDoc[] = [
   { id: "price-2x4lr", source: "MiaMe/Models", text: 'מיה פור 2×4 City Long Range (הטווח המורחב), החל מ-21,900 ₪, סוללה 35Ah.' },
   { id: "price-4x4", source: "MiaMe/Models", text: 'מיה פור 4×4 Pro Max (הכוח לכל מסלול), החל מ-27,900 ₪, ארבעה מנועים והנעה כפולה לשטח.' },
   // ── Legal status ────────────────────────────────────────────────────────────
-  { id: "legal-status", source: "MiaMe/LegalStatus", text: 'מיה פור מסווגת כקלנועית: מזוהה במספר שילדה ייחודי (לא לוחית רישוי), ללא אגרות רישוי, פטורה מהדוחות שדו-גלגלי ממונע סופג. תואמת תקן EN17128 ולתקנות הקלנועית בישראל.' },
+  { id: "legal-status", source: "MiaMe/LegalStatus", text: 'מיה פור מסווגת כקלנועית: מזוהה במספר שילדה ייחודי (לא לוחית רישוי), ללא אגרות רישוי, ולפי המעמד החוקי של קלנועית ובכפוף לדין אינה חשופה לחלק מהקנסות והדוחות שדו-גלגלי ממונע סופג. השימוש תמיד בכפוף לתקנות. תואמת תקן EN17128 ולתקנות הקלנועית בישראל. המידע כללי ואינו ייעוץ משפטי.' },
   // ── Patents ─────────────────────────────────────────────────────────────────
   { id: "patents", source: "MiaMe/Patents", text: 'פלטפורמת המזעור של MIA Dynamics מוגנת פטנטים רשומים בארה"ב ובישראל: US 11,878,763 B2, US 12,097,926 B2, IL 280339, IL 285336.' },
   // ── Service & warranty ──────────────────────────────────────────────────────
@@ -228,7 +228,30 @@ const ASK_TO_CORPUS: Record<string, string[]> = {
  * string's length, so length normalisation is unaffected.
  */
 const FINAL_FORMS: Record<string, string> = { "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" };
-const foldFinals = (t: string): string => t.replace(/[ךםןףץ]/g, (c) => FINAL_FORMS[c]);
+
+/**
+ * THE SAME CLASS OF MISS, IN PUNCTUATION. Hebrew abbreviations take גרשיים — the
+ * typographic mark U+05F4 (״) — but every Israeli keyboard produces the ASCII quote,
+ * so both spellings of one abbreviation exist in the wild and in this repo. Matching
+ * here is a substring test, so they share nothing at all.
+ *
+ * MEASURED on the live corpus, 2026-09-10: `ש"ח` matched one row and `ש״ח` matched
+ * ZERO. Same abbreviation, same meaning, no overlap. And it is not hypothetical which
+ * side the visitor is on — the site RENDERS the typographic form in twenty places,
+ * among them the SPYQE spec table (lib/spyqe.ts: "25 קמ״ש", "עד 50 ק״מ לסוללה"), which
+ * is on screen while the chat is open. A visitor who copies what they are reading into
+ * the question matched nothing.
+ *
+ * Folding both marks to their ASCII counterparts is the same move as FINAL_FORMS and
+ * carries the same two properties: applied to BOTH sides, and never changing a string's
+ * length, so length normalisation downstream is unaffected. It also makes the choice of
+ * glyph in copy a pure typography question — after this, no spelling of an abbreviation
+ * anywhere in the tree can take a row out of reach.
+ */
+const PUNCT_FORMS: Record<string, string> = { "\u05F4": '"', "\u05F3": "'" };
+
+const foldFinals = (t: string): string =>
+  t.replace(/[ךםןףץ\u05F3\u05F4]/g, (c) => FINAL_FORMS[c] ?? PUNCT_FORMS[c]);
 
 const HE_PREFIX = /^[הבלמושכ]/;
 const stems = (w: string): string[] => {

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { MODELS, getModel } from "@/lib/models";
 import { setAmbienceTilt } from "@/lib/ambience";
 import { hueShiftFor, AMBIENCE_BASE_TILT } from "@/lib/model-ambience";
-import { PRODUCT_NAME_HE, WARRANTY_MONTHS } from "@/lib/content";
+import { PRODUCT_NAME_HE, WARRANTY_MONTHS, DELIVERY_INCLUDED } from "@/lib/content";
 import {
   CustomerType,
   TRACKS,
@@ -38,6 +38,19 @@ function useCountUp(target: number, duration = 520): number {
     const from = displayRef.current;
     const to = target;
     if (from === to) return;
+    // A number counting up IS motion, and this hook had no gate. Every other
+    // animation on the site is behind `prefers-reduced-motion` — the intro, the
+    // aurora, the scroll progress, the turntable — and this one ran for everyone.
+    // For a visitor who asked for less motion it is also the most disruptive kind:
+    // it is not decoration in a corner, it is the price they are trying to read.
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    ) {
+      displayRef.current = to;
+      setDisplay(to);
+      return;
+    }
     const start = performance.now();
     const step = (now: number) => {
       const p = Math.min((now - start) / duration, 1);
@@ -79,7 +92,17 @@ const SIM_ASSURANCES: { k: string; v: string }[] = [
   { k: "אחריות יבואן רשמי", v: `MEU · שירות וחלפים מקוריים, ${WARRANTY_MONTHS} חודשים` },
   { k: "פלטפורמה מוגנת פטנט", v: "ארבעה גלגלים, מתלים עצמאיים, בלימה הידראולית כפולה" },
   { k: "תקן EN17128", v: "מותאמת לתקנות הקלנועית בישראל, בלי רישוי ובלי אגרות" },
-  { k: "מסירה בכל הארץ", v: "מתואמת אתכם מראש מול נציג" },
+  // FOUND BY READING THE RENDERED PAGE, NOT THE SOURCE (2026-09-10). The delivery
+  // promise was updated in components/Service.tsx and in the hero banner, and this
+  // fourth copy — inside the simulator, directly above the lead form, on the screen
+  // where the buyer decides — still said only "מתואמת אתכם מראש מול נציג". It was
+  // invisible to the search that found the others because it never carried the cost
+  // claim at all: it was silent about price, which is its own kind of wrong on the
+  // panel that quotes the monthly payment.
+  {
+    k: "מסירה בכל הארץ",
+    v: DELIVERY_INCLUDED ? "כלולה במחיר · מתואמת אתכם מראש" : "מתואמת אתכם מראש מול נציג",
+  },
 ];
 
 /** Stable, anonymous per-visitor id (charset matches the brain's ref validation). */
@@ -195,6 +218,10 @@ export default function Configurator() {
   }
 
   function openDeal(intent: string, evt: "LeadSubmitted" | "WhatsAppClicked") {
+    /** Resolves to whether the lead row actually landed in Supabase. Undefined on
+     *  the paths that never build one. The paid conversion below waits on it — see
+     *  the note at the track() call. */
+    let saved: Promise<boolean> | undefined;
     const digits = phone.replace(/[^\d]/g, "");
     // A valid phone is the whole point — without it there is no lead to capture.
     // Block here so we never fire a "lead" event or open WhatsApp with no contact
@@ -224,12 +251,24 @@ export default function Configurator() {
         months: quote.months,
         monthly_payment: quote.monthlyPayment,
         // Attribution rides in `source` — no new Supabase column (schema unchanged).
-        source: `miame-web · ${intent} · nationwide · ${utmTag(utm)}`,
+        // CAPPED AT 300, because supabase/schema.sql:83 enforces
+        // `char_length(coalesce(source,'')) <= 300` and this string is unbounded:
+        // utmTag() carries whatever a campaign manager typed. A Performance Max
+        // campaign name of ~190 chars plus utm_source/utm_medium plus this prefix
+        // clears 300, the INSERT is rejected by the constraint, saveLead returns
+        // false — and it is silent in production by design (lib/supabase.ts:87
+        // only warns outside production). The result would be that the site loses
+        // exactly the leads from the biggest paid campaigns, and nothing anywhere
+        // reports it. Truncating keeps the row; the attribution that survives is
+        // the front of the string, which is the part that identifies the funnel.
+        source: `miame-web · ${intent} · nationwide · ${utmTag(utm)}`.slice(0, 300),
         ...utm
       };
       // Loaded on submit, which is the first moment this page needs a database
-      // client at all. `void` keeps the funnel non-blocking exactly as before.
-      void import("@/lib/supabase").then(({ saveLead }) => saveLead(lead));
+      // client at all. The promise is KEPT now rather than voided — see the note on
+      // `track(evt)` below. Nothing awaits it before the WhatsApp hand-off, so the
+      // funnel is exactly as fast as it was.
+      saved = import("@/lib/supabase").then(({ saveLead }) => saveLead(lead));
       // Additively feed the built deal into the U.M.M central brain (tenant +
       // server-side scoring). Best-effort: the WhatsApp + Supabase funnel above
       // already fired, so a brain hiccup never costs us the lead.
@@ -261,7 +300,27 @@ export default function Configurator() {
         /* never block the funnel */
       }
     }
-    void track(evt, { modelId, type: TRACK_ID, monthly: quote.monthlyPayment, intent });
+    // THE CONVERSION WAITS FOR THE ROW. This used to fire unconditionally, one line
+    // after a fire-and-forget `saveLead`. `LeadSubmitted` maps to a Google Ads
+    // conversion and a Meta `Lead` (lib/analytics.ts), so when the INSERT failed —
+    // RLS, a constraint, a network blip, a paused project, a quota — the visitor
+    // still saw "ההצעה שבנית נשלחה אלינו", Google Ads still counted a conversion,
+    // and Smart Bidding still trained on it. A phantom conversion is worse than a
+    // missing one: it spends real budget chasing an audience that never converted,
+    // and the failure is invisible because saveLead is silent in production by
+    // design (lib/supabase.ts:87).
+    //
+    // The WhatsApp tab and the /thank-you navigation below are UNCHANGED and still
+    // immediate — the visitor waits for nothing. Only the ad platforms wait, and
+    // only for the truth. `saved` is undefined on the paths that never build a lead
+    // row (a plain enquiry), and those fire as before.
+    if (saved) {
+      void saved.then((ok) => {
+        if (ok) void track(evt, { modelId, type: TRACK_ID, monthly: quote.monthlyPayment, intent });
+      });
+    } else {
+      void track(evt, { modelId, type: TRACK_ID, monthly: quote.monthlyPayment, intent });
+    }
 
     const url = buildWhatsAppUrl(
       buildLeadMessage({
@@ -300,15 +359,20 @@ export default function Configurator() {
           <div className="cards">
             {MODELS.map((m, i) => {
               const selected = m.id === modelId;
-              const best = i === 1;
+              // A "הכי מבוקש" badge sat on `i === 1` — a popularity claim decided by a
+              // position in an array. There is no sales figure, no analytics field and
+              // no model property behind it, and two surfaces disagreed about who wins:
+              // lib/seo-pages.ts:248 calls 2×4 City (index 0) "נקודת הכניסה הפופולרית".
+              // A claim about what OTHER buyers chose is the strongest social lever on
+              // the screen where the model is picked, and this one was fabricated twice
+              // over. "פרימיום" stays: it is positioning, not a measurement.
               return (
                 <article
                   key={m.id}
                   className={selected ? "card sel" : "card"}
                 >
-                  <div className="card-stage">
-                    {best && <span className="card-badge best">הכי מבוקש</span>}
-                    {!best && i === 2 && <span className="card-badge">פרימיום</span>}
+                  <div className="card-stage depth-4d">
+                    {i === 2 && <span className="card-badge">פרימיום</span>}
                     {/* One photograph, three cards. The file is the 4×4 Pro Max —
                         the vehicle_media_assets row this cover belongs to is
                         registered as Mia FOUR "X4", and every other surface that
@@ -329,11 +393,26 @@ export default function Configurator() {
                         from the heading directly under it. Describing the platform —
                         true of all three cards, asserting nothing about which model
                         this one is — is the only version that is not wrong somewhere. */}
+                    {/* quality=90 (Next defaults to 75) and an explicit `sizes`.
+                        Both were missing, and on THIS subject that is not a
+                        rounding error: a near-black vehicle on white is where
+                        WebP at 75 manufactures banding along the tyre shoulders
+                        and the shock springs. Without `sizes`, Next assumes the
+                        image fills the viewport and hands a phone a candidate
+                        several times the ~300px the card can ever show.
+                        The file itself was re-cut on 2026-09-09 from the 3840×3840
+                        master in assets-archive (see the note in lib/turntable.ts
+                        about where those came from): 774×860 → 1200×1333, which is
+                        real detail off the render, not an enlargement. At 774 it
+                        was also BELOW Google's 1200px product-image guidance while
+                        serving as the site's Product schema image. */}
                     <Image
                       src="/mia-four-x4-hero.webp"
                       alt="קלנועית MIA FOUR, צילום סטודיו של פלטפורמת ארבעת הגלגלים"
-                      width={774}
-                      height={860}
+                      width={1200}
+                      height={1333}
+                      quality={90}
+                      sizes="(max-width: 880px) 300px, (max-width: 1120px) 30vw, 330px"
                       className="card-veh"
                     />
                   </div>
@@ -359,7 +438,7 @@ export default function Configurator() {
                         className="btn btn-ghost btn-block"
                         onClick={() => selectModel(m.id, true)}
                       >
-                        {selected ? "נטען בסימולטור ✓" : "בחר והרץ סימולציה"}
+                        {selected ? "נטען בסימולטור ✓" : "בחרו והריצו סימולציה"}
                       </button>
                     </div>
                   </div>
@@ -474,8 +553,8 @@ export default function Configurator() {
               <Image
                 src="/mia-four-x4-hero.webp"
                 alt="MIA FOUR קלנועית חשמלית ארבעה גלגלים"
-                width={774}
-                height={860}
+                width={1200}
+                height={1333}
                 className="res-product"
               />
               {/* 1600×599 shipped whole into a box that is `min(178px,48%)` wide —
@@ -495,11 +574,47 @@ export default function Configurator() {
               <div className="res-model">
                 <bdi dir="ltr">{model.name}</bdi>
               </div>
-              <div className="res-monthly" aria-live="polite" aria-atomic="true">
-                <span className="cur">₪</span>
-                <span className="num">{animatedMonthly.toLocaleString("he-IL")}</span>
-                <span className="per">לחודש · {months} תשלומים</span>
+              {/* THE LIVE REGION READS THE SETTLED NUMBER, NOT THE ANIMATION.
+                  `animatedMonthly` comes from a requestAnimationFrame count-up that
+                  calls setState on EVERY frame — about 31 of them per 520ms run. It
+                  was rendered directly inside aria-live="polite", so one nudge of one
+                  slider queued roughly thirty announcements of a number that was still
+                  moving, and a drag queued hundreds. A screen-reader user could not
+                  hear the result at all, only the counting.
+                  That matters more here than on most sites: this one sells mobility
+                  aids, so screen-reader users are a larger share of its buyers than
+                  average, and the simulator is the page's whole purpose.
+                  The visible number keeps its animation and is now hidden from the
+                  accessibility tree; a single sr-only sentence carries the SETTLED
+                  figure — quote.monthlyPayment, which changes once per interaction —
+                  and it is the only thing announced. */}
+              <div className="res-monthly">
+                <span className="cur" aria-hidden="true">₪</span>
+                <span className="num" aria-hidden="true">{animatedMonthly.toLocaleString("he-IL")}</span>
+                <span className="per" aria-hidden="true">לחודש · {months} תשלומים</span>
+                <span className="sr-only" aria-live="polite" aria-atomic="true">
+                  {quote.finalPayment === quote.monthlyPayment
+                    ? `תשלום חודשי משוער ${quote.monthlyPayment.toLocaleString("he-IL")} ₪ ל-${months} תשלומים`
+                    : `תשלום חודשי משוער ${quote.monthlyPayment.toLocaleString("he-IL")} ₪ ל-${months - 1} תשלומים, ותשלום אחרון ${quote.finalPayment.toLocaleString("he-IL")} ₪`}
+                </span>
               </div>
+
+              {/* THE SCHEDULE THAT ADDS UP, STATED WHERE IT IS CHECKED.
+                  Until 2026-09-10 the monthly figure was `round(financed / months)` and
+                  nothing carried the remainder, so in 1,068 of the 2,448 configurations
+                  a buyer can reach, `months × monthly` came out ABOVE "יתרה למימון" —
+                  by up to 9 ₪, four rows under a badge reading "0% ריבית". Anyone who
+                  multiplied found interest the site says it does not charge.
+                  The instalment now floors and the last one absorbs the remainder, so
+                  the two numbers reconcile exactly. This line is the visible half: it
+                  appears ONLY when the balance does not divide evenly, because on the
+                  21.7% that do, `18 × 829` is already the whole truth and a second
+                  sentence would just be noise. */}
+              {quote.finalPayment !== quote.monthlyPayment && (
+                <div className="res-final">
+                  {`${months - 1} תשלומים של ${ils(quote.monthlyPayment)} ותשלום אחרון של ${ils(quote.finalPayment)}`}
+                </div>
+              )}
 
               <div className="res-badges">
                 <span className="res-badge accent">0% ריבית</span>
@@ -530,7 +645,29 @@ export default function Configurator() {
               </div>
 
               {/* lead */}
-              <div className="lead">
+              {/* A real <form>, and the reason is measured, not stylistic. Until
+                  2026-09-10 this was a <div> holding two inputs and two onClick
+                  buttons, so pressing Enter in the phone field did NOTHING —
+                  confirmed in a real mobile Chromium: no request, no new tab, no
+                  state change. On a phone that is the "אישור" key on the keyboard
+                  the visitor just used to type their number, and this site's buyer
+                  is typically 58+ and finishing the form one-handed. The single most
+                  valuable keystroke on the site was inert.
+                  `noValidate`: no field declares `required`/`pattern`, so the browser
+                  has nothing to say — and openDeal already renders a specific Hebrew
+                  message through `role="alert"`. Declaring it keeps a future native
+                  bubble from competing with that announcement.
+                  The buttons now declare `type` EXPLICITLY. Inside a form an untyped
+                  <button> defaults to submit, which would have made "דברו איתי
+                  בוואטסאפ" fire the deal path too. */}
+              <form
+                className="lead"
+                noValidate
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  openDeal("אישור עסקה", "LeadSubmitted");
+                }}
+              >
                 {/* Honeypot: hidden from humans and AT; bots that fill every field trip it */}
                 <input
                   type="text"
@@ -572,14 +709,15 @@ export default function Configurator() {
                   </div>
                 )}
                 <div className="cta-stack">
-                  <button
-                    className="btn btn-primary btn-block"
-                    onClick={() => openDeal("אישור עסקה", "LeadSubmitted")}
-                  >
+                  {/* First submit button in DOM order = the one Enter triggers.
+                      That is deliberately the primary CTA. No onClick: with both,
+                      a click would fire openDeal twice. */}
+                  <button className="btn btn-primary btn-block" type="submit">
                     בדיקת התאמה בוואטסאפ
                   </button>
                   <button
                     className="btn btn-light btn-block"
+                    type="button"
                     onClick={() => openDeal("שיחה", "WhatsAppClicked")}
                   >
                     <WaIcon size={20} />
@@ -605,7 +743,7 @@ export default function Configurator() {
                     ציון עסקה {score.grade} · {score.score}/100
                   </div>
                 )}
-              </div>
+              </form>
             </div>
           </div>
         </div>

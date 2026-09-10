@@ -31,11 +31,22 @@ import { existsSync } from "node:fs";
 
 const PORT = process.env.PORT || "3333";
 const BASE = `http://127.0.0.1:${PORT}`;
+// Every route that must answer 200. /partners and /rent-eilat are NOT here: they
+// were removed by owner decision on 2026-09-02 and middleware.ts now answers 410
+// for both. Leaving them in this list made the gate assert "200" against a
+// deliberate 410, so `npm run live:audit` was guaranteed to exit non-zero on every
+// run from that day — a gate that always fails is a gate nobody reads, which is
+// how it survived a week unnoticed. They are asserted below as 410 instead, so the
+// tombstones are still covered, and by the status they are actually meant to have.
 const ROUTES = [
   "/", "/mia-four", "/klnoit-4-galgalim", "/klnoit-mitkapelet", "/klnoit-shetach",
-  "/eligibility", "/partners", "/rent-eilat", "/thank-you", "/marketplace-preview",
+  "/eligibility", "/thank-you", "/marketplace-preview",
   "/legal/terms", "/legal/privacy", "/legal/accessibility",
 ];
+
+/** Paths a product decision deleted. They must answer 410 (not 404, not 200) and
+ *  carry X-Robots-Tag: noindex — see the reasoning at the top of middleware.ts. */
+const GONE_ROUTES = ["/partners", "/rent-eilat"];
 
 // Mobile first, because that is where this site's visitors are and where its worst
 // regression to date (CLS 1.15) was invisible on desktop.
@@ -61,21 +72,18 @@ let links = 0, buttons = 0, images = 0;
 // was served, indexed, and unclickable.
 const reachable = new Set();
 // A route may be link-free only if it is not PROMOTED — that is the criterion, and
-// "noindex" was too narrow a version of it. This site deliberately uses a third state
-// besides indexed-and-linked and noindex: a page that answers 200 on a direct URL,
-// carries no in-site link, and is absent from public/sitemap.xml, so nothing is ever
-// asked to rank it. /rent-eilat is exactly that, by owner decision (84e6ec5, which
-// pulled the rental fork out of the Free Feel block because it competed with the buy
-// decision). Judging it by indexability alone would have forced it either back onto
-// the homepage or into noindex, and both reverse that decision.
+// "noindex" was too narrow a version of it. What stays a failure is the combination
+// /partners had: submitted in the sitemap AND unclickable. Adding an entry here is a
+// decision that a page is not promoted — take it out of app/sitemap.ts too, or link it.
 //
-// What stays a failure is the combination /partners had: submitted in the sitemap AND
-// unclickable. Adding an entry here is a decision that a page is not promoted — take
-// it out of the sitemap too, or link it.
+// The /rent-eilat entry was removed on 2026-09-09 along with its ROUTES entry. It
+// described a third state — "answers 200 on a direct URL, carries no in-site link,
+// absent from the sitemap" — that stopped being true on 2026-09-02, when the page was
+// deleted outright and middleware.ts began answering 410. It is now covered by
+// GONE_ROUTES, which asserts the status it actually has.
 const LINK_FREE = {
   "/thank-you": "noindex · the post-submit destination, reached by router.push",
   "/marketplace-preview": "noindex · internal demo surface, no live action",
-  "/rent-eilat": "unpromoted by owner instruction, 84e6ec5 · answers 200 on a direct URL, absent from public/sitemap.xml",
 };
 
 for (const route of ROUTES) {
@@ -151,9 +159,29 @@ for (const route of ROUTES) {
   if (r.overflow) fail(`horizontal overflow at ${VIEWPORT.width}px`);
   await page.close();
 }
+// The tombstones, by the status they are meant to have. A 410 that silently
+// decays into a 200 (someone restores the page) or a 404 (someone deletes the
+// middleware entry too early, restarting Google's retry clock) is exactly the kind
+// of regression nothing else here would see: no page renders, so no per-page check
+// above ever runs against them.
+for (const route of GONE_ROUTES) {
+  const res = await ctx.request.get(BASE + route, { maxRedirects: 0 });
+  if (res.status() !== 410) {
+    problems.push(
+      `${route} :: answered ${res.status()}, must be 410 — it was removed by product ` +
+        `decision (see middleware.ts). 404 restarts Google's retry clock; 200 means ` +
+        `the page came back without the tombstone being removed deliberately.`,
+    );
+  } else if (!/noindex/i.test(res.headers()["x-robots-tag"] || "")) {
+    problems.push(`${route} :: 410 without X-Robots-Tag: noindex (see middleware.ts).`);
+  }
+}
 await browser.close();
 
-console.log(`live-audit · ${ROUTES.length} routes · ${links} links · ${buttons} controls · ${images} images`);
+console.log(
+  `live-audit · ${ROUTES.length} routes + ${GONE_ROUTES.length} tombstones · ` +
+    `${links} links · ${buttons} controls · ${images} images`,
+);
 if (external.length) {
   console.log(`\n${external.length} third-party asset(s) did not load — informational, not a failure:`);
   for (const e of external) console.log(`  ${e}`);
@@ -168,7 +196,7 @@ for (const route of ROUTES) {
     `${route} :: no visible in-site link to it on any audited route at ${VIEWPORT.width}px — ` +
       `it is served and promoted but a phone visitor cannot click their way there. Link it ` +
       `(components/Footer.tsx renders on every content page and hides nothing), or stop ` +
-      `promoting it — out of public/sitemap.xml — and add it to LINK_FREE with the reason.`,
+      `promoting it — out of app/sitemap.ts — and add it to LINK_FREE with the reason.`,
   );
 }
 

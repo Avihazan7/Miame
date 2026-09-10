@@ -6,6 +6,7 @@ import { POST as leadPost } from "@/app/api/lead/route";
 import { POST as brainPost } from "@/app/api/brain/route";
 import { GET as embedGet, POST as embedPost } from "@/app/api/embed/route";
 import { POST as dealPost } from "@/app/api/deal/route";
+import { POST as mediaEventsPost } from "@/app/api/vehicle-media-events/route";
 
 const post = (url: string, body: unknown, headers: Record<string, string> = {}) =>
   new Request(url, {
@@ -14,9 +15,16 @@ const post = (url: string, body: unknown, headers: Record<string, string> = {}) 
     body: JSON.stringify(body),
   });
 
-// distinct IPs per test keep the shared in-memory buckets from cross-talking
+// Distinct IPs per test keep the shared in-memory buckets from cross-talking.
+//
+// This used to send `x-real-ip`, and on 2026-09-10 that stopped separating anything:
+// clientIp now reads ONLY the platform header, because the fallback chain let any
+// caller pick the rate limiter's bucket key (lib/apiGuard.ts). The suite still passed
+// — every test here stays under its ceiling even sharing one bucket — so the helper
+// went on claiming an isolation it no longer provided, which is the kind of quiet lie
+// that costs an afternoon the first time a test is added above the limit.
 let ipCounter = 0;
-const ip = () => ({ "x-real-ip": `10.9.${++ipCounter}.1` });
+const ip = () => ({ "x-vercel-forwarded-for": `10.9.${++ipCounter}.1` });
 
 describe("POST /api/lead (M1 guards)", () => {
   it("403s a foreign browser origin", async () => {
@@ -125,4 +133,42 @@ describe("POST /api/deal (M1 guards)", () => {
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: false, captured: false });
   });
+});
+
+describe("POST /api/vehicle-media-events (an unauthenticated service_role write)", () => {
+  // This route inserts with SUPABASE_SERVICE_ROLE_KEY — the one principal in the
+  // project that bypasses RLS — on behalf of an anonymous caller. `payload` was
+  // `z.record(z.unknown())`: an object of any shape and any depth, bounded only by the
+  // 8,000-byte body cap, going straight into a jsonb column.
+  //
+  // The whole application sends one payload: `{ frames: number }`
+  // (components/Product360Stage.tsx:153). The permissive shape bought nothing.
+  const ev = (payload?: unknown) =>
+    post(
+      "https://www.miame.co.il/api/vehicle-media-events",
+      payload === undefined
+        ? { vehicleId: "mia-four", type: "model3d_view" }
+        : { vehicleId: "mia-four", type: "spin360_view", payload },
+      ip(),
+    );
+
+  it("accepts what the application actually sends", async () => {
+    // 400 would mean the bound broke the feature. Anything else means the payload
+    // cleared validation — including the 500 this returns without a service key,
+    // which is the DB step and therefore proof the schema let it through.
+    expect((await mediaEventsPost(ev({ frames: 36 }))).status).not.toBe(400);
+    expect((await mediaEventsPost(ev())).status).not.toBe(400);
+  });
+
+  for (const [label, payload] of [
+    ["a nested object", { a: { b: { c: 1 } } }],
+    ["an array value", { a: [1, 2, 3] }],
+    ["more than eight keys", Object.fromEntries(Array.from({ length: 20 }, (_, i) => [`k${i}`, 1]))],
+    ["an over-long string value", { s: "A".repeat(300) }],
+    ["an over-long key", { ["k".repeat(60)]: 1 }],
+  ] as const) {
+    it(`400s ${label}`, async () => {
+      expect((await mediaEventsPost(ev(payload))).status).toBe(400);
+    });
+  }
 });

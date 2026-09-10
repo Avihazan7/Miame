@@ -8,7 +8,7 @@
 //      a variable the code reads and the contract omits is a variable the
 //      operator cannot know to set — and here it meant a finished 3D viewer sat
 //      dark with no way to discover the switch.
-//   2. public/models/README.md said the committed placeholder GLB "is served by
+//   2. docs/models/README.md said the committed placeholder GLB "is served by
 //      default". lib/content.ts says the opposite in a comment ten lines long.
 //      Documentation that contradicts the code sends the next person to wire up
 //      a fallback that was removed on purpose.
@@ -46,7 +46,7 @@ describe("the 3D switch is documented where an operator will look", () => {
 });
 
 describe("the model README does not contradict the code", () => {
-  const readme = read("public/models/README.md");
+  const readme = read("docs/models/README.md");
 
   it("no longer claims the committed placeholder is served by default", () => {
     expect(

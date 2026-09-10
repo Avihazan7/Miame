@@ -253,7 +253,7 @@
 
 @media(max-width:520px){
   .vehicle{max-width:112%}
-  .card-veh{max-width:250px}
+  .card-veh{max-width:calc(250px * var(--zoom-product, 1))}
   .res-product{
     position:relative;
     inset:auto;
@@ -327,8 +327,18 @@
 /* --- model cards: three columns, identical rhythm, CTAs on one line --- */
 .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2.4vw,24px);align-items:stretch}
 .card{display:flex;flex-direction:column;height:100%}
-.card-stage{min-height:270px;display:flex;align-items:flex-end;justify-content:center}
-.card-veh{width:96%;max-width:300px;transform:scale(1.10);transform-origin:50% 88%}
+.card-stage{min-height:calc(270px * var(--zoom-product, 1));display:flex;align-items:flex-end;justify-content:center}
+/* +10% AS A BIGGER BOX, NOT A BIGGER TRANSFORM — and the difference was visible
+   the moment it was rendered. Multiplying the existing scale(1.10) by
+   --zoom-product gave 1.21, and at 1.21 the card CLIPS the product: the handlebar
+   is cut off at the card's top edge and the near wheel is cut off at its side
+   (measured in Chromium at 1440px, 2026-09-09). The stage is a fixed box with a
+   rounded, clipping edge, so scaling the image inside it can only push the vehicle
+   INTO that edge. A crop that beheads the handlebar is worse than no enlargement.
+   Growing the box and the ceiling together by the same 10% gives the vehicle the
+   room the extra size needs, and the transform stays at the 1.10 the design
+   already had. */
+.card-veh{width:96%;max-width:calc(300px * var(--zoom-product, 1));transform:scale(1.10);transform-origin:50% 88%}
 .card-body{display:flex;flex-direction:column;flex:1}
 .card-specs{min-height:72px}
 .card-price{margin-top:auto}
@@ -336,7 +346,7 @@
 .card-cta .btn{width:100%;justify-content:center}
 @media(max-width:880px){
   .cards{grid-template-columns:1fr;max-width:420px;margin-inline:auto}
-  .card-stage{min-height:250px}
+  .card-stage{min-height:calc(250px * var(--zoom-product, 1))}
 }
 
 /* --- simulator: balanced Free Feel Deal Console --- */

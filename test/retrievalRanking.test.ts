@@ -181,6 +181,36 @@ describe("a buyer's question reaches the row that answers it", () => {
     });
   }
 
+  // GERSHAYIM: THE SAME MISS AS FINAL FORMS, IN PUNCTUATION.
+  //
+  // A Hebrew abbreviation takes ״ (U+05F4). Every Israeli keyboard produces the ASCII
+  // quote instead, so both spellings of one abbreviation exist in the wild — and in
+  // this repo: 60 ASCII against 20 typographic, measured across app/ lib/ components/
+  // on 2026-09-10. Retrieval is a substring test, so before the fix the two shared
+  // nothing at all: against the live corpus, `ש"ח` matched one row and `ש״ח` matched
+  // ZERO.
+  //
+  // And the visitor is on the losing side of that by default. The site RENDERS the
+  // typographic form — lib/spyqe.ts's spec table says "25 קמ״ש" and "עד 50 ק״מ
+  // לסוללה", on screen while the chat is open — so someone who copies what they are
+  // reading into the question asked about a number the page had just shown them and
+  // reached nothing.
+  //
+  // Asserting EQUALITY of the two results rather than a fixed id is deliberate: the
+  // invariant is that the glyph cannot matter, whatever the corpus happens to answer.
+  const GLYPH_PAIRS: [ascii: string, typographic: string][] = [
+    ['כמה עולה ספייק בש"ח', "כמה עולה ספייק בש״ח"],
+    ['מה המחיר ב ש"ח', "מה המחיר ב ש״ח"],
+  ];
+  for (const [ascii, typographic] of GLYPH_PAIRS) {
+    it(`"${typographic}" retrieves exactly what "${ascii}" does`, async () => {
+      const a = await retrieve(ascii, 3);
+      const t = await retrieve(typographic, 3);
+      expect(a.length, "the ASCII spelling retrieved nothing — the case proves nothing").toBeGreaterThan(0);
+      expect(t.map((d) => d.id)).toEqual(a.map((d) => d.id));
+    });
+  }
+
   it("a SPYQE question never ranks a MIA FOUR row first", async () => {
     // The whole point of the SPYQE rows: a different vehicle at roughly half the price.
     // warranty/service joined this set on 2026-09-09. MEASURED on the live corpus

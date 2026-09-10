@@ -1,4 +1,4 @@
-import { IMPORTER_NAME, MIA_FOUR_DELIVERY_DAYS } from "@/lib/content";
+import { IMPORTER_NAME, MIA_FOUR_DELIVERY_DAYS, DELIVERY_INCLUDED } from "@/lib/content";
 import LexIcon, { type LexName } from "@/components/LexIcon";
 import WaCta from "@/components/WaCta";
 
@@ -24,7 +24,14 @@ import WaCta from "@/components/WaCta";
  */
 const POINTS: { icon: LexName; k: string; v: string }[] = [
   { icon: "bolt", k: `אספקה עד ${MIA_FOUR_DELIVERY_DAYS} ימי עסקים`, v: "במלאי, בכפוף לזמינות" },
-  { icon: "globe", k: "מסירה בכל הארץ", v: "מתואמת אתכם מראש מול נציג" },
+  // The cost half of the delivery promise, on the surface that owns delivery. It was
+  // absent here while the hero banner claimed "עלינו" — which is how the claim came to
+  // have no source. `v` branches on the constant so the two can never disagree again.
+  {
+    icon: "globe",
+    k: "מסירה בכל הארץ",
+    v: DELIVERY_INCLUDED ? "כלולה במחיר · מתואמת אתכם מראש" : "מתואמת אתכם מראש מול נציג",
+  },
   { icon: "shield", k: "אחריות יבואן רשמי", v: IMPORTER_NAME },
   { icon: "wrench", k: "שירות וחלפים מקוריים", v: "לאורך תקופת האחריות" },
 ];

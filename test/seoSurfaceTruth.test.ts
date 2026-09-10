@@ -94,19 +94,32 @@ describe("a landing page publishes its own price or no price at all", () => {
   });
 });
 
-describe("the three hardcoded origins cannot drift apart", () => {
-  // lib/home-faq.ts adds a THIRD copy of "https://www.miame.co.il" beside the ones in
-  // app/layout.tsx and components/seo/SeoLanding.tsx, and there is no shared module to
-  // hold it. That matches the repo's precedent, so it is not worth a refactor here —
-  // but three copies with nothing comparing them is how an @id ends up pointing at a
-  // host the page is not served from, which silently voids the rich result.
-  it("layout, the home FAQ and the SEO landing all name the same site", () => {
-    const origins = ["app/layout.tsx", "lib/home-faq.ts", "components/seo/SeoLanding.tsx"].map(
-      (f) => [f, (readFileSync(f, "utf8").match(/https:\/\/www\.[a-z0-9.-]+\.co\.il/) || [])[0]],
-    );
-    const found = origins.map(([, o]) => o);
-    expect(found.every(Boolean), `no origin found in: ${origins.filter(([, o]) => !o).map(([f]) => f).join(", ")}`).toBe(true);
-    expect(new Set(found).size, `origins disagree: ${JSON.stringify(origins)}`).toBe(1);
+describe("the origin surfaces read it, they do not restate it", () => {
+  // WHAT THIS REPLACED, AND WHY. Until 2026-09-10 this block asserted that the three
+  // hardcoded copies of "https://www.miame.co.il" AGREED with each other, and its
+  // comment said so out loud: "there is no shared module to hold it. That matches the
+  // repo's precedent, so it is not worth a refactor here."
+  //
+  // Two things were wrong with that. There were SIX copies, not three — app/sitemap.ts,
+  // app/eligibility/page.tsx and components/seo/BreadcrumbJsonLd.tsx were never in the
+  // list — and the three it did watch were the three that happened to agree. The three
+  // it did not watch included the one that had already drifted: app/sitemap.ts built
+  // URLs by concatenation, so it submitted the homepage to Google as
+  // `https://www.miame.co.il/` while every canonical tag on the site said
+  // `https://www.miame.co.il`.
+  //
+  // A test that compares copies can only ever catch the copies it knows about. The
+  // origin now lives once, in lib/site.ts, and test/siteOriginSingleSource.test.ts
+  // enforces that — which is strictly stronger, because it needs no list. What is
+  // left here is the half that file cannot see: that these particular SEO surfaces
+  // still get their origin from the shared module rather than from a local of their
+  // own under a different name.
+  it("layout, the home FAQ and the SEO landing import the origin", () => {
+    for (const f of ["app/layout.tsx", "lib/home-faq.ts", "components/seo/SeoLanding.tsx"]) {
+      expect(readFileSync(f, "utf8"), `${f} no longer reads the shared origin`).toMatch(
+        /import\s*\{[^}]*\bSITE_URL\b[^}]*\}\s*from\s*"@\/lib\/site"/,
+      );
+    }
   });
 });
 
@@ -296,5 +309,141 @@ describe("the SPYQE Offer says which of its two prices is which", () => {
     expect(ld.offers.priceSpecification.priceType).toBe("https://schema.org/ListPrice");
     expect(ld.offers.priceSpecification.price).toBe(SPYQE.listPrice);
     expect(ld.offers.price).toBeLessThan(ld.offers.priceSpecification.price);
+  });
+});
+
+// ── the web root is not a filing cabinet ─────────────────────────────────────
+//
+// THE DEFECT THIS CLOSES (audit, 2026-09-09). `public/models/README.md` — 120 lines
+// of internal engineering documentation — was served at
+// https://www.miame.co.il/models/README.md with a 200, crawlable and indexable.
+// Everything under public/ IS the web root; there is no "private" corner of it.
+//
+// What it published: the name of a service-role environment variable
+// (SUPABASE_SERVICE_ROLE_KEY) and of a public one, the migration filename that
+// registers the media row, the internal script paths, which CSP directive blocks a
+// third-party model host and how that failure is silent, and a frank note that the
+// committed GLB is a procedural placeholder rather than the vehicle. None of it is
+// a secret — and all of it is a map, published to anyone who asks, of where this
+// site's soft spots are. It was also thin, off-brand, English-language content on a
+// Hebrew commercial domain, which is the SEO half of the same mistake.
+//
+// It moved to docs/models/README.md, which Next does not serve. This asserts the
+// rule rather than the one file: public/ holds assets a visitor's browser requests,
+// and nothing else. robots.txt and llms.txt are the deliberate exceptions — both
+// are addressed to crawlers by design and both are named here rather than pattern-
+// matched, so adding a third is a decision.
+describe("public/ serves assets, not documents", () => {
+  const ALLOWED_TEXT = new Set(["public/robots.txt", "public/llms.txt"]);
+  const ASSET = /\.(webp|png|jpe?g|svg|ico|gif|avif|mp4|webm|glb|gltf|woff2?|ttf|otf|pdf|xml|json|txt)$/i;
+
+  function walk(dir: string, acc: string[] = []): string[] {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const p = `${dir}/${e.name}`;
+      if (e.isDirectory()) walk(p, acc);
+      else acc.push(p);
+    }
+    return acc;
+  }
+
+  const files = walk("public");
+
+  it("the scan is alive", () => {
+    expect(files.length, "nothing found under public/ — the walk is broken").toBeGreaterThan(20);
+  });
+
+  it("publishes no markdown, source or config file", () => {
+    const leaked = files.filter(
+      (f) => /\.(md|mdx|ts|tsx|js|mjs|cjs|sql|yml|yaml|env|sh|lock)$/i.test(f),
+    );
+    expect(
+      leaked,
+      "these are served at the domain root and are indexable. Internal notes, source " +
+        "and config belong in docs/ or beside the code — public/ is the web root, and " +
+        "a file there is a published page whether or not anything links to it.",
+    ).toEqual([]);
+  });
+
+  it("publishes no text file that is not a deliberate crawler surface", () => {
+    const unexpected = files.filter((f) => f.endsWith(".txt") && !ALLOWED_TEXT.has(f));
+    expect(
+      unexpected,
+      "a .txt in public/ is served to crawlers. If it is meant to be — like robots.txt " +
+        "and llms.txt — add it to ALLOWED_TEXT here, deliberately.",
+    ).toEqual([]);
+  });
+
+  it("every remaining file is an asset a browser would actually request", () => {
+    const odd = files.filter((f) => !ASSET.test(f));
+    expect(odd, "unrecognised file type under the web root").toEqual([]);
+  });
+});
+
+// ── llms.txt may not tell a machine something the site denies to a human ─────
+//
+// THE DEFECT THIS CLOSES (audit, 2026-09-09). public/llms.txt described SPYQE as
+// «מהירות מרבית 25 קמ"ש (תקרת הקלנועית בישראל)» — a REGULATORY assertion, that
+// 25 km/h is the Israeli mobility-scooter ceiling. The site tells a person the
+// opposite: components/Specs.tsx renders «12 קמ"ש» and components/AskBrain.tsx
+// answers «מהירות מרבית 12 קמ"ש, מותאם לתקנות הקלנועית בישראל».
+//
+// So the same origin told a buyer 12 is the compliant speed and told an answer
+// engine that 25 is the legal ceiling — in the file that exists to be QUOTED, on
+// the one subject where being wrong is a regulatory problem rather than a
+// marketing one. The parenthetical is gone; 25 stands as what it always was, a
+// manufacturer figure, and MIA FOUR's own 12 km/h — which was missing from the
+// file entirely — is now stated on the product line.
+//
+// This asserts the RELATIONSHIP, not the number: whatever speed the site shows a
+// human is the speed llms.txt must carry, and llms.txt may not claim a regulatory
+// ceiling of its own.
+describe("llms.txt agrees with the site it describes", () => {
+  const llms = readFileSync("public/llms.txt", "utf8");
+  const specs = readFileSync("components/Specs.tsx", "utf8");
+
+  it("carries the same top speed the spec table shows a visitor", () => {
+    const onPage = specs.match(/(\d+)\s*קמ&quot;ש|(\d+)\s*קמ"ש/)?.slice(1).find(Boolean);
+    expect(onPage, "the spec table no longer states a speed").toBeTruthy();
+    expect(
+      llms,
+      `components/Specs.tsx shows ${onPage} קמ"ש and llms.txt does not carry it. An ` +
+        `answer engine quotes this file; a speed it does not hold is a speed it will ` +
+        `take from somewhere else, and the only other number in the file is SPYQE's.`,
+    ).toContain(`${onPage} קמ"ש`);
+  });
+
+  it("claims no regulatory ceiling of its own", () => {
+    // MiaMe may state what a manufacturer published and what the site's own legal
+    // copy says. It may not tell a machine what Israeli law permits — that is the
+    // assertion shape test/commercialTruth.test.ts bans everywhere else, and this
+    // file is the one surface written to be repeated verbatim by a third party.
+    expect(llms, 'llms.txt asserts a legal speed ceiling').not.toMatch(/תקרת הקלנועית/);
+  });
+
+  it("covers the Ministry of Defence eligibility route, and links it", () => {
+    // The owner's stated priority topic. It was absent from this file entirely
+    // while /eligibility carried 1,267 words and seven answers on it — so an engine
+    // asked "האם קלנועית מיה פור מוכרת לזכאי אגף שיקום?" found nothing in the one
+    // file built for that question.
+    expect(llms, "llms.txt never names אגף השיקום").toContain("אגף השיקום");
+    expect(llms, "llms.txt never links /eligibility").toContain("/eligibility");
+    // And it must carry the boundary, not just the topic: quoting the tracks without
+    // the caveat is how a chatbot turns "there are two tracks" into "you qualify".
+    expect(llms, "llms.txt states the tracks without saying who decides").toMatch(
+      /נקבעים על ידי משרד הביטחון בלבד/,
+    );
+  });
+
+  it("quotes no entitlement figure — the same rule the corpus follows", () => {
+    // supabase/migrations/20260909140000_knowledge_subsidy_no_figures.sql removed
+    // every percentage and sum from the retrieval corpus by owner decision. A figure
+    // in llms.txt would reintroduce it through the other machine-readable door.
+    const eligibilityBlock = llms.slice(
+      llms.indexOf("## זכאות ניידות"),
+      llms.indexOf("## דרכי פעולה באתר"),
+    );
+    expect(eligibilityBlock.length, "the eligibility block is missing").toBeGreaterThan(100);
+    expect(eligibilityBlock, "an entitlement percentage is quoted").not.toMatch(/\d+\s*%/);
+    expect(eligibilityBlock, "an entitlement sum is quoted").not.toMatch(/\d[\d,]*\s*₪/);
   });
 });

@@ -8,7 +8,7 @@ import Link from "next/link";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import WaIcon from "@/components/WaIcon";
 import LexIcon from "@/components/LexIcon";
-import { OG_IMAGES } from "@/lib/seo/og";
+import { OG_BASE } from "@/lib/seo/og";
 
 export const metadata: Metadata = {
   title: "תודה! הפרטים התקבלו",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   // openGraph the page inherited the root layout's — announcing the homepage's
   // title and, worse, the homepage's og:url — so the card described a different
   // page than the one being shared. Next also fills the X card from here.
-  openGraph: { images: OG_IMAGES,
+  openGraph: { ...OG_BASE,
     title: "תודה! הפרטים התקבלו · MiaMe",
     description: "הפנייה שלך התקבלה. נציג MiaMe יחזור אליך בהקדם עם ההצעה המותאמת.",
     url: "/thank-you",

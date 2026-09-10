@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { PRODUCT_NAME_HE } from "@/lib/content";
+import { PRODUCT_NAME_HE, DELIVERY_INCLUDED } from "@/lib/content";
 function Ic({ d }: { d: string }) {
   return (
     <div className="feat-ic">
@@ -61,7 +61,27 @@ export default function Features() {
           <span className="deliver-banner">
             <TruckIcon />
             <span>
-              משלוח <b>MIA FOUR</b> עד אליך, <span className="db-free">עלינו.</span>
+              {/* "עלינו" IS the claim, and it is now backed. It shipped for a while
+                  with no source anywhere — not app/legal/terms (whose §5 covered
+                  delivery TIMING and never price), not Service.tsx, not llms.txt, not
+                  any module — and was pulled on 2026-09-10 for exactly that reason.
+                  Owner decision the same day: delivery and handover ARE included. So it
+                  is back, sourced from lib/content.ts, stated in §5 of the binding
+                  document, and encoded in the Offer's shippingDetails.
+                  Rendered under `DELIVERY_INCLUDED` rather than written flat: if the
+                  commercial fact ever changes, this sentence disappears with the
+                  schema node and the clause, instead of outliving them. */}
+              {DELIVERY_INCLUDED ? (
+                <>
+                  משלוח ומסירה של <b>MIA FOUR</b> עד אליכם,{" "}
+                  <span className="db-free">עלינו.</span>
+                </>
+              ) : (
+                <>
+                  משלוח ומסירה של <b>MIA FOUR</b> עד אליכם,{" "}
+                  <span className="db-free">בתיאום מראש.</span>
+                </>
+              )}
             </span>
           </span>
         </div>

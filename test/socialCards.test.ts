@@ -56,12 +56,56 @@ describe("a large-image card always has an image", () => {
     expect(overriders.length).toBeGreaterThan(5);
   });
 
-  it.each(overriders)("%s declares an image", (file) => {
+  // The GUARANTEE is "this route resolves to a card image", and there are now three
+  // honest ways to satisfy it. The original text scan only recognised one of them
+  // (a literal `images:` key), which is why it had to be widened when the shared
+  // chrome was introduced — not weakened:
+  //
+  //   1. `...OG_BASE`   — the shared object in lib/seo/og.tsx, which carries
+  //                       images alongside siteName and locale. Spreading it is
+  //                       now the default, because og:site_name and og:locale were
+  //                       being lost to the same merge trap as og:image was.
+  //   2. `images:`      — the route declares its own, e.g. the four landing pages,
+  //                       which have their own photograph.
+  //   3. `...OG_CHROME` — the route deliberately omits `images` so that its
+  //                       COLOCATED opengraph-image file convention wins. Next
+  //                       gives an explicit metadata `images` precedence over the
+  //                       file, so /eligibility was generating a dedicated card,
+  //                       serving it at 200, and referencing the generic one.
+  //                       This branch is only accepted when the file really exists.
+  it.each(overriders)("%s resolves to a card image", (file) => {
     const src = read(file);
     const og = src.slice(src.indexOf("openGraph:"));
-    expect(og.slice(0, og.indexOf("},") + 1), `${file} overrides openGraph with no images`).toMatch(
-      /images\s*:/,
-    );
+    const block = og.slice(0, og.indexOf("},") + 1);
+    const hasOwnImages = /images\s*:/.test(block);
+    const hasSharedImages = /\.\.\.OG_BASE/.test(block);
+    const colocated = existsSync(file.replace(/page\.tsx$/, "opengraph-image.tsx"));
+    const viaChrome = /\.\.\.OG_CHROME/.test(block) && colocated;
+    expect(
+      hasOwnImages || hasSharedImages || viaChrome,
+      `${file} overrides openGraph and no image resolves for it. Spread ...OG_BASE ` +
+        `(lib/seo/og.tsx), declare your own images, or — if this route has its own ` +
+        `opengraph-image.tsx beside it — spread ...OG_CHROME and let the file ` +
+        `convention supply the image. Note that ...OG_CHROME WITHOUT that file is a ` +
+        `large-image card with no image, which renders as an empty frame.`,
+    ).toBe(true);
+  });
+
+  it("every route that relies on the file convention actually has the file", () => {
+    // The dangerous half of branch 3: ...OG_CHROME is a promise that a colocated
+    // opengraph-image.tsx exists. Delete that file and the route silently becomes a
+    // summary_large_image card with no image — the exact defect this describe block
+    // was written for, re-entering through the fix for it.
+    const broken = overriders.filter((f) => {
+      const og = read(f).slice(read(f).indexOf("openGraph:"));
+      const block = og.slice(0, og.indexOf("},") + 1);
+      return (
+        /\.\.\.OG_CHROME/.test(block) &&
+        !/images\s*:/.test(block) &&
+        !existsSync(f.replace(/page\.tsx$/, "opengraph-image.tsx"))
+      );
+    });
+    expect(broken, "these spread OG_CHROME but have no opengraph-image.tsx beside them").toEqual([]);
   });
 });
 

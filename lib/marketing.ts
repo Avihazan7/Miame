@@ -28,6 +28,36 @@ export const hasTikTokPixel = Boolean(TIKTOK_PIXEL_ID);
 /** Any pixel configured → we should render the consent banner + tag scripts. */
 export const marketingEnabled = hasGa4 || hasGoogleAds || hasMetaPixel || hasTikTokPixel;
 
+/**
+ * Vercel Web Analytics — the ONE measurement that is not in `marketingEnabled`,
+ * because it is not marketing and it is not consent-gated. See
+ * components/VercelAnalytics.tsx for why that is defensible and where it is
+ * disclosed.
+ *
+ * The env read lives HERE and not in the component because .eslintrc.json bans
+ * `process.env` under components/** and app/** outright — secrets stay server-
+ * side, and the rule does not try to guess which reads are safe. Every other
+ * measurement flag in this file is derived the same way, so the component gets a
+ * boolean and never sees an environment.
+ *
+ * NEXT_PUBLIC_VERCEL_ENV is set automatically on every Vercel deployment and is
+ * not a secret — it is literally "production" | "preview" | "development". The
+ * gate exists because /_vercel/insights/script.js is served by the PLATFORM:
+ * anywhere else it is a guaranteed 404 in the visitor's console.
+ *
+ * ⚠ ANY Vercel environment, not just production — and the first draft got this
+ * wrong. It read `=== "production"`, which is a stricter test than the reason for
+ * the gate supports: the endpoint exists on PREVIEW deployments too. The practical
+ * cost was the part that mattered: with Web Analytics freshly enabled, the owner
+ * opens the dashboard on "All environments" to check that it works, and the
+ * preview build — the only one carrying this code until the PR merges — reports
+ * nothing. The dashboard would have read 0 and looked broken, for as long as it
+ * took to notice why. Vercel already separates environments in its own filters, so
+ * reporting from preview costs nothing and makes the change verifiable before it
+ * ships. A local `npm run dev` still sends nothing: the variable is unset there.
+ */
+export const vercelAnalyticsEnabled = Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV);
+
 type Params = Record<string, unknown>;
 
 interface Gtag {
@@ -136,6 +166,19 @@ export function setConsent(state: "granted" | "denied"): void {
     // banner reports success. Caught by the review bot on PR #159; it was right.
     const t = ttq();
     if (t) (state === "granted" ? t.enableCookie : t.disableCookie)?.();
+
+    // ATTRIBUTION FOLLOWS THE ANSWER, IN BOTH DIRECTIONS. lib/utm.ts captures the
+    // landing campaign into memory on every visit and writes it to the device only
+    // once consent exists, so this is where a "granted" turns that memory into
+    // storage — otherwise a visitor who lands on an ad and then accepts would have
+    // been persisted nothing, purely because the two events happen in that order.
+    // A "denied" clears anything a previous grant left behind: withdrawal has to
+    // remove what the grant stored, or it is not a withdrawal.
+    if (state === "granted") {
+      void import("@/lib/utm").then((m) => m.persistUtm());
+    } else if (typeof window !== "undefined") {
+      window.localStorage.removeItem("miame_utm");
+    }
   } catch {
     /* marketing never throws */
   }

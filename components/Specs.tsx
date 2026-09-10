@@ -12,7 +12,7 @@ export default function Specs() {
           </p>
         </div>
         <div className="specs-wrap">
-          <div className="specs-media specs-media--product">
+          <div className="specs-media specs-media--product depth-4d">
             {/* Was a plain <img>, so the 81 KB original shipped whole with no srcset
                 to a box that is .9fr of a two-column grid (~45vw) and one column on
                 a phone. The optimizer needs `sizes` to know that; without it every

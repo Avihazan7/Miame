@@ -1,4 +1,4 @@
-import { PRODUCT_NAME } from "@/lib/content";
+import { MANUFACTURER_NAME, MANUFACTURER_NAME_HE, MANUFACTURER_URL, PRODUCT_NAME } from "@/lib/content";
 
 /**
  * lib/spyqe.ts — the single source of truth for MIA SPYQE.
@@ -148,18 +148,42 @@ export function spyqeProductJsonLd(siteUrl: string) {
     "@type": "Product",
     "@id": `${siteUrl}/#product-spyqe`,
     name: SPYQE.full,
+    sku: SPYQE.id,
+    productID: SPYQE.id,
     image: `${siteUrl}/miame-spyqe.webp`,
     description:
       `${SPYQE.full} — הדגם השני על פלטפורמת MIA Dynamics. ` +
       `מנוע BLDC כפול, מהירות מרבית 25 קמ״ש, טווח עד 50 ק״מ לסוללה, תקן EN17128. ` +
       `נמכר בהזמנה מוקדמת לקראת המשלוח הראשון לישראל.`,
-    brand: { "@type": "Brand", name: PRODUCT_NAME },
+    // BRAND WAS `PRODUCT_NAME` — "MIA FOUR". SPYQE is not a MIA FOUR: its own
+    // description one line above calls it "הדגם השני על פלטפורמת MIA Dynamics", the
+    // site sells the two at different prices under different availability, and
+    // public/llms.txt carries an explicit instruction to answer engines never to
+    // move a figure from one to the other. Declaring MIA FOUR as this product's
+    // brand merges the two into a single entity in the graph — which is exactly
+    // the class of error app/layout.tsx fixed when it stopped calling MiaMe the
+    // brand of MIA FOUR, made here in the opposite direction.
+    //
+    // It was also the only Product node on the site with no `manufacturer` and no
+    // `seller`, so the one product whose maker is the strongest trust signal it
+    // has was the one that did not name it.
+    brand: { "@type": "Brand", name: SPYQE.name, alternateName: [SPYQE.full, SPYQE.nameHe] },
+    manufacturer: {
+      "@type": "Organization",
+      name: MANUFACTURER_NAME,
+      alternateName: [MANUFACTURER_NAME_HE],
+      url: MANUFACTURER_URL,
+    },
     offers: {
       "@type": "Offer",
       priceCurrency: "ILS",
       price: SPYQE_TOTAL,
       availability: "https://schema.org/PreOrder",
       url: `${siteUrl}/#spyqe`,
+      // A pre-order is by definition a new unit. Stated because Google reads an
+      // absent itemCondition as unknown, not as new.
+      itemCondition: "https://schema.org/NewCondition",
+      seller: { "@id": `${siteUrl}/#organization` },
       // UnitPriceSpecification, not the abstract PriceSpecification, because
       // `priceType` only exists on the subtype — and `priceType` is the whole
       // point. Without it the Offer carries two bare numbers, 10,990 and 11,990,

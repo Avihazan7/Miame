@@ -18,6 +18,7 @@ import { TRACKS, computeQuote } from "@/lib/finance";
 import { MODELS } from "@/lib/models";
 import * as content from "@/lib/content";
 import { WA_CTA, waHref } from "@/lib/wa-cta";
+import sitemapEntries from "@/app/sitemap";
 
 const ROOT = process.cwd();
 const read = (rel: string) => readFileSync(resolve(ROOT, rel), "utf8");
@@ -106,8 +107,19 @@ describe("simulator runs exactly one track", () => {
       });
       expect(q.balloonAmount).toBe(0);
       expect(q.effectivePrice).toBe(m.price);
-      // no interest: the instalments recover exactly the financed amount
-      expect(q.monthlyPayment).toBe(Math.round(q.financedAmount / 18));
+      // NO INTEREST — ASSERTED AS THE IDENTITY, NOT AS THE FORMULA.
+      //
+      // This line read `expect(q.monthlyPayment).toBe(Math.round(q.financedAmount / 18))`
+      // under the comment "the instalments recover exactly the financed amount". The
+      // comment named the right property and the assertion tested something else: it
+      // re-stated the implementation, and `Math.round` is exactly what made the
+      // instalments NOT recover the balance. Enumerated on 2026-09-10 across all 2,448
+      // reachable configurations, 1,068 of them (43.6%) had `months × monthly` land
+      // ABOVE the financed amount — by up to 9 ₪, on a panel badged "0% ריבית".
+      // A test that mirrors the code can only ever agree with it.
+      expect(q.monthlyPayment * (q.months - 1) + q.finalPayment).toBe(q.financedAmount);
+      // and the regular instalment never exceeds the buyer's fair share
+      expect(q.monthlyPayment).toBeLessThanOrEqual(Math.ceil(q.financedAmount / q.months));
       expect(q.downAmount + q.financedAmount).toBe(m.price);
     }
   });
@@ -257,7 +269,7 @@ describe("one route out of the Free Feel moment", () => {
   // different product, at the exact moment the visitor is deciding whether to
   // buy. The focused campaign sells one thing, so the fork is gone.
   const fm = readFileSync("components/FreedomMomentVideo.tsx", "utf8");
-  const sitemap = readFileSync("public/sitemap.xml", "utf8");
+  const sitemap = sitemapEntries().map((e) => e.url).join("\n");
 
   it("offers no rental fork", () => {
     expect(fm).not.toContain("rent-eilat");
@@ -267,8 +279,52 @@ describe("one route out of the Free Feel moment", () => {
   it("does not submit a page nothing links to", () => {
     // That link was the site's ONLY inbound route to /rent-eilat. Leaving the
     // URL in the sitemap after removing it would submit an orphan for indexing —
-    // the same regression the EntryPaths removal caused once already. The page
-    // still answers on a direct URL; it is simply no longer promoted.
+    // the same regression the EntryPaths removal caused once already.
     expect(sitemap).not.toContain("rent-eilat");
+  });
+
+  it("no machine-readable surface still advertises rental or a partner programme", () => {
+    // WHY THIS EXISTS. The sweep that removed the rental and partner products read
+    // the components and the sitemap. It did not read app/manifest.ts, which went on
+    // describing the business as "קנייה, ליסינג והשכרה" for a week — while
+    // public/llms.txt, on the same origin, told answer engines "MiaMe אינה משכירה
+    // ואינה מפעילה תוכנית שותפים" and middleware.ts answered 410 for /rent-eilat.
+    // A crawler reading both got a straight contradiction, and the manifest is the
+    // copy an install prompt shows. These are the three files that state what the
+    // business sells to a machine; they are asserted together so the next product
+    // decision cannot land in two of them and miss the third.
+    const surfaces = {
+      "app/manifest.ts": readFileSync("app/manifest.ts", "utf8"),
+      "public/llms.txt": readFileSync("public/llms.txt", "utf8"),
+      "app/layout.tsx": readFileSync("app/layout.tsx", "utf8"),
+    };
+    for (const [file, src] of Object.entries(surfaces)) {
+      // Only the DECLARATIVE strings — the explanatory comments in these files are
+      // allowed to name what was removed, and must be, or the reason is lost.
+      // Comment-stripping applies to the TypeScript files only. In llms.txt a
+      // leading "#" is a markdown heading — real content an answer engine reads —
+      // so stripping those lines there would blind the check to the exact place a
+      // stale product claim would do the most damage.
+      const declarative = file.endsWith(".ts")
+        ? src
+            .replace(/\/\*[\s\S]*?\*\//g, " ")
+            .split("\n")
+            .filter((l) => !l.trim().startsWith("//"))
+            .join("\n")
+        : src;
+      expect(declarative, `${file} still offers rental`).not.toMatch(/השכרה|להשכיר|rent-eilat/);
+      expect(declarative, `${file} still offers a partner programme`).not.toMatch(/\/partners/);
+    }
+  });
+
+  it("the manifest names the product and the category, not a phrase nobody searches", () => {
+    // app/layout.tsx struck "ניידות חשמלית פרימיום" from the meta description on
+    // 2026-09-01 because it named neither the product (מיה פור) nor what the thing
+    // legally is (קלנועית). The manifest kept it until 2026-09-09.
+    const manifest = readFileSync("app/manifest.ts", "utf8");
+    const description = manifest.match(/description:\s*\n?\s*"([^"]+)"/)?.[1] ?? "";
+    expect(description.length, "manifest description not found").toBeGreaterThan(20);
+    expect(description).toContain("מיה פור");
+    expect(description).toContain("קלנועית");
   });
 });

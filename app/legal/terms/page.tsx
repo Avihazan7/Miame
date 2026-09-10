@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { MANUFACTURER_NAME_HE } from "@/lib/content";
+import { MANUFACTURER_NAME_HE, DELIVERY_INCLUDED_NOTE } from "@/lib/content";
 // Seller identification has to name a channel that answers, so the number is
 // read from the one sales-line constant rather than typed here a second time.
 import { SALES_PHONE_DISPLAY, SALES_PHONE_TEL } from "@/lib/whatsapp";
 import Link from "next/link";
-import { OG_IMAGES } from "@/lib/seo/og";
+import { OG_BASE } from "@/lib/seo/og";
 
-const UPDATED = "4 ביולי 2026";
+const UPDATED = "10 בספטמבר 2026";
 
 const DESC =
   "תקנון האתר ותנאי הרכישה, המקדמות, הביטולים, המסירה, האחריות והשירות של MiaMe. הצעות התשלום באתר הן הערכה ואינן מחייבות.";
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "תקנון ותנאי שימוש",
   description: DESC,
   alternates: { canonical: "/legal/terms" },
-  openGraph: { images: OG_IMAGES, title: "תקנון ותנאי שימוש · MiaMe", description: DESC, url: "/legal/terms", type: "article" },
+  openGraph: { ...OG_BASE, title: "תקנון ותנאי שימוש · MiaMe", description: DESC, url: "/legal/terms", type: "article" },
   robots: { index: true, follow: true }
 };
 
@@ -24,11 +24,21 @@ export default function TermsPage() {
     <main id="main" className="legal">
       <Link href="/" className="legal-back">← חזרה לדף הבית</Link>
       <h1>תקנון ותנאי שימוש</h1>
-      <p className="legal-meta">גרסה 1.0 · עודכן: {UPDATED}</p>
+      <p className="legal-meta">גרסה 1.1 · עודכן: {UPDATED}</p>
 
       <p>
-        תקנון זה חל על השימוש באתר MiaMe.co.il (להלן: "האתר") ועל תהליך הרכישה,
-        ההשכרה והשירות של מוצרי {MANUFACTURER_NAME_HE} הנמכרים בו. האתר מופעל על ידי
+        {/* "ההשכרה" stood here until 2026-09-10. MiaMe does not rent: the owner
+            settled rental out of the business on 2026-09-02 (supabase/phases.json,
+            9-rental-fleet-os), middleware.ts answers /rent-eilat with 410, and
+            public/llms.txt tells answer engines, in as many words, "MiaMe אינה
+            משכירה". This is the binding document, so it was the one place the claim
+            could do real damage — the site told machines it does not rent while its
+            own terms declared their scope over "ההשכרה … של מוצרי מיה דיינמיקס".
+            The existing gate whitelisted this file by name, on the reasoning that
+            rental "is legitimate in app/legal/terms"; that reasoning predates the
+            owner's decision and is corrected in test/commercialTruth.test.ts. */}
+        תקנון זה חל על השימוש באתר MiaMe.co.il (להלן: "האתר") ועל תהליך הרכישה
+        והשירות של מוצרי {MANUFACTURER_NAME_HE} הנמכרים בו. האתר מופעל על ידי
         Leasing.co.il. עצם
         השימוש באתר, שליחת פנייה או ביצוע הזמנה מהווים הסכמה לתנאים אלה. אם אינך
         מסכים לתנאים, אין לעשות שימוש באתר.
@@ -73,9 +83,16 @@ export default function TermsPage() {
 
       <h2>5. מסירה ואספקה</h2>
       <p>
-        מועדי אספקה ומסירה הם הערכה וכפופים לזמינות מלאי. תיאום מסירה, נסיעת מבחן
-        ומקום איסוף יבוצעו מול נציג. באחריות הרוכש לוודא התאמת המוצר לצרכיו ולדין
-        החל על השימוש בו.
+        {/* THE COST HALF, ADDED 2026-09-10 BY OWNER DECISION. Until then this clause
+            covered delivery TIMING only, while components/Features.tsx told the buyer
+            "משלוח … עלינו" — an absolute cost promise the binding document did not
+            back by a single word. A promise the terms cannot answer for is the one a
+            buyer complains about. The sentence is rendered from DELIVERY_INCLUDED_NOTE
+            in lib/content.ts, the same constant the delivery section and the Offer's
+            shippingDetails read, so the page and the contract cannot drift apart. */}
+        {DELIVERY_INCLUDED_NOTE}. מועדי אספקה ומסירה הם הערכה וכפופים לזמינות מלאי.
+        תיאום מסירה, נסיעת מבחן ומקום איסוף יבוצעו מול נציג. באחריות הרוכש לוודא
+        התאמת המוצר לצרכיו ולדין החל על השימוש בו.
       </p>
 
       <h2>6. אחריות ושירות</h2>

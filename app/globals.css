@@ -52,6 +52,25 @@
   --r-lg:26px;
   --maxw:1120px;
 
+  /* ── PRODUCT PRESENCE (owner call, 2026-09-09) ──────────────────────────────
+     How large the vehicle reads inside the box it already occupies. These are
+     TRANSFORM scales, not layout widths, and that distinction is the whole
+     reason they are safe: the reserved box, the `sizes` contract, the CLS
+     reservation and — on the hero — the turntable's six-frame alignment are all
+     untouched. Growing the layout box instead would have changed the slot the
+     hero's `sizes` string describes ("…, 520px", derived in test/heroLight.test.ts
+     from --maxw and the grid) and under-served the LCP on every desktop.
+
+     The pixels can afford it. The hero frames are 2599×2879 served into a 520px
+     CSS slot — a five-fold oversupply — so 13% more magnification spends headroom
+     that is already paid for rather than enlarging anything.
+
+     --zoom-hero is absolute. --zoom-product is applied ON TOP of a rule that
+     already carried scale(1.10) for the model cards, so the shipped value there
+     is 1.21: ten percent more than what is live, which is what was asked for. */
+  --zoom-hero:1.13;
+  --zoom-product:1.10;
+
   /* adaptive ambient lighting — AmbientLight.tsx overrides these live */
   --amb-hue-a:186;
   --amb-hue-b:200;
@@ -347,6 +366,9 @@ svg{display:block}
 .inp-error:focus{border-color:#ff7a7a}
 .lead-err{font-size:13px;color:#ffb0b0;text-align:center;margin-top:-2px;margin-bottom:8px;font-weight:600}
 .disclaimer{font-size:11.5px;color:#7e93b8;margin-top:12px;text-align:center;line-height:1.5}
+/* The exact-schedule line under the monthly figure. Same voice as .res-badge text:
+   secondary, small, never competing with the number it explains. */
+.res-final{font-size:12.5px;color:#9fb4d6;text-align:center;margin-top:6px;line-height:1.5}
 .lead-ok{font-size:13px;color:#7fd4a0;text-align:center;margin-top:10px;font-weight:600}
 
 /* partner */
@@ -654,7 +676,13 @@ svg{display:block}
   border-radius:24px;padding:clamp(16px,2.4vw,26px) clamp(10px,2vw,20px);min-height:0}
 .tribute-media img{width:100%;height:auto;max-width:min(100%,450px);aspect-ratio:900/880;
   filter:drop-shadow(0 30px 48px rgba(11,20,40,.24))}
-.tribute-badge{position:absolute;top:12px;inset-inline-start:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(96px,9vw,132px);height:clamp(96px,9vw,132px);border-radius:50%;background:linear-gradient(150deg,var(--glow-teal),var(--ink-teal) 72%);color:#fff;font-weight:900;font-size:clamp(26px,2.6vw,34px);line-height:1;border:3px solid rgba(255,255,255,.92);box-shadow:0 16px 34px rgba(15,107,94,.42),0 0 0 6px rgba(24,224,189,.16);text-align:center;z-index:2}
+.tribute-badge{position:absolute;top:12px;inset-inline-start:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(96px,9vw,132px);height:clamp(96px,9vw,132px);border-radius:50%;background:linear-gradient(150deg,var(--glow-teal) -25%,var(--ink-teal) 42%);color:#fff;font-weight:900;font-size:clamp(26px,2.6vw,34px);line-height:1;border:3px solid rgba(255,255,255,.92);box-shadow:0 16px 34px rgba(15,107,94,.42),0 0 0 6px rgba(24,224,189,.16);text-align:center;z-index:2}
+ /* THE GRADIENT WAS UNDER THE LEGAL HEDGE. White type sat on the --glow-teal end
+    at 1.69:1, and the word it made hardest to read is "עד" — the qualifier that
+    turns "100%" from a promise into a ceiling. components/Tribute.tsx calls that
+    wording legally reviewed and frozen; a hedge nobody can read is a hedge that is
+    not really there. The stops moved (not the colours) so the teal now runs off the
+    edge and every glyph sits on --ink-teal, where white measures 6.39:1. */
 .tribute-badge .tb-pre{font-size:clamp(11px,1.05vw,13px);font-weight:800;opacity:.95;margin-bottom:1px}
 .tribute-badge small{font-size:clamp(11px,1.05vw,13px);font-weight:800;margin-top:3px;letter-spacing:.5px}
 .elig-card{background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 10px 26px rgba(11,20,40,.06);margin-bottom:14px}
@@ -911,7 +939,16 @@ svg{display:block}
    ════════════════════════════════════════════════════════════════════ */
 
 /* ─── POLISH · ליטוש: יישור, חיתוך-עוגן מתחת לכותרת דביקה, חדות ─────── */
-html{scroll-padding-top:92px}
+html{scroll-padding-top:92px;scroll-padding-bottom:96px}
+/* scroll-padding-BOTTOM, for WCAG 2.2 §2.4.11 (Focus Not Obscured). `.sticky-cta`
+   is `position:fixed; bottom:0` and is the primary call to action on mobile, so it
+   sits ON TOP of the page at every scroll position — roughly 74px plus
+   env(safe-area-inset-bottom). Without this, tabbing to a control near the bottom
+   of the viewport scrolls it exactly to the edge and the bar covers it: the focus
+   ring is correct, visible to the DOM, and hidden from the person using it. 96px
+   clears the bar and its safe-area padding with room to spare. The top value has
+   been here for the fixed header since launch; the bottom one was never added when
+   the bar arrived. */
 ::selection{background:rgba(12,229,221,.26);color:var(--ink)}
 ::-moz-selection{background:rgba(12,229,221,.26);color:var(--ink)}
 :root{accent-color:var(--azure);color-scheme:light}
@@ -957,7 +994,7 @@ html{scroll-padding-top:92px}
 
 /* ─── WAX NANO CRISTAL · the catalog's material ────────────────────────
    MIA FOUR's body is a MATTE nano-crystal black with teal springs — that is
-   the manufacturer's own material language (public/models/README.md), and it
+   the manufacturer's own material language (docs/models/README.md), and it
    is what the photography shows. The catalog surfaces were plain white cards
    over a flat gradient, which reads as a template rather than as this product.
 
@@ -1372,7 +1409,13 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 /* Footer legal links row */
 .foot-links{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;margin:16px 0 4px}
 .foot-links a{font-size:13.5px;color:var(--slate,#5b6b85);font-weight:600;display:inline-flex;align-items:center;min-height:28px}
-.foot-links a:hover{color:var(--teal)}
+.foot-links a:hover{color:var(--ink-teal)}
+/* WAS var(--teal) — an alias of --glow-teal, measured 1.69:1 on white against the
+   4.5:1 text minimum. styles/tokens.miame.css annotates --glow-teal "dark only"
+   in the token block itself, so this was a documented rule being broken, not a
+   judgement call. --ink-teal is the token the same file designates for text on
+   light and measures 6.39:1. The irony worth recording: one of the links this
+   made unreadable on hover is "הצהרת נגישות". */
 
 /* ── SEO landing pages (mia-four · קלנועית 4 גלגלים / מתקפלת / שטח) ── */
 .seo{padding:34px 0 72px}
@@ -1430,7 +1473,11 @@ a,button,.btn,.mp,input{touch-action:manipulation}
 .seo-faq summary::after{content:"+";color:var(--teal);font-size:22px;font-weight:400;line-height:1}
 .seo-faq details[open] summary::after{content:"–"}
 .seo-faq details p{margin:0 0 16px;color:#22314f;line-height:1.7;font-size:15.5px}
-.seo-faq summary:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:6px}
+.seo-faq summary:focus-visible{outline:2px solid var(--ink-teal);outline-offset:3px;border-radius:6px}
+/* A FOCUS RING IS A UI COMPONENT, so WCAG 1.4.11 asks 3:1 against what surrounds
+   it — and var(--teal) gave 1.69:1 on the white card. A keyboard user could not
+   see where they were. This accordion is also what /eligibility renders its seven
+   answers in, which makes it the worst page on the site to lose the ring on. */
 
 .seo-related{max-width:760px;margin-top:40px}
 .seo-related h2{font-size:19px;color:var(--ink);font-weight:800;margin-bottom:12px}
@@ -1730,3 +1777,64 @@ a,button,.btn,.mp,input{touch-action:manipulation}
    `<button.spq-video-poster> h:0→170`. Desktop never showed it, because the row
    layout gave the column a width all along. */
 .soon-media{width:100%;align-self:stretch}
+
+/* ═══ 4D DEPTH · the pool a product sits IN, not the plate it sits ON ═════════
+   A studio cut-out on flat white has no depth cue at all: the eye reads it as a
+   sticker. Three layers give it one, and they are ordered the way a real
+   lighting rig makes them — which is why this is not simply "a gradient".
+
+     1. AMBIENT WELL   a wide radial pool of the room's live hue, behind and
+                       above the subject. It is what separates the black frame
+                       from the white page: a near-black object on pure white has
+                       nowhere to go but a hard silhouette, and the well gives the
+                       silhouette somewhere to land.
+     2. CONTACT SHADOW a tight, dark, elliptical core directly under the tyres.
+                       Contact is the single strongest depth cue there is — it is
+                       what says "resting" rather than "floating".
+     3. RIM SPILL      a faint bright arc opposite the shadow, so the top edge of
+                       the subject is not the brightest thing in the frame.
+
+   It reads from --amb-hue-a, which AmbientLight.tsx writes live, so the pool is
+   the same light as the rest of the page rather than a second, disagreeing one.
+   Pointer-events none, aria-hidden by construction (a pseudo-element), and every
+   layer is a paint-only property — no layout, no reflow, nothing the turntable or
+   the LCP can trip over. */
+.depth-4d{position:relative}
+.depth-4d>*{position:relative;z-index:1}
+.depth-4d::before,
+.depth-4d::after{content:"";position:absolute;pointer-events:none;z-index:0}
+/* 1 + 3 — the well, with the rim spill riding its upper edge */
+.depth-4d::before{
+  inset:-6% -8% -2%;
+  background:
+    radial-gradient(58% 44% at 50% 34%, hsla(var(--amb-hue-a),88%,62%,.13) 0%, hsla(var(--amb-hue-b),80%,58%,.06) 46%, transparent 72%),
+    radial-gradient(38% 22% at 50% 12%, rgba(255,255,255,.55) 0%, transparent 70%);
+  filter:blur(.5px);
+}
+/* 2 — contact. Tight, low, and darker than anything else in the frame. */
+.depth-4d::after{
+  inset-inline:18%;
+  bottom:2%;
+  height:7%;
+  border-radius:50%;
+  background:radial-gradient(50% 50% at 50% 50%, rgba(4,18,31,.30) 0%, rgba(4,18,31,.14) 52%, transparent 78%);
+  filter:blur(6px);
+}
+@media (prefers-reduced-motion:reduce){
+  /* The pool is static paint — nothing here animates — so it stays. Only the
+     blur softening is dropped, because a filter on a large box is the one part
+     of this that costs a compositor pass on a weak device. */
+  .depth-4d::before{filter:none}
+}
+
+/* The other two product stills take the same magnification as the model cards.
+   Transform, not width: the reserved box and the declared aspect-ratio stay
+   exactly as they are, so nothing shifts while the image decodes (the Tribute
+   still is the LCP on /eligibility). transform-origin sits at the tyre line,
+   not the centre, so the vehicle grows UP from where it is resting instead of
+   sinking through its own contact shadow. */
+.tribute-media img,
+.specs-media--product img{
+  transform:scale(var(--zoom-product, 1));
+  transform-origin:50% 86%;
+}

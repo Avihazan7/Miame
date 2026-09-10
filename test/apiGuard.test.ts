@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { clientIp, guardJsonPost, honeypotTripped, originAllowed, withinRate } from "@/lib/apiGuard";
+import {
+  clientIp,
+  guardJsonPost,
+  honeypotTripped,
+  originAllowed,
+  UNIDENTIFIED_CLIENT,
+  withinRate,
+} from "@/lib/apiGuard";
 
 const req = (headers: Record<string, string> = {}, body?: string) =>
   new Request("https://www.miame.co.il/api/test", {
@@ -10,11 +17,38 @@ const req = (headers: Record<string, string> = {}, body?: string) =>
   });
 
 describe("clientIp", () => {
-  it("prefers platform headers, first hop wins", () => {
+  // THIS BLOCK USED TO ASSERT THE BUG. It read "prefers platform headers, first hop
+  // wins" and required clientIp to honour x-real-ip and x-forwarded-for — two ordinary
+  // request headers that any client sends at will. Since clientIp is the rate
+  // limiter's bucket key, that made the key attacker-chosen, and the test locked the
+  // behaviour in place as if it were intended. MEASURED against a production build on
+  // 2026-09-10, /api/lead at 5-per-minute: eight requests with a rotating
+  // x-forwarded-for returned 503×8 and never once 429.
+  it("reads only the header the platform sets, taking the first hop", () => {
     expect(clientIp(req({ "x-vercel-forwarded-for": "1.1.1.1, 2.2.2.2" }))).toBe("1.1.1.1");
-    expect(clientIp(req({ "x-real-ip": "3.3.3.3" }))).toBe("3.3.3.3");
-    expect(clientIp(req({ "x-forwarded-for": "4.4.4.4" }))).toBe("4.4.4.4");
-    expect(clientIp(req())).toBe("unknown");
+  });
+
+  it("ignores headers a client can forge", () => {
+    // Each of these alone must NOT identify a caller. If any of them ever does again,
+    // one attacker becomes an unlimited number of rate-limit buckets.
+    for (const forged of ["x-real-ip", "x-forwarded-for", "x-client-ip", "forwarded", "true-client-ip"]) {
+      expect(clientIp(req({ [forged]: "3.3.3.3" })), `${forged} is being trusted`).toBe(UNIDENTIFIED_CLIENT);
+    }
+  });
+
+  it("a forged header cannot override the platform's", () => {
+    expect(
+      clientIp(req({ "x-vercel-forwarded-for": "1.1.1.1", "x-forwarded-for": "9.9.9.9" })),
+    ).toBe("1.1.1.1");
+  });
+
+  it("with no platform header every caller shares ONE bucket", () => {
+    // Fail-closed: when callers cannot be told apart, the only sound limit is an
+    // aggregate one. Two different forged identities must land on the same key.
+    expect(clientIp(req({ "x-forwarded-for": "5.5.5.5" }))).toBe(
+      clientIp(req({ "x-forwarded-for": "6.6.6.6" })),
+    );
+    expect(clientIp(req())).toBe(UNIDENTIFIED_CLIENT);
   });
 });
 

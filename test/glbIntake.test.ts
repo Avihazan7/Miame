@@ -73,14 +73,14 @@ describe("the gate accepts what the site can actually serve", () => {
   });
 
   it("counts the triangles the GPU is asked to draw, not the ones stored", () => {
-    // Cross-check with an independent path: public/models/README.md records 2,508
+    // Cross-check with an independent path: docs/models/README.md records 2,508
     // triangles as measured through the real three.js GLTFLoader. The scene-graph
     // walk here reproduces it from the bytes. If these ever disagree, one of the
     // two is wrong and this names which file to open.
     const r: Result = inspectGlb(readFileSync("public/models/mia-four-x4.glb"));
     expect(r.stats!.triangles).toBe(2508);
     expect(r.stats!.trianglesUnique).toBe(720);
-    expect(readFileSync("public/models/README.md", "utf8")).toContain("2,508 triangles");
+    expect(readFileSync("docs/models/README.md", "utf8")).toContain("2,508 triangles");
   });
 
   it("passes a minimal well-formed model", () => {
