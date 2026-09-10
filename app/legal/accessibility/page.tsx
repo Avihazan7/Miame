@@ -83,6 +83,8 @@ export default function AccessibilityPage() {
           וואטסאפ:{" "}
           <a
             href={buildWhatsAppUrl("היי MiaMe, אני פונה בנושא נגישות האתר ואשמח לעזרת רכז הנגישות")}
+            target="_blank"
+            rel="noopener"
           >
             {SALES_PHONE_DISPLAY}
           </a>
