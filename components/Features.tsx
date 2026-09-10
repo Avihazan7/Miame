@@ -61,7 +61,22 @@ export default function Features() {
           <span className="deliver-banner">
             <TruckIcon />
             <span>
-              משלוח <b>MIA FOUR</b> עד אליכם, <span className="db-free">עלינו.</span>
+              {/* "עלינו." until 2026-09-10 — an absolute cost promise with no source
+                  anywhere: not app/legal/terms (the only binding document, whose §5
+                  covers delivery TIMING and says nothing about price), not
+                  components/Service.tsx (the dedicated delivery section, which says
+                  "מסירה בכל הארץ · מתואמת אתכם מראש מול נציג"), not public/llms.txt,
+                  not the brain corpus, and not lib/content.ts. It was the one
+                  unqualified cost claim on a site where every other figure carries a
+                  caveat, and a buyer in the periphery who read it and was then charged
+                  for transport has exactly the consumer-protection complaint the rest
+                  of this codebase is written to avoid.
+                  The wording now matches every other delivery surface verbatim. If
+                  delivery IS included, it belongs back here WITH a source — a constant
+                  in lib/content.ts read by this banner, by Service.tsx and by §5 of the
+                  terms — which is also what would let the Offer schema carry a real
+                  `shippingDetails` instead of omitting it. */}
+              משלוח <b>MIA FOUR</b> עד אליכם, <span className="db-free">בתיאום מראש.</span>
             </span>
           </span>
         </div>

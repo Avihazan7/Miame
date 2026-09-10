@@ -48,8 +48,12 @@ async function load() {
   };
 }
 
-beforeEach(() => stubWindow(LANDING));
-afterEach(() => vi.unstubAllGlobals());
+beforeEach(() => {
+  stubWindow(LANDING);
+});
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe("without consent", () => {
   it("writes nothing to the device", async () => {

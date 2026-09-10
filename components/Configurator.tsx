@@ -349,15 +349,20 @@ export default function Configurator() {
           <div className="cards">
             {MODELS.map((m, i) => {
               const selected = m.id === modelId;
-              const best = i === 1;
+              // A "הכי מבוקש" badge sat on `i === 1` — a popularity claim decided by a
+              // position in an array. There is no sales figure, no analytics field and
+              // no model property behind it, and two surfaces disagreed about who wins:
+              // lib/seo-pages.ts:248 calls 2×4 City (index 0) "נקודת הכניסה הפופולרית".
+              // A claim about what OTHER buyers chose is the strongest social lever on
+              // the screen where the model is picked, and this one was fabricated twice
+              // over. "פרימיום" stays: it is positioning, not a measurement.
               return (
                 <article
                   key={m.id}
                   className={selected ? "card sel" : "card"}
                 >
                   <div className="card-stage depth-4d">
-                    {best && <span className="card-badge best">הכי מבוקש</span>}
-                    {!best && i === 2 && <span className="card-badge">פרימיום</span>}
+                    {i === 2 && <span className="card-badge">פרימיום</span>}
                     {/* One photograph, three cards. The file is the 4×4 Pro Max —
                         the vehicle_media_assets row this cover belongs to is
                         registered as Mia FOUR "X4", and every other surface that
