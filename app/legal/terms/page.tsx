@@ -27,8 +27,18 @@ export default function TermsPage() {
       <p className="legal-meta">גרסה 1.0 · עודכן: {UPDATED}</p>
 
       <p>
-        תקנון זה חל על השימוש באתר MiaMe.co.il (להלן: "האתר") ועל תהליך הרכישה,
-        ההשכרה והשירות של מוצרי {MANUFACTURER_NAME_HE} הנמכרים בו. האתר מופעל על ידי
+        {/* "ההשכרה" stood here until 2026-09-10. MiaMe does not rent: the owner
+            settled rental out of the business on 2026-09-02 (supabase/phases.json,
+            9-rental-fleet-os), middleware.ts answers /rent-eilat with 410, and
+            public/llms.txt tells answer engines, in as many words, "MiaMe אינה
+            משכירה". This is the binding document, so it was the one place the claim
+            could do real damage — the site told machines it does not rent while its
+            own terms declared their scope over "ההשכרה … של מוצרי מיה דיינמיקס".
+            The existing gate whitelisted this file by name, on the reasoning that
+            rental "is legitimate in app/legal/terms"; that reasoning predates the
+            owner's decision and is corrected in test/commercialTruth.test.ts. */}
+        תקנון זה חל על השימוש באתר MiaMe.co.il (להלן: "האתר") ועל תהליך הרכישה
+        והשירות של מוצרי {MANUFACTURER_NAME_HE} הנמכרים בו. האתר מופעל על ידי
         Leasing.co.il. עצם
         השימוש באתר, שליחת פנייה או ביצוע הזמנה מהווים הסכמה לתנאים אלה. אם אינך
         מסכים לתנאים, אין לעשות שימוש באתר.
