@@ -780,6 +780,50 @@
         "in brain/knowledge.ts, not in a row. Recorded rather than half-attempted."
       ],
       "evidence": "ledger name: knowledge_spyqe_warranty_unpublished. Measured live immediately after: the row names אחריות and IP, and its embedding is NULL. The gate that now holds it is test/retrievalRanking.test.ts — mutation-proven twice: reverting the row to the five-field list fails with the original message (\"מה האחריות על ספייק\" → warranty, a MIA FOUR row), and deleting the `warranty` row from the fixture — which used to make the whole assertion pass silently, and is how the defect survived — now fails on a fixture-completeness check."
+    },
+    {
+      "id": "26-media-events-anon-bounded-insert",
+      "title": "The anonymous media-event write stops needing the key that bypasses RLS",
+      "status": "applied",
+      "migrations": [
+        {
+          "file": "20260910090000_media_events_anon_bounded_insert.sql",
+          "ledger": "20260910080111"
+        }
+      ],
+      "risk": "low — additive: one GRANT and one bounded INSERT policy for anon. Nothing existing is dropped, the service_role SELECT policy is untouched, and while the route still uses the service-role key this phase changes no behaviour at all (service_role bypasses RLS either way). It is the DB half of a two-step, applied first on purpose.",
+      "why": [
+        "app/api/vehicle-media-events/route.ts inserted with SUPABASE_SERVICE_ROLE_KEY —",
+        "the one principal in the project that bypasses RLS — on behalf of an",
+        "unauthenticated caller. 20260629_vehicle_media_ultra.sql created no anon INSERT",
+        "policy on purpose and said so, which was coherent; but it put the strongest",
+        "credential in the project behind a public endpoint whose only guards were an",
+        "Origin check that passes when no Origin header is sent (curl, by definition) and",
+        "an in-memory rate limit.",
+        "",
+        "MEASURED 2026-09-10 against a production build: 200 unauthenticated POSTs with a",
+        "rotating x-forwarded-for → 200 accepted, 0 refused, because the rate-limit key was",
+        "attacker-chosen. Fixing that (lib/apiGuard.ts, same day) brought it back to the",
+        "declared 60/min ceiling — measured 140 limited, 60 through — but the WRITE was",
+        "still service-role.",
+        "",
+        "This adds a bounded anon INSERT policy, shaped by the same rules the route's zod",
+        "schema enforces, so the database refuses what the application refuses instead of",
+        "trusting it to. event_type is pinned to the four enum values.",
+        "",
+        "PRECISION, because the obvious phrasing is wrong: anon ALREADY holds table-level",
+        "INSERT/SELECT/UPDATE/DELETE grants (Supabase's default `grant all ... to anon`) and",
+        "relrowsecurity is true — measured 2026-09-10. Under RLS a grant permits nothing by",
+        "itself; a POLICY does. What refuses an anon read here is the absence of a SELECT",
+        "policy, not the absence of a grant. The `grant insert` in the file is a no-op today,",
+        "kept as an explicit statement of intent. anon writes, and can never read back.",
+        "",
+        "ORDER MATTERS AND IS DELIBERATE. Schema first, consumer second: this phase is",
+        "inert while the route still holds the service key, and the route switches to the",
+        "anon client only after it has landed. The reverse order would mean an anon INSERT",
+        "against a table with RLS on and no policy — every media event refused."
+      ],
+      "evidence": "Live state before, read from pg_policy 2026-09-10: exactly one policy on public.vehicle_media_events — service_role_read_media_events (SELECT, to service_role). After: that policy plus 'anon insert vehicle_media_events' (INSERT, to anon) carrying the bounded WITH CHECK, verified by reading pg_get_expr back. relrowsecurity=true, relforcerowsecurity=false. Bounds mirror app/api/vehicle-media-events/route.ts: vehicle_id 1..140, event_type in the four-value enum, source='web', session_id ≤ 64, payload ≤ 8000 chars (the route's body cap). Ledger row: 20260910080111 / media_events_anon_bounded_insert — read back from supabase_migrations.schema_migrations, not assumed: the applier assigns its own timestamp, which is why this field records what landed rather than what the filename says. VERIFIED 2026-09-14 on a throwaway PostgreSQL 16.13 cluster carrying this table, this policy and Supabase's default `grant select ... to anon`: the four event types insert (INSERT 0 4), anon reads back 0 rows, and an over-long payload, an over-long session_id, an empty vehicle_id and a source other than 'web' are each refused. The same probe explained a live refusal that had looked like a broken policy: the first hand probe ended in `returning id, ...`, and under RLS a RETURNING clause needs the new row to be visible through a SELECT policy anon must never have. Without RETURNING the identical row inserts. The route sends no RETURNING — postgrest-js sets `Prefer: return=representation` only from `.select()` — and test/apiRoutes.test.ts now fails if anyone adds one."
     }
   ]
 }
