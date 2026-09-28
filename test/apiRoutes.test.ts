@@ -2,6 +2,7 @@
 // functions, so they run under vitest without a dev server. No ANTHROPIC/VOYAGE
 // key is set here, so no paid call can ever fire — the guards reject first.
 import { afterEach, describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { POST as leadPost } from "@/app/api/lead/route";
 import { POST as brainPost } from "@/app/api/brain/route";
 import { GET as embedGet, POST as embedPost } from "@/app/api/embed/route";
@@ -135,11 +136,15 @@ describe("POST /api/deal (M1 guards)", () => {
   });
 });
 
-describe("POST /api/vehicle-media-events (an unauthenticated service_role write)", () => {
-  // This route inserts with SUPABASE_SERVICE_ROLE_KEY — the one principal in the
-  // project that bypasses RLS — on behalf of an anonymous caller. `payload` was
-  // `z.record(z.unknown())`: an object of any shape and any depth, bounded only by the
-  // 8,000-byte body cap, going straight into a jsonb column.
+describe("POST /api/vehicle-media-events (an unauthenticated public write)", () => {
+  // This route USED to insert with SUPABASE_SERVICE_ROLE_KEY — the one principal in
+  // the project that bypasses RLS — on behalf of an anonymous caller. It now uses the
+  // ANON key against the bounded INSERT policy added by phase
+  // 26-media-events-anon-bounded-insert (ledger 20260910080111), so the database
+  // refuses what this schema refuses rather than trusting the route to.
+  //
+  // `payload` was `z.record(z.unknown())`: an object of any shape and any depth,
+  // bounded only by the 8,000-byte body cap, going straight into a jsonb column.
   //
   // The whole application sends one payload: `{ frames: number }`
   // (components/Product360Stage.tsx:153). The permissive shape bought nothing.
@@ -151,6 +156,47 @@ describe("POST /api/vehicle-media-events (an unauthenticated service_role write)
         : { vehicleId: "mia-four", type: "spin360_view", payload },
       ip(),
     );
+
+  it("does not hold the service-role key", () => {
+    // The point of the phase. A route that reads SUPABASE_SERVICE_ROLE_KEY for an
+    // UNAUTHENTICATED caller puts the one RLS-bypassing credential in the project
+    // behind a public endpoint; reintroducing that here would silently undo the
+    // migration's whole purpose while every other test kept passing.
+    const src = readFileSync("app/api/vehicle-media-events/route.ts", "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, " ")
+      .split("\n")
+      .filter((l) => !l.trim().startsWith("//"))
+      .join("\n");
+    expect(src).not.toMatch(/SUPABASE_SERVICE_ROLE_KEY/);
+    expect(src).toMatch(/SUPABASE_PUBLIC_CONFIG\.anonKey/);
+  });
+
+  it("never asks PostgREST to return the inserted row", () => {
+    // THE TRAP THIS CLOSES, MEASURED — not a style rule.
+    //
+    // Under RLS, `INSERT ... RETURNING` needs the new row to be visible through a
+    // SELECT policy. anon deliberately has none here: it writes and can never read
+    // back. So the moment anyone appends `.select()` to the insert below,
+    // postgrest-js appends `Prefer: return=representation`
+    // (@supabase/postgrest-js PostgrestTransformBuilder.select, the ONLY place that
+    // header is set), PostgREST emits RETURNING, and EVERY media event starts failing
+    // — with an error that blames the policy rather than the `.select()`:
+    //
+    //   ERROR: new row violates row-level security policy for table "vehicle_media_events"
+    //
+    // REPRODUCED 2026-09-14 on a throwaway PostgreSQL 16.13 cluster carrying this
+    // table, this policy, and Supabase's default `grant select ... to anon`:
+    //   with RETURNING    -> that exact error, byte for byte
+    //   without RETURNING -> INSERT 0 1, for all four event types
+    //   anon reading back -> 0 rows
+    // The same probe confirmed the policy still refuses an over-long payload, an
+    // over-long session_id, an empty vehicle_id and a source other than 'web'.
+    //
+    // That error message is why this test exists: it is indistinguishable from a
+    // genuinely wrong policy, and it cost this session an investigation to tell apart.
+    const src = readFileSync("app/api/vehicle-media-events/route.ts", "utf8");
+    expect(src).not.toMatch(/\.insert\([\s\S]*?\)\s*\.\s*select\s*\(/);
+  });
 
   it("accepts what the application actually sends", async () => {
     // 400 would mean the bound broke the feature. Anything else means the payload

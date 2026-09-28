@@ -48,14 +48,43 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }
 
+  // THE ANON KEY IS THE CORRECT PRINCIPAL HERE, NOT A DOWNGRADE.
+  //
+  // This route used SUPABASE_SERVICE_ROLE_KEY — the one credential in the project that
+  // BYPASSES RLS — on behalf of an unauthenticated caller, because the table had no
+  // anon INSERT policy (20260629_vehicle_media_ultra.sql said so explicitly). The
+  // guards in front of it were an Origin check that passes when no Origin header is
+  // sent — curl, by definition — and an in-memory rate limit. MEASURED 2026-09-10
+  // against a production build: 200 unauthenticated POSTs with a rotating
+  // x-forwarded-for, 200 accepted, because the limiter's key was attacker-chosen.
+  //
+  // Phase 26-media-events-anon-bounded-insert (ledger 20260910080111) added the policy,
+  // bounded by the same shape the zod schema above enforces, so the DATABASE refuses
+  // what the application refuses instead of trusting it to. With that in place the
+  // strongest credential in the project no longer sits behind a public endpoint.
+  //
+  // app/api/vehicles/[vehicleId]/media/route.ts made the same move for reads, and its
+  // comment states the principle this follows: "The anon client is not a downgrade
+  // here; it is the correct principal."
+  //
+  // ORDER: the policy landed FIRST and this switch second. The reverse would mean an
+  // anon INSERT against a table with RLS on and no policy — every media event refused.
   const url = SUPABASE_PUBLIC_CONFIG.url;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const key = SUPABASE_PUBLIC_CONFIG.anonKey;
   if (!key) {
     return NextResponse.json({ ok: false, error: "missing_supabase_env" }, { status: 500 });
   }
 
   const supabase = createClient(url, key, { auth: { persistSession: false } });
 
+  // NO `.select()` HERE, EVER. anon writes this table and can never read it back —
+  // that is the design — so there is no SELECT policy for it. `.select()` would make
+  // postgrest-js send `Prefer: return=representation`, PostgREST would emit
+  // `INSERT ... RETURNING`, and RLS would refuse every single event with an error that
+  // names the policy rather than the `.select()` that caused it. Reproduced on a local
+  // PostgreSQL 16.13 carrying this exact table and policy, 2026-09-14; the same probe
+  // showed the plain insert below succeeding for all four event types. Gated by
+  // test/apiRoutes.test.ts, "never asks PostgREST to return the inserted row".
   const { error } = await supabase.from("vehicle_media_events").insert({
     vehicle_id: parsed.data.vehicleId,
     event_type: parsed.data.type,
