@@ -96,21 +96,37 @@ jobs:
           python3 -c "import json,sys; d=json.load(open('body.json')); \
             print('provider key  :', 'present' if d.get('embeddingsReady') else 'MISSING'); \
             print('write key     :', 'present' if d.get('hasServiceKey') else 'MISSING'); \
-            print('rows pending  :', d.get('pending')); \
+            print('rows pending  :', d.get('pending') if (d.get('pending') or 0) >= 0 else 'unreadable (-1)'); \
             sys.exit(0 if d.get('embeddingsReady') and d.get('hasServiceKey') else 3)" \
             || { echo "::error::חסר מפתח בפריסה — ראו MISSING למעלה. הוסיפו ב-Vercel ואז Redeploy." >&2; exit 1; }
 
       # רק בהרצה מתוזמנת. בהרצה ידנית של `status` המספר הוא בדיוק מה שבאו לראות
       # לפני שמחליטים להוציא כסף — להכשיל שם היה הופך את הבדיקה לחסרת תועלת.
+      #
+      # שלושה מצבים, לא שניים. ‏`pending: -1` אינו "שורה אחת פחות מאפס ממתינה" — זה
+      # הראוט שאומר שלא הצליח לקרוא את `public.knowledge` בכלל (app/api/embed/route.ts,
+      # ה-GET משאיר -1 כשהשאילתה זורקת). עד 30.09.26 השער קרא את זה כ"שורות בלי ווקטור"
+      # ושלח את המפעיל להריץ mode=embed — הרצה שנכשלת על אותה קריאה בדיוק, כי אין לה
+      # רשימת עבודה. זה לא תיאורטי: פרויקט ה-Supabase של MiaMe עומד על INACTIVE, וההרצות
+      # 29–30 נכשלו בדיוק כך, עם האבחנה הלא-נכונה. ה-driver המקומי כבר מבחין בזה
+      # (scripts/knowledge-embed.mjs, `json.pending < 0`); השער עכשיו אומר את אותו הדבר.
       - name: שער יומי — אין שורה בלי ווקטור
         if: github.event_name == 'schedule'
         env:
           TOKEN: ${{ secrets.EMBED_ADMIN_TOKEN }}
         run: |
-          python3 -c "import json,sys; d=json.load(open('body.json')); p=d.get('pending'); \
-            print('rows awaiting an embedding:', p); \
-            sys.exit(0 if p == 0 else 6)" \
-            || { echo "::error::שורות בקורפוס בלי ווקטור — הן בלתי-נראות לחיפוש הסמנטי. הריצו את ה-workflow הזה ידנית עם mode=embed." >&2; exit 1; }
+          python3 - <<'PY'
+          import json, sys
+          p = json.load(open('body.json')).get('pending')
+          if not isinstance(p, int) or p < 0:
+              print(f"rows awaiting an embedding: unreadable ({p!r})")
+              print("::error::הראוט לא הצליח לקרוא את public.knowledge בכלל — זו לא שורה ממתינה אלא מסד שאינו זמין (בדקו שפרויקט ה-Supabase של MiaMe פעיל). אל תריצו mode=embed: אין לו רשימת עבודה והוא ייכשל על אותה קריאה.", file=sys.stderr)
+              sys.exit(7)
+          print("rows awaiting an embedding:", p)
+          if p > 0:
+              print("::error::שורות בקורפוס בלי ווקטור — הן בלתי-נראות לחיפוש הסמנטי. הריצו את ה-workflow הזה ידנית עם mode=embed.", file=sys.stderr)
+              sys.exit(6)
+          PY
 
       - name: הרצה (POST /api/embed)
         if: inputs.mode == 'embed'
@@ -118,6 +134,10 @@ jobs:
           TOKEN: ${{ secrets.EMBED_ADMIN_TOKEN }}
         run: |
           set -o pipefail
+          # בלי רשימת עבודה אין מה להריץ — ‏-1 פירושו שהקורפוס לא נקרא (ראו השער היומי).
+          python3 -c "import json,sys; p=json.load(open('body.json')).get('pending'); \
+            sys.exit(0 if isinstance(p, int) and p >= 0 else 7)" \
+            || { echo "::error::הקורפוס לא נקרא (pending=-1) — לא נשלח POST ולא הוצא כסף. בדקו שפרויקט ה-Supabase של MiaMe פעיל." >&2; exit 1; }
           code=$(curl -sS -X POST -o post.json -w '%{http_code}' \
             -H "x-admin-token: $TOKEN" "$BASE/api/embed") || {
               echo "::error::בקשת ה-POST נכשלה ברמת הרשת." >&2; exit 1; }
