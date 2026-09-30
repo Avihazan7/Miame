@@ -12,7 +12,7 @@ import { readFileSync } from "node:fs";
 process.env.VOYAGE_API_KEY = "test-voyage-key";
 process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-key";
 
-const { POST } = await import("../app/api/embed/route");
+const { GET, POST } = await import("../app/api/embed/route");
 const { embedDocuments, embedQuery } = await import("../brain/embeddings");
 
 const TOKEN = "test-embed-admin-token";
@@ -214,5 +214,62 @@ describe("retrieval and the backfill embed asymmetrically", () => {
     );
     const out = await embedDocuments(["first", "second"]);
     expect(out.map((v) => v[0])).toEqual([0.1, 0.2]);
+  });
+});
+
+describe("an unreadable corpus is not a pending corpus", () => {
+  // `pending: -1` is the route saying it could not read public.knowledge at all. The
+  // daily gate in knowledge-embed.yml read it as "rows without a vector" and sent the
+  // operator to run mode=embed — a run with no work list, which fails on the same read.
+  // Measured, not hypothesised: with the MiaMe Supabase project INACTIVE, scheduled
+  // runs 29 and 30 (2026-09-29/30) failed exactly that way, with that advice.
+  beforeEach(() => {
+    process.env.EMBED_ADMIN_TOKEN = TOKEN;
+  });
+  afterEach(() => {
+    delete process.env.EMBED_ADMIN_TOKEN;
+    vi.unstubAllGlobals();
+  });
+
+  it("GET reports -1, not 0, when the corpus cannot be read", async () => {
+    // The contract the gate branches on. A 0 here would be the worst answer: a dead
+    // database reported as a fully embedded corpus.
+    vi.stubGlobal("fetch", vi.fn(async () => json({ message: "upstream timeout" }, 503)));
+    const res = await GET(
+      new Request("https://www.miame.co.il/api/embed", { headers: { "x-admin-token": TOKEN } })
+    );
+    expect(res.status).toBe(200);
+    expect((await res.json()).pending).toBe(-1);
+  });
+
+  const workflow = readFileSync(".github/workflows/knowledge-embed.yml", "utf8");
+  const step = (name: string) => {
+    const at = workflow.indexOf(`- name: ${name}`);
+    expect(at, `step "${name}" not found`).toBeGreaterThan(-1);
+    const next = workflow.indexOf("- name:", at + 1);
+    return workflow.slice(at, next === -1 ? undefined : next);
+  };
+  const EMBED_ADVICE = "הריצו את ה-workflow הזה ידנית עם mode=embed";
+
+  it("the daily gate tells an unreadable corpus apart from rows awaiting a vector", () => {
+    const gate = step("שער יומי — אין שורה בלי ווקטור");
+    const unreadable = gate.indexOf("p < 0");
+    const pendingBranch = gate.indexOf("p > 0");
+    expect(unreadable, "gate has no branch for pending < 0").toBeGreaterThan(-1);
+    expect(pendingBranch, "gate has no branch for pending > 0").toBeGreaterThan(unreadable);
+    // The unreadable branch fails the run, and does NOT send anyone to spend money.
+    const unreadableBranch = gate.slice(unreadable, pendingBranch);
+    expect(unreadableBranch).toMatch(/sys\.exit\([1-9]/);
+    expect(unreadableBranch).not.toContain(EMBED_ADVICE);
+    // The advice survives exactly where it is true.
+    expect(gate.slice(pendingBranch)).toContain(EMBED_ADVICE);
+  });
+
+  it("a manual embed run refuses to POST without a work list", () => {
+    const post = step("הרצה (POST /api/embed)");
+    const guard = post.indexOf("p >= 0");
+    const send = post.indexOf("curl -sS -X POST");
+    expect(guard, "no pending >= 0 guard before the POST").toBeGreaterThan(-1);
+    expect(send).toBeGreaterThan(guard);
   });
 });
