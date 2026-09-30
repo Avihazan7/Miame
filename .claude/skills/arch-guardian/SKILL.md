@@ -1,6 +1,6 @@
 ---
 name: arch-guardian
-description: "Architecture Guardian — האחראי הישיר 24/7 על תקינות הארכיטקטורה מקצה-לקצה של MiaMe.co.il (מבית Leasing.co.il). מאמת 4 תחומים: code (typecheck/lint/build + אינווריאנטים: Configurator/סימולטור, משפך WhatsApp, Supabase CRM+RLS, api/lead, המוח), live (זמינות אתר + /api/lead), SEO/GEO/AEO (sitemap, schema, llms.txt), ו-secrets/deps (חוזה env, אין דליפת .env, npm audit). פותח GitHub Issue על drift ומנסה PR-fix. Triggers on: architecture, guardian, ארכיטקטורה, תקינות, health check, drift, integrity, end-to-end, 24/7, arch audit."
+description: "Architecture Guardian — האחראי הישיר 24/7 על תקינות הארכיטקטורה מקצה-לקצה של MiaMe.co.il (מבית Leasing.co.il). מאמת 4 תחומים: code (typecheck/lint/build + אינווריאנטים: Configurator/סימולטור, משפך WhatsApp, Supabase CRM+RLS, api/lead, המוח), live (זמינות אתר + /api/lead + ה-DB של MiaMe), SEO/GEO/AEO (sitemap, schema, llms.txt), ו-secrets/deps (חוזה env, אין דליפת .env, npm audit). פותח GitHub Issue על drift ומנסה PR-fix. Triggers on: architecture, guardian, ארכיטקטורה, תקינות, health check, drift, integrity, end-to-end, 24/7, arch audit."
 user-invocable: true
 argument-hint: "[check|report|fix] [code|live|seo|secrets|all]"
 license: MIT
@@ -38,6 +38,11 @@ GitHub Actions cron — לא תלוי בסשן: [`.github/workflows/arch-guardia
 ### 2. Live / Health
 - דף הבית של `miame.co.il` עונה 2xx/3xx · `/api/lead` נגיש.
 - `leasing.co.il` (אתר-אם) זמין.
+- **ה-DB של MiaMe עונה** (`live.miame.db`, critical) — `GET /api/embed` מחזיר `pending` שלם ≥ 0.
+  `-1` = הקורפוס לא נקרא = המסד לא זמין. הבדיקות שמעליו לא נוגעות במסד, ולכן 10 ריצות
+  (487–496, 28–30.09.26) נשארו ירוקות על פרויקט Supabase מושהה. דורש `EMBED_ADMIN_TOKEN`, שעובר
+  **לשלב הריצה בלבד**, רק ל-`https://(www.)miame.co.il` ובלי לעקוב אחרי הפניה; בלעדיו —
+  `warn`, לא `pass`. הלוגיקה: `scripts/miame-db-probe.mjs`.
 
 ### 3. SEO / GEO / AEO
 - `sitemap.xml` תקין · `robots.txt` עם `Sitemap:` · `schema` JSON-LD בדף הבית · `llms.txt` (GEO/AEO).
