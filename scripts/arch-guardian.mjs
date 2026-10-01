@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 // Architecture Guardian — MiaMe.co.il (מבית Leasing.co.il)
 // מאמת תקינות ארכיטקטורה מקצה-לקצה. דטרמיניסטי בלבד (אין LLM).
-// 4 תחומים: code (typecheck/lint/build + אינווריאנטים) · live (זמינות) · seo (SEO/GEO/AEO) · secrets/deps.
+// 4 תחומים: code (typecheck/lint/build + אינווריאנטים) · live (זמינות + המסד) · seo (SEO/GEO/AEO) · secrets/deps.
 // פלט: arch-guardian-report.json + arch-guardian-summary.md. exit!=0 אם יש כשל קריטי/actionable.
 
 import { execSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { classifyDbProbe, tokenMayGoTo } from './miame-db-probe.mjs';
 
 const ROOT = resolve(process.cwd());
 const DOMAINS = (process.env.GUARDIAN_DOMAINS || 'code,live,seo,secrets')
@@ -15,6 +16,13 @@ const DOMAINS = (process.env.GUARDIAN_DOMAINS || 'code,live,seo,secrets')
 const MIAME_SITE = (process.env.MIAME_SITE || 'https://miame.co.il').replace(/\/$/, '');
 const LEASING_SITE = (process.env.LEASING_SITE || 'https://leasing.co.il').replace(/\/$/, '');
 const SKIP_HEAVY = process.env.GUARDIAN_SKIP_HEAVY === '1';
+
+// בדיקת המסד פונה ל-host הקנוני ישירות (כמו BASE ב-knowledge-embed.yml), כי הטוקן
+// לא עוקב אחרי הפניה. נקרא פעם אחת ונמחק מהסביבה: תחום ה-code מריץ next build
+// ו-npm audit, ואף אחד מהם לא צריך טוקן אדמין ב-env שלו.
+const MIAME_DB_PROBE_SITE = (process.env.MIAME_DB_PROBE_SITE || 'https://www.miame.co.il').replace(/\/$/, '');
+const EMBED_ADMIN_TOKEN = process.env.EMBED_ADMIN_TOKEN || '';
+delete process.env.EMBED_ADMIN_TOKEN;
 
 const results = [];
 function record(r) { results.push({ severity: 'medium', status: 'pass', ...r }); }
@@ -31,14 +39,14 @@ function sh(cmd, timeoutMs = 15 * 60 * 1000) {
   }
 }
 
-async function probe(url, { retries = 2, timeout = 12000, wantBody = false } = {}) {
+async function probe(url, { retries = 2, timeout = 12000, wantBody = false, headers = {}, redirect = 'follow' } = {}) {
   for (let i = 0; i <= retries; i++) {
     try {
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), timeout);
       const res = await fetch(url, {
-        signal: ctrl.signal, redirect: 'follow',
-        headers: { 'user-agent': 'MiaMe-Arch-Guardian/1.0 (+architecture-integrity)' },
+        signal: ctrl.signal, redirect,
+        headers: { 'user-agent': 'MiaMe-Arch-Guardian/1.0 (+architecture-integrity)', ...headers },
       });
       clearTimeout(t);
       const body = wantBody ? await res.text() : '';
@@ -115,6 +123,18 @@ async function checkLive() {
   record({ domain: 'live', id: 'live.miame.lead', title: 'MiaMe /api/lead נגיש', severity: 'high',
     status: lead.ok && lead.status > 0 && lead.status < 500 ? 'pass' : 'fail',
     detail: lead.ok ? `HTTP ${lead.status}` : `אין מענה: ${lead.error}` });
+
+  // המסד עצמו — שלוש הבדיקות שלמעלה עברו 10 ריצות ירוקות (28–30.09.26) על פרויקט
+  // Supabase מושהה. הנימוק המלא ב-scripts/miame-db-probe.mjs.
+  const hostAllowed = tokenMayGoTo(MIAME_DB_PROBE_SITE);
+  const db = EMBED_ADMIN_TOKEN && hostAllowed
+    ? await probe(`${MIAME_DB_PROBE_SITE}/api/embed`, {
+      timeout: 15000, wantBody: true, redirect: 'manual',
+      headers: { 'x-admin-token': EMBED_ADMIN_TOKEN },
+    })
+    : null;
+  record({ domain: 'live', id: 'live.miame.db', title: 'MiaMe DB (Supabase) עונה', severity: 'critical',
+    ...classifyDbProbe({ tokenPresent: Boolean(EMBED_ADMIN_TOKEN), hostAllowed, probe: db }) });
 }
 
 // ───────────────────────── SEO / GEO / AEO ─────────────────────────

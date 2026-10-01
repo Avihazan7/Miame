@@ -47,6 +47,12 @@ jobs:
       - name: Run Architecture Guardian
         id: guardian
         continue-on-error: true
+        env:
+          # בדיקת המסד (live.miame.db) קוראת ל-GET /api/embed, שדורש x-admin-token.
+          # לשלב הזה בלבד ולא ל-job: שלב ה-autofix שלמטה מריץ npm audit fix, ותלות
+          # עם lifecycle script לא צריכה לראות טוקן אדמין. הסקריפט עצמו מוחק אותו
+          # מ-process.env לפני שהוא מריץ next build. ראו scripts/miame-db-probe.mjs.
+          EMBED_ADMIN_TOKEN: ${{ secrets.EMBED_ADMIN_TOKEN }}
         run: node scripts/arch-guardian.mjs
 
       - name: Publish summary
